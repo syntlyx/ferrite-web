@@ -1,0 +1,128 @@
+{
+  "tab_size": 2,
+  "hard_tabs": false,
+  "format_on_save": "on",
+  "ensure_final_newline_on_save": true,
+  "remove_trailing_whitespace_on_save": true,
+  "preferred_line_length": 100,
+  "soft_wrap": "preferred_line_length",
+  "show_whitespaces": "selection",
+  "inlay_hints": {
+    "enabled": true,
+    "show_type_hints": false,
+    "show_parameter_hints": true,
+    "show_other_hints": false,
+  },
+  "languages": {
+    "JavaScript": {
+      "tab_size": 2,
+      "language_servers": ["typescript-language-server", "eslint", "!vtsls"],
+      "formatter": {
+        "external": {
+          "command": "node_modules/.bin/prettier",
+          "arguments": ["--stdin-filepath", "{buffer_path}"],
+        },
+      },
+    },
+    "TypeScript": {
+      "tab_size": 2,
+      "language_servers": ["typescript-language-server", "eslint", "!vtsls"],
+      "formatter": {
+        "external": {
+          "command": "node_modules/.bin/prettier",
+          "arguments": ["--stdin-filepath", "{buffer_path}"],
+        },
+      },
+    },
+    "TSX": {
+      "tab_size": 2,
+      "language_servers": [
+        "typescript-language-server",
+        "tailwindcss-language-server",
+        "eslint",
+        "!vtsls",
+      ],
+      "formatter": {
+        "external": {
+          "command": "node_modules/.bin/prettier",
+          "arguments": ["--stdin-filepath", "{buffer_path}"],
+        },
+      },
+    },
+    "CSS": {
+      "tab_size": 2,
+      "language_servers": ["tailwindcss-language-server"],
+      "formatter": {
+        "external": {
+          "command": "node_modules/.bin/prettier",
+          "arguments": ["--stdin-filepath", "{buffer_path}"],
+        },
+      },
+    },
+    "JSON": {
+      "tab_size": 2,
+      "formatter": {
+        "external": {
+          "command": "node_modules/.bin/prettier",
+          "arguments": ["--stdin-filepath", "{buffer_path}"],
+        },
+      },
+    },
+  },
+  "lsp": {
+    "typescript-language-server": {
+      "initialization_options": {
+        "preferences": {
+          "importModuleSpecifierPreference": "shortest",
+          "includeInlayParameterNameHints": "literals",
+          "includeInlayFunctionParameterTypeHints": false,
+          "includeInlayVariableTypeHints": false,
+          "includeInlayPropertyDeclarationTypeHints": false,
+          "includeInlayEnumMemberValueHints": true,
+          "quotePreference": "double",
+        },
+        "tsserver": {
+          "maxTsServerMemory": 4096,
+        },
+      },
+    },
+    "eslint": {
+      "settings": {
+        "codeActionOnSave": {
+          "rules": ["react-hooks/exhaustive-deps"],
+        },
+      },
+    },
+    "tailwindcss-language-server": {
+      "settings": {
+        "tailwindCSS": {
+          "includeLanguages": {
+            "javascript": "javascript",
+            "javascriptreact": "javascript",
+            "typescript": "javascript",
+            "typescriptreact": "javascript",
+          },
+          "validate": true,
+          "lint": {
+            "cssConflict": "warning",
+            "invalidApply": "error",
+            "invalidScreen": "error",
+            "invalidVariant": "error",
+            "invalidConfigPath": "error",
+            "invalidTailwindDirective": "error",
+            "recommendedVariantOrder": "warning",
+          },
+          "experimental": {
+            "classRegex": [
+              ["cn\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+              ["clsx\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+              ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+              "className[\\s]*=[\\s]*[\"'`]([^\"'`]*)[\"'`]",
+              "class[\\s]*=[\\s]*[\"'`]([^\"'`]*)[\"'`]",
+            ],
+          },
+        },
+      },
+    },
+  },
+}

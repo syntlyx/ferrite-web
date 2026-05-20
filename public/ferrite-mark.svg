@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Ferrite">
+  <defs>
+    <linearGradient id="ferrite-dark" x1="14" y1="12" x2="37" y2="54" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#3b4450"/>
+      <stop offset="1" stop-color="#202936"/>
+    </linearGradient>
+    <linearGradient id="ferrite-green" x1="37" y1="12" x2="54" y2="54" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#67e3ac"/>
+      <stop offset="1" stop-color="#25c781"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="64" height="64" rx="14" fill="#05070a"/>
+
+  <path
+    d="M12 22.8 30.3 12c2.7-1.6 6.1.4 6.1 3.5v9.8c0 1.8-1 3.5-2.6 4.4l-8.7 5.1h9.6c1.3 0 2.4 1.1 2.4 2.4v4.6c0 1.3-1.1 2.4-2.4 2.4h-9.6v10.3c0 3.1-3.4 5.1-6.1 3.5L12 53.9a8 8 0 0 1-3.9-6.9V29.7a8 8 0 0 1 3.9-6.9Z"
+    fill="url(#ferrite-dark)"
+  />
+
+  <path
+    d="M40.4 13.1 52 20a8 8 0 0 1 3.9 6.9v10.2A8 8 0 0 1 52 44l-11.6 6.9c-2.8 1.7-6.4-.3-6.4-3.6v-2.9c0-2.1 1.2-4 3-5.1a10.8 10.8 0 0 0 0-18.6 5.9 5.9 0 0 1-3-5.1v-2.9c0-3.3 3.6-5.3 6.4-3.6Z"
+    fill="url(#ferrite-green)"
+  />
+</svg>

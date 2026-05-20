@@ -1,0 +1,244 @@
+@import "tailwindcss";
+
+@theme {
+  /* Animations */
+  --animate-fade-up: fade-up 0.22s ease-out both;
+  --animate-fade-down: fade-down 0.15s ease-out both;
+  --animate-scale-in: scale-in 0.15s ease-out both;
+  --animate-slide-in-right: slide-in-right 0.2s ease-out both;
+
+  /* Backgrounds */
+  --color-void: #050708;
+  --color-sidebar: #0a1013;
+  --color-card: #10161a;
+  --color-panel: #131b20;
+  --color-raised: #1a242a;
+  --color-bdr: #26343c;
+
+  /* Text */
+  --color-heading: #f2f7fa;
+  --color-body: #b7c6d4;
+  --color-muted: #7c8fa2;
+
+  /* Brand — teal (allowed traffic, accent) */
+  --color-teal: #35dc9a;
+  --color-teal-h: #22c783;
+  --color-teal-dim: #0b3429;
+  --color-on-teal: #05100d;
+
+  /* Status */
+  --color-blocked: #ef4444;
+  --color-cached: #22c55e;
+  --color-upstream: #3b82f6;
+  --color-warn: #f59e0b;
+}
+
+button,
+[role="button"],
+a {
+  cursor: pointer;
+}
+
+body {
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.014) 1px, transparent 1px),
+    linear-gradient(135deg, rgba(53, 220, 154, 0.06) 0%, transparent 34%),
+    linear-gradient(180deg, #050708 0%, #091013 52%, #050708 100%);
+  background-size:
+    54px 54px,
+    54px 54px,
+    100% 100%,
+    100% 100%;
+  color: var(--color-body);
+  font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+::selection {
+  background: rgba(53, 217, 157, 0.24);
+  color: var(--color-heading);
+}
+
+.app-canvas {
+  background:
+    linear-gradient(115deg, rgba(53, 220, 154, 0.045), transparent 32%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.018), transparent 42%),
+    var(--color-void);
+}
+
+.control-surface {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.026), rgba(255, 255, 255, 0.004)),
+    var(--color-card);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.035),
+    0 12px 34px rgba(0, 0, 0, 0.18);
+}
+
+.control-surface-muted {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.018), rgba(255, 255, 255, 0.004)),
+    var(--color-panel);
+}
+
+.mono {
+  font-family:
+    "SF Mono", "Cascadia Code", "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+
+/* ── Reusable patterns ───────────────────────────────────────────────────── */
+
+/* Sidebar collapsed tooltip — appears to the right of icon on hover */
+.sidebar-tooltip {
+  @apply pointer-events-none absolute top-1/2 left-full z-50 ml-3 -translate-x-1 -translate-y-1/2 rounded-md border border-bdr bg-card px-2.5 py-1.5 text-[11px] whitespace-nowrap text-heading opacity-0 shadow-lg transition-[opacity,transform] duration-150 group-hover:translate-x-0 group-hover:opacity-100;
+}
+
+/* ── Keyframes ───────────────────────────────────────────────────────────── */
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-down {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── Scrollbar ────────────────────────────────────────────────────────────── */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-bdr) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-bdr);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-muted);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+[data-theme="light"] {
+  /* surfaces */
+  --color-void: #e8eff0;
+  --color-sidebar: #f5fbfa;
+  --color-card: #ffffff;
+  --color-panel: #f1f7f7;
+  --color-raised: #e8f0f2;
+  --color-bdr: #cfdddf;
+
+  /* text */
+  --color-heading: #0b1720;
+  --color-body: #334754;
+  --color-muted: #6c7f8f;
+
+  /* teal — darker variant for contrast on white (teal-600) */
+  --color-teal: #0b956b;
+  --color-teal-h: #087d58;
+  --color-teal-dim: #e1f5ec;
+  --color-on-teal: #ffffff;
+
+  /* status — darker on white */
+  --color-blocked: #dc2626;
+  --color-cached: #16a34a;
+  --color-upstream: #2563eb;
+  --color-warn: #d97706;
+}
+
+[data-theme="light"] body {
+  background:
+    linear-gradient(rgba(13, 24, 32, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(13, 24, 32, 0.025) 1px, transparent 1px),
+    radial-gradient(circle at 18% 10%, rgba(11, 149, 107, 0.15), transparent 34%),
+    radial-gradient(circle at 80% 8%, rgba(37, 99, 235, 0.09), transparent 34%),
+    linear-gradient(180deg, #f1f7f7 0%, #e8eff0 100%);
+  background-size:
+    54px 54px,
+    54px 54px,
+    100% 100%,
+    100% 100%,
+    100% 100%;
+}
+
+[data-theme="light"] .app-canvas {
+  background:
+    linear-gradient(115deg, rgba(11, 149, 107, 0.1), transparent 32%),
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.62), transparent 40%),
+    var(--color-void);
+}
+
+[data-theme="light"] .control-surface {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.78)), var(--color-card);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.92),
+    0 16px 42px rgba(47, 68, 80, 0.12);
+}
+
+[data-theme="light"] .control-surface-muted {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.54)),
+    var(--color-panel);
+}
