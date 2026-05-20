@@ -122,10 +122,11 @@ git tag v0.1.0
 git push origin v0.1.0
 ```
 
-The release workflow builds the app, packs `dist.tar.gz`, writes
-`dist.tar.gz.sha256`, and publishes both files to the GitHub release for that
-tag. The archive intentionally contains a top-level `dist/` directory because
-Ferrite's updater accepts either a `dist/` folder or files at the archive root.
+The release workflow builds the app and publishes `dist.tar.gz` to the GitHub
+release for that tag. GitHub exposes the uploaded asset's SHA256 digest in the
+release UI and API, so no companion checksum asset is needed. The archive
+intentionally contains a top-level `dist/` directory because Ferrite's updater
+accepts either a `dist/` folder or files at the archive root.
 
 The release publisher uses GitHub's built-in `${{ github.token }}` with workflow
 `contents: write` permission. It avoids Actions artifacts so releases are
