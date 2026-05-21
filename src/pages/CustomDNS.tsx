@@ -105,14 +105,22 @@ export default function CustomDNS() {
       {/* Add / update form */}
       <Card className="mb-4">
         <SectionLabel>{t("dns.add_or_update")}</SectionLabel>
-        <form onSubmit={handleAdd} className="flex flex-wrap items-end gap-3">
-          <div className="min-w-35 flex flex-col gap-1">
+        <form
+          onSubmit={handleAdd}
+          className="grid grid-cols-1 items-end gap-3 md:grid-cols-[minmax(12rem,1.1fr)_6rem_minmax(14rem,2fr)_6rem_auto]"
+        >
+          <div className="flex min-w-0 flex-col gap-1">
             <span className="text-muted text-xs">{t("dns.field_domain")}</span>
-            <Input value={form.domain} onChange={set("domain")} placeholder="router.lan" />
+            <Input
+              value={form.domain}
+              onChange={set("domain")}
+              placeholder="router.lan"
+              className="w-full font-mono"
+            />
           </div>
-          <div className="flex flex-col gap-1">
+          <div className="flex min-w-0 flex-col gap-1">
             <span className="text-muted text-xs">{t("dns.field_type")}</span>
-            <Select value={form.type} onChange={set("type")}>
+            <Select value={form.type} onChange={set("type")} className="w-full">
               {TYPES.map((t) => (
                 <option key={t} value={t}>
                   {t}
@@ -120,31 +128,35 @@ export default function CustomDNS() {
               ))}
             </Select>
           </div>
-          <div className="min-w-30 flex flex-1 flex-col gap-1">
+          <div className="flex min-w-0 flex-col gap-1">
             <span className="text-muted text-xs">{t("dns.field_value")}</span>
-            <Input value={form.value} onChange={set("value")} placeholder="192.168.1.1" />
+            <Input
+              value={form.value}
+              onChange={set("value")}
+              placeholder="192.168.1.1"
+              className="w-full font-mono"
+            />
           </div>
-          <div className="flex flex-col gap-1">
+          <div className="flex min-w-0 flex-col gap-1">
             <span className="text-muted text-xs">{t("dns.field_ttl")}</span>
             <Input
               type="number"
               value={form.ttl}
               onChange={set("ttl")}
-              className="w-20 text-right"
+              className="w-full text-right font-mono tabular-nums"
             />
           </div>
-          <div className="flex flex-col gap-1">
-            <span className="invisible select-none text-xs">x</span>
-            <Btn
-              type="submit"
-              disabled={adding || !form.domain.trim() || !form.value.trim()}
-              className="py-2"
-            >
-              <Plus size={12} />{" "}
-              {records.some((r) => r.domain === form.domain) ? t("dns.update") : t("dns.add")}
-            </Btn>
-          </div>
-          {addErr && <p className="text-blocked mb-1 self-end text-xs">{addErr}</p>}
+          <Btn
+            type="submit"
+            disabled={adding || !form.domain.trim() || !form.value.trim()}
+            className="h-8 justify-center"
+          >
+            <Plus size={12} />{" "}
+            {records.some((r) => r.domain === form.domain) ? t("dns.update") : t("dns.add")}
+          </Btn>
+          {addErr && (
+            <p className="text-blocked text-xs md:col-span-5 md:justify-self-end">{addErr}</p>
+          )}
         </form>
       </Card>
 

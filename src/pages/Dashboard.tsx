@@ -12,7 +12,19 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from "recharts";
-import { Activity, Zap, Globe, Database, ArrowRight, Shield, ServerCog } from "lucide-react";
+import {
+  Activity,
+  Zap,
+  Globe,
+  Database,
+  ArrowRight,
+  Shield,
+  ServerCog,
+  Cpu,
+  MemoryStick,
+  HardDrive,
+  Network,
+} from "lucide-react";
 import { api } from "@/api";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Card } from "@/components/layout/Card";
@@ -514,34 +526,70 @@ function LiveFeed({
 
 // ── System stats ──────────────────────────────────────────────────────────────
 
-function MetricBar({
+function boundedPercent(percent: number | null | undefined) {
+  if (percent == null || !Number.isFinite(percent)) return null;
+  return Math.min(Math.max(percent, 0), 100);
+}
+
+function SystemTrack({ percent, color }: { percent: number | null | undefined; color: string }) {
+  const width = boundedPercent(percent);
+
+  return (
+    <div className="bg-bdr/70 relative h-1.5 w-full overflow-hidden rounded-full">
+      {width == null ? (
+        <div className="absolute inset-y-0 left-0 w-8 rounded-full bg-white/10" />
+      ) : (
+        <div
+          className={`absolute h-full rounded-full transition-all duration-700 ${color}`}
+          style={{ width: `${width}%` }}
+        />
+      )}
+    </div>
+  );
+}
+
+function SystemMetric({
   label,
   value,
   percent,
   color,
   detail,
+  icon: Icon,
+  showPercentBadge = true,
 }: {
   label: string;
   value: ReactNode;
-  percent: number | null;
+  percent: number | null | undefined;
   color: string;
   detail?: ReactNode;
+  icon: ComponentType<{ size?: number; className?: string }>;
+  showPercentBadge?: boolean;
 }) {
+  const shownPercent = boundedPercent(percent);
+
   return (
-    <div className="space-y-1.5">
-      <div className="flex items-baseline justify-between text-xs">
-        <span className="text-muted text-[10px] uppercase tracking-wider">{label}</span>
-        <span className="text-heading font-medium tabular-nums">{value}</span>
-      </div>
-      {detail && <div className="text-muted/70 text-[10px] tabular-nums">{detail}</div>}
-      {percent !== null && (
-        <div className="bg-bdr/80 relative h-1.5 w-full overflow-hidden rounded-full">
-          <div
-            className={`absolute h-full rounded-full transition-all duration-700 ${color}`}
-            style={{ width: `${Math.min(percent, 100)}%` }}
-          />
+    <div className="border-bdr/55 bg-void/18 min-h-30 flex flex-col justify-between rounded-md border p-3.5">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-muted flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider">
+            <Icon size={12} className="text-teal/80 shrink-0" />
+            <span className="truncate">{label}</span>
+          </p>
+          <div className="text-heading mt-2 min-w-0 text-base font-semibold tabular-nums sm:text-lg">
+            {value}
+          </div>
         </div>
-      )}
+        {showPercentBadge && shownPercent != null && (
+          <span className="text-muted/70 shrink-0 text-[10px] tabular-nums">
+            {shownPercent.toFixed(1)}%
+          </span>
+        )}
+      </div>
+
+      <div className="mt-3 space-y-2">
+        <div className="text-muted/70 min-h-4 text-[10px] tabular-nums">{detail ?? ""}</div>
+        <SystemTrack percent={percent} color={color} />
+      </div>
     </div>
   );
 }
@@ -562,7 +610,21 @@ function SystemBar({ sys }: { sys: SystemStats }) {
         ? "bg-warn/60"
         : "bg-upstream/60";
 
-  const swapColor = sys.swap.used_percent > 50 ? "bg-warn/60" : "bg-upstream/40";
+  const diskColor =
+    sys.disk && sys.disk.used_percent > 85
+      ? "bg-blocked/70"
+      : sys.disk && sys.disk.used_percent > 70
+        ? "bg-warn/60"
+        : "bg-teal/45";
+
+  const swapColor =
+    sys.swap.used_percent > 75
+      ? "text-blocked"
+      : sys.swap.used_percent > 50
+        ? "text-warn"
+        : "text-upstream";
+
+  const hasSwap = sys.swap.total_bytes > 0;
   const memoryDetail =
     sys.memory.available_bytes != null || sys.memory.reclaimable_bytes != null ? (
       <span className="flex flex-wrap gap-x-3 gap-y-0.5">
@@ -583,7 +645,7 @@ function SystemBar({ sys }: { sys: SystemStats }) {
     <Card className="mb-4 overflow-hidden p-0">
       <div className="border-bdr/60 flex flex-col gap-3 border-b p-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
-          <span className="border-teal/15 bg-teal/10 text-teal rounded-full border p-2.5">
+          <span className="border-teal/20 bg-teal/12 text-teal rounded-full border p-2.5">
             <ServerCog size={18} />
           </span>
           <div>
@@ -595,21 +657,19 @@ function SystemBar({ sys }: { sys: SystemStats }) {
             </p>
           </div>
         </div>
-        <div className="text-muted flex flex-wrap items-center gap-x-5 gap-y-1 text-[11px]">
-          {sys.load_avg.one > 0 && (
-            <span>
-              {t("dashboard.load")}{" "}
-              <span className="text-heading font-medium tabular-nums">
-                {sys.load_avg.one.toFixed(2)}
-              </span>
-              <span className="text-muted/50">
-                {" · "}
-                {sys.load_avg.five.toFixed(2)}
-                {" · "}
-                {sys.load_avg.fifteen.toFixed(2)}
-              </span>
+        <div className="text-muted flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px]">
+          <span>
+            {t("dashboard.load")}{" "}
+            <span className="text-heading font-medium tabular-nums">
+              {sys.load_avg.one.toFixed(2)}
             </span>
-          )}
+            <span className="text-muted/50">
+              {" · "}
+              {sys.load_avg.five.toFixed(2)}
+              {" · "}
+              {sys.load_avg.fifteen.toFixed(2)}
+            </span>
+          </span>
           <span className="text-teal flex items-center gap-1.5">
             <span className="bg-teal h-1.5 w-1.5 rounded-full" />
             {t("dashboard.live")}
@@ -617,24 +677,27 @@ function SystemBar({ sys }: { sys: SystemStats }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 p-4 sm:grid-cols-2">
-        <MetricBar
+      <div className="grid grid-cols-1 gap-3 p-4 sm:grid-cols-2 2xl:grid-cols-4">
+        <SystemMetric
           label={t("dashboard.cpu").toUpperCase()}
+          icon={Cpu}
           percent={sys.cpu_usage_percent}
           color={cpuColor}
           value={
-            <span className="flex items-baseline gap-1.5">
+            <span className="flex min-w-0 items-baseline gap-1.5">
               {sys.cpu_usage_percent.toFixed(1)}%
-              {sys.cpu_temp_celsius != null && (
-                <span className="text-muted text-[10px] font-normal">
-                  {sys.cpu_temp_celsius.toFixed(0)}°C
-                </span>
-              )}
             </span>
           }
+          detail={
+            sys.cpu_temp_celsius != null
+              ? `${sys.cpu_temp_celsius.toFixed(0)}°C`
+              : t("dashboard.sensor_unavailable")
+          }
+          showPercentBadge={false}
         />
-        <MetricBar
+        <SystemMetric
           label="RAM"
+          icon={MemoryStick}
           percent={sys.memory.used_percent}
           color={memColor}
           detail={memoryDetail}
@@ -648,34 +711,14 @@ function SystemBar({ sys }: { sys: SystemStats }) {
             </span>
           }
         />
-        {sys.swap.total_bytes > 0 && (
-          <MetricBar
-            label="Swap"
-            percent={sys.swap.used_percent}
-            color={swapColor}
-            value={
-              <span>
-                {formatBytes(sys.swap.used_bytes)}
-                <span className="text-muted font-normal">
-                  {" "}
-                  / {formatBytes(sys.swap.total_bytes)}
-                </span>
-              </span>
-            }
-          />
-        )}
-        {sys.disk && (
-          <MetricBar
-            label={`Disk ${sys.disk.mount}`}
-            percent={sys.disk.used_percent}
-            color={
-              sys.disk.used_percent > 85
-                ? "bg-blocked/70"
-                : sys.disk.used_percent > 70
-                  ? "bg-warn/60"
-                  : "bg-teal/40"
-            }
-            value={
+        <SystemMetric
+          label={sys.disk ? `Disk ${sys.disk.mount}` : "Disk"}
+          icon={HardDrive}
+          percent={sys.disk?.used_percent}
+          color={diskColor}
+          detail={sys.disk ? null : t("common.no_data")}
+          value={
+            sys.disk ? (
               <span>
                 {formatBytes(sys.disk.used_bytes)}
                 <span className="text-muted font-normal">
@@ -683,47 +726,87 @@ function SystemBar({ sys }: { sys: SystemStats }) {
                   / {formatBytes(sys.disk.total_bytes)}
                 </span>
               </span>
-            }
-          />
-        )}
-        <MetricBar
-          label="Net ↓"
-          percent={sys.network.rx_utilization_percent}
-          color="bg-teal/50"
-          value={<span>{formatBytes(sys.network.rx_bytes_per_sec)}/s</span>}
+            ) : (
+              "—"
+            )
+          }
         />
-        <MetricBar
-          label="Net ↑"
-          percent={sys.network.tx_utilization_percent}
-          color="bg-upstream/50"
-          value={<span>{formatBytes(sys.network.tx_bytes_per_sec)}/s</span>}
-        />
+        <div className="border-bdr/55 bg-void/18 min-h-30 flex flex-col justify-between rounded-md border p-3.5">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-muted flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider">
+                <Network size={12} className="text-teal/80 shrink-0" />
+                NET
+              </p>
+              <div className="text-heading mt-2 text-base font-semibold tabular-nums sm:text-lg">
+                {formatBytes(sys.network.rx_bytes_per_sec)}/s
+              </div>
+            </div>
+            <span className="text-muted/70 shrink-0 text-[10px] tabular-nums">
+              {formatBytes(sys.network.tx_bytes_per_sec)}/s
+            </span>
+          </div>
+
+          <div className="mt-3 space-y-2">
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between gap-3 text-[10px]">
+                <span className="text-muted/70">Net ↓</span>
+                <span className="text-heading tabular-nums">
+                  {formatBytes(sys.network.rx_bytes_per_sec)}/s
+                </span>
+              </div>
+              <SystemTrack percent={sys.network.rx_utilization_percent} color="bg-teal/55" />
+            </div>
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between gap-3 text-[10px]">
+                <span className="text-muted/70">Net ↑</span>
+                <span className="text-heading tabular-nums">
+                  {formatBytes(sys.network.tx_bytes_per_sec)}/s
+                </span>
+              </div>
+              <SystemTrack percent={sys.network.tx_utilization_percent} color="bg-upstream/55" />
+            </div>
+          </div>
+        </div>
       </div>
 
-      {sys.process && (
-        <div className="border-bdr/50 flex flex-wrap items-center gap-x-5 gap-y-1 border-t px-4 py-3">
-          <span className="text-muted flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider">
-            <span className="bg-teal/70 h-1.5 w-1.5 rounded-full" />
-            ferrite
-          </span>
-          <span className="text-xs">
-            <span className="text-muted">{t("dashboard.mem")} </span>
-            <span className="text-heading font-medium tabular-nums">
-              {formatBytes(sys.process.memory_bytes)}
+      <div className="border-bdr/50 flex flex-wrap items-center gap-x-5 gap-y-1 border-t px-4 py-3">
+        {sys.process && (
+          <>
+            <span className="text-muted flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider">
+              <span className="bg-teal/70 h-1.5 w-1.5 rounded-full" />
+              ferrite
             </span>
-          </span>
-          <span className="text-xs">
-            <span className="text-muted">{t("dashboard.cpu")} </span>
-            <span className="text-heading font-medium tabular-nums">
-              {sys.process.cpu_percent.toFixed(2)}%
+            <span className="text-xs">
+              <span className="text-muted">{t("dashboard.mem")} </span>
+              <span className="text-heading font-medium tabular-nums">
+                {formatBytes(sys.process.memory_bytes)}
+              </span>
             </span>
-          </span>
-          <span className="text-muted/50 text-[11px] tabular-nums">
-            {sys.process.memory_percent.toFixed(2)}
-            {t("dashboard.of_ram")}
-          </span>
-        </div>
-      )}
+            <span className="text-xs">
+              <span className="text-muted">{t("dashboard.cpu")} </span>
+              <span className="text-heading font-medium tabular-nums">
+                {sys.process.cpu_percent.toFixed(2)}%
+              </span>
+            </span>
+            <span className="text-muted/50 text-[11px] tabular-nums">
+              {sys.process.memory_percent.toFixed(2)}
+              {t("dashboard.of_ram")}
+            </span>
+          </>
+        )}
+        <span className={cn("text-xs tabular-nums", hasSwap ? swapColor : "text-muted/55")}>
+          <span className="text-muted">{hasSwap ? "swap " : ""}</span>
+          {hasSwap ? (
+            <>
+              {formatBytes(sys.swap.used_bytes)}
+              <span className="text-muted font-normal"> / {formatBytes(sys.swap.total_bytes)}</span>
+            </>
+          ) : (
+            t("dashboard.swap_off")
+          )}
+        </span>
+      </div>
     </Card>
   );
 }

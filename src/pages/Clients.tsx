@@ -93,7 +93,8 @@ function AliasesPanel() {
       .finally(() => setLoading(false));
   }, []);
 
-  const placeholder = addrType === "MAC" ? "AA:BB:CC:DD:EE:FF" : "192.168.1.42 or fe80::1";
+  const placeholder =
+    addrType === "MAC" ? t("clients.mac_placeholder") : t("clients.ip_placeholder");
 
   async function handleAdd(e: FormEvent) {
     e.preventDefault();
@@ -141,30 +142,52 @@ function AliasesPanel() {
       <SectionLabel>{t("clients.manual_aliases")}</SectionLabel>
       {err && <Err msg={err} />}
 
-      <form onSubmit={handleAdd} className="mb-4 flex flex-wrap gap-2">
-        <TypeToggle
-          value={addrType}
-          onChange={(t) => {
-            setAddrType(t);
-            setForm((p) => ({ ...p, address: "" }));
-          }}
-        />
-        <Input
-          value={form.address}
-          onChange={(e) => setForm((p) => ({ ...p, address: e.target.value }))}
-          placeholder={placeholder}
-          className="min-w-36 flex-1 font-mono"
-        />
-        <Input
-          value={form.name}
-          onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
-          placeholder={t("clients.alias_name_placeholder")}
-          className="w-36"
-        />
-        <Btn type="submit" disabled={adding || !form.address.trim() || !form.name.trim()}>
+      <form
+        onSubmit={handleAdd}
+        className="mb-4 grid grid-cols-1 gap-2 lg:grid-cols-[auto_minmax(16rem,1fr)_minmax(10rem,14rem)_auto] lg:items-end"
+      >
+        <div className="space-y-1">
+          <span className="text-muted block text-[10px] uppercase tracking-wider">
+            {t("clients.col_type")}
+          </span>
+          <TypeToggle
+            value={addrType}
+            onChange={(t) => {
+              setAddrType(t);
+              setForm((p) => ({ ...p, address: "" }));
+            }}
+          />
+        </div>
+        <label className="min-w-0 space-y-1">
+          <span className="text-muted block text-[10px] uppercase tracking-wider">
+            {t("clients.col_address")}
+          </span>
+          <Input
+            value={form.address}
+            onChange={(e) => setForm((p) => ({ ...p, address: e.target.value }))}
+            placeholder={placeholder}
+            className="w-full font-mono"
+          />
+        </label>
+        <label className="min-w-0 space-y-1">
+          <span className="text-muted block text-[10px] uppercase tracking-wider">
+            {t("clients.col_name")}
+          </span>
+          <Input
+            value={form.name}
+            onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
+            placeholder={t("clients.alias_name_placeholder")}
+            className="w-full"
+          />
+        </label>
+        <Btn
+          type="submit"
+          disabled={adding || !form.address.trim() || !form.name.trim()}
+          className="h-9"
+        >
           <Plus size={12} /> {t("clients.add_alias")}
         </Btn>
-        {addErr && <p className="text-blocked self-center text-xs">{addErr}</p>}
+        {addErr && <p className="text-blocked text-xs lg:col-span-4">{addErr}</p>}
       </form>
 
       {loading ? (

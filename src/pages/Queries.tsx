@@ -129,7 +129,7 @@ function ClientMultiSelect({
       ? null
       : selected.size === 1
         ? [...selected][0]
-        : `${selected.size} clients`;
+        : t("queries.selected_clients", { count: selected.size });
 
   function toggle(name: string) {
     const next = new Set(selected);
@@ -139,17 +139,19 @@ function ClientMultiSelect({
   }
 
   return (
-    <div ref={ref} className="relative">
+    <div ref={ref} className="relative w-full">
       <button
         onClick={() => setOpen((v) => !v)}
         className={cn(
-          "bg-sidebar hover:border-teal/30 focus:border-teal flex items-center gap-2 rounded-lg border px-3 py-2 text-xs transition-colors focus:outline-none",
+          "bg-sidebar hover:border-teal/30 focus:border-teal flex h-9 w-full items-center gap-2 rounded-md border px-3 text-xs transition-colors focus:outline-none",
           selected.size > 0 ? "border-teal/40 text-body" : "border-bdr text-muted",
         )}
       >
         <Users size={12} className={selected.size > 0 ? "text-teal" : "text-muted"} />
-        <span>{label ?? t("queries.all_clients")}</span>
-        <ChevronDown size={11} className="text-muted" />
+        <span className="min-w-0 flex-1 truncate text-left">
+          {label ?? t("queries.all_clients")}
+        </span>
+        <ChevronDown size={11} className="text-muted shrink-0" />
       </button>
 
       {open && (
@@ -432,41 +434,45 @@ export default function Queries() {
         }
       />
 
-      <div className="mb-4 flex flex-wrap gap-2">
-        <SearchInput
-          icon={Search}
-          placeholder={t("queries.domain_placeholder")}
-          value={domainInput}
-          onChange={(e) => setDomainInput(e.target.value)}
-          className="min-w-48 flex-1"
-        />
-        <ClientMultiSelect
-          clients={clientList}
-          selected={selectedClients}
-          onChange={handleClientChange}
-        />
-        <Select
-          value={filters.status ?? ""}
-          onChange={(e) => handleSelectFilter("status", e.target.value as QueryStatus | "")}
-        >
-          {STATUSES.map((s) => (
-            <option key={s} value={s}>
-              {s ? t(`queries.status_${s}`) : t("queries.all_statuses")}
-            </option>
-          ))}
-        </Select>
-        <Select
-          value={filters.limit}
-          onChange={(e) => handleSelectFilter("limit", Number(e.target.value))}
-          className="w-28"
-        >
-          {[50, 100, 250, 500].map((n) => (
-            <option key={n} value={n}>
-              {n} {t("common.rows")}
-            </option>
-          ))}
-        </Select>
-      </div>
+      <Card className="mb-4 p-3">
+        <div className="grid grid-cols-1 gap-2 lg:grid-cols-[minmax(18rem,1fr)_minmax(10rem,14rem)_minmax(9rem,10rem)_8rem]">
+          <SearchInput
+            icon={Search}
+            placeholder={t("queries.domain_placeholder")}
+            value={domainInput}
+            onChange={(e) => setDomainInput(e.target.value)}
+            className="min-w-0"
+            inputClass="h-9"
+          />
+          <ClientMultiSelect
+            clients={clientList}
+            selected={selectedClients}
+            onChange={handleClientChange}
+          />
+          <Select
+            value={filters.status ?? ""}
+            onChange={(e) => handleSelectFilter("status", e.target.value as QueryStatus | "")}
+            className="w-full"
+          >
+            {STATUSES.map((s) => (
+              <option key={s} value={s}>
+                {s ? t(`queries.status_${s}`) : t("queries.all_statuses")}
+              </option>
+            ))}
+          </Select>
+          <Select
+            value={filters.limit}
+            onChange={(e) => handleSelectFilter("limit", Number(e.target.value))}
+            className="w-full"
+          >
+            {[50, 100, 250, 500].map((n) => (
+              <option key={n} value={n}>
+                {n} {t("common.rows")}
+              </option>
+            ))}
+          </Select>
+        </div>
+      </Card>
 
       <Card className="p-0! overflow-hidden">
         {loading && (

@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import type { ChangeEvent, FormEvent, ReactNode } from "react";
+import type { ChangeEvent, ComponentType, FormEvent, InputHTMLAttributes, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Save,
@@ -12,13 +12,23 @@ import {
   AlertTriangle,
   X,
   Shuffle,
+  Minus,
+  Plus,
+  Clock3,
+  Database,
+  KeyRound,
+  ListFilter,
+  RadioTower,
+  ServerCog,
+  ShieldCheck,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { api } from "@/api";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Card } from "@/components/layout/Card";
 import { Spinner } from "@/components/feedback/Spinner";
 import { Err } from "@/components/feedback/Err";
-import { Input, Btn, SectionLabel } from "@/components/ui";
+import { Input, Btn } from "@/components/ui";
 import { useToast } from "@/hooks/use-toast";
 import type {
   PatchSettingsBody,
@@ -54,13 +64,40 @@ function formatConfigValue(value: unknown): string {
 
 // ── Layout primitives ─────────────────────────────────────────────────────────
 
-function SectionHeader({ children, badge }: { children: ReactNode; badge?: ReactNode }) {
+type SettingsIcon = ComponentType<{ size?: number; className?: string }>;
+
+function SettingsPanel({
+  title,
+  sub,
+  icon: Icon,
+  badge,
+  footer,
+  children,
+}: {
+  title: string;
+  sub?: string;
+  icon: SettingsIcon;
+  badge?: ReactNode;
+  footer?: ReactNode;
+  children: ReactNode;
+}) {
   return (
-    <div className="mb-5 flex items-center gap-3">
-      <div className="bg-teal h-4 w-0.5 rounded-full" />
-      <SectionLabel className="mb-0">{children}</SectionLabel>
-      {badge}
-    </div>
+    <Card className="overflow-hidden p-0">
+      <div className="border-bdr/60 flex flex-col gap-3 border-b px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex min-w-0 items-center gap-3">
+          <span className="border-teal/15 bg-teal/10 text-teal shrink-0 rounded-md border p-2">
+            <Icon size={16} />
+          </span>
+          <div className="min-w-0">
+            <p className="text-heading text-sm font-semibold">{title}</p>
+            {sub && <p className="text-muted mt-0.5 text-xs leading-relaxed">{sub}</p>}
+          </div>
+        </div>
+        {badge && <div className="shrink-0">{badge}</div>}
+      </div>
+      <div className="divide-bdr/55 divide-y px-4">{children}</div>
+      {footer && <div className="border-bdr/55 bg-void/20 border-t px-4 py-3">{footer}</div>}
+    </Card>
   );
 }
 
@@ -69,14 +106,21 @@ function SettingRow({
   sub,
   badge,
   children,
+  align = "center",
 }: {
   label: string;
   sub?: string;
   badge?: ReactNode;
   children: ReactNode;
+  align?: "center" | "start";
 }) {
   return (
-    <div className="border-bdr flex items-center justify-between gap-6 border-b py-4 last:border-0">
+    <div
+      className={cn(
+        "grid gap-3 py-4 sm:grid-cols-[minmax(0,1fr)_minmax(18rem,24rem)]",
+        align === "center" ? "sm:items-center" : "sm:items-start",
+      )}
+    >
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
           <p className="text-heading text-sm font-medium">{label}</p>
@@ -84,7 +128,7 @@ function SettingRow({
         </div>
         {sub && <p className="text-muted mt-0.5 text-xs leading-relaxed">{sub}</p>}
       </div>
-      <div className="flex shrink-0 items-center gap-2">{children}</div>
+      <div className="flex min-w-0 items-center gap-2 sm:justify-end">{children}</div>
     </div>
   );
 }
@@ -106,6 +150,178 @@ function StatusBadge({
     <span className="bg-bdr text-muted rounded-full px-2 py-0.5 text-[10px] font-medium">
       {labelUnset}
     </span>
+  );
+}
+
+function UnitInput({
+  unit,
+  className,
+  ...props
+}: InputHTMLAttributes<HTMLInputElement> & { unit?: string }) {
+  const min = props.min != null && props.min !== "" ? Number(props.min) : undefined;
+  const max = props.max != null && props.max !== "" ? Number(props.max) : undefined;
+  const rawStep = props.step != null && props.step !== "any" ? Number(props.step) : 1;
+  const step = Number.isFinite(rawStep) && rawStep > 0 ? rawStep : 1;
+
+  function changeBy(direction: -1 | 1) {
+    const rawValue = props.value != null && props.value !== "" ? Number(props.value) : (min ?? 0);
+    const current = Number.isFinite(rawValue) ? rawValue : (min ?? 0);
+    const next = Math.min(Math.max(current + step * direction, min ?? -Infinity), max ?? Infinity);
+    props.onChange?.({ target: { value: String(next) } } as ChangeEvent<HTMLInputElement>);
+  }
+
+  return (
+    <div className="group relative w-full">
+      <Input
+        className={cn(
+          "w-full font-mono tabular-nums [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none",
+          unit ? "pr-28" : "pr-16",
+          className,
+        )}
+        {...props}
+      />
+      {unit && (
+        <span className="text-muted/60 pointer-events-none absolute right-16 top-1/2 -translate-y-1/2 text-[10px]">
+          {unit}
+        </span>
+      )}
+      <div className="border-bdr/70 bg-panel/80 absolute right-1.5 top-1/2 grid h-6 -translate-y-1/2 grid-cols-2 overflow-hidden rounded border opacity-40 shadow-[0_6px_16px_rgba(0,0,0,0.18)] transition-opacity group-focus-within:opacity-100 group-hover:opacity-100">
+        <button
+          type="button"
+          onClick={() => changeBy(-1)}
+          disabled={props.disabled}
+          className="hover:bg-white/7 text-muted hover:text-heading border-bdr/60 flex w-6 items-center justify-center border-r transition-colors disabled:opacity-30"
+          aria-label="Decrease"
+        >
+          <Minus size={10} />
+        </button>
+        <button
+          type="button"
+          onClick={() => changeBy(1)}
+          disabled={props.disabled}
+          className="hover:bg-white/7 text-muted hover:text-heading flex w-6 items-center justify-center transition-colors disabled:opacity-30"
+          aria-label="Increase"
+        >
+          <Plus size={10} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function SecretInput({
+  shown,
+  onToggle,
+  className,
+  ...props
+}: InputHTMLAttributes<HTMLInputElement> & {
+  shown: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <div className="relative w-full">
+      <Input
+        type={shown ? "text" : "password"}
+        className={cn("w-full pr-9", className)}
+        {...props}
+      />
+      <button
+        type="button"
+        className="text-muted hover:text-heading absolute right-2.5 top-1/2 -translate-y-1/2 transition-colors"
+        onClick={onToggle}
+        aria-label={shown ? "Hide" : "Show"}
+      >
+        {shown ? <EyeOff size={12} /> : <Eye size={12} />}
+      </button>
+    </div>
+  );
+}
+
+function StatusTile({
+  icon: Icon,
+  label,
+  value,
+  sub,
+  tone = "teal",
+}: {
+  icon: SettingsIcon;
+  label: string;
+  value: ReactNode;
+  sub?: ReactNode;
+  tone?: "teal" | "upstream" | "warn" | "muted";
+}) {
+  const toneClass = {
+    teal: "text-teal bg-teal/10 border-teal/15",
+    upstream: "text-upstream bg-upstream/10 border-upstream/15",
+    warn: "text-warn bg-warn/10 border-warn/20",
+    muted: "text-muted bg-white/5 border-bdr/70",
+  }[tone];
+
+  return (
+    <div className="control-surface border-bdr/75 rounded-lg border p-4">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <p className="text-muted text-[10px] font-semibold uppercase tracking-wider">{label}</p>
+        <span className={cn("rounded-md border p-1.5", toneClass)}>
+          <Icon size={13} />
+        </span>
+      </div>
+      <p className="text-heading text-lg font-semibold tabular-nums">{value}</p>
+      {sub && <p className="text-muted mt-1 truncate text-[11px]">{sub}</p>}
+    </div>
+  );
+}
+
+function SettingsOverview({
+  settings,
+  apiKeySet,
+  passwordSet,
+}: {
+  settings: SettingsType;
+  apiKeySet: boolean;
+  passwordSet: boolean;
+}) {
+  const { t } = useTranslation();
+  const minTtl = settings.dns?.min_ttl;
+  const maxTtl = settings.dns?.max_ttl;
+  const retention = settings.storage?.log_retention_days;
+  const logPatterns = settings.dns?.log_ignore?.length ?? 0;
+
+  return (
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <StatusTile
+        icon={Clock3}
+        label={t("settings.ttl_window")}
+        value={minTtl != null && maxTtl != null ? `${minTtl}-${maxTtl}s` : t("common.no_data")}
+        sub={t("settings.live_changes")}
+      />
+      <StatusTile
+        icon={ShieldCheck}
+        label={t("settings.auth")}
+        value={passwordSet ? t("common.enabled") : t("common.disabled")}
+        sub={apiKeySet ? t("settings.api_key_set_short") : t("settings.api_key_not_set")}
+        tone={passwordSet ? "teal" : "warn"}
+      />
+      <StatusTile
+        icon={Database}
+        label={t("settings.retention")}
+        value={
+          retention == null
+            ? t("common.no_data")
+            : retention === 0
+              ? t("settings.forever")
+              : `${retention}d`
+        }
+        sub={settings.storage?.backend ?? "storage"}
+        tone="upstream"
+      />
+      <StatusTile
+        icon={ListFilter}
+        label={t("settings.log_ignore")}
+        value={t("settings.patterns_count", { count: logPatterns })}
+        sub={settings.web_dir || t("settings.default_web_dir")}
+        tone="muted"
+      />
+    </div>
   );
 }
 
@@ -134,12 +350,19 @@ function CollapsibleConfig({ settings }: { settings: SettingsType }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   return (
-    <Card>
+    <Card className="overflow-hidden p-0">
       <button
-        className="flex w-full items-center justify-between text-left"
+        className="flex w-full items-center justify-between gap-3 px-4 py-4 text-left"
         onClick={() => setOpen((p) => !p)}
       >
-        <SectionLabel className="mb-0 select-none">{t("settings.current_config")}</SectionLabel>
+        <span>
+          <span className="text-heading block text-sm font-semibold">
+            {t("settings.current_config")}
+          </span>
+          <span className="text-muted mt-0.5 block text-xs">
+            {t("settings.current_config_sub")}
+          </span>
+        </span>
         {open ? (
           <ChevronUp size={13} className="text-muted shrink-0" />
         ) : (
@@ -147,7 +370,7 @@ function CollapsibleConfig({ settings }: { settings: SettingsType }) {
         )}
       </button>
       {open && (
-        <div className="max-h-120 mt-4 overflow-auto">
+        <div className="border-bdr/55 max-h-120 overflow-auto border-t px-4 py-4">
           {Object.entries(settings).map(([k, v]) => (
             <ConfigSection key={k} title={k} value={v} />
           ))}
@@ -224,42 +447,47 @@ function UpdatesCard() {
   }
 
   return (
-    <Card>
-      <SectionHeader>{t("settings.updates")}</SectionHeader>
-
+    <SettingsPanel
+      title={t("settings.updates")}
+      sub={t("settings.updates_sub")}
+      icon={Download}
+      footer={
+        <div className="flex flex-wrap justify-end gap-2">
+          <Btn variant="ghost" onClick={checkUpdate} disabled={checking}>
+            <RefreshCw size={12} className={checking ? "animate-spin" : ""} />
+            {t("settings.check_updates")}
+          </Btn>
+          {info?.server?.update_available && (
+            <Btn
+              onClick={() => doUpdate(api.updateServer, setUpdatingServer)}
+              disabled={updatingServer}
+            >
+              <Download size={12} /> {t("settings.update_server")}
+            </Btn>
+          )}
+          {info?.web?.update_available && (
+            <Btn
+              variant="ghost"
+              onClick={() => doUpdate(api.updateWeb, setUpdatingWeb)}
+              disabled={updatingWeb}
+            >
+              <Download size={12} /> {t("settings.update_web")}
+            </Btn>
+          )}
+        </div>
+      }
+    >
       {info && (
-        <div className="border-bdr bg-sidebar mb-4 space-y-2 rounded-lg border px-4 py-3">
+        <div className="space-y-2 py-4">
           <VersionRow label={t("settings.server")} component={info.server} />
           <VersionRow label={t("settings.web_ui")} component={info.web} />
         </div>
       )}
 
-      {msg && <p className="text-upstream mb-3 text-xs">{msg}</p>}
+      {!info && !msg && <p className="text-muted py-4 text-xs">{t("settings.updates_empty")}</p>}
 
-      <div className="flex flex-wrap gap-2">
-        <Btn variant="ghost" onClick={checkUpdate} disabled={checking}>
-          <RefreshCw size={12} className={checking ? "animate-spin" : ""} />
-          {t("settings.check_updates")}
-        </Btn>
-        {info?.server?.update_available && (
-          <Btn
-            onClick={() => doUpdate(api.updateServer, setUpdatingServer)}
-            disabled={updatingServer}
-          >
-            <Download size={12} /> {t("settings.update_server")}
-          </Btn>
-        )}
-        {info?.web?.update_available && (
-          <Btn
-            variant="ghost"
-            onClick={() => doUpdate(api.updateWeb, setUpdatingWeb)}
-            disabled={updatingWeb}
-          >
-            <Download size={12} /> {t("settings.update_web")}
-          </Btn>
-        )}
-      </div>
-    </Card>
+      {msg && <p className="text-upstream py-4 text-xs">{msg}</p>}
+    </SettingsPanel>
   );
 }
 
@@ -299,6 +527,8 @@ export default function Settings() {
   const [restarting, setRestarting] = useState(false);
 
   const loadSettings = useCallback(async () => {
+    setLoading(true);
+    setErr("");
     try {
       const s = await api.getSettings();
       setSettings(s);
@@ -363,10 +593,18 @@ export default function Settings() {
   async function handleHotSave(e: FormEvent) {
     e.preventDefault();
     const patch: PatchSettingsBody = {};
-    if (form.dns_min_ttl !== "") patch.dns_min_ttl = Number(form.dns_min_ttl);
-    if (form.dns_max_ttl !== "") patch.dns_max_ttl = Number(form.dns_max_ttl);
-    if (form.log_retention_days !== "") patch.log_retention_days = Number(form.log_retention_days);
-    if (form.web_dir.trim() !== "") patch.web_dir = form.web_dir.trim();
+    if (form.dns_min_ttl !== "" && Number(form.dns_min_ttl) !== settings?.dns?.min_ttl)
+      patch.dns_min_ttl = Number(form.dns_min_ttl);
+    if (form.dns_max_ttl !== "" && Number(form.dns_max_ttl) !== settings?.dns?.max_ttl)
+      patch.dns_max_ttl = Number(form.dns_max_ttl);
+    if (
+      form.log_retention_days !== "" &&
+      Number(form.log_retention_days) !== settings?.storage?.log_retention_days
+    )
+      patch.log_retention_days = Number(form.log_retention_days);
+    const nextWebDir = form.web_dir.trim();
+    const currentWebDir = settings?.web_dir ?? "";
+    if (nextWebDir !== currentWebDir) patch.web_dir = nextWebDir === "" ? null : nextWebDir;
     if (form.api_key.trim() !== "") patch.api_key = form.api_key.trim();
     if (form.password !== "") patch.password = form.password;
     const originalIgnore = settings?.dns?.log_ignore ?? [];
@@ -380,14 +618,10 @@ export default function Settings() {
     try {
       await api.patchSettings(patch);
       toast(t("settings.settings_saved"));
+      await loadSettings();
       setForm((p) => ({ ...p, api_key: "", password: "" }));
       if (patch.api_key) setApiKeySet(true);
       if (patch.password) setPasswordSet(true);
-      if (patch.dns_log_ignore) {
-        setSettings((current) =>
-          current?.dns ? { ...current, dns: { ...current.dns, log_ignore: logIgnore } } : current,
-        );
-      }
     } catch (e) {
       toast((e as Error).message, "error");
     } finally {
@@ -447,7 +681,16 @@ export default function Settings() {
 
   return (
     <div className="p-6">
-      <PageHeader title={t("settings.title")} />
+      <PageHeader
+        title={t("settings.title")}
+        subtitle={t("settings.subtitle")}
+        action={
+          <Btn variant="ghost" onClick={loadSettings} disabled={loading}>
+            <RefreshCw size={12} className={loading ? "animate-spin" : ""} />
+            {t("common.refresh")}
+          </Btn>
+        }
+      />
       {err && <Err msg={err} />}
       {loading && <Spinner />}
 
@@ -460,256 +703,267 @@ export default function Settings() {
 
       {settings && (
         <div className="space-y-4">
-          {/* ── General ─────────────────────────────────────────────────────── */}
-          <Card>
-            <SectionHeader>{t("settings.general")}</SectionHeader>
-            <form onSubmit={handleHotSave}>
-              {/* TTL */}
-              <SettingRow label={t("settings.min_ttl")} sub={t("settings.min_ttl_sub")}>
-                <Input
-                  type="number"
-                  min={60}
-                  max={3600}
-                  value={form.dns_min_ttl}
-                  onChange={setF("dns_min_ttl")}
-                  className="w-28 text-right font-mono"
-                />
-              </SettingRow>
-              <SettingRow label={t("settings.max_ttl")} sub={t("settings.max_ttl_sub")}>
-                <Input
-                  type="number"
-                  min={60}
-                  max={3600}
-                  value={form.dns_max_ttl}
-                  onChange={setF("dns_max_ttl")}
-                  className="w-28 text-right font-mono"
-                />
-              </SettingRow>
-              <SettingRow label={t("settings.log_retention")} sub={t("settings.log_retention_sub")}>
-                <Input
-                  type="number"
-                  value={form.log_retention_days}
-                  onChange={setF("log_retention_days")}
-                  className="w-28 text-right font-mono"
-                />
-              </SettingRow>
+          <SettingsOverview settings={settings} apiKeySet={apiKeySet} passwordSet={passwordSet} />
 
-              {/* API key */}
-              <SettingRow
-                label={t("settings.api_key")}
-                badge={
-                  <StatusBadge
-                    set={apiKeySet}
-                    labelSet={t("common.enabled")}
-                    labelUnset={t("settings.api_key_not_set")}
-                  />
-                }
-              >
-                <button
-                  type="button"
-                  onClick={() => {
-                    const key = generateKey();
-                    setForm((p) => ({ ...p, api_key: key }));
-                    setShowApiKey(true);
-                  }}
-                  className="text-muted hover:text-teal flex items-center gap-1.5 text-xs transition-colors"
-                  title={t("settings.generate")}
+          <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_24rem]">
+            <div className="space-y-4">
+              <form onSubmit={handleHotSave} className="space-y-4">
+                <SettingsPanel
+                  title={t("settings.general")}
+                  sub={t("settings.live_changes_sub")}
+                  icon={ServerCog}
                 >
-                  <Shuffle size={12} />
-                  {t("settings.generate")}
-                </button>
-                <div className="relative">
-                  <Input
-                    type={showApiKey ? "text" : "password"}
-                    value={form.api_key}
-                    onChange={setF("api_key")}
-                    placeholder={apiKeySet ? "••••••••" : t("settings.api_key_placeholder")}
-                    className="w-44 pr-8 font-mono"
-                  />
-                  <button
-                    type="button"
-                    className="text-muted hover:text-heading absolute right-2.5 top-1/2 -translate-y-1/2 transition-colors"
-                    onClick={() => setShowApiKey((p) => !p)}
+                  <SettingRow label={t("settings.min_ttl")} sub={t("settings.min_ttl_sub")}>
+                    <UnitInput
+                      type="number"
+                      min={60}
+                      max={3600}
+                      unit="s"
+                      value={form.dns_min_ttl}
+                      onChange={setF("dns_min_ttl")}
+                    />
+                  </SettingRow>
+                  <SettingRow label={t("settings.max_ttl")} sub={t("settings.max_ttl_sub")}>
+                    <UnitInput
+                      type="number"
+                      min={60}
+                      max={3600}
+                      unit="s"
+                      value={form.dns_max_ttl}
+                      onChange={setF("dns_max_ttl")}
+                    />
+                  </SettingRow>
+                  <SettingRow
+                    label={t("settings.log_retention")}
+                    sub={t("settings.log_retention_sub")}
                   >
-                    {showApiKey ? <EyeOff size={12} /> : <Eye size={12} />}
-                  </button>
-                </div>
-                {apiKeySet && (
-                  <button
-                    type="button"
-                    onClick={() => clearField("api_key")}
-                    className="text-muted hover:text-blocked transition-colors"
-                    title={t("settings.api_key_clear_title")}
+                    <UnitInput
+                      type="number"
+                      min={0}
+                      unit="d"
+                      value={form.log_retention_days}
+                      onChange={setF("log_retention_days")}
+                    />
+                  </SettingRow>
+                  <SettingRow label={t("settings.web_dir")} sub={t("settings.web_dir_sub")}>
+                    <Input
+                      value={form.web_dir}
+                      onChange={setF("web_dir")}
+                      placeholder="~/.local/share/ferrite/web"
+                      className="w-full font-mono"
+                    />
+                  </SettingRow>
+                  <SettingRow
+                    label={t("settings.log_ignore")}
+                    sub={t("settings.log_ignore_sub")}
+                    align="start"
                   >
-                    <X size={13} />
-                  </button>
-                )}
-              </SettingRow>
+                    <div className="w-full space-y-3">
+                      <div className="border-bdr/70 bg-sidebar/60 min-h-18 rounded-md border p-2">
+                        {logIgnore.length === 0 ? (
+                          <span className="text-muted/60 block px-1 py-1 text-xs italic">
+                            {t("settings.no_patterns")}
+                          </span>
+                        ) : (
+                          <div className="flex flex-wrap gap-1.5">
+                            {logIgnore.map((pattern) => (
+                              <span
+                                key={pattern}
+                                className="border-bdr/80 bg-panel text-body flex max-w-full items-center gap-1.5 rounded-md border px-2 py-1 font-mono text-[11px]"
+                              >
+                                <span className="truncate">{pattern}</span>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setLogIgnore((prev) => prev.filter((x) => x !== pattern))
+                                  }
+                                  className="text-muted hover:text-blocked shrink-0 transition-colors"
+                                  aria-label={t("common.delete")}
+                                >
+                                  <X size={10} />
+                                </button>
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-2">
+                        <Input
+                          value={logIgnoreInput}
+                          onChange={(e) => setLogIgnoreInput(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              addLogIgnorePattern();
+                            }
+                          }}
+                          placeholder="*.arpa"
+                          className="w-full font-mono"
+                        />
+                        <Btn type="button" variant="ghost" onClick={addLogIgnorePattern}>
+                          {t("settings.add_pattern")}
+                        </Btn>
+                      </div>
+                    </div>
+                  </SettingRow>
+                </SettingsPanel>
 
-              {/* Password */}
-              <SettingRow
-                label={t("settings.password")}
-                sub={t("settings.password_sub")}
-                badge={
-                  <StatusBadge
-                    set={passwordSet}
-                    labelSet={t("common.enabled")}
-                    labelUnset={t("common.disabled")}
-                  />
-                }
-              >
-                <div className="relative">
-                  <Input
-                    type={showPwd ? "text" : "password"}
-                    value={form.password}
-                    onChange={setF("password")}
-                    placeholder={t("settings.password_new_placeholder")}
-                    className="w-44 pr-8"
-                  />
-                  <button
-                    type="button"
-                    className="text-muted hover:text-heading absolute right-2.5 top-1/2 -translate-y-1/2 transition-colors"
-                    onClick={() => setShowPwd((p) => !p)}
+                <SettingsPanel
+                  title={t("settings.access")}
+                  sub={t("settings.access_sub")}
+                  icon={KeyRound}
+                  footer={
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <p className="text-muted text-xs">{t("settings.live_changes")}</p>
+                      <Btn type="submit" disabled={saving}>
+                        <Save size={12} /> {t("settings.save")}
+                      </Btn>
+                    </div>
+                  }
+                >
+                  <SettingRow
+                    label={t("settings.api_key")}
+                    badge={
+                      <StatusBadge
+                        set={apiKeySet}
+                        labelSet={t("common.enabled")}
+                        labelUnset={t("settings.api_key_not_set")}
+                      />
+                    }
                   >
-                    {showPwd ? <EyeOff size={12} /> : <Eye size={12} />}
-                  </button>
-                </div>
-                {passwordSet && (
-                  <button
-                    type="button"
-                    onClick={() => clearField("password")}
-                    className="text-muted hover:text-blocked transition-colors"
-                    title={t("settings.password_disable_title")}
-                  >
-                    <X size={13} />
-                  </button>
-                )}
-              </SettingRow>
-
-              {/* Web dir */}
-              <SettingRow label={t("settings.web_dir")} sub={t("settings.web_dir_sub")}>
-                <Input
-                  value={form.web_dir}
-                  onChange={setF("web_dir")}
-                  placeholder="~/.local/share/ferrite/web"
-                  className="w-56 font-mono"
-                />
-              </SettingRow>
-
-              {/* Log ignore patterns — full-width */}
-              <div className="border-bdr border-b py-4 last:border-0">
-                <p className="text-heading text-sm font-medium">{t("settings.log_ignore")}</p>
-                <p className="text-muted mb-3 mt-0.5 text-xs leading-relaxed">
-                  {t("settings.log_ignore_sub")}
-                </p>
-                <div className="min-h-7 mb-3 flex flex-wrap gap-1.5">
-                  {logIgnore.length === 0 ? (
-                    <span className="text-muted/60 text-xs italic">
-                      {t("settings.no_patterns")}
-                    </span>
-                  ) : (
-                    logIgnore.map((pattern) => (
-                      <span
-                        key={pattern}
-                        className="border-bdr bg-sidebar text-body flex items-center gap-1.5 rounded-lg border px-2.5 py-1 font-mono text-[11px]"
+                    <div className="grid w-full grid-cols-[auto_minmax(0,1fr)_auto] gap-2">
+                      <Btn
+                        type="button"
+                        variant="ghost"
+                        onClick={() => {
+                          const key = generateKey();
+                          setForm((p) => ({ ...p, api_key: key }));
+                          setShowApiKey(true);
+                        }}
+                        title={t("settings.generate")}
+                        className="px-2.5"
                       >
-                        {pattern}
-                        <button
-                          type="button"
-                          onClick={() => setLogIgnore((prev) => prev.filter((x) => x !== pattern))}
-                          className="text-muted hover:text-blocked transition-colors"
-                        >
-                          <X size={10} />
-                        </button>
-                      </span>
-                    ))
-                  )}
-                </div>
-                <div className="flex gap-2">
-                  <Input
-                    value={logIgnoreInput}
-                    onChange={(e) => setLogIgnoreInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        addLogIgnorePattern();
-                      }
-                    }}
-                    placeholder="*.arpa"
-                    className="w-44 font-mono"
-                  />
-                  <Btn type="button" variant="ghost" onClick={addLogIgnorePattern}>
-                    {t("settings.add_pattern")}
-                  </Btn>
-                </div>
-              </div>
+                        <Shuffle size={12} />
+                      </Btn>
+                      <SecretInput
+                        shown={showApiKey}
+                        onToggle={() => setShowApiKey((p) => !p)}
+                        value={form.api_key}
+                        onChange={setF("api_key")}
+                        placeholder={apiKeySet ? "••••••••" : t("settings.api_key_placeholder")}
+                        className="font-mono"
+                      />
+                      <Btn
+                        type="button"
+                        variant="danger"
+                        onClick={() => clearField("api_key")}
+                        disabled={!apiKeySet}
+                        title={t("settings.api_key_clear_title")}
+                        className="px-2.5"
+                      >
+                        <X size={13} />
+                      </Btn>
+                    </div>
+                  </SettingRow>
 
-              <div className="pt-2">
-                <Btn type="submit" disabled={saving}>
-                  <Save size={12} /> {t("settings.save")}
-                </Btn>
-              </div>
-            </form>
-          </Card>
+                  <SettingRow
+                    label={t("settings.password")}
+                    sub={t("settings.password_sub")}
+                    badge={
+                      <StatusBadge
+                        set={passwordSet}
+                        labelSet={t("common.enabled")}
+                        labelUnset={t("common.disabled")}
+                      />
+                    }
+                  >
+                    <div className="grid w-full grid-cols-[minmax(0,1fr)_auto] gap-2">
+                      <SecretInput
+                        shown={showPwd}
+                        onToggle={() => setShowPwd((p) => !p)}
+                        value={form.password}
+                        onChange={setF("password")}
+                        placeholder={t("settings.password_new_placeholder")}
+                      />
+                      <Btn
+                        type="button"
+                        variant="danger"
+                        onClick={() => clearField("password")}
+                        disabled={!passwordSet}
+                        title={t("settings.password_disable_title")}
+                        className="px-2.5"
+                      >
+                        <X size={13} />
+                      </Btn>
+                    </div>
+                  </SettingRow>
+                </SettingsPanel>
+              </form>
 
-          {/* ── Network ─────────────────────────────────────────────────────── */}
-          <Card>
-            <SectionHeader
-              badge={
-                <span className="bg-warn/10 text-warn flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium">
-                  <AlertTriangle size={9} /> {t("settings.requires_restart")}
-                </span>
-              }
-            >
-              {t("settings.network")}
-            </SectionHeader>
-            <form onSubmit={handleRestartSave}>
-              <SettingRow label={t("settings.dns_bind")} sub={t("settings.dns_bind_sub")}>
-                <Input
-                  value={restartForm.dns_bind_addr}
-                  onChange={setR("dns_bind_addr")}
-                  placeholder="0.0.0.0:53"
-                  className="w-40 font-mono"
-                />
-              </SettingRow>
-              <SettingRow label={t("settings.cache_size")} sub={t("settings.cache_size_sub")}>
-                <Input
-                  type="number"
-                  value={restartForm.dns_cache_size}
-                  onChange={setR("dns_cache_size")}
-                  className="w-28 text-right font-mono"
-                />
-              </SettingRow>
-              <SettingRow
-                label={t("settings.blocklist_cache_size")}
-                sub={t("settings.blocklist_cache_size_sub")}
-              >
-                <Input
-                  type="number"
-                  min={1}
-                  value={restartForm.blocklist_decision_cache_size}
-                  onChange={setR("blocklist_decision_cache_size")}
-                  className="w-28 text-right font-mono"
-                />
-              </SettingRow>
-              <SettingRow label={t("settings.api_bind")} sub={t("settings.api_bind_sub")}>
-                <Input
-                  value={restartForm.api_bind_addr}
-                  onChange={setR("api_bind_addr")}
-                  placeholder="127.0.0.1:8080"
-                  className="w-40 font-mono"
-                />
-              </SettingRow>
-              <div className="pt-2">
-                <Btn type="submit" disabled={savingRestart || restarting}>
-                  <Save size={12} /> {t("settings.save_restart")}
-                </Btn>
-              </div>
-            </form>
-          </Card>
+              <form onSubmit={handleRestartSave}>
+                <SettingsPanel
+                  title={t("settings.network")}
+                  sub={t("settings.restart_changes_sub")}
+                  icon={RadioTower}
+                  badge={
+                    <span className="bg-warn/10 text-warn flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium">
+                      <AlertTriangle size={9} /> {t("settings.requires_restart")}
+                    </span>
+                  }
+                  footer={
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <p className="text-muted text-xs">{t("settings.restart_changes")}</p>
+                      <Btn type="submit" disabled={savingRestart || restarting}>
+                        <Save size={12} /> {t("settings.save_restart")}
+                      </Btn>
+                    </div>
+                  }
+                >
+                  <SettingRow label={t("settings.dns_bind")} sub={t("settings.dns_bind_sub")}>
+                    <Input
+                      value={restartForm.dns_bind_addr}
+                      onChange={setR("dns_bind_addr")}
+                      placeholder="0.0.0.0:53"
+                      className="w-full font-mono"
+                    />
+                  </SettingRow>
+                  <SettingRow label={t("settings.cache_size")} sub={t("settings.cache_size_sub")}>
+                    <UnitInput
+                      type="number"
+                      unit={t("settings.entries_unit")}
+                      value={restartForm.dns_cache_size}
+                      onChange={setR("dns_cache_size")}
+                    />
+                  </SettingRow>
+                  <SettingRow
+                    label={t("settings.blocklist_cache_size")}
+                    sub={t("settings.blocklist_cache_size_sub")}
+                  >
+                    <UnitInput
+                      type="number"
+                      min={1}
+                      unit={t("settings.entries_unit")}
+                      value={restartForm.blocklist_decision_cache_size}
+                      onChange={setR("blocklist_decision_cache_size")}
+                    />
+                  </SettingRow>
+                  <SettingRow label={t("settings.api_bind")} sub={t("settings.api_bind_sub")}>
+                    <Input
+                      value={restartForm.api_bind_addr}
+                      onChange={setR("api_bind_addr")}
+                      placeholder="127.0.0.1:8080"
+                      className="w-full font-mono"
+                    />
+                  </SettingRow>
+                </SettingsPanel>
+              </form>
+            </div>
 
-          <CollapsibleConfig settings={settings} />
-          <UpdatesCard />
+            <div className="space-y-4">
+              <UpdatesCard />
+              <CollapsibleConfig settings={settings} />
+            </div>
+          </div>
         </div>
       )}
     </div>

@@ -137,20 +137,33 @@ export default function Lists() {
       {/* Add form */}
       <Card className="mb-4">
         <SectionLabel>{t("lists.add_list")}</SectionLabel>
-        <form onSubmit={handleAdd} className="flex flex-wrap gap-2">
-          <Input
-            value={form.name}
-            onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
-            placeholder={t("lists.name_placeholder")}
-            className="w-40"
-          />
-          <Input
-            value={form.url}
-            onChange={(e) => setForm((p) => ({ ...p, url: e.target.value }))}
-            placeholder={t("lists.url_placeholder")}
-            className="min-w-48 flex-1"
-          />
-          <Btn type="submit" disabled={adding || !form.url.trim() || !form.name.trim()}>
+        <form
+          onSubmit={handleAdd}
+          className="grid grid-cols-1 gap-3 md:grid-cols-[minmax(12rem,18rem)_minmax(16rem,1fr)_auto]"
+        >
+          <div className="flex min-w-0 flex-col gap-1">
+            <span className="text-muted text-xs">{t("lists.col_name")}</span>
+            <Input
+              value={form.name}
+              onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
+              placeholder={t("lists.name_placeholder")}
+              className="w-full"
+            />
+          </div>
+          <div className="flex min-w-0 flex-col gap-1">
+            <span className="text-muted text-xs">{t("lists.col_url")}</span>
+            <Input
+              value={form.url}
+              onChange={(e) => setForm((p) => ({ ...p, url: e.target.value }))}
+              placeholder={t("lists.url_placeholder")}
+              className="w-full font-mono"
+            />
+          </div>
+          <Btn
+            type="submit"
+            disabled={adding || !form.url.trim() || !form.name.trim()}
+            className="justify-center self-end"
+          >
             <Plus size={12} /> {t("lists.add")}
           </Btn>
         </form>
