@@ -2,8 +2,10 @@ import { http } from "./client";
 import type { RawUpdateCheckResponse, UpdateCheckResponse, UpdateApplyResponse } from "./types";
 
 /** Check configured releases for server and web UI updates */
-export async function check(): Promise<UpdateCheckResponse> {
-  const raw = await http.get<RawUpdateCheckResponse>("/update/check");
+export async function check(force = false): Promise<UpdateCheckResponse> {
+  const raw = await http.get<RawUpdateCheckResponse>(
+    force ? "/update/check?force=true" : "/update/check",
+  );
   return {
     server: {
       current: raw.current_server_version,
@@ -15,6 +17,10 @@ export async function check(): Promise<UpdateCheckResponse> {
       latest: raw.web_update?.version ?? raw.current_web_version,
       update_available: raw.web_update != null,
     },
+    checked_at: raw.checked_at,
+    stale: raw.stale,
+    check_pending: raw.check_pending,
+    last_error: raw.last_error,
   };
 }
 

@@ -171,7 +171,7 @@ function UpdatesCard() {
     setChecking(true);
     setMsg("");
     try {
-      setInfo(await api.checkUpdate());
+      setInfo(await api.checkUpdate(true));
     } catch (e) {
       setMsg((e as Error).message);
     } finally {
@@ -190,7 +190,7 @@ function UpdatesCard() {
           : t("settings.already_up_to_date", { version: d.version }),
       );
       try {
-        setInfo(await api.checkUpdate());
+        setInfo(await api.checkUpdate(true));
       } catch {
         /* ignore */
       }

@@ -403,14 +403,25 @@ export interface AvailableUpdate {
 
 export interface RawUpdateCheckResponse {
   current_server_version: string;
+  current_server_sha256?: string | null;
   current_web_version: string;
+  current_web_sha256?: string | null;
   server_update: AvailableUpdate | null;
   web_update: AvailableUpdate | null;
+  checked_at?: number | null;
+  cache_ttl_seconds?: number;
+  stale?: boolean;
+  check_pending?: boolean;
+  last_error?: string | null;
 }
 
 export interface UpdateCheckResponse {
   server: UpdateComponent;
   web: UpdateComponent;
+  checked_at?: number | null;
+  stale?: boolean;
+  check_pending?: boolean;
+  last_error?: string | null;
 }
 
 export interface UpdateApplyResponse {
