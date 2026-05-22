@@ -3,12 +3,50 @@
  * Token management + single point for all fetch calls.
  */
 
+import i18n from "@/i18n";
+
 const BASE = "/api";
 
 type QueryParam = string | number | boolean | null | undefined;
 type QueryParams<T extends object> = {
   [K in keyof T]: T[K] extends QueryParam ? T[K] : never;
 };
+
+type ApiErrorPayload = {
+  error?: string;
+  code?: string;
+  kind?: string;
+  details?: string;
+};
+
+type ApiClientErrorOptions = {
+  status: number;
+  statusText: string;
+  code?: string;
+  kind?: string;
+  details?: string;
+  rawMessage?: string;
+};
+
+export class ApiClientError extends Error {
+  readonly status: number;
+  readonly statusText: string;
+  readonly code?: string;
+  readonly kind?: string;
+  readonly details?: string;
+  readonly rawMessage?: string;
+
+  constructor(message: string, options: ApiClientErrorOptions) {
+    super(message);
+    this.name = "ApiClientError";
+    this.status = options.status;
+    this.statusText = options.statusText;
+    this.code = options.code;
+    this.kind = options.kind;
+    this.details = options.details;
+    this.rawMessage = options.rawMessage;
+  }
+}
 
 // ── Token helpers ─────────────────────────────────────────────────────────────
 
@@ -52,23 +90,35 @@ async function request<T>(method: string, path: string, body?: unknown): Promise
   if (res.status === 401) {
     setToken(null);
     window.location.pathname = "/login";
-    throw new Error("Unauthorized");
+    throw new ApiClientError(i18n.t("errors.unauthorized"), {
+      status: res.status,
+      statusText: res.statusText,
+      code: "unauthorized",
+      kind: "unauthorized",
+    });
   }
 
   if (!res.ok) {
-    // Error responses are { "error": "..." } — extract the message
-    let message = res.statusText;
+    let payload: ApiErrorPayload = {};
     try {
-      const json = (await res.json()) as { error?: string };
-      message = json.error ?? message;
+      payload = (await res.json()) as ApiErrorPayload;
     } catch {
       try {
-        message = (await res.text()) || message;
+        payload.error = (await res.text()) || undefined;
       } catch {
         /* ignore */
       }
     }
-    throw new Error(message);
+
+    const message = translatedErrorMessage(payload, res.status, res.statusText);
+    throw new ApiClientError(message, {
+      status: res.status,
+      statusText: res.statusText,
+      code: payload.code,
+      kind: payload.kind,
+      details: payload.details,
+      rawMessage: payload.error,
+    });
   }
 
   const ct = res.headers.get("content-type") ?? "";
@@ -83,3 +133,40 @@ export const http = {
   del: <T>(path: string) => request<T>("DELETE", path),
   patch: <T>(path: string, body?: unknown) => request<T>("PATCH", path, body),
 };
+
+function translatedErrorMessage(
+  payload: ApiErrorPayload,
+  status: number,
+  statusText: string,
+): string {
+  const rawMessage = payload.error ?? statusText;
+  const details = payload.details ?? rawMessage;
+  const code = payload.code ?? defaultErrorCode(status);
+  const translated = i18n.t(`errors.${code}`, {
+    details,
+    defaultValue: "",
+  });
+
+  if (typeof translated === "string" && translated.trim()) {
+    return translated;
+  }
+
+  const fallback = i18n.t(`errors.${defaultErrorCode(status)}`, {
+    details,
+    defaultValue: "",
+  });
+
+  if (typeof fallback === "string" && fallback.trim()) {
+    return fallback;
+  }
+
+  return rawMessage;
+}
+
+function defaultErrorCode(status: number): string {
+  if (status === 400) return "bad_request";
+  if (status === 401) return "unauthorized";
+  if (status === 404) return "not_found";
+  if (status === 409) return "conflict";
+  return "internal";
+}

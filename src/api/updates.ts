@@ -14,8 +14,9 @@ export async function check(force = false): Promise<UpdateCheckResponse> {
     },
     web: {
       current: raw.current_web_version,
-      latest: raw.web_update?.version ?? raw.current_web_version,
+      latest: raw.web_update?.version ?? raw.incompatible_web_update?.version ?? raw.current_web_version,
       update_available: raw.web_update != null,
+      blocked: raw.incompatible_web_update ?? null,
     },
     checked_at: raw.checked_at,
     stale: raw.stale,

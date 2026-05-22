@@ -28,7 +28,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { Card } from "@/components/layout/Card";
 import { Spinner } from "@/components/feedback/Spinner";
 import { Err } from "@/components/feedback/Err";
-import { Input, Btn } from "@/components/ui";
+import { Input, Btn, Switch } from "@/components/ui";
 import { useToast } from "@/hooks/use-toast";
 import type {
   PatchSettingsBody,
@@ -284,7 +284,8 @@ function SettingsOverview({
   const minTtl = settings.dns?.min_ttl;
   const maxTtl = settings.dns?.max_ttl;
   const retention = settings.storage?.log_retention_days;
-  const logPatterns = settings.dns?.log_ignore?.length ?? 0;
+  const blockingEnabled = settings.blocklist?.enabled ?? true;
+  const bypassCount = settings.blocklist?.client_bypass?.length ?? 0;
 
   return (
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -316,10 +317,10 @@ function SettingsOverview({
       />
       <StatusTile
         icon={ListFilter}
-        label={t("settings.log_ignore")}
-        value={t("settings.patterns_count", { count: logPatterns })}
-        sub={settings.web_dir || t("settings.default_web_dir")}
-        tone="muted"
+        label={t("settings.blocking")}
+        value={blockingEnabled ? t("common.enabled") : t("common.disabled")}
+        sub={t("settings.client_bypass_count", { count: bypassCount })}
+        tone={blockingEnabled ? "teal" : "warn"}
       />
     </div>
   );
@@ -429,18 +430,34 @@ function UpdatesCard() {
     component,
   }: {
     label: string;
-    component: { current: string; latest: string; update_available: boolean };
+    component: {
+      current: string;
+      latest: string;
+      update_available: boolean;
+      blocked?: { version: string; required_server: string; reason: string } | null;
+    };
   }) {
     return (
-      <div className="flex items-center gap-3 text-xs">
-        <span className="text-muted w-20">{label}</span>
-        <span className="text-heading font-mono">{component.current}</span>
-        {component.update_available ? (
-          <span className="bg-teal/10 text-teal flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium">
-            → {component.latest}
-          </span>
-        ) : (
-          <span className="text-muted/60">{t("settings.up_to_date")}</span>
+      <div className="space-y-1 text-xs">
+        <div className="flex items-center gap-3">
+          <span className="text-muted w-20">{label}</span>
+          <span className="text-heading font-mono">{component.current}</span>
+          {component.update_available ? (
+            <span className="bg-teal/10 text-teal flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium">
+              → {component.latest}
+            </span>
+          ) : component.blocked ? (
+            <span className="bg-upstream/10 text-upstream flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium">
+              {t("settings.update_blocked")} {component.blocked.version}
+            </span>
+          ) : (
+            <span className="text-muted/60">{t("settings.up_to_date")}</span>
+          )}
+        </div>
+        {component.blocked && (
+          <p className="text-muted/70 ml-23 text-[11px] leading-relaxed">
+            {component.blocked.reason}
+          </p>
         )}
       </div>
     );
@@ -508,6 +525,7 @@ export default function Settings() {
     web_dir: "",
     api_key: "",
     password: "",
+    blocklist_enabled: true,
   });
   const [logIgnore, setLogIgnore] = useState<string[]>([]);
   const [logIgnoreInput, setLogIgnoreInput] = useState("");
@@ -540,6 +558,7 @@ export default function Settings() {
         dns_max_ttl: String(s.dns?.max_ttl ?? ""),
         log_retention_days: String(s.storage?.log_retention_days ?? ""),
         web_dir: String(s.web_dir ?? ""),
+        blocklist_enabled: s.blocklist?.enabled ?? true,
       }));
       setLogIgnore(s.dns?.log_ignore ?? []);
       setRestartForm({
@@ -607,6 +626,8 @@ export default function Settings() {
     if (nextWebDir !== currentWebDir) patch.web_dir = nextWebDir === "" ? null : nextWebDir;
     if (form.api_key.trim() !== "") patch.api_key = form.api_key.trim();
     if (form.password !== "") patch.password = form.password;
+    if (form.blocklist_enabled !== (settings?.blocklist?.enabled ?? true))
+      patch.blocklist_enabled = form.blocklist_enabled;
     const originalIgnore = settings?.dns?.log_ignore ?? [];
     if (JSON.stringify(logIgnore) !== JSON.stringify(originalIgnore))
       patch.dns_log_ignore = logIgnore;
@@ -617,6 +638,7 @@ export default function Settings() {
     setSaving(true);
     try {
       await api.patchSettings(patch);
+      window.dispatchEvent(new Event("ferrite:settings-changed"));
       toast(t("settings.settings_saved"));
       await loadSettings();
       setForm((p) => ({ ...p, api_key: "", password: "" }));
@@ -632,6 +654,7 @@ export default function Settings() {
   async function clearField(field: ClearableSecretField) {
     try {
       await api.patchSettings({ [field]: null });
+      window.dispatchEvent(new Event("ferrite:settings-changed"));
       if (field === "api_key") setApiKeySet(false);
       if (field === "password") setPasswordSet(false);
       toast(field === "api_key" ? t("settings.api_key_cleared") : t("settings.password_cleared"));
@@ -661,6 +684,7 @@ export default function Settings() {
     setSavingRestart(true);
     try {
       const res = await api.patchSettings(patch);
+      window.dispatchEvent(new Event("ferrite:settings-changed"));
       if (res.restart_required) {
         setRestarting(true);
         pollUntilBack();
@@ -674,7 +698,8 @@ export default function Settings() {
     }
   }
 
-  const setF = (key: keyof typeof form) => (e: ChangeEvent<HTMLInputElement>) =>
+  type TextFormField = Exclude<keyof typeof form, "blocklist_enabled">;
+  const setF = (key: TextFormField) => (e: ChangeEvent<HTMLInputElement>) =>
     setForm((p) => ({ ...p, [key]: e.target.value }));
   const setR = (key: keyof typeof restartForm) => (e: ChangeEvent<HTMLInputElement>) =>
     setRestartForm((p) => ({ ...p, [key]: e.target.value }));
@@ -751,6 +776,24 @@ export default function Settings() {
                       onChange={setF("web_dir")}
                       placeholder="~/.local/share/ferrite/web"
                       className="w-full font-mono"
+                    />
+                  </SettingRow>
+                  <SettingRow
+                    label={t("settings.blocking_enabled")}
+                    sub={t("settings.blocking_enabled_sub")}
+                    badge={
+                      <StatusBadge
+                        set={form.blocklist_enabled}
+                        labelSet={t("common.enabled")}
+                        labelUnset={t("common.disabled")}
+                      />
+                    }
+                  >
+                    <Switch
+                      checked={form.blocklist_enabled}
+                      onCheckedChange={(checked) =>
+                        setForm((p) => ({ ...p, blocklist_enabled: checked }))
+                      }
                     />
                   </SettingRow>
                   <SettingRow

@@ -21,16 +21,31 @@ import {
   Moon,
   Languages,
   Wifi,
+  WifiOff,
 } from "lucide-react";
 import { api } from "@/api";
 import { useTheme } from "@/providers/ThemeProvider";
+import { Select } from "@/components/ui";
 
 const LANGS = [
   { code: "en", label: "EN" },
   { code: "uk", label: "UK" },
+  { code: "es", label: "ES" },
+  { code: "de", label: "DE" },
+  { code: "fr", label: "FR" },
+  { code: "pl", label: "PL" },
 ] as const;
 
 type LangCode = (typeof LANGS)[number]["code"];
+
+function isLangCode(value: string): value is LangCode {
+  return LANGS.some((lang) => lang.code === value);
+}
+
+function langCode(value: string | undefined): LangCode {
+  const base = value?.split("-")[0] ?? "en";
+  return isLangCode(base) ? base : "en";
+}
 
 const NAV = [
   { to: "/", icon: LayoutDashboard, key: "nav.dashboard" },
@@ -116,6 +131,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
     () => localStorage.getItem("sidebar-collapsed") === "true",
   );
   const [updateAvailable, setUpdateAvailable] = useState(false);
+  const [blockingEnabled, setBlockingEnabled] = useState(true);
   const { theme, toggle: toggleTheme } = useTheme();
 
   useEffect(() => {
@@ -125,6 +141,29 @@ export default function AppShell({ children }: { children: ReactNode }) {
         if (r.server.update_available || r.web.update_available) setUpdateAvailable(true);
       })
       .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    let alive = true;
+
+    const loadBlockingState = () => {
+      api
+        .getSettings()
+        .then((settings) => {
+          if (alive) setBlockingEnabled(settings.blocklist?.enabled ?? true);
+        })
+        .catch(() => {});
+    };
+
+    loadBlockingState();
+    window.addEventListener("focus", loadBlockingState);
+    window.addEventListener("ferrite:settings-changed", loadBlockingState);
+
+    return () => {
+      alive = false;
+      window.removeEventListener("focus", loadBlockingState);
+      window.removeEventListener("ferrite:settings-changed", loadBlockingState);
+    };
   }, []);
 
   function toggleCollapsed() {
@@ -137,6 +176,12 @@ export default function AppShell({ children }: { children: ReactNode }) {
   function switchLang(code: LangCode) {
     i18n.changeLanguage(code);
     localStorage.setItem("lang", code);
+  }
+
+  function cycleLang() {
+    const currentIndex = LANGS.findIndex((lang) => lang.code === currentLang);
+    const next = LANGS[(currentIndex + 1) % LANGS.length] ?? LANGS[0];
+    switchLang(next.code);
   }
 
   async function handleLogout() {
@@ -161,11 +206,12 @@ export default function AppShell({ children }: { children: ReactNode }) {
     setMobileOpen(false);
   }
 
-  const currentLang = (i18n.language ?? "en") as LangCode;
+  const currentLang = langCode(i18n.language);
 
   // Shared bottom controls for both sidebar and mobile drawer
   function BottomControls({ inDrawer = false }: { inDrawer?: boolean }) {
     const compact = collapsed && !inDrawer;
+    const Icon = blockingEnabled ? Wifi : WifiOff;
     const btnCls = cn(
       "mt-0.5 flex w-full items-center gap-3 rounded-md px-3 py-2 text-xs text-muted transition-colors hover:bg-white/5 hover:text-heading",
       compact && "justify-center px-0",
@@ -177,13 +223,22 @@ export default function AppShell({ children }: { children: ReactNode }) {
           <div className="control-surface-muted border-bdr/70 mb-2 rounded-lg border p-3">
             <div className="text-heading mb-1.5 flex items-center gap-2 text-xs font-medium">
               <span className="relative flex h-2 w-2">
-                <span className="bg-teal absolute inline-flex h-full w-full animate-ping rounded-full opacity-50" />
-                <span className="bg-teal relative inline-flex h-2 w-2 rounded-full" />
+                {blockingEnabled && (
+                  <span className="bg-teal absolute inline-flex h-full w-full animate-ping rounded-full opacity-50" />
+                )}
+                <span
+                  className={cn(
+                    "relative inline-flex h-2 w-2 rounded-full",
+                    blockingEnabled ? "bg-teal" : "bg-warn",
+                  )}
+                />
               </span>
-              <Wifi size={12} className="text-teal" />
-              {t("sidebar.status_online")}
+              <Icon size={12} className={blockingEnabled ? "text-teal" : "text-warn"} />
+              {blockingEnabled ? t("sidebar.status_online") : t("sidebar.status_filtering_off")}
             </div>
-            <p className="text-muted text-[10px]">{t("sidebar.control_plane")}</p>
+            <p className="text-muted text-[10px]">
+              {blockingEnabled ? t("sidebar.control_plane") : t("sidebar.filtering_off_hint")}
+            </p>
           </div>
         )}
 
@@ -198,32 +253,26 @@ export default function AppShell({ children }: { children: ReactNode }) {
           {compact ? (
             <>
               <button
-                onClick={() => switchLang(currentLang === "en" ? "uk" : "en")}
+                onClick={cycleLang}
                 className="text-muted hover:text-heading font-mono text-[10px] font-semibold transition-colors"
               >
                 {currentLang.toUpperCase()}
               </button>
-              <span className="sidebar-tooltip">
-                {t("lang.en")} / {t("lang.uk")}
-              </span>
+              <span className="sidebar-tooltip">{t(`lang.${currentLang}`)}</span>
             </>
           ) : (
-            <div className="flex items-center gap-1">
-              {LANGS.map((l) => (
-                <button
-                  key={l.code}
-                  onClick={() => switchLang(l.code)}
-                  className={cn(
-                    "rounded px-1.5 py-0.5 font-mono text-[10px] font-semibold transition-colors",
-                    currentLang === l.code
-                      ? "bg-teal/15 text-teal"
-                      : "text-muted hover:text-heading",
-                  )}
-                >
-                  {l.label}
-                </button>
+            <Select
+              value={currentLang}
+              onChange={(e) => switchLang(langCode(e.target.value))}
+              className="min-w-0 flex-1"
+              aria-label="Language"
+            >
+              {LANGS.map((lang) => (
+                <option key={lang.code} value={lang.code}>
+                  {lang.label} · {t(`lang.${lang.code}`)}
+                </option>
               ))}
-            </div>
+            </Select>
           )}
         </div>
 

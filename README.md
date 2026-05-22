@@ -118,8 +118,8 @@ npm ci -> npm run lint -> npm run build -> validate dist.tar.gz
 `release.yml` runs when a semver tag is pushed:
 
 ```bash
-git tag v0.1.0
-git push origin v0.1.0
+git tag v0.1.1
+git push origin v0.1.1
 ```
 
 The release workflow builds the app and publishes `dist.tar.gz` to the GitHub

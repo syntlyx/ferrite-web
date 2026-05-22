@@ -177,6 +177,7 @@ export interface ClientEntry {
   blocked: number;
   last_seen: number; // Unix timestamp
   is_alias: boolean; // true if name was set via aliases API
+  blocking_bypassed: boolean; // true when this client bypasses blocklist filtering
 }
 
 export interface ClientsResponse {
@@ -345,10 +346,12 @@ export interface ApiConfig {
 }
 
 export interface BlocklistConfig {
+  enabled?: boolean;
   decision_cache_size?: number;
   lists?: SubscriptionList[];
   wildcard_block?: string[];
   whitelist?: string[];
+  client_bypass?: string[];
 }
 
 /** Full parsed config returned by GET /api/settings */
@@ -371,6 +374,8 @@ export interface PatchSettingsBody {
   dns_log_ignore?: string[];
   web_dir?: string | null;
   log_retention_days?: number;
+  blocklist_enabled?: boolean;
+  blocklist_client_bypass?: string[];
   dns_bind_addr?: string;
   dns_cache_size?: number;
   blocklist_decision_cache_size?: number;
@@ -393,12 +398,20 @@ export interface UpdateComponent {
   current: string;
   latest: string;
   update_available: boolean;
+  blocked?: IncompatibleUpdate | null;
 }
 
 export interface AvailableUpdate {
   version: string;
   download_url?: string;
   release_notes?: string;
+  server_compat?: string;
+}
+
+export interface IncompatibleUpdate {
+  version: string;
+  required_server: string;
+  reason: string;
 }
 
 export interface RawUpdateCheckResponse {
@@ -408,6 +421,7 @@ export interface RawUpdateCheckResponse {
   current_web_sha256?: string | null;
   server_update: AvailableUpdate | null;
   web_update: AvailableUpdate | null;
+  incompatible_web_update?: IncompatibleUpdate | null;
   checked_at?: number | null;
   cache_ttl_seconds?: number;
   stale?: boolean;

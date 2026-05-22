@@ -20,6 +20,7 @@ import {
   Td,
   TableRow,
   EmptyRow,
+  Switch,
 } from "@/components/ui";
 import { useToast } from "@/hooks/use-toast";
 import { useConfirm } from "@/hooks/use-confirm";
@@ -69,6 +70,14 @@ function AddrTypeBadge({ alias }: { alias: ClientAlias }) {
 
 function aliasKey(a: ClientAlias): string {
   return a.mac ?? a.ip ?? "";
+}
+
+function uniqueKeys(keys: string[]): string[] {
+  return Array.from(new Set(keys.filter(Boolean)));
+}
+
+function clientBlockingKeys(client: ClientEntry): string[] {
+  return uniqueKeys([...client.ips, ...client.macs]);
 }
 
 function AliasesPanel() {
@@ -240,13 +249,18 @@ export default function Clients() {
   const [clients, setClients] = useState<ClientEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
+  const [blockingEnabled, setBlockingEnabled] = useState(true);
+  const [bypassKeys, setBypassKeys] = useState<string[]>([]);
+  const [togglingBlocking, setTogglingBlocking] = useState("");
 
   async function load() {
     setLoading(true);
     setErr("");
     try {
-      const data = await api.clients(100);
+      const [data, settings] = await Promise.all([api.clients(100), api.getSettings()]);
       setClients(data.clients ?? []);
+      setBlockingEnabled(settings.blocklist?.enabled ?? true);
+      setBypassKeys(settings.blocklist?.client_bypass ?? []);
     } catch (e) {
       setErr((e as Error).message);
     } finally {
@@ -259,6 +273,39 @@ export default function Clients() {
   }, []);
 
   const maxTotal = clients[0]?.total ?? 1;
+
+  async function toggleClientBlocking(client: ClientEntry) {
+    const keys = clientBlockingKeys(client);
+    if (keys.length === 0) return;
+
+    const token = client.name;
+    setTogglingBlocking(token);
+    try {
+      const nextBypass = client.blocking_bypassed
+        ? bypassKeys.filter((key) => !keys.includes(key))
+        : uniqueKeys([...bypassKeys, ...keys]);
+
+      await api.patchSettings({ blocklist_client_bypass: nextBypass });
+      window.dispatchEvent(new Event("ferrite:settings-changed"));
+      setBypassKeys(nextBypass);
+      setClients((prev) =>
+        prev.map((item) =>
+          item === client || item.name === client.name
+            ? { ...item, blocking_bypassed: !client.blocking_bypassed }
+            : item,
+        ),
+      );
+      toast(
+        client.blocking_bypassed
+          ? t("clients.filtering_enabled_toast", { name: client.name })
+          : t("clients.filtering_bypassed_toast", { name: client.name }),
+      );
+    } catch (e) {
+      toast((e as Error).message, "error");
+    } finally {
+      setTogglingBlocking("");
+    }
+  }
 
   return (
     <div className="p-6">
@@ -301,15 +348,17 @@ export default function Clients() {
                 <Th className="w-36">{t("clients.col_activity")}</Th>
                 <Th className="text-right">{t("clients.col_total")}</Th>
                 <Th className="text-right">{t("clients.col_blocked")}</Th>
+                <Th className="text-right">{t("clients.col_filtering")}</Th>
                 <Th className="text-right">{t("clients.col_last_seen")}</Th>
               </tr>
             </thead>
             <tbody>
               {clients.length === 0 ? (
-                <EmptyRow cols={7} message={t("clients.no_data")} />
+                <EmptyRow cols={8} message={t("clients.no_data")} />
               ) : (
                 clients.map((c, i) => {
                   const blockedPct = c.total > 0 ? (c.blocked / c.total) * 100 : 0;
+                  const filteringOn = blockingEnabled && !c.blocking_bypassed;
                   return (
                     <TableRow key={c.name + i}>
                       <Td className="text-muted tabular-nums">{i + 1}</Td>
@@ -347,6 +396,29 @@ export default function Clients() {
                         {c.total > 0 && (
                           <span className="text-muted ml-1">({blockedPct.toFixed(0)}%)</span>
                         )}
+                      </Td>
+                      <Td className="text-right">
+                        <div className="inline-flex items-center gap-2">
+                          <span
+                            className={cn(
+                              "rounded-full px-2 py-0.5 text-[10px] font-medium",
+                              filteringOn
+                                ? "bg-teal/10 text-teal"
+                                : "bg-warn/10 text-warn",
+                            )}
+                          >
+                            {!blockingEnabled
+                              ? t("clients.filtering_global_off")
+                              : c.blocking_bypassed
+                                ? t("clients.filtering_bypassed")
+                                : t("clients.filtering_on")}
+                          </span>
+                          <Switch
+                            checked={filteringOn}
+                            onCheckedChange={() => toggleClientBlocking(c)}
+                            disabled={!blockingEnabled || togglingBlocking === c.name}
+                          />
+                        </div>
                       </Td>
                       <Td className="text-muted whitespace-nowrap text-right">
                         {fmtRelTime(c.last_seen)}

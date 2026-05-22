@@ -32,9 +32,36 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Generate compatibility manifest
+        run: |
+          node <<'NODE'
+          const fs = require("node:fs");
+          const tag = process.env.GITHUB_REF_NAME || "";
+          const version = tag.replace(/^v/, "");
+          const [majorRaw, minorRaw] = version.split(".");
+          const major = Number.parseInt(majorRaw, 10);
+          const minor = Number.parseInt(minorRaw, 10);
+
+          if (!Number.isInteger(major) || !Number.isInteger(minor)) {
+            throw new Error(`Cannot derive server compatibility from tag ${tag}`);
+          }
+
+          const serverCompat = `>=${major}.${minor}.0 <${major}.${minor + 1}.0`;
+          const manifest = {
+            component: "ferrite-web",
+            version,
+            server_compat: serverCompat,
+          };
+          const json = `${JSON.stringify(manifest, null, 2)}\n`;
+          fs.writeFileSync("dist/ferrite-web-manifest.json", json);
+          fs.writeFileSync("dist.manifest.json", json);
+          NODE
+
       - name: Pack Ferrite web asset
         run: |
           tar -czf dist.tar.gz dist
+          sha256sum dist.tar.gz > dist.tar.gz.sha256
+          sha256sum dist.manifest.json > dist.manifest.json.sha256
           tar -tzf dist.tar.gz | sed -n '1,8p'
 
       - name: Publish GitHub release
@@ -48,7 +75,7 @@ jobs:
           fi
 
           if gh release view "${tag}" >/dev/null 2>&1; then
-            gh release upload "${tag}" dist.tar.gz --clobber
+            gh release upload "${tag}" dist.tar.gz dist.tar.gz.sha256 dist.manifest.json dist.manifest.json.sha256 --clobber
           else
-            gh release create "${tag}" dist.tar.gz "${release_args[@]}"
+            gh release create "${tag}" dist.tar.gz dist.tar.gz.sha256 dist.manifest.json dist.manifest.json.sha256 "${release_args[@]}"
           fi
