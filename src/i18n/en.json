@@ -48,7 +48,8 @@
     "enabled": "Enabled",
     "disabled": "Disabled",
     "all": "All",
-    "search": "Search"
+    "search": "Search",
+    "reset": "Reset"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -157,7 +158,13 @@
     "add": "Add",
     "empty": "Empty",
     "remove_black_confirm": "Remove \"{{domain}}\" from blacklist?",
-    "remove_white_confirm": "Remove \"{{domain}}\" from whitelist?"
+    "remove_white_confirm": "Remove \"{{domain}}\" from whitelist?",
+    "filter_placeholder": "Filter…",
+    "no_matches": "No matches",
+    "add_to_whitelist": "Add to whitelist",
+    "add_to_blacklist": "Add to blacklist",
+    "in_blacklist": "In blacklist",
+    "added_toast": "\"{{domain}}\" added to {{list}}"
   },
   "lists": {
     "title": "Subscription Lists",
@@ -174,7 +181,8 @@
     "no_lists": "No lists configured",
     "remove_confirm": "Remove subscription list \"{{name}}\"? This cannot be undone.",
     "refresh_toast": "\"{{name}}\" refreshed — {{count}} domains",
-    "refresh_all_toast": "All {{count}} lists refreshed — {{total}} total domains"
+    "refresh_all_toast": "All {{count}} lists refreshed — {{total}} total domains",
+    "refreshing_all": "Refreshing…"
   },
   "dns": {
     "title": "Custom DNS Records",
@@ -304,7 +312,10 @@
     "restarted": "Server restarted successfully",
     "restart_timeout": "Server did not come back after restart. Reload the page to retry.",
     "api_key_cleared": "API key cleared",
-    "password_cleared": "Password cleared"
+    "password_cleared": "Password cleared",
+    "system": "System",
+    "unsaved_changes": "Unsaved changes",
+    "quick_add": "Quick add"
   },
   "login": {
     "sign_in": "Sign in",

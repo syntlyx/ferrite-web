@@ -1,6 +1,6 @@
 export function Spinner() {
   return (
-    <div className="flex items-center justify-center py-14 text-muted">
+    <div className="text-muted flex items-center justify-center py-14">
       <svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none">
         <circle
           className="opacity-20"

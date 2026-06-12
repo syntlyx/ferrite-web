@@ -181,7 +181,7 @@ export default function CustomDNS() {
                 records.map((r) => (
                   <TableRow
                     key={r.domain}
-                    className={cn("cursor-pointer", form.domain === r.domain && "bg-teal/5")}
+                    className={cn("cursor-pointer", form.domain === r.domain && "bg-ember/5")}
                     onClick={() =>
                       setForm({
                         domain: r.domain,

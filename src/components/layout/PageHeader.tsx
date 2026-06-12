@@ -18,10 +18,13 @@ export function PageHeader({ title, subtitle, action }: PageHeaderProps) {
   return (
     <div className="border-bdr/60 mb-5 flex flex-col gap-3 border-b pb-5 sm:flex-row sm:items-end sm:justify-between">
       <div className="min-w-0">
-        <h1 className="text-heading text-2xl font-semibold">{title}</h1>
-        {subtitle && <p className="text-muted mt-0.5 text-xs">{subtitle}</p>}
+        <h1 className="display-title text-heading flex items-center gap-2.5 text-xl sm:text-2xl">
+          <span className="bg-ember mt-0.5 h-4 w-1 shrink-0 shadow-[0_0_12px_var(--color-ember)]" />
+          {title}
+        </h1>
+        {subtitle && <p className="text-muted mt-1 pl-3.5 text-xs">{subtitle}</p>}
       </div>
-      {action && <div className="max-w-full shrink-0 *:flex-wrap">{action}</div>}
+      {action && <div className="*:flex-wrap max-w-full shrink-0">{action}</div>}
     </div>
   );
 }

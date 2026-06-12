@@ -48,7 +48,8 @@
     "enabled": "Activado",
     "disabled": "Desactivado",
     "all": "Todo",
-    "search": "Buscar"
+    "search": "Buscar",
+    "reset": "Restablecer"
   },
   "dashboard": {
     "title": "Panel",
@@ -157,7 +158,13 @@
     "add": "Añadir",
     "empty": "Vacio",
     "remove_black_confirm": "Eliminar \"{{domain}}\" de la lista negra?",
-    "remove_white_confirm": "Eliminar \"{{domain}}\" de la lista blanca?"
+    "remove_white_confirm": "Eliminar \"{{domain}}\" de la lista blanca?",
+    "filter_placeholder": "Filtrar…",
+    "no_matches": "Sin coincidencias",
+    "add_to_whitelist": "Añadir a lista blanca",
+    "add_to_blacklist": "Añadir a lista negra",
+    "in_blacklist": "En lista negra",
+    "added_toast": "\"{{domain}}\" añadido a {{list}}"
   },
   "lists": {
     "title": "Listas de suscripcion",
@@ -174,7 +181,8 @@
     "no_lists": "No hay listas configuradas",
     "remove_confirm": "Eliminar la lista \"{{name}}\"? No se puede deshacer.",
     "refresh_toast": "\"{{name}}\" actualizada — {{count}} dominios",
-    "refresh_all_toast": "{{count}} listas actualizadas — {{total}} dominios en total"
+    "refresh_all_toast": "{{count}} listas actualizadas — {{total}} dominios en total",
+    "refreshing_all": "Actualizando…"
   },
   "dns": {
     "title": "Registros DNS personalizados",
@@ -304,7 +312,10 @@
     "restarted": "Servidor reiniciado correctamente",
     "restart_timeout": "El servidor no volvio tras reiniciar. Recarga la pagina para reintentar.",
     "api_key_cleared": "API key borrada",
-    "password_cleared": "Contraseña borrada"
+    "password_cleared": "Contraseña borrada",
+    "system": "Sistema",
+    "unsaved_changes": "Cambios sin guardar",
+    "quick_add": "Añadir rápido"
   },
   "login": {
     "sign_in": "Iniciar sesion",

@@ -162,6 +162,9 @@ export interface QueryFilters {
   limit?: number;
   before_id?: number;
   before_ts?: number;
+  /** Delta cursor: only entries with id > after_id, served from the live ring
+   *  buffer. The server ignores all other filters on this path. */
+  after_id?: number;
   offset?: number;
 }
 

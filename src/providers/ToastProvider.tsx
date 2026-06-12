@@ -5,7 +5,7 @@ import { ToastContext } from "@/hooks/use-toast";
 import type { ToastType } from "@/hooks/use-toast";
 
 const ICONS: Record<ToastType, ReactNode> = {
-  success: <CheckCircle size={14} className="text-teal shrink-0" />,
+  success: <CheckCircle size={14} className="text-ember shrink-0" />,
   error: <XCircle size={14} className="text-blocked shrink-0" />,
 };
 

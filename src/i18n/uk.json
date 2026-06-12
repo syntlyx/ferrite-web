@@ -48,7 +48,8 @@
     "enabled": "Увімкнено",
     "disabled": "Вимкнено",
     "all": "Всі",
-    "search": "Пошук"
+    "search": "Пошук",
+    "reset": "Скинути"
   },
   "dashboard": {
     "title": "Панель",
@@ -157,7 +158,13 @@
     "add": "Додати",
     "empty": "Порожньо",
     "remove_black_confirm": "Видалити \"{{domain}}\" з чорного списку?",
-    "remove_white_confirm": "Видалити \"{{domain}}\" з білого списку?"
+    "remove_white_confirm": "Видалити \"{{domain}}\" з білого списку?",
+    "filter_placeholder": "Фільтр…",
+    "no_matches": "Немає збігів",
+    "add_to_whitelist": "Додати в білий список",
+    "add_to_blacklist": "Додати в чорний список",
+    "in_blacklist": "У чорному списку",
+    "added_toast": "«{{domain}}» додано до: {{list}}"
   },
   "lists": {
     "title": "Підписки на списки",
@@ -174,7 +181,8 @@
     "no_lists": "Списки не налаштовано",
     "remove_confirm": "Видалити список \"{{name}}\"? Це незворотна дія.",
     "refresh_toast": "\"{{name}}\" оновлено — {{count}} доменів",
-    "refresh_all_toast": "Всі {{count}} списки оновлено — {{total}} доменів загалом"
+    "refresh_all_toast": "Всі {{count}} списки оновлено — {{total}} доменів загалом",
+    "refreshing_all": "Оновлення…"
   },
   "dns": {
     "title": "Власні DNS-записи",
@@ -304,7 +312,10 @@
     "restarted": "Сервер успішно перезапущено",
     "restart_timeout": "Сервер не повернувся після перезапуску. Перезавантажте сторінку, щоб спробувати ще раз.",
     "api_key_cleared": "API-ключ очищено",
-    "password_cleared": "Пароль очищено"
+    "password_cleared": "Пароль очищено",
+    "system": "Система",
+    "unsaved_changes": "Незбережені зміни",
+    "quick_add": "Швидке додавання"
   },
   "login": {
     "sign_in": "Увійти",

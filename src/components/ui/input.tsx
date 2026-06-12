@@ -12,7 +12,7 @@ export function Input({ className, ...props }: InputProps) {
   return (
     <input
       className={cn(
-        "border-bdr/90 bg-sidebar/90 text-heading placeholder:text-muted hover:border-teal/30 focus:border-teal focus:ring-teal/15 rounded-md border px-3 py-2 text-xs shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] transition-colors focus:outline-none focus:ring-2",
+        "border-bdr/90 bg-sidebar/90 text-heading placeholder:text-muted hover:border-ember/35 focus:border-ember focus:ring-ember/15 rounded-xs border px-3 py-2 text-xs shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] transition-colors focus:outline-none focus:ring-2",
         className,
       )}
       {...props}

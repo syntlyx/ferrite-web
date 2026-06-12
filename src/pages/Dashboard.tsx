@@ -30,6 +30,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { Card } from "@/components/layout/Card";
 import { Err } from "@/components/feedback/Err";
 import { Bar, Skeleton, Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui";
+import { usePageVisible } from "@/hooks/use-page-visible";
 import { QTYPE, RCODE_LABEL } from "@/lib/dns";
 import { fmt, pct, formatBytes, formatUptime } from "@/lib/format";
 import type {
@@ -41,8 +42,7 @@ import type {
   TopClientEntry,
 } from "@/api/types";
 
-const SUMMARY_REFRESH_ACTIVE = 1_000;
-const SUMMARY_REFRESH_BACKGROUND = 5_000;
+const SUMMARY_REFRESH = 1_000;
 const SYS_REFRESH = 5_000;
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -55,12 +55,6 @@ function fmtTime(ts: number) {
 }
 
 const isIpv4 = (s: string) => /^\d+\.\d+\.\d+\.\d+$/.test(s);
-
-function summaryRefreshDelay() {
-  return document.visibilityState === "hidden"
-    ? SUMMARY_REFRESH_BACKGROUND
-    : SUMMARY_REFRESH_ACTIVE;
-}
 
 const BUCKET_SIZE = 600;
 const NUM_BUCKETS = 144;
@@ -162,7 +156,7 @@ function StatCard({
 }) {
   return (
     <div
-      className="control-surface min-h-32 animate-fade-up border-bdr/85 group relative overflow-hidden rounded-lg border p-4 transition-transform duration-200 hover:-translate-y-0.5"
+      className="control-surface min-h-32 animate-fade-up border-bdr/85 rounded-xs group relative overflow-hidden border p-4 transition-transform duration-200 hover:-translate-y-0.5"
       style={delay ? { animationDelay: `${delay}ms` } : undefined}
     >
       <div
@@ -203,7 +197,7 @@ const ChartTooltip = ({
 }) => {
   if (!active || !payload?.length) return null;
   return (
-    <div className="border-bdr bg-sidebar space-y-1 rounded-lg border px-3 py-2.5 text-xs shadow-xl">
+    <div className="border-bdr bg-sidebar rounded-xs space-y-1 border px-3 py-2.5 text-xs shadow-xl">
       <p className="text-muted mb-1.5 tabular-nums">{label}</p>
       {payload.map((p) => (
         <p key={p.name} className="flex items-center gap-2.5">
@@ -238,7 +232,7 @@ function DomainRows({
         <button
           key={label}
           onClick={() => onRowClick(label)}
-          className="hover:bg-white/4 group w-full cursor-pointer rounded-md px-2 py-1.5 text-left transition-colors"
+          className="hover:bg-white/4 rounded-xs group w-full cursor-pointer px-2 py-1.5 text-left transition-colors"
         >
           <div className="mb-1 flex items-center justify-between text-xs">
             <div className="flex min-w-0 items-center gap-2">
@@ -246,7 +240,7 @@ function DomainRows({
                 {i + 1}
               </span>
               <span
-                className={cn("mono group-hover:text-teal truncate transition-colors", textColor)}
+                className={cn("mono group-hover:text-ember truncate transition-colors", textColor)}
               >
                 {label}
               </span>
@@ -286,7 +280,7 @@ function RangeButtons({
           disabled={loading && r.value !== value}
           className={cn(
             "rounded px-2 py-0.5 text-[10px] transition-colors disabled:opacity-40",
-            value === r.value ? "bg-teal/15 text-teal" : "text-muted hover:text-heading",
+            value === r.value ? "bg-ember/15 text-ember" : "text-muted hover:text-heading",
           )}
         >
           {r.label}
@@ -327,7 +321,7 @@ function TopDomains({
         <TabsContent value="queried">
           <DomainRows
             rows={topQueried}
-            barColor="bg-teal"
+            barColor="bg-ember"
             textColor="text-body"
             onRowClick={(d) => navigate(`/queries?domain=${encodeURIComponent(d)}`)}
           />
@@ -381,14 +375,14 @@ function TopClients({
                   navigate("/clients");
                 }
               }}
-              className="hover:bg-white/4 group w-full cursor-pointer rounded-md px-2 py-1.5 text-left transition-colors"
+              className="hover:bg-white/4 rounded-xs group w-full cursor-pointer px-2 py-1.5 text-left transition-colors"
             >
               <div className="mb-1 flex items-center justify-between text-xs">
                 <div className="flex min-w-0 items-center gap-2">
                   <span className="mono text-muted w-4 shrink-0 text-right text-[10px] tabular-nums">
                     {i + 1}
                   </span>
-                  <span className="mono text-body group-hover:text-teal truncate transition-colors">
+                  <span className="mono text-body group-hover:text-ember truncate transition-colors">
                     {c.name}
                   </span>
                 </div>
@@ -406,14 +400,14 @@ function TopClients({
 // ── Live feed ─────────────────────────────────────────────────────────────────
 
 const STATUS_DOT: Record<QueryStatus, string> = {
-  allowed: "bg-teal",
+  allowed: "bg-ember",
   blocked: "bg-blocked",
   cached: "bg-cached",
   upstream: "bg-upstream",
 };
 
 const STATUS_LABEL: Record<QueryStatus, string> = {
-  allowed: "text-teal/70",
+  allowed: "text-ember/70",
   blocked: "text-blocked/80",
   cached: "text-cached/70",
   upstream: "text-upstream/70",
@@ -438,14 +432,14 @@ function FeedRows({ rows, navigate }: { rows: QueryEntry[]; navigate: (to: strin
           <button
             key={r.id}
             onClick={() => navigate(`/queries?domain=${encodeURIComponent(r.domain)}`)}
-            className="hover:bg-white/4 group flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-left transition-colors"
+            className="hover:bg-white/4 rounded-xs group flex w-full items-center gap-2.5 px-2 py-1.5 text-left transition-colors"
           >
             <span
               className={cn("h-1.5 w-1.5 shrink-0 self-center rounded-full", STATUS_DOT[r.status])}
             />
             <span className="min-w-0 flex-1">
               <span className="flex items-baseline gap-1.5">
-                <span className="mono text-body group-hover:text-teal block truncate text-xs transition-colors">
+                <span className="mono text-body group-hover:text-ember block truncate text-xs transition-colors">
                   {r.domain}
                 </span>
                 {QTYPE[r.query_type] && (
@@ -501,8 +495,8 @@ function LiveFeed({
             <TabsTrigger value="all">{t("dashboard.all")}</TabsTrigger>
             <TabsTrigger value="blocked">{t("dashboard.blocked")}</TabsTrigger>
           </TabsList>
-          <span className="text-teal flex items-center gap-1.5 text-[10px]">
-            <span className="bg-teal h-1.5 w-1.5 animate-pulse rounded-full" />
+          <span className="text-ember flex items-center gap-1.5 text-[10px]">
+            <span className="bg-ember h-1.5 w-1.5 animate-pulse rounded-full" />
             {t("dashboard.live")}
           </span>
         </div>
@@ -516,7 +510,7 @@ function LiveFeed({
 
       <button
         onClick={() => navigate("/queries")}
-        className="border-bdr/70 text-muted hover:text-teal mt-4 flex items-center gap-1 border-t pt-4 text-xs transition-colors"
+        className="border-bdr/70 text-muted hover:text-ember mt-4 flex items-center gap-1 border-t pt-4 text-xs transition-colors"
       >
         {t("dashboard.view_all_queries")} <ArrowRight size={11} />
       </button>
@@ -568,11 +562,11 @@ function SystemMetric({
   const shownPercent = boundedPercent(percent);
 
   return (
-    <div className="border-bdr/55 bg-void/18 min-h-30 flex flex-col justify-between rounded-md border p-3.5">
+    <div className="border-bdr/55 bg-void/18 min-h-30 rounded-xs flex flex-col justify-between border p-3.5">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-muted flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider">
-            <Icon size={12} className="text-teal/80 shrink-0" />
+            <Icon size={12} className="text-ember/80 shrink-0" />
             <span className="truncate">{label}</span>
           </p>
           <div className="text-heading mt-2 min-w-0 text-base font-semibold tabular-nums sm:text-lg">
@@ -601,7 +595,7 @@ function SystemBar({ sys }: { sys: SystemStats }) {
       ? "bg-blocked/70"
       : sys.cpu_usage_percent > 60
         ? "bg-warn/60"
-        : "bg-teal/60";
+        : "bg-ember/60";
 
   const memColor =
     sys.memory.used_percent > 85
@@ -615,7 +609,7 @@ function SystemBar({ sys }: { sys: SystemStats }) {
       ? "bg-blocked/70"
       : sys.disk && sys.disk.used_percent > 70
         ? "bg-warn/60"
-        : "bg-teal/45";
+        : "bg-ember/45";
 
   const swapColor =
     sys.swap.used_percent > 75
@@ -645,7 +639,7 @@ function SystemBar({ sys }: { sys: SystemStats }) {
     <Card className="mb-4 overflow-hidden p-0">
       <div className="border-bdr/60 flex flex-col gap-3 border-b p-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
-          <span className="border-teal/20 bg-teal/12 text-teal rounded-full border p-2.5">
+          <span className="border-ember/20 bg-ember/12 text-ember rounded-full border p-2.5">
             <ServerCog size={18} />
           </span>
           <div>
@@ -670,8 +664,8 @@ function SystemBar({ sys }: { sys: SystemStats }) {
               {sys.load_avg.fifteen.toFixed(2)}
             </span>
           </span>
-          <span className="text-teal flex items-center gap-1.5">
-            <span className="bg-teal h-1.5 w-1.5 rounded-full" />
+          <span className="text-ember flex items-center gap-1.5">
+            <span className="bg-ember h-1.5 w-1.5 rounded-full" />
             {t("dashboard.live")}
           </span>
         </div>
@@ -731,11 +725,11 @@ function SystemBar({ sys }: { sys: SystemStats }) {
             )
           }
         />
-        <div className="border-bdr/55 bg-void/18 min-h-30 flex flex-col justify-between rounded-md border p-3.5">
+        <div className="border-bdr/55 bg-void/18 min-h-30 rounded-xs flex flex-col justify-between border p-3.5">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <p className="text-muted flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider">
-                <Network size={12} className="text-teal/80 shrink-0" />
+                <Network size={12} className="text-ember/80 shrink-0" />
                 NET
               </p>
               <div className="text-heading mt-2 text-base font-semibold tabular-nums sm:text-lg">
@@ -755,7 +749,7 @@ function SystemBar({ sys }: { sys: SystemStats }) {
                   {formatBytes(sys.network.rx_bytes_per_sec)}/s
                 </span>
               </div>
-              <SystemTrack percent={sys.network.rx_utilization_percent} color="bg-teal/55" />
+              <SystemTrack percent={sys.network.rx_utilization_percent} color="bg-ember/55" />
             </div>
             <div className="space-y-1.5">
               <div className="flex items-center justify-between gap-3 text-[10px]">
@@ -774,7 +768,7 @@ function SystemBar({ sys }: { sys: SystemStats }) {
         {sys.process && (
           <>
             <span className="text-muted flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider">
-              <span className="bg-teal/70 h-1.5 w-1.5 rounded-full" />
+              <span className="bg-ember/70 h-1.5 w-1.5 rounded-full" />
               ferrite
             </span>
             <span className="text-xs">
@@ -827,13 +821,13 @@ function DashboardSkeleton() {
       </div>
       <Card className="mb-5">
         <Skeleton className="mb-5 h-2.5 w-40" />
-        <Skeleton className="h-44 w-full rounded-lg" />
+        <Skeleton className="rounded-xs h-44 w-full" />
       </Card>
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <div className="flex flex-col gap-4">
           {[...Array(2)].map((_, i) => (
             <Card key={i}>
-              <Skeleton className="mb-4 h-5 w-40 rounded-lg" />
+              <Skeleton className="rounded-xs mb-4 h-5 w-40" />
               {[...Array(5)].map((__, j) => (
                 <div key={j} className="mb-3">
                   <div className="mb-1.5 flex justify-between">
@@ -901,7 +895,10 @@ export default function Dashboard() {
     let running = false;
     let timer: number | undefined;
 
-    const schedule = (delay = summaryRefreshDelay()) => {
+    const schedule = (delay = SUMMARY_REFRESH) => {
+      // Hidden tab: stop polling entirely; rescheduleForVisibility re-arms
+      // the loop as soon as the tab becomes visible again.
+      if (document.visibilityState === "hidden") return;
       timer = window.setTimeout(tick, delay);
     };
 
@@ -927,13 +924,16 @@ export default function Dashboard() {
     };
   }, [fetchAll]);
 
+  // System stats poll pauses in hidden tabs and catches up on return.
+  const pageVisible = usePageVisible();
   useEffect(() => {
+    if (!pageVisible) return;
     fetchSys();
     const sysRefresh = window.setInterval(fetchSys, SYS_REFRESH);
     return () => {
       clearInterval(sysRefresh);
     };
-  }, [fetchSys]);
+  }, [fetchSys, pageVisible]);
 
   useEffect(() => {
     if (topHours === 0) {
@@ -989,8 +989,8 @@ export default function Dashboard() {
         action={
           <span className="text-muted flex items-center gap-1.5 text-xs">
             <span className="relative flex h-2 w-2">
-              <span className="bg-teal absolute inline-flex h-full w-full animate-ping rounded-full opacity-60" />
-              <span className="bg-teal relative inline-flex h-2 w-2 rounded-full" />
+              <span className="bg-ember absolute inline-flex h-full w-full animate-ping rounded-full opacity-60" />
+              <span className="bg-ember relative inline-flex h-2 w-2 rounded-full" />
             </span>
             {t("dashboard.live")} ·{" "}
             {updatedAt ? updatedAt.toLocaleTimeString() : t("dashboard.live_interval")}
@@ -1012,7 +1012,7 @@ export default function Dashboard() {
               textColor="text-heading"
               lineColor="via-slate-300/35"
               bgColor="bg-white/6"
-              sparkColor="#cbd5e1"
+              sparkColor="#d4c8bb"
               sparkValues={querySpark}
               sparkId="spark-total"
               icon={Activity}
@@ -1025,7 +1025,7 @@ export default function Dashboard() {
               textColor="text-blocked"
               lineColor="via-blocked/50"
               bgColor="bg-blocked/10"
-              sparkColor="#ef4444"
+              sparkColor="#ff5c5c"
               sparkValues={blockedSpark}
               sparkId="spark-blocked"
               // right={<BlockRing pct={bp} />}
@@ -1039,7 +1039,7 @@ export default function Dashboard() {
               textColor="text-cached"
               lineColor="via-cached/40"
               bgColor="bg-cached/10"
-              sparkColor="#22c55e"
+              sparkColor="#46d08e"
               sparkValues={cachedSpark}
               sparkId="spark-cached"
               icon={Zap}
@@ -1052,7 +1052,7 @@ export default function Dashboard() {
               textColor="text-upstream"
               lineColor="via-upstream/40"
               bgColor="bg-upstream/10"
-              sparkColor="#3b82f6"
+              sparkColor="#5ea7ff"
               sparkValues={upstreamSpark}
               sparkId="spark-upstream"
               icon={Globe}
@@ -1062,10 +1062,10 @@ export default function Dashboard() {
               label={t("dashboard.blocklist")}
               value={fmt(stats.total_domains_blocked)}
               sub={t("dashboard.domains_protected")}
-              textColor="text-teal"
-              lineColor="via-teal/40"
-              bgColor="bg-teal/10"
-              sparkColor="#35dc9a"
+              textColor="text-ember"
+              lineColor="via-ember/40"
+              bgColor="bg-ember/10"
+              sparkColor="#ff6a38"
               sparkValues={blockedSpark}
               sparkId="spark-blocklist"
               icon={Database}
@@ -1105,20 +1105,20 @@ export default function Dashboard() {
               <AreaChart data={chartData} margin={{ top: 6, right: 8, bottom: 0, left: -14 }}>
                 <defs>
                   <linearGradient id="gT" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#cbd5e1" stopOpacity={0.2} />
-                    <stop offset="95%" stopColor="#cbd5e1" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#d4c8bb" stopOpacity={0.2} />
+                    <stop offset="95%" stopColor="#d4c8bb" stopOpacity={0} />
                   </linearGradient>
                   <linearGradient id="gB" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#ef4444" stopOpacity={0.25} />
-                    <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#ff5c5c" stopOpacity={0.25} />
+                    <stop offset="95%" stopColor="#ff5c5c" stopOpacity={0} />
                   </linearGradient>
                   <linearGradient id="gC" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#22c55e" stopOpacity={0.2} />
-                    <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#46d08e" stopOpacity={0.2} />
+                    <stop offset="95%" stopColor="#46d08e" stopOpacity={0} />
                   </linearGradient>
                   <linearGradient id="gU" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.18} />
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#5ea7ff" stopOpacity={0.18} />
+                    <stop offset="95%" stopColor="#5ea7ff" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--color-bdr)" vertical={false} />
@@ -1138,7 +1138,7 @@ export default function Dashboard() {
                 <Area
                   type="monotone"
                   dataKey="Queries"
-                  stroke="#cbd5e1"
+                  stroke="#d4c8bb"
                   strokeWidth={2}
                   fill="url(#gT)"
                   dot={false}
@@ -1146,7 +1146,7 @@ export default function Dashboard() {
                 <Area
                   type="monotone"
                   dataKey="Blocked"
-                  stroke="#ef4444"
+                  stroke="#ff5c5c"
                   strokeWidth={1.8}
                   fill="url(#gB)"
                   dot={false}
@@ -1154,7 +1154,7 @@ export default function Dashboard() {
                 <Area
                   type="monotone"
                   dataKey="Cached"
-                  stroke="#22c55e"
+                  stroke="#46d08e"
                   strokeWidth={1.6}
                   fill="url(#gC)"
                   dot={false}
@@ -1162,7 +1162,7 @@ export default function Dashboard() {
                 <Area
                   type="monotone"
                   dataKey="Upstream"
-                  stroke="#3b82f6"
+                  stroke="#5ea7ff"
                   strokeWidth={1.6}
                   fill="url(#gU)"
                   dot={false}

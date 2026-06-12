@@ -3,5 +3,5 @@ interface ErrProps {
 }
 
 export function Err({ msg }: ErrProps) {
-  return <p className="py-3 text-xs text-blocked">{msg}</p>;
+  return <p className="text-blocked py-3 text-xs">{msg}</p>;
 }

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api } from "@/api";
 import { Input, Btn } from "@/components/ui";
+import { FerriteMark } from "@/components/layout/Brand";
 
 export default function Login() {
   const { t } = useTranslation();
@@ -29,20 +30,21 @@ export default function Login() {
   return (
     <div className="app-canvas bg-void flex min-h-screen items-center justify-center p-6">
       <div className="animate-fade-up w-full max-w-sm">
-        <div className="border-bdr/80 mx-auto mb-7 flex h-24 w-72 max-w-full items-center justify-center overflow-hidden rounded-lg border bg-[#05070a] shadow-[0_24px_70px_rgba(0,0,0,0.34)]">
-          <img
-            src="/ferrite-logo.svg"
-            alt="Ferrite"
-            className="h-full w-full object-contain p-3"
-            draggable={false}
-          />
+        <div className="mb-8 flex flex-col items-center text-center">
+          <FerriteMark className="mb-5 h-16 w-16" />
+          <h1 className="display-title text-heading text-3xl">ferrite</h1>
+          <p className="text-muted mt-2 font-mono text-[10px] font-medium uppercase tracking-[0.3em]">
+            DNS · Control · Plane
+          </p>
         </div>
 
         <form
           onSubmit={handleSubmit}
-          className="border-bdr/85 bg-card space-y-4 rounded-lg border p-6 shadow-[0_14px_34px_rgba(0,0,0,0.22)]"
+          className="control-surface plate-ticks ember-seam border-bdr/85 rounded-xs space-y-4 border p-6"
         >
-          <h2 className="text-heading text-center text-sm font-semibold">{t("login.sign_in")}</h2>
+          <h2 className="text-heading text-center font-mono text-xs font-medium uppercase tracking-[0.14em]">
+            {t("login.sign_in")}
+          </h2>
           <div className="space-y-1.5">
             <label className="text-muted block text-xs">{t("login.password_label")}</label>
             <Input

@@ -38,7 +38,9 @@ export function refresh(name: string): Promise<RefreshListResponse> {
   return http.post(`/lists/${encodeURIComponent(name)}/refresh`);
 }
 
-/** Force re-download of all lists; waits for the FST rebuild to complete */
+/** Force re-download of all lists; waits for the FST rebuild to complete.
+ *  Downloading every list + one full rebuild can easily exceed the default
+ *  30s client timeout, so allow up to 5 minutes. */
 export function refreshAll(): Promise<RefreshAllListsResponse> {
-  return http.post("/lists/refresh");
+  return http.post("/lists/refresh", undefined, { timeoutMs: 300_000 });
 }

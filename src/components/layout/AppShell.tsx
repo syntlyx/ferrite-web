@@ -20,8 +20,8 @@ import {
   Sun,
   Moon,
   Languages,
-  Wifi,
-  WifiOff,
+  ShieldCheck,
+  ShieldOff,
 } from "lucide-react";
 import { api } from "@/api";
 import { useTheme } from "@/providers/ThemeProvider";
@@ -96,10 +96,10 @@ function NavItem({
       aria-label={collapsed ? label : undefined}
       className={({ isActive }) =>
         cn(
-          "min-h-10 group relative flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
+          "min-h-10 rounded-xs group relative flex items-center gap-3 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.09em] transition-colors",
           collapsed && "justify-center px-0",
           isActive
-            ? "bg-teal-dim text-heading shadow-[inset_2px_0_0_var(--color-teal)]"
+            ? "bg-ember-dim text-heading [&_svg]:text-ember shadow-[inset_2px_0_0_var(--color-ember)]"
             : "text-body hover:bg-white/4 hover:text-heading",
         )
       }
@@ -211,29 +211,29 @@ export default function AppShell({ children }: { children: ReactNode }) {
   // Shared bottom controls for both sidebar and mobile drawer
   function BottomControls({ inDrawer = false }: { inDrawer?: boolean }) {
     const compact = collapsed && !inDrawer;
-    const Icon = blockingEnabled ? Wifi : WifiOff;
+    const Icon = blockingEnabled ? ShieldCheck : ShieldOff;
     const btnCls = cn(
-      "mt-0.5 flex w-full items-center gap-3 rounded-md px-3 py-2 text-xs text-muted transition-colors hover:bg-white/5 hover:text-heading",
+      "mt-0.5 flex w-full items-center gap-3 rounded-xs px-3 py-2 text-xs text-muted transition-colors hover:bg-white/5 hover:text-heading",
       compact && "justify-center px-0",
     );
 
     return (
       <>
         {!compact && (
-          <div className="control-surface-muted border-bdr/70 mb-2 rounded-lg border p-3">
-            <div className="text-heading mb-1.5 flex items-center gap-2 text-xs font-medium">
+          <div className="control-surface-muted plate-ticks border-bdr/70 rounded-xs mb-2 border p-3">
+            <div className="text-heading mb-1.5 flex items-center gap-2 font-mono text-[11px] font-medium uppercase tracking-[0.1em]">
               <span className="relative flex h-2 w-2">
                 {blockingEnabled && (
-                  <span className="bg-teal absolute inline-flex h-full w-full animate-ping rounded-full opacity-50" />
+                  <span className="bg-ember absolute inline-flex h-full w-full animate-ping opacity-50" />
                 )}
                 <span
                   className={cn(
-                    "relative inline-flex h-2 w-2 rounded-full",
-                    blockingEnabled ? "bg-teal" : "bg-warn",
+                    "relative inline-flex h-2 w-2",
+                    blockingEnabled ? "bg-ember shadow-[0_0_8px_var(--color-ember)]" : "bg-warn",
                   )}
                 />
               </span>
-              <Icon size={12} className={blockingEnabled ? "text-teal" : "text-warn"} />
+              <Icon size={12} className={blockingEnabled ? "text-ember" : "text-warn"} />
               {blockingEnabled ? t("sidebar.status_online") : t("sidebar.status_filtering_off")}
             </div>
             <p className="text-muted text-[10px]">
@@ -245,7 +245,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
         {/* Lang switcher */}
         <div
           className={cn(
-            "group relative mt-0.5 flex w-full items-center rounded-md px-3 py-2 text-xs",
+            "rounded-xs group relative mt-0.5 flex w-full items-center px-3 py-2 text-xs",
             compact ? "justify-center px-0" : "gap-3",
           )}
         >
@@ -293,7 +293,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
         <button
           onClick={handleLogout}
           className={cn(
-            "text-muted hover:bg-blocked/10 hover:text-blocked group relative mt-0.5 flex w-full items-center gap-3 rounded-md px-3 py-2 text-xs transition-colors",
+            "text-muted hover:bg-blocked/10 hover:text-blocked rounded-xs group relative mt-0.5 flex w-full items-center gap-3 px-3 py-2 text-xs transition-colors",
             compact && "justify-center px-0",
           )}
         >
@@ -307,7 +307,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="app-canvas bg-void flex h-screen justify-center overflow-hidden">
-      <div className="border-bdr/70 bg-void/50 relative flex h-screen w-full max-w-420 border-x shadow-[0_0_90px_rgba(0,0,0,0.5)]">
+      <div className="border-bdr/70 bg-void/50 max-w-420 relative flex h-screen w-full border-x shadow-[0_0_90px_rgba(0,0,0,0.5)]">
         {/* ── Desktop sidebar ─────────────────────────────────────────────── */}
         <aside
           className={`border-bdr/85 bg-sidebar/95 hidden h-screen shrink-0 flex-col border-r shadow-[18px_0_44px_rgba(0,0,0,0.2)] backdrop-blur-xl transition-[width] duration-200 md:flex ${collapsed ? "w-16" : "w-60"}`}
@@ -344,7 +344,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
               onClick={toggleCollapsed}
               title={collapsed ? t("sidebar.expand") : t("sidebar.collapse")}
               className={cn(
-                "text-muted hover:text-heading flex w-full items-center gap-3 rounded-md px-3 py-2 text-xs transition-colors hover:bg-white/5",
+                "text-muted hover:text-heading rounded-xs flex w-full items-center gap-3 px-3 py-2 text-xs transition-colors hover:bg-white/5",
                 collapsed && "justify-center px-0",
               )}
             >
@@ -367,7 +367,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
           </Link>
           <button
             onClick={() => setMobileOpen((v) => !v)}
-            className="border-bdr/75 bg-panel/70 text-muted hover:text-heading rounded-md border p-2 transition-colors"
+            className="border-bdr/75 bg-panel/70 text-muted hover:text-heading rounded-xs border p-2 transition-colors"
             aria-label="Toggle menu"
           >
             {mobileOpen ? <X size={18} /> : <Menu size={18} />}

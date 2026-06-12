@@ -48,7 +48,8 @@
     "enabled": "Active",
     "disabled": "Desactive",
     "all": "Tout",
-    "search": "Rechercher"
+    "search": "Rechercher",
+    "reset": "Réinitialiser"
   },
   "dashboard": {
     "title": "Tableau de bord",
@@ -157,7 +158,13 @@
     "add": "Ajouter",
     "empty": "Vide",
     "remove_black_confirm": "Retirer \"{{domain}}\" de la blacklist?",
-    "remove_white_confirm": "Retirer \"{{domain}}\" de la whitelist?"
+    "remove_white_confirm": "Retirer \"{{domain}}\" de la whitelist?",
+    "filter_placeholder": "Filtrer…",
+    "no_matches": "Aucun résultat",
+    "add_to_whitelist": "Ajouter à la liste blanche",
+    "add_to_blacklist": "Ajouter à la liste noire",
+    "in_blacklist": "Dans la liste noire",
+    "added_toast": "« {{domain}} » ajouté à {{list}}"
   },
   "lists": {
     "title": "Listes d'abonnement",
@@ -174,7 +181,8 @@
     "no_lists": "Aucune liste configuree",
     "remove_confirm": "Supprimer la liste \"{{name}}\"? Action irreversible.",
     "refresh_toast": "\"{{name}}\" rafraichie — {{count}} domaines",
-    "refresh_all_toast": "{{count}} listes rafraichies — {{total}} domaines au total"
+    "refresh_all_toast": "{{count}} listes rafraichies — {{total}} domaines au total",
+    "refreshing_all": "Actualisation…"
   },
   "dns": {
     "title": "Enregistrements DNS perso",
@@ -304,7 +312,10 @@
     "restarted": "Serveur redemarre avec succes",
     "restart_timeout": "Le serveur n'est pas revenu apres le redemarrage. Rechargez la page pour reessayer.",
     "api_key_cleared": "Cle API effacee",
-    "password_cleared": "Mot de passe efface"
+    "password_cleared": "Mot de passe efface",
+    "system": "Système",
+    "unsaved_changes": "Modifications non enregistrées",
+    "quick_add": "Ajout rapide"
   },
   "login": {
     "sign_in": "Connexion",

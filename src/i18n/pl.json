@@ -48,7 +48,8 @@
     "enabled": "Wlaczone",
     "disabled": "Wylaczone",
     "all": "Wszystko",
-    "search": "Szukaj"
+    "search": "Szukaj",
+    "reset": "Resetuj"
   },
   "dashboard": {
     "title": "Panel",
@@ -157,7 +158,13 @@
     "add": "Dodaj",
     "empty": "Pusto",
     "remove_black_confirm": "Usun \"{{domain}}\" z czarnej listy?",
-    "remove_white_confirm": "Usun \"{{domain}}\" z bialej listy?"
+    "remove_white_confirm": "Usun \"{{domain}}\" z bialej listy?",
+    "filter_placeholder": "Filtruj…",
+    "no_matches": "Brak wyników",
+    "add_to_whitelist": "Dodaj do białej listy",
+    "add_to_blacklist": "Dodaj do czarnej listy",
+    "in_blacklist": "Na czarnej liście",
+    "added_toast": "\"{{domain}}\" dodano do: {{list}}"
   },
   "lists": {
     "title": "Listy subskrypcji",
@@ -174,7 +181,8 @@
     "no_lists": "Brak skonfigurowanych list",
     "remove_confirm": "Usun liste \"{{name}}\"? Tego nie mozna cofnac.",
     "refresh_toast": "\"{{name}}\" odswiezona — {{count}} domen",
-    "refresh_all_toast": "Odswiezono {{count}} list — {{total}} domen lacznie"
+    "refresh_all_toast": "Odswiezono {{count}} list — {{total}} domen lacznie",
+    "refreshing_all": "Odświeżanie…"
   },
   "dns": {
     "title": "Wlasne rekordy DNS",
@@ -304,7 +312,10 @@
     "restarted": "Serwer zrestartowany pomyslnie",
     "restart_timeout": "Serwer nie wrocil po restarcie. Odswiez strone, aby sprobowac ponownie.",
     "api_key_cleared": "API key wyczyszczony",
-    "password_cleared": "Haslo wyczyszczone"
+    "password_cleared": "Haslo wyczyszczone",
+    "system": "System",
+    "unsaved_changes": "Niezapisane zmiany",
+    "quick_add": "Szybkie dodawanie"
   },
   "login": {
     "sign_in": "Zaloguj",

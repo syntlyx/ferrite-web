@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { Plus, Trash2, RefreshCw, ExternalLink } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { fmt } from "@/lib/format";
 import { api } from "@/api";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Card } from "@/components/layout/Card";
@@ -91,9 +93,15 @@ export default function Lists() {
     setRefreshingAll(true);
     try {
       const { lists: updated } = await api.refreshAllLists();
-      setLists(updated);
-      const total = updated.reduce((sum, l) => sum + (l.domains_loaded ?? 0), 0);
-      toast(t("lists.refresh_all_toast", { count: updated.length, total }));
+      // The refresh response may omit domains_loaded — re-fetch for
+      // authoritative counts so the column never degrades to "—".
+      const fresh = await api
+        .getLists()
+        .then((d) => d.lists ?? updated)
+        .catch(() => updated);
+      setLists(fresh);
+      const total = fresh.reduce((sum, l) => sum + (l.domains_loaded ?? 0), 0);
+      toast(t("lists.refresh_all_toast", { count: updated.length, total: fmt(total) }));
     } catch (e) {
       toast((e as Error).message, "error");
     }
@@ -127,7 +135,7 @@ export default function Lists() {
               disabled={refreshingAll || !!refreshing}
             >
               <RefreshCw size={12} className={refreshingAll ? "animate-spin" : ""} />
-              {t("lists.refresh_all")}
+              {refreshingAll ? t("lists.refreshing_all") : t("lists.refresh_all")}
             </Btn>
           )
         }
@@ -207,13 +215,21 @@ export default function Lists() {
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => e.stopPropagation()}
-                        className="hover:text-teal flex items-center gap-1 truncate transition-colors"
+                        className="hover:text-ember flex items-center gap-1 truncate transition-colors"
                       >
                         <span className="truncate">{l.url}</span>
                         <ExternalLink size={10} className="shrink-0" />
                       </a>
                     </Td>
-                    <Td className="text-body tabular-nums">{l.domains_loaded ?? "—"}</Td>
+                    <Td
+                      className={cn(
+                        "text-body font-mono tabular-nums",
+                        (refreshing === l.name || (refreshingAll && l.enabled)) &&
+                          "text-muted animate-pulse",
+                      )}
+                    >
+                      {l.domains_loaded != null ? fmt(l.domains_loaded) : "—"}
+                    </Td>
                     <Td>
                       <Switch
                         checked={l.enabled}
@@ -230,7 +246,11 @@ export default function Lists() {
                         >
                           <RefreshCw
                             size={13}
-                            className={refreshing === l.name ? "animate-spin" : ""}
+                            className={
+                              refreshing === l.name || (refreshingAll && l.enabled)
+                                ? "animate-spin"
+                                : ""
+                            }
                           />
                         </IconBtn>
                         <IconBtn

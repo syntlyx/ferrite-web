@@ -48,7 +48,8 @@
     "enabled": "Aktiv",
     "disabled": "Aus",
     "all": "Alle",
-    "search": "Suchen"
+    "search": "Suchen",
+    "reset": "Zurücksetzen"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -157,7 +158,13 @@
     "add": "Hinzufugen",
     "empty": "Leer",
     "remove_black_confirm": "\"{{domain}}\" aus der Blacklist entfernen?",
-    "remove_white_confirm": "\"{{domain}}\" aus der Whitelist entfernen?"
+    "remove_white_confirm": "\"{{domain}}\" aus der Whitelist entfernen?",
+    "filter_placeholder": "Filtern…",
+    "no_matches": "Keine Treffer",
+    "add_to_whitelist": "Zur Whitelist hinzufügen",
+    "add_to_blacklist": "Zur Blacklist hinzufügen",
+    "in_blacklist": "In Blacklist",
+    "added_toast": "\"{{domain}}\" zu {{list}} hinzugefügt"
   },
   "lists": {
     "title": "Abo-Listen",
@@ -174,7 +181,8 @@
     "no_lists": "Keine Listen konfiguriert",
     "remove_confirm": "Abo-Liste \"{{name}}\" entfernen? Das kann nicht ruckgangig gemacht werden.",
     "refresh_toast": "\"{{name}}\" aktualisiert — {{count}} Domains",
-    "refresh_all_toast": "Alle {{count}} Listen aktualisiert — {{total}} Domains gesamt"
+    "refresh_all_toast": "Alle {{count}} Listen aktualisiert — {{total}} Domains gesamt",
+    "refreshing_all": "Aktualisiere…"
   },
   "dns": {
     "title": "Eigene DNS-Eintrage",
@@ -304,7 +312,10 @@
     "restarted": "Server erfolgreich neu gestartet",
     "restart_timeout": "Server ist nach dem Neustart nicht zuruckgekommen. Seite neu laden, um es erneut zu versuchen.",
     "api_key_cleared": "API-Key geloscht",
-    "password_cleared": "Passwort geloscht"
+    "password_cleared": "Passwort geloscht",
+    "system": "System",
+    "unsaved_changes": "Ungespeicherte Änderungen",
+    "quick_add": "Schnell hinzufügen"
   },
   "login": {
     "sign_in": "Anmelden",

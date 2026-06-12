@@ -1,36 +1,41 @@
 @import "tailwindcss";
 
 @theme {
+  /* Typography — Archivo variable (width axis) + IBM Plex Mono */
+  --font-sans: "Archivo", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --font-display: "Archivo", "Avenir Next", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", "SF Mono", "Cascadia Code", ui-monospace, Menlo, monospace;
+
   /* Animations */
   --animate-fade-up: fade-up 0.22s ease-out both;
   --animate-fade-down: fade-down 0.15s ease-out both;
   --animate-scale-in: scale-in 0.15s ease-out both;
   --animate-slide-in-right: slide-in-right 0.2s ease-out both;
 
-  /* Backgrounds */
-  --color-void: #050708;
-  --color-sidebar: #0a1013;
-  --color-card: #10161a;
-  --color-panel: #131b20;
-  --color-raised: #1a242a;
-  --color-bdr: #26343c;
+  /* Backgrounds — warm charcoal iron */
+  --color-void: #0b0907;
+  --color-sidebar: #110e0b;
+  --color-card: #161210;
+  --color-panel: #1b1613;
+  --color-raised: #251f1a;
+  --color-bdr: #342b24;
 
   /* Text */
-  --color-heading: #f2f7fa;
-  --color-body: #b7c6d4;
-  --color-muted: #7c8fa2;
+  --color-heading: #f6f1ea;
+  --color-body: #c9bdb0;
+  --color-muted: #8e8174;
 
-  /* Brand — teal (allowed traffic, accent) */
-  --color-teal: #35dc9a;
-  --color-teal-h: #22c783;
-  --color-teal-dim: #0b3429;
-  --color-on-teal: #05100d;
+  /* Brand — ember (molten iron accent) */
+  --color-ember: #ff6a38;
+  --color-ember-h: #ff8557;
+  --color-ember-dim: #3b1d0e;
+  --color-on-ember: #1c0a03;
 
   /* Status */
-  --color-blocked: #ef4444;
-  --color-cached: #22c55e;
-  --color-upstream: #3b82f6;
-  --color-warn: #f59e0b;
+  --color-blocked: #ff5c5c;
+  --color-cached: #46d08e;
+  --color-upstream: #5ea7ff;
+  --color-warn: #ffb224;
 }
 
 button,
@@ -41,59 +46,127 @@ a {
 
 body {
   background:
-    linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.014) 1px, transparent 1px),
-    linear-gradient(135deg, rgba(53, 220, 154, 0.06) 0%, transparent 34%),
-    linear-gradient(180deg, #050708 0%, #091013 52%, #050708 100%);
+    linear-gradient(rgba(255, 244, 230, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 244, 230, 0.014) 1px, transparent 1px),
+    radial-gradient(ellipse 90% 60% at 12% -8%, rgba(255, 106, 56, 0.09), transparent 50%),
+    radial-gradient(ellipse 70% 50% at 95% 110%, rgba(255, 106, 56, 0.05), transparent 55%),
+    linear-gradient(180deg, #0b0907 0%, #120e0b 50%, #0b0907 100%);
   background-size:
     54px 54px,
     54px 54px,
     100% 100%,
+    100% 100%,
     100% 100%;
   color: var(--color-body);
-  font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  font-family: var(--font-sans);
   margin: 0;
   -webkit-font-smoothing: antialiased;
   text-rendering: geometricPrecision;
 }
 
+/* Film grain over everything — keeps the forge atmosphere */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
 ::selection {
-  background: rgba(53, 217, 157, 0.24);
+  background: rgba(255, 106, 56, 0.28);
   color: var(--color-heading);
 }
 
 .app-canvas {
   background:
-    linear-gradient(115deg, rgba(53, 220, 154, 0.045), transparent 32%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.018), transparent 42%),
-    var(--color-void);
+    radial-gradient(ellipse 70% 45% at 18% 0%, rgba(255, 106, 56, 0.06), transparent 55%),
+    linear-gradient(180deg, rgba(255, 244, 230, 0.015), transparent 40%), var(--color-void);
 }
 
+/* Machined plate — primary raised surface */
 .control-surface {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.026), rgba(255, 255, 255, 0.004)),
+    linear-gradient(180deg, rgba(255, 240, 226, 0.028), rgba(255, 240, 226, 0.004)),
     var(--color-card);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.035),
-    0 12px 34px rgba(0, 0, 0, 0.18);
+    inset 0 1px 0 rgba(255, 240, 226, 0.04),
+    0 14px 38px rgba(0, 0, 0, 0.32);
 }
 
 .control-surface-muted {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.018), rgba(255, 255, 255, 0.004)),
+    linear-gradient(180deg, rgba(255, 240, 226, 0.018), rgba(255, 240, 226, 0.004)),
     var(--color-panel);
 }
 
+/* Corner brackets — machined plate ticks on card corners */
+.plate-ticks {
+  position: relative;
+}
+
+.plate-ticks::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: -1px;
+  --tick: color-mix(in srgb, var(--color-ember) 55%, transparent);
+  background:
+    linear-gradient(var(--tick), var(--tick)) 0 0 / 11px 1.5px,
+    linear-gradient(var(--tick), var(--tick)) 0 0 / 1.5px 11px,
+    linear-gradient(var(--tick), var(--tick)) 100% 0 / 11px 1.5px,
+    linear-gradient(var(--tick), var(--tick)) 100% 0 / 1.5px 11px,
+    linear-gradient(var(--tick), var(--tick)) 0 100% / 11px 1.5px,
+    linear-gradient(var(--tick), var(--tick)) 0 100% / 1.5px 11px,
+    linear-gradient(var(--tick), var(--tick)) 100% 100% / 11px 1.5px,
+    linear-gradient(var(--tick), var(--tick)) 100% 100% / 1.5px 11px;
+  background-repeat: no-repeat;
+}
+
+/* Ember hairline — glowing seam along a top edge */
+.ember-seam {
+  position: relative;
+}
+
+.ember-seam::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  top: -1px;
+  left: 8%;
+  right: 8%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-ember) 35%,
+    #ffc29e 50%,
+    var(--color-ember) 65%,
+    transparent
+  );
+  opacity: 0.65;
+}
+
 .mono {
-  font-family:
-    "SF Mono", "Cascadia Code", "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  font-family: var(--font-mono);
+}
+
+/* Display headings — wide industrial capitals */
+.display-title {
+  font-family: var(--font-display);
+  font-stretch: 118%;
+  font-weight: 700;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
 }
 
 /* ── Reusable patterns ───────────────────────────────────────────────────── */
 
 /* Sidebar collapsed tooltip — appears to the right of icon on hover */
 .sidebar-tooltip {
-  @apply pointer-events-none absolute top-1/2 left-full z-50 ml-3 -translate-x-1 -translate-y-1/2 rounded-md border border-bdr bg-card px-2.5 py-1.5 text-[11px] whitespace-nowrap text-heading opacity-0 shadow-lg transition-[opacity,transform] duration-150 group-hover:translate-x-0 group-hover:opacity-100;
+  @apply rounded-xs border-bdr bg-card text-heading pointer-events-none absolute left-full top-1/2 z-50 ml-3 -translate-x-1 -translate-y-1/2 whitespace-nowrap border px-2.5 py-1.5 text-[11px] opacity-0 shadow-lg transition-[opacity,transform] duration-150 group-hover:translate-x-0 group-hover:opacity-100;
 }
 
 /* ── Keyframes ───────────────────────────────────────────────────────────── */
@@ -180,40 +253,42 @@ body {
   background: transparent;
 }
 
+/* ── Light theme — cold steel workshop ───────────────────────────────────── */
+
 [data-theme="light"] {
-  /* surfaces */
-  --color-void: #e8eff0;
-  --color-sidebar: #f5fbfa;
-  --color-card: #ffffff;
-  --color-panel: #f1f7f7;
-  --color-raised: #e8f0f2;
-  --color-bdr: #cfdddf;
+  /* surfaces — warm paper over steel */
+  --color-void: #ece6dd;
+  --color-sidebar: #f8f4ed;
+  --color-card: #fffdf9;
+  --color-panel: #f3ede4;
+  --color-raised: #e9e1d5;
+  --color-bdr: #d9cebf;
 
-  /* text */
-  --color-heading: #0b1720;
-  --color-body: #334754;
-  --color-muted: #6c7f8f;
+  /* text — ink */
+  --color-heading: #1d140d;
+  --color-body: #4c4036;
+  --color-muted: #8c7e6e;
 
-  /* teal — darker variant for contrast on white (teal-600) */
-  --color-teal: #0b956b;
-  --color-teal-h: #087d58;
-  --color-teal-dim: #e1f5ec;
-  --color-on-teal: #ffffff;
+  /* ember — deeper for contrast on paper */
+  --color-ember: #d2491a;
+  --color-ember-h: #b53c12;
+  --color-ember-dim: #fae3d6;
+  --color-on-ember: #fff8f3;
 
-  /* status — darker on white */
-  --color-blocked: #dc2626;
-  --color-cached: #16a34a;
-  --color-upstream: #2563eb;
-  --color-warn: #d97706;
+  /* status — darker on paper */
+  --color-blocked: #d22d2d;
+  --color-cached: #15894f;
+  --color-upstream: #1e6cd2;
+  --color-warn: #b27205;
 }
 
 [data-theme="light"] body {
   background:
-    linear-gradient(rgba(13, 24, 32, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(13, 24, 32, 0.025) 1px, transparent 1px),
-    radial-gradient(circle at 18% 10%, rgba(11, 149, 107, 0.15), transparent 34%),
-    radial-gradient(circle at 80% 8%, rgba(37, 99, 235, 0.09), transparent 34%),
-    linear-gradient(180deg, #f1f7f7 0%, #e8eff0 100%);
+    linear-gradient(rgba(40, 24, 12, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(40, 24, 12, 0.028) 1px, transparent 1px),
+    radial-gradient(ellipse 80% 55% at 14% -6%, rgba(210, 73, 26, 0.1), transparent 50%),
+    radial-gradient(ellipse 60% 45% at 90% 105%, rgba(210, 73, 26, 0.06), transparent 55%),
+    linear-gradient(180deg, #f3ede4 0%, #ece6dd 100%);
   background-size:
     54px 54px,
     54px 54px,
@@ -222,23 +297,30 @@ body {
     100% 100%;
 }
 
+[data-theme="light"] body::after {
+  opacity: 0.035;
+}
+
 [data-theme="light"] .app-canvas {
   background:
-    linear-gradient(115deg, rgba(11, 149, 107, 0.1), transparent 32%),
-    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.62), transparent 40%),
-    var(--color-void);
+    radial-gradient(ellipse 70% 45% at 18% 0%, rgba(210, 73, 26, 0.07), transparent 55%),
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.6), transparent 40%), var(--color-void);
 }
 
 [data-theme="light"] .control-surface {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.78)), var(--color-card);
+    linear-gradient(180deg, rgba(255, 253, 249, 0.95), rgba(255, 253, 249, 0.8)), var(--color-card);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.92),
-    0 16px 42px rgba(47, 68, 80, 0.12);
+    0 16px 42px rgba(82, 56, 35, 0.12);
 }
 
 [data-theme="light"] .control-surface-muted {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.54)),
+    linear-gradient(180deg, rgba(255, 253, 249, 0.78), rgba(255, 253, 249, 0.55)),
     var(--color-panel);
+}
+
+[data-theme="light"] .ember-seam::before {
+  opacity: 0.5;
 }

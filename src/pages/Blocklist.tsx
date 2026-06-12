@@ -1,50 +1,25 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import { useTranslation } from "react-i18next";
-import { Ban, CheckCircle2, Plus, Trash2, Search } from "lucide-react";
+import {
+  Ban,
+  CheckCircle2,
+  Plus,
+  Trash2,
+  Search,
+  ListFilter,
+  ShieldPlus,
+  ShieldMinus,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { api } from "@/api";
+import type { DomainCheckResult } from "@/api/types";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Card } from "@/components/layout/Card";
 import { Err } from "@/components/feedback/Err";
 import { Input, SearchInput, Btn, IconBtn, SectionLabel, Skeleton } from "@/components/ui";
 import { useToast } from "@/hooks/use-toast";
 import { useConfirm } from "@/hooks/use-confirm";
-
-// ── Domain list ───────────────────────────────────────────────────────────────
-
-function DomainList({
-  items,
-  onRemove,
-  removing,
-}: {
-  items: string[];
-  onRemove: (domain: string) => void;
-  removing: string;
-}) {
-  const { t } = useTranslation();
-  if (items.length === 0) return <p className="text-muted py-2 text-xs">{t("blocklist.empty")}</p>;
-  return (
-    <div className="max-h-80 space-y-0.5 overflow-y-auto">
-      {items.map((domain) => (
-        <div
-          key={domain}
-          className="hover:bg-white/3 group flex items-center justify-between gap-2 rounded-md px-2 py-1.5"
-        >
-          <span className="text-body min-w-0 truncate font-mono text-xs">{domain}</span>
-          <IconBtn
-            danger
-            onClick={() => onRemove(domain)}
-            disabled={removing === domain}
-            className="opacity-0 group-hover:opacity-100"
-          >
-            <Trash2 size={12} />
-          </IconBtn>
-        </div>
-      ))}
-    </div>
-  );
-}
 
 // ── Add form ──────────────────────────────────────────────────────────────────
 
@@ -77,7 +52,7 @@ function AddDomainForm({
   }
 
   return (
-    <form onSubmit={handle} className="mb-3 grid grid-cols-[minmax(0,1fr)_auto] gap-2">
+    <form onSubmit={handle} className="grid grid-cols-[minmax(0,1fr)_auto] gap-2">
       <Input
         value={value}
         onChange={(e) => {
@@ -92,6 +67,89 @@ function AddDomainForm({
       </Btn>
       {err && <p className="text-blocked col-span-full text-xs">{err}</p>}
     </form>
+  );
+}
+
+// ── List column ───────────────────────────────────────────────────────────────
+
+function ListPanel({
+  label,
+  tone,
+  items,
+  placeholder,
+  onAdd,
+  onRemove,
+  removing,
+}: {
+  label: string;
+  tone: "blocked" | "ember";
+  items: string[];
+  placeholder: string;
+  onAdd: (domain: string) => Promise<void>;
+  onRemove: (domain: string) => void;
+  removing: string;
+}) {
+  const { t } = useTranslation();
+  const [query, setQuery] = useState("");
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return q ? items.filter((d) => d.includes(q)) : items;
+  }, [items, query]);
+
+  const badgeCls =
+    tone === "blocked"
+      ? "border-blocked/25 bg-blocked/10 text-blocked"
+      : "border-ember/25 bg-ember/10 text-ember";
+
+  return (
+    <Card className="flex min-w-0 flex-col">
+      <SectionLabel className="flex items-center">
+        {label}
+        <span className={cn("ml-auto rounded-full border px-2 py-0.5 tracking-normal", badgeCls)}>
+          {query.trim() ? `${filtered.length} / ${items.length}` : items.length}
+        </span>
+      </SectionLabel>
+
+      <div className="mb-3 space-y-2">
+        <AddDomainForm onAdd={onAdd} placeholder={placeholder} />
+        {items.length > 5 && (
+          <SearchInput
+            icon={ListFilter}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={t("blocklist.filter_placeholder")}
+            inputClass="font-mono"
+          />
+        )}
+      </div>
+
+      {items.length === 0 ? (
+        <p className="text-muted py-2 text-xs">{t("blocklist.empty")}</p>
+      ) : filtered.length === 0 ? (
+        <p className="text-muted py-2 text-xs">{t("blocklist.no_matches")}</p>
+      ) : (
+        <div className="max-h-96 space-y-0.5 overflow-y-auto">
+          {filtered.map((domain) => (
+            <div
+              key={domain}
+              className="hover:bg-white/3 rounded-xs group flex items-center justify-between gap-2 px-2 py-1.5"
+            >
+              <span className="text-body min-w-0 truncate font-mono text-xs">{domain}</span>
+              <IconBtn
+                danger
+                onClick={() => onRemove(domain)}
+                disabled={removing === domain}
+                className="opacity-35 group-hover:opacity-100"
+                title={t("common.delete")}
+              >
+                <Trash2 size={12} />
+              </IconBtn>
+            </div>
+          ))}
+        </div>
+      )}
+    </Card>
   );
 }
 
@@ -110,10 +168,9 @@ export default function Blocklist() {
 
   // Check domain state
   const [checkDomain, setCheckDomain] = useState("");
-  const [checkResult, setCheckResult] = useState<Awaited<
-    ReturnType<typeof api.checkDomain>
-  > | null>(null);
+  const [checkResult, setCheckResult] = useState<DomainCheckResult | null>(null);
   const [checking, setChecking] = useState(false);
+  const [quickActing, setQuickActing] = useState(false);
 
   useEffect(() => {
     Promise.all([api.getBlacklist(), api.getWhitelist()])
@@ -125,13 +182,10 @@ export default function Blocklist() {
       .finally(() => setLoading(false));
   }, []);
 
-  async function handleCheck(e: FormEvent) {
-    e.preventDefault();
-    const d = checkDomain.trim();
-    if (!d) return;
+  async function runCheck(domain: string) {
     setChecking(true);
     try {
-      setCheckResult(await api.checkDomain(d));
+      setCheckResult(await api.checkDomain(domain));
     } catch {
       setCheckResult(null);
     } finally {
@@ -139,15 +193,36 @@ export default function Blocklist() {
     }
   }
 
+  async function handleCheck(e: FormEvent) {
+    e.preventDefault();
+    const d = checkDomain.trim().toLowerCase();
+    if (!d) return;
+    await runCheck(d);
+  }
+
   async function addBlack(domain: string) {
     await api.addBlacklist(domain);
     setBlack((p) => [...p, domain].sort());
-    toast(`"${domain}" added to blacklist`);
+    toast(t("blocklist.added_toast", { domain, list: t("blocklist.blacklist") }));
   }
   async function addWhite(domain: string) {
     await api.addWhitelist(domain);
     setWhite((p) => [...p, domain].sort());
-    toast(`"${domain}" added to whitelist`);
+    toast(t("blocklist.added_toast", { domain, list: t("blocklist.whitelist") }));
+  }
+
+  async function quickAdd(kind: "black" | "white") {
+    if (!checkResult) return;
+    setQuickActing(true);
+    try {
+      if (kind === "black") await addBlack(checkResult.domain);
+      else await addWhite(checkResult.domain);
+      await runCheck(checkResult.domain);
+    } catch (e) {
+      toast((e as Error).message, "error");
+    } finally {
+      setQuickActing(false);
+    }
   }
 
   async function removeBlack(domain: string) {
@@ -175,18 +250,19 @@ export default function Blocklist() {
     setRemoving("");
   }
 
+  const inBlack = checkResult ? black.includes(checkResult.domain) : false;
+  const inWhite = checkResult ? white.includes(checkResult.domain) : false;
+
   return (
     <div className="p-6">
       {ConfirmDialog}
       <PageHeader title={t("blocklist.title")} subtitle={t("blocklist.subtitle")} />
       {err && <Err msg={err} />}
 
-      {/* Check domain — full-width filter bar at top */}
-      <Card className="mb-4 p-3">
-        <form
-          onSubmit={handleCheck}
-          className="grid grid-cols-1 gap-2 md:grid-cols-[minmax(0,1fr)_auto_auto] md:items-center"
-        >
+      {/* Domain inspector */}
+      <Card className="plate-ticks mb-4">
+        <SectionLabel>{t("blocklist.check_btn")}</SectionLabel>
+        <form onSubmit={handleCheck} className="grid grid-cols-[minmax(0,1fr)_auto] gap-2">
           <SearchInput
             icon={Search}
             value={checkDomain}
@@ -206,34 +282,58 @@ export default function Blocklist() {
           >
             {t("blocklist.check_btn")}
           </Btn>
-          {checkResult && (
-            <div
-              className={cn(
-                "flex h-9 items-center gap-2 rounded-md border px-3 text-xs",
-                checkResult.blocked
-                  ? "border-blocked/25 bg-blocked/10 text-blocked"
-                  : "border-teal/25 bg-teal/10 text-teal",
-              )}
-            >
-              {checkResult.blocked ? <Ban size={13} /> : <CheckCircle2 size={13} />}
-              <span className="font-medium">
+        </form>
+
+        {checkResult && (
+          <div className="animate-fade-up border-bdr/60 mt-3 flex flex-col gap-3 border-t pt-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex min-w-0 flex-wrap items-center gap-2.5">
+              <span
+                className={cn(
+                  "rounded-xs flex items-center gap-1.5 border px-2.5 py-1 font-mono text-[11px] font-semibold uppercase tracking-[0.08em]",
+                  checkResult.blocked
+                    ? "border-blocked/25 bg-blocked/10 text-blocked"
+                    : "border-cached/25 bg-cached/10 text-cached",
+                )}
+              >
+                {checkResult.blocked ? <Ban size={12} /> : <CheckCircle2 size={12} />}
                 {checkResult.blocked
                   ? t("blocklist.status_blocked")
                   : t("blocklist.status_allowed")}
               </span>
+              <span className="text-heading min-w-0 truncate font-mono text-sm">
+                {checkResult.domain}
+              </span>
               {checkResult.whitelisted && (
-                <span className="text-upstream border-upstream/25 border-l pl-2">
+                <span className="border-upstream/25 bg-upstream/10 text-upstream rounded-xs border px-2 py-0.5 text-[10px] font-medium">
                   {t("blocklist.whitelisted")}
                 </span>
               )}
+              {inBlack && (
+                <span className="border-blocked/25 bg-blocked/10 text-blocked rounded-xs border px-2 py-0.5 text-[10px] font-medium">
+                  {t("blocklist.in_blacklist")}
+                </span>
+              )}
             </div>
-          )}
-        </form>
+
+            <div className="flex shrink-0 gap-2">
+              {checkResult.blocked && !inWhite && (
+                <Btn variant="ghost" disabled={quickActing} onClick={() => quickAdd("white")}>
+                  <ShieldPlus size={12} /> {t("blocklist.add_to_whitelist")}
+                </Btn>
+              )}
+              {!checkResult.blocked && !inBlack && (
+                <Btn variant="ghost" disabled={quickActing} onClick={() => quickAdd("black")}>
+                  <ShieldMinus size={12} /> {t("blocklist.add_to_blacklist")}
+                </Btn>
+              )}
+            </div>
+          </div>
+        )}
       </Card>
 
-      {/* Blacklist + Whitelist — full width, side by side */}
-      <Card>
-        {loading ? (
+      {/* Blacklist + Whitelist */}
+      {loading ? (
+        <Card>
           <div className="space-y-3">
             <Skeleton className="h-7 w-44" />
             <Skeleton className="h-8 w-full" />
@@ -241,31 +341,29 @@ export default function Blocklist() {
             <Skeleton className="h-5 w-3/4" />
             <Skeleton className="h-5 w-5/6" />
           </div>
-        ) : (
-          <div className="md:divide-bdr/70 grid grid-cols-1 gap-6 md:grid-cols-2 md:divide-x">
-            <section className="min-w-0 md:pr-6">
-              <SectionLabel className="flex items-center">
-                {t("blocklist.blacklist")}
-                <span className="border-blocked/25 bg-blocked/10 text-blocked ml-auto rounded-full border px-2 py-0.5 normal-case tracking-normal">
-                  {black.length}
-                </span>
-              </SectionLabel>
-              <AddDomainForm onAdd={addBlack} placeholder={t("blocklist.blacklist_placeholder")} />
-              <DomainList items={black} onRemove={removeBlack} removing={removing} />
-            </section>
-            <section className="min-w-0 md:pl-6">
-              <SectionLabel className="flex items-center">
-                {t("blocklist.whitelist")}
-                <span className="border-teal/25 bg-teal/10 text-teal ml-auto rounded-full border px-2 py-0.5 normal-case tracking-normal">
-                  {white.length}
-                </span>
-              </SectionLabel>
-              <AddDomainForm onAdd={addWhite} placeholder={t("blocklist.whitelist_placeholder")} />
-              <DomainList items={white} onRemove={removeWhite} removing={removing} />
-            </section>
-          </div>
-        )}
-      </Card>
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 items-start gap-4 md:grid-cols-2">
+          <ListPanel
+            label={t("blocklist.blacklist")}
+            tone="blocked"
+            items={black}
+            placeholder={t("blocklist.blacklist_placeholder")}
+            onAdd={addBlack}
+            onRemove={removeBlack}
+            removing={removing}
+          />
+          <ListPanel
+            label={t("blocklist.whitelist")}
+            tone="ember"
+            items={white}
+            placeholder={t("blocklist.whitelist_placeholder")}
+            onAdd={addWhite}
+            onRemove={removeWhite}
+            removing={removing}
+          />
+        </div>
+      )}
     </div>
   );
 }

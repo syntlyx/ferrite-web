@@ -49,7 +49,7 @@ function TypeToggle({
           className={cn(
             "border-bdr -mr-px border px-3 py-2 text-xs transition-colors first:rounded-l-lg last:mr-0 last:rounded-r-lg",
             value === t
-              ? "border-teal/40 bg-teal/15 text-teal relative z-10"
+              ? "border-ember/40 bg-ember/15 text-ember relative z-10"
               : "bg-sidebar text-muted hover:text-body",
           )}
         >
@@ -65,7 +65,7 @@ function AddrTypeBadge({ alias }: { alias: ClientAlias }) {
     return <span className={cn(addrTypeBadgeCls, "bg-upstream/10 text-upstream/80")}>MAC</span>;
   if (alias.ip?.includes(":"))
     return <span className={cn(addrTypeBadgeCls, "bg-warn/10 text-warn/80")}>IPv6</span>;
-  return <span className={cn(addrTypeBadgeCls, "bg-teal/10 text-teal/70")}>IPv4</span>;
+  return <span className={cn(addrTypeBadgeCls, "bg-ember/10 text-ember/70")}>IPv4</span>;
 }
 
 function aliasKey(a: ClientAlias): string {
@@ -366,12 +366,12 @@ export default function Clients() {
                       <Td>
                         <Link
                           to={`/queries?client_ip=${encodeURIComponent((c.ips.length > 0 ? c.ips : [c.name]).join(","))}`}
-                          className="text-heading hover:text-teal font-medium transition-colors"
+                          className="text-heading hover:text-ember font-medium transition-colors"
                         >
                           {c.name}
                         </Link>
                         {c.is_alias && (
-                          <span className="bg-teal/10 text-teal/70 ml-1.5 rounded px-1 py-0.5 text-[10px]">
+                          <span className="bg-ember/10 text-ember/70 ml-1.5 rounded px-1 py-0.5 text-[10px]">
                             {t("clients.alias_badge")}
                           </span>
                         )}
@@ -388,7 +388,7 @@ export default function Clients() {
                       <Td>
                         <Bar
                           value={(c.total / maxTotal) * 100}
-                          color={i === 0 ? "bg-teal" : "bg-teal/40"}
+                          color={i === 0 ? "bg-ember" : "bg-ember/40"}
                         />
                       </Td>
                       <Td className="text-body text-right tabular-nums">{fmt(c.total)}</Td>
@@ -403,9 +403,7 @@ export default function Clients() {
                           <span
                             className={cn(
                               "rounded-full px-2 py-0.5 text-[10px] font-medium",
-                              filteringOn
-                                ? "bg-teal/10 text-teal"
-                                : "bg-warn/10 text-warn",
+                              filteringOn ? "bg-ember/10 text-ember" : "bg-warn/10 text-warn",
                             )}
                           >
                             {!blockingEnabled

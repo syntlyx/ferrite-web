@@ -70,7 +70,17 @@ export function withQuery<T extends object>(path: string, params: QueryParams<T>
 
 // ── Core request ─────────────────────────────────────────────────────────────
 
-async function request<T>(method: string, path: string, body?: unknown): Promise<T> {
+type RequestOpts = {
+  /** Override the default 30s timeout, e.g. for long-running batch operations. */
+  timeoutMs?: number;
+};
+
+async function request<T>(
+  method: string,
+  path: string,
+  body?: unknown,
+  opts?: RequestOpts,
+): Promise<T> {
   const token = getToken();
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
@@ -78,7 +88,7 @@ async function request<T>(method: string, path: string, body?: unknown): Promise
   if (token) headers["Authorization"] = `Bearer ${token}`;
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 30_000);
+  const timeoutId = setTimeout(() => controller.abort(), opts?.timeoutMs ?? 30_000);
 
   const res = await fetch(BASE + path, {
     method,
@@ -129,7 +139,8 @@ async function request<T>(method: string, path: string, body?: unknown): Promise
 
 export const http = {
   get: <T>(path: string) => request<T>("GET", path),
-  post: <T>(path: string, body?: unknown) => request<T>("POST", path, body),
+  post: <T>(path: string, body?: unknown, opts?: RequestOpts) =>
+    request<T>("POST", path, body, opts),
   del: <T>(path: string) => request<T>("DELETE", path),
   patch: <T>(path: string, body?: unknown) => request<T>("PATCH", path, body),
 };

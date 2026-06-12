@@ -26,7 +26,7 @@ export function Th({ children, className }: ThProps) {
   return (
     <th
       className={cn(
-        "text-muted px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-wider",
+        "text-muted px-4 py-3 text-left font-mono text-[10px] font-medium uppercase tracking-[0.12em]",
         className,
       )}
     >

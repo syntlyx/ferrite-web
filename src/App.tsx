@@ -18,11 +18,11 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { error: Error | 
     if (this.state.error) {
       return (
         <div className="app-canvas bg-void flex min-h-screen items-center justify-center p-8 text-center">
-          <div className="border-bdr/85 bg-card rounded-lg border p-6 shadow-[0_14px_34px_rgba(0,0,0,0.22)]">
+          <div className="border-bdr/85 bg-card rounded-xs border p-6 shadow-[0_14px_34px_rgba(0,0,0,0.22)]">
             <p className="text-blocked text-sm font-medium">Something went wrong</p>
             <p className="text-muted mt-1 text-xs">{(this.state.error as Error).message}</p>
             <button
-              className="text-teal mt-4 text-xs underline"
+              className="text-ember mt-4 text-xs underline"
               onClick={() => this.setState({ error: null })}
             >
               Try again
@@ -69,7 +69,7 @@ const PageFallback = () => (
 
 const FullScreenFallback = ({ label = "Loading…" }: { label?: string }) => (
   <div className="app-canvas bg-void flex min-h-screen items-center justify-center">
-    <span className="border-bdr/75 bg-card text-muted rounded-md border px-3 py-2 text-xs shadow-[0_10px_24px_rgba(0,0,0,0.16)]">
+    <span className="border-bdr/75 bg-card text-muted rounded-xs border px-3 py-2 text-xs shadow-[0_10px_24px_rgba(0,0,0,0.16)]">
       {label}
     </span>
   </div>

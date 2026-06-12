@@ -12,6 +12,7 @@ import { Err } from "@/components/feedback/Err";
 import { SearchInput, Select, Btn, Th, Td, TableRow, EmptyRow, Skeleton } from "@/components/ui";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useConfirm } from "@/hooks/use-confirm";
+import { usePageVisible } from "@/hooks/use-page-visible";
 import { RCODE_LABEL, RCODE_COLOR, qtypeName } from "@/lib/dns";
 import { fmt } from "@/lib/format";
 import type { QueryEntry, QueryFilters, QueryStatus, ClientEntry } from "@/api/types";
@@ -54,10 +55,10 @@ function CopyBtn({ text }: { text: string }) {
   return (
     <button
       onClick={handleCopy}
-      className="text-muted hover:text-teal ml-1 inline-flex opacity-0 transition-all group-hover:opacity-100"
+      className="text-muted hover:text-ember ml-1 inline-flex opacity-0 transition-all group-hover:opacity-100"
       title="Copy"
     >
-      {copied ? <Check size={11} className="text-teal" /> : <Copy size={11} />}
+      {copied ? <Check size={11} className="text-ember" /> : <Copy size={11} />}
     </button>
   );
 }
@@ -143,11 +144,11 @@ function ClientMultiSelect({
       <button
         onClick={() => setOpen((v) => !v)}
         className={cn(
-          "bg-sidebar hover:border-teal/30 focus:border-teal flex h-9 w-full items-center gap-2 rounded-md border px-3 text-xs transition-colors focus:outline-none",
-          selected.size > 0 ? "border-teal/40 text-body" : "border-bdr text-muted",
+          "bg-sidebar hover:border-ember/30 focus:border-ember rounded-xs flex h-9 w-full items-center gap-2 border px-3 text-xs transition-colors focus:outline-none",
+          selected.size > 0 ? "border-ember/40 text-body" : "border-bdr text-muted",
         )}
       >
-        <Users size={12} className={selected.size > 0 ? "text-teal" : "text-muted"} />
+        <Users size={12} className={selected.size > 0 ? "text-ember" : "text-muted"} />
         <span className="min-w-0 flex-1 truncate text-left">
           {label ?? t("queries.all_clients")}
         </span>
@@ -155,7 +156,7 @@ function ClientMultiSelect({
       </button>
 
       {open && (
-        <div className="min-w-52 animate-fade-down border-bdr bg-card absolute left-0 top-full z-30 mt-1 rounded-lg border shadow-2xl">
+        <div className="min-w-52 animate-fade-down border-bdr bg-card rounded-xs absolute left-0 top-full z-30 mt-1 border shadow-2xl">
           {clients.length === 0 ? (
             <p className="text-muted px-3 py-3 text-xs">{t("queries.no_clients")}</p>
           ) : (
@@ -169,11 +170,11 @@ function ClientMultiSelect({
                   <span
                     className={cn(
                       "flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded border transition-colors",
-                      selected.has(c.name) ? "border-teal bg-teal" : "border-bdr bg-transparent",
+                      selected.has(c.name) ? "border-ember bg-ember" : "border-bdr bg-transparent",
                     )}
                   >
                     {selected.has(c.name) && (
-                      <Check size={9} className="text-[#0a0c10]" strokeWidth={3} />
+                      <Check size={9} className="text-on-ember" strokeWidth={3} />
                     )}
                   </span>
                   <span className="text-body min-w-0 flex-1 truncate font-mono text-xs">
@@ -254,6 +255,9 @@ export default function Queries() {
   const filtersRef = useRef(filters);
   filtersRef.current = filters;
 
+  const rowsRef = useRef(rows);
+  rowsRef.current = rows;
+
   // Monotonic request id: the auto-refresh tick, debounced domain changes and
   // pagination can all fire overlapping fetches. Only the most recent request
   // is allowed to commit its result, so a slow earlier response can't clobber a
@@ -324,13 +328,57 @@ export default function Queries() {
     resetPagination({ ...filtersRef.current, domain: debouncedDomain });
   }, [debouncedDomain, resetPagination]);
 
-  // Auto-refresh
+  // Auto-refresh tick. Without active filters, polls the cheap `after_id`
+  // delta and prepends new rows; the server ignores filters on the delta path,
+  // so a filtered view falls back to a full silent reload.
+  const refresh = useCallback(async () => {
+    const f = filtersRef.current;
+    const hasFilters = Boolean(f.domain || f.client_ip || f.status);
+    const newestId = rowsRef.current[0]?.id;
+    if (hasFilters || newestId === undefined) {
+      return load(undefined, { silent: true });
+    }
+
+    const seq = ++loadSeq.current;
+    const limit = f.limit ?? 100;
+    try {
+      const delta = await api.queries({ after_id: newestId, limit });
+      if (seq !== loadSeq.current) return;
+      if (!Array.isArray(delta) || delta.length === 0) return;
+      if (delta.length >= limit) {
+        // More new entries than one page — the delta window overflowed.
+        return load(undefined, { silent: true });
+      }
+      // Guard against servers that don't know after_id yet and return the
+      // full unfiltered list (would duplicate already-rendered rows).
+      const fresh = delta.filter((e) => e.id > newestId);
+      if (fresh.length === 0) return;
+      setErr("");
+      setRows((prev) => [...fresh, ...prev].slice(0, limit));
+    } catch (e) {
+      if (seq !== loadSeq.current) return;
+      setErr((e as Error).message);
+    }
+  }, [load]);
+
+  // Auto-refresh: only on the live first page and only while the tab is
+  // visible. On return to a visible tab, catch up immediately.
   const isLive = pageIndex === 0;
+  const pageVisible = usePageVisible();
+  const wasHidden = useRef(false);
   useEffect(() => {
     if (!isLive) return;
-    const id = setInterval(() => load(undefined, { silent: true }), AUTO_REFRESH);
+    if (!pageVisible) {
+      wasHidden.current = true;
+      return;
+    }
+    if (wasHidden.current) {
+      wasHidden.current = false;
+      refresh();
+    }
+    const id = setInterval(refresh, AUTO_REFRESH);
     return () => clearInterval(id);
-  }, [isLive, load]);
+  }, [isLive, pageVisible, refresh]);
 
   function handleSelectFilter(key: keyof QueryFilters, val: QueryFilters[keyof QueryFilters]) {
     resetPagination({ ...filtersRef.current, [key]: val });
@@ -417,8 +465,8 @@ export default function Queries() {
             {isLive && (
               <span className="text-muted flex items-center gap-1.5 text-xs">
                 <span className="relative flex h-2 w-2">
-                  <span className="bg-teal absolute inline-flex h-full w-full animate-ping rounded-full opacity-60" />
-                  <span className="bg-teal relative inline-flex h-2 w-2 rounded-full" />
+                  <span className="bg-ember absolute inline-flex h-full w-full animate-ping rounded-full opacity-60" />
+                  <span className="bg-ember relative inline-flex h-2 w-2 rounded-full" />
                 </span>
                 {t("queries.live")}
               </span>
@@ -529,7 +577,7 @@ export default function Queries() {
                       <Td className="text-heading max-w-xs font-mono">
                         <span className="group flex items-center">
                           <button
-                            className="hover:text-teal cursor-pointer truncate text-left transition-colors"
+                            className="hover:text-ember cursor-pointer truncate text-left transition-colors"
                             onClick={() => filterByDomain(r.domain)}
                             title={`Filter by ${r.domain}`}
                           >
@@ -544,7 +592,7 @@ export default function Queries() {
                       <Td>
                         <span className="group flex items-center gap-0.5">
                           <button
-                            className="text-body hover:text-teal cursor-pointer font-mono transition-colors"
+                            className="text-body hover:text-ember cursor-pointer font-mono transition-colors"
                             onClick={() => filterByClient(r.client_ip)}
                             title={`Filter by ${r.client_ip}`}
                           >
