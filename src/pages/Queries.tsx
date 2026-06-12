@@ -254,17 +254,26 @@ export default function Queries() {
   const filtersRef = useRef(filters);
   filtersRef.current = filters;
 
+  // Monotonic request id: the auto-refresh tick, debounced domain changes and
+  // pagination can all fire overlapping fetches. Only the most recent request
+  // is allowed to commit its result, so a slow earlier response can't clobber a
+  // newer one.
+  const loadSeq = useRef(0);
+
   const load = useCallback(async (f?: QueryFilters, { silent = false } = {}) => {
     const target = f ?? filtersRef.current;
+    const seq = ++loadSeq.current;
     if (!silent) setLoading(true);
     setErr("");
     try {
       const data = await api.queries(target);
+      if (seq !== loadSeq.current) return;
       setRows(Array.isArray(data) ? data : []);
     } catch (e) {
+      if (seq !== loadSeq.current) return;
       setErr((e as Error).message);
     } finally {
-      setLoading(false);
+      if (seq === loadSeq.current) setLoading(false);
     }
   }, []);
 

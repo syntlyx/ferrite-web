@@ -329,8 +329,16 @@ export interface DnsConfig {
 
 export interface UpstreamConfig {
   type: string;
-  address: string;
-  port: number;
+  address?: string;
+  port?: number;
+  tls_name?: string;
+  url?: string;
+  bootstrap_ip?: string;
+}
+
+export interface ZoneConfig {
+  name: string;
+  upstream: string;
 }
 
 export interface StorageConfig {
@@ -354,12 +362,21 @@ export interface BlocklistConfig {
   client_bypass?: string[];
 }
 
+export interface PanelConfig {
+  enabled?: boolean;
+  domain?: string;
+  ipv4?: string | null;
+  url?: string | null;
+}
+
 /** Full parsed config returned by GET /api/settings */
 export interface Settings {
   dns?: DnsConfig;
   upstream?: UpstreamConfig[];
+  zones?: ZoneConfig[];
   storage?: StorageConfig;
   api?: ApiConfig;
+  panel?: PanelConfig;
   blocklist?: BlocklistConfig;
   custom_records?: CustomRecord[];
   web_dir?: string;
@@ -380,6 +397,12 @@ export interface PatchSettingsBody {
   dns_cache_size?: number;
   blocklist_decision_cache_size?: number;
   api_bind_addr?: string;
+  upstream?: UpstreamConfig[];
+  zones?: ZoneConfig[];
+  panel_enabled?: boolean;
+  panel_domain?: string;
+  panel_ipv4?: string | null;
+  panel_url?: string | null;
 }
 
 export interface PatchSettingsResponse {

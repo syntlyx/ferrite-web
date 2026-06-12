@@ -18,9 +18,12 @@ import {
   Database,
   KeyRound,
   ListFilter,
+  PanelTop,
   RadioTower,
+  Route,
   ServerCog,
   ShieldCheck,
+  Trash2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { api } from "@/api";
@@ -28,19 +31,30 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { Card } from "@/components/layout/Card";
 import { Spinner } from "@/components/feedback/Spinner";
 import { Err } from "@/components/feedback/Err";
-import { Input, Btn, Switch } from "@/components/ui";
+import { Input, Btn, Select, Switch } from "@/components/ui";
 import { useToast } from "@/hooks/use-toast";
 import type {
   PatchSettingsBody,
   Settings as SettingsType,
   UpdateApplyResponse,
   UpdateCheckResponse,
+  UpstreamConfig,
+  ZoneConfig,
 } from "@/api/types";
 
 type ClearableSecretField = "api_key" | "password";
 type RestartSettingsPatch = Pick<
   PatchSettingsBody,
-  "dns_bind_addr" | "dns_cache_size" | "blocklist_decision_cache_size" | "api_bind_addr"
+  | "dns_bind_addr"
+  | "dns_cache_size"
+  | "blocklist_decision_cache_size"
+  | "api_bind_addr"
+  | "upstream"
+  | "zones"
+  | "panel_enabled"
+  | "panel_domain"
+  | "panel_ipv4"
+  | "panel_url"
 >;
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -60,6 +74,100 @@ function formatConfigValue(value: unknown): string {
   if (Array.isArray(value)) return `[${value.length} items]`;
   if (isPlainObject(value)) return JSON.stringify(value);
   return String(value);
+}
+
+type UpstreamDraft = {
+  type: string;
+  address: string;
+  port: string;
+  tls_name: string;
+  url: string;
+  bootstrap_ip: string;
+};
+
+type ZoneDraft = {
+  name: string;
+  upstream: string;
+};
+
+const DEFAULT_UPSTREAM_DRAFT: UpstreamDraft = {
+  type: "plain",
+  address: "1.1.1.1",
+  port: "53",
+  tls_name: "",
+  url: "",
+  bootstrap_ip: "",
+};
+
+function defaultPort(type: string): string {
+  if (type === "tls" || type === "quic") return "853";
+  return "53";
+}
+
+function upstreamToDraft(upstream: UpstreamConfig): UpstreamDraft {
+  return {
+    ...DEFAULT_UPSTREAM_DRAFT,
+    type: upstream.type || "plain",
+    address: upstream.address ?? "",
+    port: String(upstream.port ?? Number(defaultPort(upstream.type))),
+    tls_name: upstream.tls_name ?? "",
+    url: upstream.url ?? "",
+    bootstrap_ip: upstream.bootstrap_ip ?? "",
+  };
+}
+
+function draftToUpstream(draft: UpstreamDraft): UpstreamConfig {
+  const type = draft.type || "plain";
+  if (type === "https") {
+    const upstream: UpstreamConfig = { type, url: draft.url.trim() };
+    const bootstrap = draft.bootstrap_ip.trim();
+    if (bootstrap) upstream.bootstrap_ip = bootstrap;
+    return upstream;
+  }
+
+  const upstream: UpstreamConfig = {
+    type,
+    address: draft.address.trim(),
+    port: Number(draft.port),
+  };
+  if (type === "tls" || type === "quic") upstream.tls_name = draft.tls_name.trim();
+  return upstream;
+}
+
+function upstreamsToDraft(upstreams: UpstreamConfig[] | undefined): UpstreamDraft[] {
+  return upstreams?.length ? upstreams.map(upstreamToDraft) : [{ ...DEFAULT_UPSTREAM_DRAFT }];
+}
+
+function zonesToDraft(zones: ZoneConfig[] | undefined): ZoneDraft[] {
+  return zones?.map((z) => ({ name: z.name, upstream: z.upstream })) ?? [];
+}
+
+/** Build the restart-form draft from a settings payload. Shared by the initial
+ *  load and the post-restart poll so the two stay in sync. */
+function restartFormFromSettings(s: SettingsType) {
+  return {
+    dns_bind_addr: s.dns?.bind_addr ?? "",
+    dns_cache_size: String(s.dns?.cache_size ?? ""),
+    blocklist_decision_cache_size: String(s.blocklist?.decision_cache_size ?? ""),
+    api_bind_addr: s.api?.bind_addr ?? "",
+    upstream: upstreamsToDraft(s.upstream),
+    zones: zonesToDraft(s.zones),
+    panel_enabled: s.panel?.enabled ?? true,
+    panel_domain: s.panel?.domain ?? "fe.te",
+    panel_ipv4: s.panel?.ipv4 ?? "",
+    panel_url: s.panel?.url ?? "",
+  };
+}
+
+function draftToZone(draft: ZoneDraft): ZoneConfig {
+  return {
+    name: draft.name.trim(),
+    upstream: draft.upstream.trim(),
+  };
+}
+
+function stableJson(value: unknown): string {
+  return JSON.stringify(value);
 }
 
 // ── Layout primitives ─────────────────────────────────────────────────────────
@@ -326,6 +434,215 @@ function SettingsOverview({
   );
 }
 
+function FieldLabel({ children }: { children: ReactNode }) {
+  return <span className="text-muted block text-[10px] uppercase tracking-wider">{children}</span>;
+}
+
+function RestartBadge() {
+  const { t } = useTranslation();
+  return (
+    <span className="bg-warn/10 text-warn flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium">
+      <AlertTriangle size={9} /> {t("settings.requires_restart")}
+    </span>
+  );
+}
+
+function UpstreamEditor({
+  value,
+  onChange,
+}: {
+  value: UpstreamDraft[];
+  onChange: (next: UpstreamDraft[]) => void;
+}) {
+  const { t } = useTranslation();
+
+  function update(index: number, patch: Partial<UpstreamDraft>) {
+    onChange(
+      value.map((item, i) => {
+        if (i !== index) return item;
+        const next = { ...item, ...patch };
+        if (patch.type && patch.type !== item.type) {
+          next.port = defaultPort(patch.type);
+          if (patch.type === "https" && !next.url) next.url = "https://dns.example/dns-query";
+        }
+        return next;
+      }),
+    );
+  }
+
+  function remove(index: number) {
+    if (value.length <= 1) return;
+    onChange(value.filter((_, i) => i !== index));
+  }
+
+  return (
+    <div className="w-full space-y-2">
+      {value.map((item, index) => (
+        <div
+          key={`${index}-${item.type}`}
+          className="control-surface-muted border-bdr/70 grid grid-cols-1 gap-2 rounded-md border p-2 lg:grid-cols-[7rem_minmax(0,1fr)_8rem_minmax(0,1fr)_auto]"
+        >
+          <label className="space-y-1">
+            <FieldLabel>{t("settings.upstream_type")}</FieldLabel>
+            <Select
+              value={item.type}
+              onChange={(e) => update(index, { type: e.target.value })}
+              className="w-full"
+            >
+              <option value="plain">{t("settings.upstream_plain")}</option>
+              <option value="tls">{t("settings.upstream_tls")}</option>
+              <option value="https">{t("settings.upstream_https")}</option>
+              <option value="quic">{t("settings.upstream_quic")}</option>
+            </Select>
+          </label>
+
+          {item.type === "https" ? (
+            <>
+              <label className="min-w-0 space-y-1 lg:col-span-2">
+                <FieldLabel>{t("settings.upstream_url")}</FieldLabel>
+                <Input
+                  value={item.url}
+                  onChange={(e) => update(index, { url: e.target.value })}
+                  placeholder="https://cloudflare-dns.com/dns-query"
+                  className="w-full font-mono"
+                />
+              </label>
+              <label className="min-w-0 space-y-1">
+                <FieldLabel>{t("settings.upstream_bootstrap")}</FieldLabel>
+                <Input
+                  value={item.bootstrap_ip}
+                  onChange={(e) => update(index, { bootstrap_ip: e.target.value })}
+                  placeholder="1.1.1.1"
+                  className="w-full font-mono"
+                />
+              </label>
+            </>
+          ) : (
+            <>
+              <label className="min-w-0 space-y-1">
+                <FieldLabel>{t("settings.upstream_address")}</FieldLabel>
+                <Input
+                  value={item.address}
+                  onChange={(e) => update(index, { address: e.target.value })}
+                  placeholder="1.1.1.1"
+                  className="w-full font-mono"
+                />
+              </label>
+              <label className="min-w-0 space-y-1">
+                <FieldLabel>{t("settings.upstream_port")}</FieldLabel>
+                <Input
+                  type="number"
+                  min={1}
+                  value={item.port}
+                  onChange={(e) => update(index, { port: e.target.value })}
+                  placeholder={defaultPort(item.type)}
+                  className="w-full font-mono tabular-nums"
+                />
+              </label>
+              <label className="min-w-0 space-y-1">
+                <FieldLabel>{t("settings.upstream_tls_name")}</FieldLabel>
+                <Input
+                  value={item.tls_name}
+                  onChange={(e) => update(index, { tls_name: e.target.value })}
+                  placeholder="cloudflare-dns.com"
+                  disabled={item.type === "plain"}
+                  className="w-full font-mono"
+                />
+              </label>
+            </>
+          )}
+
+          <Btn
+            type="button"
+            variant="danger"
+            onClick={() => remove(index)}
+            disabled={value.length <= 1}
+            className="self-end px-2.5"
+            title={t("common.delete")}
+          >
+            <Trash2 size={12} />
+          </Btn>
+        </div>
+      ))}
+      <Btn
+        type="button"
+        variant="ghost"
+        onClick={() => onChange([...value, { ...DEFAULT_UPSTREAM_DRAFT }])}
+      >
+        <Plus size={12} /> {t("settings.add_upstream")}
+      </Btn>
+    </div>
+  );
+}
+
+function ZonesEditor({
+  value,
+  onChange,
+}: {
+  value: ZoneDraft[];
+  onChange: (next: ZoneDraft[]) => void;
+}) {
+  const { t } = useTranslation();
+
+  function update(index: number, patch: Partial<ZoneDraft>) {
+    onChange(value.map((item, i) => (i === index ? { ...item, ...patch } : item)));
+  }
+
+  return (
+    <div className="w-full space-y-2">
+      {value.length === 0 ? (
+        <p className="border-bdr/70 bg-sidebar/60 text-muted rounded-md border px-3 py-3 text-xs">
+          {t("settings.zones_empty")}
+        </p>
+      ) : (
+        value.map((item, index) => (
+          <div
+            key={index}
+            className="control-surface-muted border-bdr/70 grid grid-cols-1 gap-2 rounded-md border p-2 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]"
+          >
+            <label className="min-w-0 space-y-1">
+              <FieldLabel>{t("settings.zone_name")}</FieldLabel>
+              <Input
+                value={item.name}
+                onChange={(e) => update(index, { name: e.target.value })}
+                placeholder="1.168.192.in-addr.arpa"
+                className="w-full font-mono"
+              />
+            </label>
+            <label className="min-w-0 space-y-1">
+              <FieldLabel>{t("settings.zone_upstream")}</FieldLabel>
+              <Input
+                value={item.upstream}
+                onChange={(e) => update(index, { upstream: e.target.value })}
+                placeholder="192.168.1.1:53"
+                className="w-full font-mono"
+              />
+            </label>
+            <Btn
+              type="button"
+              variant="danger"
+              onClick={() => onChange(value.filter((_, i) => i !== index))}
+              className="self-end px-2.5"
+              title={t("common.delete")}
+            >
+              <Trash2 size={12} />
+            </Btn>
+          </div>
+        ))
+      )}
+      <Btn
+        type="button"
+        variant="ghost"
+        onClick={() =>
+          onChange([...value, { name: "1.168.192.in-addr.arpa", upstream: "192.168.1.1:53" }])
+        }
+      >
+        <Plus size={12} /> {t("settings.add_zone")}
+      </Btn>
+    </div>
+  );
+}
+
 // ── Config dump ───────────────────────────────────────────────────────────────
 
 function ConfigSection({ title, value }: { title: string; value: unknown }) {
@@ -540,6 +857,12 @@ export default function Settings() {
     dns_cache_size: "",
     blocklist_decision_cache_size: "",
     api_bind_addr: "",
+    upstream: [] as UpstreamDraft[],
+    zones: [] as ZoneDraft[],
+    panel_enabled: true,
+    panel_domain: "",
+    panel_ipv4: "",
+    panel_url: "",
   });
   const [savingRestart, setSavingRestart] = useState(false);
   const [restarting, setRestarting] = useState(false);
@@ -561,12 +884,7 @@ export default function Settings() {
         blocklist_enabled: s.blocklist?.enabled ?? true,
       }));
       setLogIgnore(s.dns?.log_ignore ?? []);
-      setRestartForm({
-        dns_bind_addr: s.dns?.bind_addr ?? "",
-        dns_cache_size: String(s.dns?.cache_size ?? ""),
-        blocklist_decision_cache_size: String(s.blocklist?.decision_cache_size ?? ""),
-        api_bind_addr: s.api?.bind_addr ?? "",
-      });
+      setRestartForm(restartFormFromSettings(s));
       // Check if password is set
       api
         .checkAuth()
@@ -584,21 +902,28 @@ export default function Settings() {
   }, [loadSettings]);
 
   function pollUntilBack() {
+    // Give up after ~2 minutes (60 tries, 2s apart) so a server that never
+    // comes back doesn't leave the UI polling and showing "restarting…" forever.
+    const maxAttempts = 60;
+    let attempts = 0;
     const attempt = () => {
+      attempts += 1;
       api
         .getSettings()
         .then((s) => {
           setRestarting(false);
           setSettings(s);
-          setRestartForm({
-            dns_bind_addr: s.dns?.bind_addr ?? "",
-            dns_cache_size: String(s.dns?.cache_size ?? ""),
-            blocklist_decision_cache_size: String(s.blocklist?.decision_cache_size ?? ""),
-            api_bind_addr: s.api?.bind_addr ?? "",
-          });
+          setRestartForm(restartFormFromSettings(s));
           toast(t("settings.restarted"));
         })
-        .catch(() => setTimeout(attempt, 2000));
+        .catch(() => {
+          if (attempts >= maxAttempts) {
+            setRestarting(false);
+            toast(t("settings.restart_timeout"), "error");
+            return;
+          }
+          setTimeout(attempt, 2000);
+        });
     };
     setTimeout(attempt, 1000);
   }
@@ -677,6 +1002,29 @@ export default function Settings() {
       patch.blocklist_decision_cache_size = Number(restartForm.blocklist_decision_cache_size);
     if (restartForm.api_bind_addr !== (settings?.api?.bind_addr ?? ""))
       patch.api_bind_addr = restartForm.api_bind_addr;
+
+    const nextUpstreams = restartForm.upstream.map(draftToUpstream);
+    const currentUpstreams = (settings?.upstream ?? []).map(upstreamToDraft).map(draftToUpstream);
+    if (stableJson(nextUpstreams) !== stableJson(currentUpstreams)) patch.upstream = nextUpstreams;
+
+    const nextZones = restartForm.zones.map(draftToZone).filter((z) => z.name || z.upstream);
+    const currentZones = zonesToDraft(settings?.zones).map(draftToZone);
+    if (stableJson(nextZones) !== stableJson(currentZones)) patch.zones = nextZones;
+
+    if (restartForm.panel_enabled !== (settings?.panel?.enabled ?? true))
+      patch.panel_enabled = restartForm.panel_enabled;
+    const nextPanelDomain = restartForm.panel_domain.trim() || "fe.te";
+    if (nextPanelDomain !== (settings?.panel?.domain ?? "fe.te"))
+      patch.panel_domain = nextPanelDomain;
+    const nextPanelIpv4 = restartForm.panel_ipv4.trim();
+    const currentPanelIpv4 = settings?.panel?.ipv4 ?? "";
+    if (nextPanelIpv4 !== currentPanelIpv4)
+      patch.panel_ipv4 = nextPanelIpv4 === "" ? null : nextPanelIpv4;
+    const nextPanelUrl = restartForm.panel_url.trim();
+    const currentPanelUrl = settings?.panel?.url ?? "";
+    if (nextPanelUrl !== currentPanelUrl)
+      patch.panel_url = nextPanelUrl === "" ? null : nextPanelUrl;
+
     if (Object.keys(patch).length === 0) {
       toast(t("settings.no_changes"));
       return;
@@ -701,7 +1049,15 @@ export default function Settings() {
   type TextFormField = Exclude<keyof typeof form, "blocklist_enabled">;
   const setF = (key: TextFormField) => (e: ChangeEvent<HTMLInputElement>) =>
     setForm((p) => ({ ...p, [key]: e.target.value }));
-  const setR = (key: keyof typeof restartForm) => (e: ChangeEvent<HTMLInputElement>) =>
+  type RestartTextField =
+    | "dns_bind_addr"
+    | "dns_cache_size"
+    | "blocklist_decision_cache_size"
+    | "api_bind_addr"
+    | "panel_domain"
+    | "panel_ipv4"
+    | "panel_url";
+  const setR = (key: RestartTextField) => (e: ChangeEvent<HTMLInputElement>) =>
     setRestartForm((p) => ({ ...p, [key]: e.target.value }));
 
   return (
@@ -943,24 +1299,12 @@ export default function Settings() {
                 </SettingsPanel>
               </form>
 
-              <form onSubmit={handleRestartSave}>
+              <form onSubmit={handleRestartSave} className="space-y-4">
                 <SettingsPanel
                   title={t("settings.network")}
                   sub={t("settings.restart_changes_sub")}
                   icon={RadioTower}
-                  badge={
-                    <span className="bg-warn/10 text-warn flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium">
-                      <AlertTriangle size={9} /> {t("settings.requires_restart")}
-                    </span>
-                  }
-                  footer={
-                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                      <p className="text-muted text-xs">{t("settings.restart_changes")}</p>
-                      <Btn type="submit" disabled={savingRestart || restarting}>
-                        <Save size={12} /> {t("settings.save_restart")}
-                      </Btn>
-                    </div>
-                  }
+                  badge={<RestartBadge />}
                 >
                   <SettingRow label={t("settings.dns_bind")} sub={t("settings.dns_bind_sub")}>
                     <Input
@@ -995,6 +1339,103 @@ export default function Settings() {
                       value={restartForm.api_bind_addr}
                       onChange={setR("api_bind_addr")}
                       placeholder="127.0.0.1:8080"
+                      className="w-full font-mono"
+                    />
+                  </SettingRow>
+                </SettingsPanel>
+
+                <SettingsPanel
+                  title={t("settings.upstream_resolvers")}
+                  sub={t("settings.upstream_resolvers_sub")}
+                  icon={RadioTower}
+                  badge={<RestartBadge />}
+                >
+                  <SettingRow
+                    label={t("settings.upstream")}
+                    sub={t("settings.upstream_sub")}
+                    align="start"
+                  >
+                    <UpstreamEditor
+                      value={restartForm.upstream}
+                      onChange={(upstream) => setRestartForm((p) => ({ ...p, upstream }))}
+                    />
+                  </SettingRow>
+                </SettingsPanel>
+
+                <SettingsPanel
+                  title={t("settings.zone_routing")}
+                  sub={t("settings.zone_routing_sub")}
+                  icon={Route}
+                  badge={<RestartBadge />}
+                >
+                  <SettingRow
+                    label={t("settings.zones")}
+                    sub={t("settings.zones_sub")}
+                    align="start"
+                  >
+                    <ZonesEditor
+                      value={restartForm.zones}
+                      onChange={(zones) => setRestartForm((p) => ({ ...p, zones }))}
+                    />
+                  </SettingRow>
+                </SettingsPanel>
+
+                <SettingsPanel
+                  title={t("settings.panel")}
+                  sub={t("settings.panel_sub")}
+                  icon={PanelTop}
+                  badge={<RestartBadge />}
+                  footer={
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <p className="text-muted text-xs">{t("settings.restart_changes")}</p>
+                      <Btn type="submit" disabled={savingRestart || restarting}>
+                        <Save size={12} /> {t("settings.save_restart")}
+                      </Btn>
+                    </div>
+                  }
+                >
+                  <SettingRow
+                    label={t("settings.panel_enabled")}
+                    sub={t("settings.panel_enabled_sub")}
+                    badge={
+                      <StatusBadge
+                        set={restartForm.panel_enabled}
+                        labelSet={t("common.enabled")}
+                        labelUnset={t("common.disabled")}
+                      />
+                    }
+                  >
+                    <Switch
+                      checked={restartForm.panel_enabled}
+                      onCheckedChange={(checked) =>
+                        setRestartForm((p) => ({ ...p, panel_enabled: checked }))
+                      }
+                    />
+                  </SettingRow>
+                  <SettingRow
+                    label={t("settings.panel_domain")}
+                    sub={t("settings.panel_domain_sub")}
+                  >
+                    <Input
+                      value={restartForm.panel_domain}
+                      onChange={setR("panel_domain")}
+                      placeholder="fe.te"
+                      className="w-full font-mono"
+                    />
+                  </SettingRow>
+                  <SettingRow label={t("settings.panel_ipv4")} sub={t("settings.panel_ipv4_sub")}>
+                    <Input
+                      value={restartForm.panel_ipv4}
+                      onChange={setR("panel_ipv4")}
+                      placeholder="192.168.1.10"
+                      className="w-full font-mono"
+                    />
+                  </SettingRow>
+                  <SettingRow label={t("settings.panel_url")} sub={t("settings.panel_url_sub")}>
+                    <Input
+                      value={restartForm.panel_url}
+                      onChange={setR("panel_url")}
+                      placeholder="http://fe.te:8031"
                       className="w-full font-mono"
                     />
                   </SettingRow>

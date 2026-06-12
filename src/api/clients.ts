@@ -7,7 +7,7 @@ import type {
   RemoveAliasResponse,
 } from "./types";
 
-/** Top clients by query count (last 24h). IPv4+IPv6 sharing a PTR name are merged. */
+/** Top clients by query count across retained history. IPv4+IPv6 sharing a PTR name are merged. */
 export function list(limit = 50): Promise<ClientsResponse> {
   return http.get(`/clients?limit=${limit}`);
 }

@@ -246,6 +246,7 @@ function AliasesPanel() {
 
 export default function Clients() {
   const { t } = useTranslation();
+  const toast = useToast();
   const [clients, setClients] = useState<ClientEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
