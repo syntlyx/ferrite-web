@@ -1,7 +1,8 @@
-import { Component, lazy, Suspense, useEffect, useState } from "react";
+import { Component, lazy, Suspense, useCallback, useEffect, useState } from "react";
 import type { ErrorInfo, ReactNode } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { api } from "@/api";
+import { ApiClientError } from "@/api/client";
 import { ToastProvider } from "@/providers/ToastProvider";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import AppShell from "@/components/layout/AppShell";
@@ -47,15 +48,45 @@ const Settings = lazy(() => import("@/pages/Settings"));
 function RequireAuth({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState("checking");
 
-  useEffect(() => {
+  const check = useCallback(() => {
+    let cancelled = false;
+    setStatus("checking");
     api
       .checkAuth()
-      .then((d) => setStatus(!d.password_set || d.authenticated ? "ok" : "unauth"))
-      .catch(() => setStatus("unauth"));
+      .then((d) => {
+        if (!cancelled) setStatus(!d.password_set || d.authenticated ? "ok" : "unauth");
+      })
+      .catch((e) => {
+        if (cancelled) return;
+        // A genuine 401 is already handled globally in the API client (token
+        // cleared + redirect to /login). Anything reaching here is a transient
+        // infra error (network / 5xx / timeout) — surface a retry instead of
+        // force-logging-out an authenticated user.
+        setStatus(e instanceof ApiClientError && e.status === 401 ? "unauth" : "error");
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
+
+  useEffect(() => check(), [check]);
 
   if (status === "checking") {
     return <FullScreenFallback label="Connecting…" />;
+  }
+
+  if (status === "error") {
+    return (
+      <div className="app-canvas bg-void flex min-h-screen items-center justify-center">
+        <div className="border-bdr/85 bg-card rounded-xs border p-6 text-center shadow-[0_14px_34px_rgba(0,0,0,0.22)]">
+          <p className="text-blocked text-sm font-medium">Couldn’t reach the server</p>
+          <p className="text-muted mt-1 text-xs">Check your connection and try again.</p>
+          <button className="text-ember mt-4 text-xs underline" onClick={check}>
+            Retry
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return status === "unauth" ? <Navigate to="/login" replace /> : <>{children}</>;

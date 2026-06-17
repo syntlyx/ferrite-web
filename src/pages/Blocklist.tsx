@@ -201,14 +201,16 @@ export default function Blocklist() {
   }
 
   async function addBlack(domain: string) {
-    await api.addBlacklist(domain);
-    setBlack((p) => [...p, domain].sort());
-    toast(t("blocklist.added_toast", { domain, list: t("blocklist.blacklist") }));
+    // Use the server-normalized key (lowercase, no trailing dot) so the row
+    // matches what a refetch returns and membership checks line up.
+    const { domain: canonical } = await api.addBlacklist(domain);
+    setBlack((p) => (p.includes(canonical) ? p : [...p, canonical].sort()));
+    toast(t("blocklist.added_toast", { domain: canonical, list: t("blocklist.blacklist") }));
   }
   async function addWhite(domain: string) {
-    await api.addWhitelist(domain);
-    setWhite((p) => [...p, domain].sort());
-    toast(t("blocklist.added_toast", { domain, list: t("blocklist.whitelist") }));
+    const { domain: canonical } = await api.addWhitelist(domain);
+    setWhite((p) => (p.includes(canonical) ? p : [...p, canonical].sort()));
+    toast(t("blocklist.added_toast", { domain: canonical, list: t("blocklist.whitelist") }));
   }
 
   async function quickAdd(kind: "black" | "white") {

@@ -72,7 +72,7 @@ export default function CustomDNS() {
         return [...filtered, d.record];
       });
       setForm(EMPTY);
-      toast(t("dns.record_saved", { type: form.type, domain: form.domain }));
+      toast(t("dns.record_saved", { type: d.record.type, domain: d.record.domain }));
     } catch (e) {
       setAddErr((e as Error).message);
     } finally {
@@ -95,6 +95,11 @@ export default function CustomDNS() {
 
   const set = (key: keyof typeof form) => (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setForm((p) => ({ ...p, [key]: e.target.value }));
+
+  // Match the server's normalise_domain (lowercase + strip trailing dots) so the
+  // Add/Update label and selected-row highlight compare against stored records,
+  // which are stored under the normalized key.
+  const normDomain = form.domain.trim().toLowerCase().replace(/\.+$/, "");
 
   return (
     <div className="p-6">
@@ -152,7 +157,7 @@ export default function CustomDNS() {
             className="h-8 justify-center"
           >
             <Plus size={12} />{" "}
-            {records.some((r) => r.domain === form.domain) ? t("dns.update") : t("dns.add")}
+            {records.some((r) => r.domain === normDomain) ? t("dns.update") : t("dns.add")}
           </Btn>
           {addErr && (
             <p className="text-blocked text-xs md:col-span-5 md:justify-self-end">{addErr}</p>
@@ -181,7 +186,7 @@ export default function CustomDNS() {
                 records.map((r) => (
                   <TableRow
                     key={r.domain}
-                    className={cn("cursor-pointer", form.domain === r.domain && "bg-ember/5")}
+                    className={cn("cursor-pointer", normDomain === r.domain && "bg-ember/5")}
                     onClick={() =>
                       setForm({
                         domain: r.domain,

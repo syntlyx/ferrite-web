@@ -882,9 +882,15 @@ export default function Dashboard() {
     }
   }, []);
 
+  const sysFetchId = useRef(0);
   const fetchSys = useCallback(async () => {
+    // setInterval doesn't wait for the async callback, so a slow request can
+    // overlap the next tick. Guard with a sequence id so a late older response
+    // can't overwrite a newer snapshot (matches the topFetchId pattern below).
+    const id = ++sysFetchId.current;
     try {
-      setSysStats(await api.statsSystem());
+      const data = await api.statsSystem();
+      if (id === sysFetchId.current) setSysStats(data);
     } catch {
       /* optional — ignore if unavailable */
     }
@@ -1000,6 +1006,16 @@ export default function Dashboard() {
 
       {err && <Err msg={err} />}
       {!stats && !err && <DashboardSkeleton />}
+
+      {stats && stats.dropped_stats > 0 && (
+        <div className="border-blocked/40 bg-blocked/5 text-blocked rounded-xs mb-4 border px-3 py-2 text-xs">
+          {t("dashboard.dropped_stats_warning", {
+            count: stats.dropped_stats,
+            defaultValue:
+              "{{count}} query stats were dropped under load — counters and the live feed may be undercounting.",
+          })}
+        </div>
+      )}
 
       {stats && (
         <>

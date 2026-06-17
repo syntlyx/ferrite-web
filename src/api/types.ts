@@ -30,6 +30,8 @@ export interface StatsSummary {
   upstream_queries: number;
   block_percentage: number;
   total_domains_blocked: number;
+  /** Query stats dropped under writer back-pressure; >0 means counters/feed undercount. */
+  dropped_stats: number;
   top_domains: [string, number][];
   top_blocked: [string, number][];
   top_clients: TopClientEntry[];
@@ -242,11 +244,23 @@ export interface DomainCheckResult {
 // Subscription lists
 // ─────────────────────────────────────────────────────────────────────────────
 
+/** Breakdown of how an Adblock-format list was interpreted (present only for
+ *  Adblock lists like EasyList; explains the rules-vs-domains gap). */
+export interface AdblockStats {
+  kept: number;
+  exceptions: number;
+  unblocked_by_exception: number;
+  scoped_skipped: number;
+  cosmetic_skipped: number;
+  unsupported_skipped: number;
+}
+
 export interface SubscriptionList {
   name: string;
   url: string;
   enabled: boolean;
   domains_loaded?: number;
+  parse_stats?: AdblockStats;
 }
 
 export interface ListsResponse {
@@ -279,6 +293,7 @@ export interface RemoveListResponse {
 export interface RefreshListResponse {
   name: string;
   domains_loaded: number;
+  parse_stats?: AdblockStats;
 }
 
 export interface RefreshAllListsResponse {

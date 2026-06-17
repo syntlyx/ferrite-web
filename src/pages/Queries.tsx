@@ -258,10 +258,15 @@ export default function Queries() {
   const rowsRef = useRef(rows);
   rowsRef.current = rows;
 
+  // Separate sequence for the delta refresh so it can't cancel load()'s
+  // loading-flag commit (which would orphan the skeleton on the live page).
+  const refreshSeq = useRef(0);
+
   // Monotonic request id: the auto-refresh tick, debounced domain changes and
   // pagination can all fire overlapping fetches. Only the most recent request
   // is allowed to commit its result, so a slow earlier response can't clobber a
-  // newer one.
+  // newer one. The delta refresh uses a SEPARATE counter (below) so it can never
+  // cancel a full load's loading-flag commit and orphan the skeleton.
   const loadSeq = useRef(0);
 
   const load = useCallback(async (f?: QueryFilters, { silent = false } = {}) => {
@@ -277,7 +282,9 @@ export default function Queries() {
       if (seq !== loadSeq.current) return;
       setErr((e as Error).message);
     } finally {
-      if (seq === loadSeq.current) setLoading(false);
+      // Always clear our own skeleton, even if a newer request superseded us —
+      // otherwise a load that loses the race leaves `loading` stuck true.
+      if (!silent) setLoading(false);
     }
   }, []);
 
@@ -339,11 +346,11 @@ export default function Queries() {
       return load(undefined, { silent: true });
     }
 
-    const seq = ++loadSeq.current;
+    const seq = ++refreshSeq.current;
     const limit = f.limit ?? 100;
     try {
       const delta = await api.queries({ after_id: newestId, limit });
-      if (seq !== loadSeq.current) return;
+      if (seq !== refreshSeq.current) return;
       if (!Array.isArray(delta) || delta.length === 0) return;
       if (delta.length >= limit) {
         // More new entries than one page — the delta window overflowed.
@@ -356,7 +363,7 @@ export default function Queries() {
       setErr("");
       setRows((prev) => [...fresh, ...prev].slice(0, limit));
     } catch (e) {
-      if (seq !== loadSeq.current) return;
+      if (seq !== refreshSeq.current) return;
       setErr((e as Error).message);
     }
   }, [load]);
