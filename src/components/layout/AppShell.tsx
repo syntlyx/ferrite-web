@@ -12,6 +12,7 @@ import {
   Globe,
   Server,
   Waypoints,
+  ScrollText,
   Settings,
   LogOut,
   Menu,
@@ -57,6 +58,7 @@ const NAV = [
   { to: "/lists", icon: Globe, key: "nav.subscriptions" },
   { to: "/dns", icon: Server, key: "nav.custom_dns" },
   { to: "/tunnels", icon: Waypoints, key: "nav.tunnels" },
+  { to: "/logs", icon: ScrollText, key: "nav.logs" },
   { to: "/settings", icon: Settings, key: "nav.settings" },
 ];
 

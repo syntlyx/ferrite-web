@@ -18,6 +18,7 @@ import * as lists from "./lists";
 import * as dns from "./dns";
 import * as settings from "./settings";
 import * as proxy from "./proxy";
+import * as logs from "./logs";
 import * as updates from "./updates";
 
 import type {
@@ -89,6 +90,9 @@ export const api = {
   // ── Proxy / Tunnels ───────────────────────────────────────────────────────────
   getProxy: proxy.get,
   putProxy: (body: ProxyConfig) => proxy.put(body),
+
+  // ── Server logs ───────────────────────────────────────────────────────────────
+  getLogs: (params: { after_id?: number; level?: string; limit?: number }) => logs.get(params),
 
   // ── Updates ─────────────────────────────────────────────────────────────────
   checkUpdate: updates.check,

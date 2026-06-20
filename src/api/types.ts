@@ -490,7 +490,7 @@ export interface UpdateApplyResponse {
 
 // ── Proxy / selective routing ───────────────────────────────────────────────
 
-export type EgressKind = "direct" | "socks5";
+export type EgressKind = "direct" | "socks5" | "wireguard";
 
 export interface ProxyEgress {
   id: string;
@@ -504,6 +504,8 @@ export interface ProxyEgress {
   username?: string | null;
   /** Redacted (null) on GET; leave blank on save to keep the stored one. */
   password?: string | null;
+  /** wireguard: raw `.conf` text (`[Interface]`/`[Peer]`). */
+  config?: string | null;
 }
 
 export interface ProxyRule {
@@ -534,4 +536,18 @@ export interface PutProxyResponse {
   restart_required: boolean;
   persisted: boolean;
   saved_to?: string | null;
+}
+
+// ── Server logs ─────────────────────────────────────────────────────────────
+
+export interface LogEntry {
+  id: number;
+  timestamp: string;
+  level: string;
+  target: string;
+  message: string;
+}
+
+export interface LogsResponse {
+  logs: LogEntry[];
 }

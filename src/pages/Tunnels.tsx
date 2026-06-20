@@ -12,7 +12,7 @@ import { Input, Select, Switch, Btn, IconBtn, SectionLabel } from "@/components/
 import { useToast } from "@/hooks/use-toast";
 import type { EgressKind, ProxyConfig, ProxyEgress, ProxyRule } from "@/api/types";
 
-const KINDS: EgressKind[] = ["direct", "socks5"];
+const KINDS: EgressKind[] = ["direct", "socks5", "wireguard"];
 
 const EMPTY: ProxyConfig = {
   enabled: false,
@@ -296,6 +296,25 @@ export default function Tunnels() {
                             onChange={(ev) => updateEgress(i, { password: ev.target.value })}
                             placeholder={t("tunnels.keep_blank", { defaultValue: "leave blank to keep" })}
                             className="w-full"
+                          />
+                        </Field>
+                      </div>
+                    )}
+
+                    {e.kind === "wireguard" && (
+                      <div className="md:col-span-5">
+                        <Field
+                          label={t("tunnels.wg_config", { defaultValue: "WireGuard config (.conf)" })}
+                        >
+                          <textarea
+                            value={e.config ?? ""}
+                            onChange={(ev) => updateEgress(i, { config: ev.target.value })}
+                            rows={9}
+                            spellCheck={false}
+                            placeholder={
+                              "[Interface]\nPrivateKey = …\nAddress = 10.0.0.2/32\nDNS = 10.0.0.1\n\n[Peer]\nPublicKey = …\nEndpoint = vpn.example.com:51820\nAllowedIPs = 0.0.0.0/0"
+                            }
+                            className="border-bdr bg-panel/50 text-body rounded-xs w-full border p-2 font-mono text-xs"
                           />
                         </Field>
                       </div>
