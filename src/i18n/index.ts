@@ -5,10 +5,9 @@ import uk from "./uk.json";
 import es from "./es.json";
 import de from "./de.json";
 import fr from "./fr.json";
-import pl from "./pl.json";
 
 const saved = localStorage.getItem("lang");
-const supported = ["en", "uk", "es", "de", "fr", "pl"] as const;
+const supported = ["en", "uk", "es", "de", "fr"] as const;
 const detected = navigator.language.split("-")[0];
 type SupportedLang = (typeof supported)[number];
 const savedLang =
@@ -27,7 +26,6 @@ i18n.use(initReactI18next).init({
     es: { translation: es },
     de: { translation: de },
     fr: { translation: fr },
-    pl: { translation: pl },
   },
   interpolation: { escapeValue: false },
 });

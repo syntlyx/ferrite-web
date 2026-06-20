@@ -14,10 +14,15 @@ files served by the Ferrite server.
 - Blacklist and whitelist management.
 - Subscription list management with per-list refresh and refresh-all actions.
 - Custom DNS records for `A`, `AAAA`, and `CNAME`.
+- Selective routing (Tunnels): manage egresses (Direct, SOCKS5, WireGuard,
+  DPI-evasion) and domain rules, with live egress health and a buffer-size speed
+  calculator.
+- Live server logs viewer (in-memory, delta-polled, level filter).
 - Runtime settings for auth, DNS TTLs, log ignore patterns, log retention, API
   bind address, cache sizing, and the served `web_dir`.
 - Server and web update checks/actions.
-- Password/session-token login flow, light/dark theme, and English/Ukrainian UI.
+- Password/session-token login flow, light/dark theme, and a localized UI
+  (English, Ukrainian, Spanish, German, French, Polish).
 
 ## Stack
 

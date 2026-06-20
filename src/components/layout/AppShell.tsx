@@ -13,6 +13,7 @@ import {
   Server,
   Waypoints,
   ScrollText,
+  Wrench,
   Settings,
   LogOut,
   Menu,
@@ -36,7 +37,6 @@ const LANGS = [
   { code: "es", label: "ES" },
   { code: "de", label: "DE" },
   { code: "fr", label: "FR" },
-  { code: "pl", label: "PL" },
 ] as const;
 
 type LangCode = (typeof LANGS)[number]["code"];
@@ -59,6 +59,7 @@ const NAV = [
   { to: "/dns", icon: Server, key: "nav.custom_dns" },
   { to: "/tunnels", icon: Waypoints, key: "nav.tunnels" },
   { to: "/logs", icon: ScrollText, key: "nav.logs" },
+  { to: "/tools", icon: Wrench, key: "nav.tools" },
   { to: "/settings", icon: Settings, key: "nav.settings" },
 ];
 

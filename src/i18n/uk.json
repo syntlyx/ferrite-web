@@ -8,7 +8,8 @@
     "custom_dns": "DNS записи",
     "settings": "Налаштування",
     "tunnels": "Тунелі",
-    "logs": "Логи"
+    "logs": "Логи",
+    "tools": "Інструменти"
   },
   "sidebar": {
     "collapse": "Згорнути",
@@ -26,8 +27,7 @@
     "uk": "Українська",
     "es": "Español",
     "de": "Deutsch",
-    "fr": "Français",
-    "pl": "Polski"
+    "fr": "Français"
   },
   "common": {
     "refresh": "Оновити",
@@ -166,6 +166,9 @@
     "add_to_whitelist": "Додати в білий список",
     "add_to_blacklist": "Додати в чорний список",
     "in_blacklist": "У чорному списку",
+    "why_whitelisted": "У whitelist через",
+    "matched_on": "збіг по",
+    "matched_sources": "Збіг у",
     "added_toast": "«{{domain}}» додано до: {{list}}"
   },
   "lists": {
@@ -250,6 +253,8 @@
     "web_dir_sub": "Шлях до веб-файлів; залиште порожнім для типового",
     "blocking_enabled": "Фільтрація блоклістом",
     "blocking_enabled_sub": "Головний перемикач DNS-блокування; DNS і журнал продовжують працювати",
+    "debug_logging": "Debug-логування",
+    "debug_logging_sub": "Детальні логи для діагностики. Увімкнено за замовчуванням; вимкни, якщо забагато. Застосовується одразу.",
     "log_ignore": "Шаблони ігнорування в журналі",
     "log_ignore_sub": "Домени, що відповідають шаблонам, обробляються, але не записуються в журнал",
     "no_patterns": "Шаблонів немає — всі запити записуються",
@@ -275,6 +280,9 @@
     "upstream_tls_name": "TLS name",
     "upstream_url": "URL",
     "upstream_bootstrap": "Bootstrap IP",
+    "upstream_egress": "Через тунель",
+    "upstream_egress_direct": "Напряму (без тунелю)",
+    "upstream_egress_help": "Слати запити цього резолвера через тунель. Якщо тунель недоступний — напряму.",
     "upstream_plain": "Plain",
     "upstream_tls": "TLS",
     "upstream_https": "HTTPS",
@@ -359,20 +367,29 @@
     "invalid_client_key": "Клієнт має бути коректною IP-адресою або MAC-адресою.",
     "web_update_incompatible": "Це оновлення веб-інтерфейсу потребує іншої версії сервера."
   },
+  "tools": {
+    "title": "Інструменти",
+    "subtitle": "DNS-запити та WHOIS — із сервера через його ж резолвери.",
+    "dns_lookup": "DNS-запит",
+    "whois": "WHOIS",
+    "lookup": "Запит",
+    "via": "через",
+    "server": "сервер",
+    "no_answers": "Немає записів.",
+    "col_name": "Імʼя",
+    "col_type": "Тип",
+    "col_data": "Дані"
+  },
   "tunnels": {
     "title": "Тунелі",
     "subtitle": "Спрямовуйте обрані домени через тунель або проксі. Домени, що збігаються, резолвляться у ferrite, який пересилає їх через вибраний вихід.",
     "saved": "Збережено",
-    "saved_restart": "Збережено. Перезапустіть ferrite, щоб зміни набули чинності.",
-    "restart_pending": "Налаштування слухача (увімкнення / порти / макс. з'єднань) відрізняються від запущеного сервера — перезапустіть, щоб застосувати.",
     "general": "Загальне",
     "enabled": "Увімкнути вибірковий роутинг",
     "advertise_ipv4": "Анонсувати IPv4",
     "advertise_ipv6": "Анонсувати IPv6",
     "auto": "автовизначення",
     "optional": "необов'язково",
-    "http_port": "HTTP-порт",
-    "https_port": "HTTPS-порт",
     "max_connections": "Макс. з'єднань",
     "egresses": "Виходи",
     "add_egress": "Додати вихід",
@@ -390,13 +407,23 @@
     "wg_config": "Конфіг WireGuard (.conf)",
     "rules": "Правила",
     "add_rule": "Додати правило",
-    "no_rules": "Немає правил. Правило зіставляє домен (або *.domain) з виходом.",
+    "no_rules": "Немає правил. Звичайний домен (example.com) маршрутизує його та всі піддомени; *.example.com — лише піддомени.",
     "rule_pattern": "Шаблон домену",
     "rule_egress": "Вихід",
     "fail_closed": "Fail-closed",
+    "rule_all_devices": "Усі пристрої",
+    "rule_n_devices": "Пристроїв: {{count}}",
+    "no_known_devices": "Пристроїв ще не видно — з'являться після перших запитів.",
     "save": "Зберегти зміни",
     "up": "активний",
-    "down": "недоступний"
+    "down": "недоступний",
+    "seg_position": "Позиція розрізу",
+    "evasion_help": "Розбиває TLS ClientHello на кілька TCP-сегментів, щоб DPI за SNI не зчитав ім'я хоста. Залиште порожнім для автоматичного розрізу всередині SNI.",
+    "wg_hidden_hint": "PrivateKey показано замаскованим (********). Лишіть як є, щоб зберегти ключ, або вставте новий .conf, щоб замінити.",
+    "buffer": "Буфер (КБ)",
+    "buffer_hint": "Макс/з'єдн ≈ {{a}} Мбіт @20мс · {{b}} @50мс · {{c}} @100мс RTT · ~{{ram}} МБ RAM/з'єдн",
+    "buffer_over": "{{buf}} КБ × паралельні завантаження можуть перевищити спільний kernel UDP-буфер egress'а (~{{max}} КБ) — медіа може падати посеред завантаження. Підніми: sudo sysctl -w net.core.rmem_max={{rec}} (або менший буфер).",
+    "kernel_buffer": "Kernel UDP-буфер ≈ {{max}} КБ (підніми net.core.rmem_max для більшого)"
   },
   "logs": {
     "title": "Логи",

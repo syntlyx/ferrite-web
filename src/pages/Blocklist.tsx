@@ -278,48 +278,84 @@ export default function Blocklist() {
         </form>
 
         {checkResult && (
-          <div className="animate-fade-up border-bdr/60 mt-3 flex flex-col gap-3 border-t pt-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex min-w-0 flex-wrap items-center gap-2.5">
-              <span
-                className={cn(
-                  "rounded-xs flex items-center gap-1.5 border px-2.5 py-1 font-mono text-[11px] font-semibold uppercase tracking-[0.08em]",
-                  checkResult.blocked
-                    ? "border-blocked/25 bg-blocked/10 text-blocked"
-                    : "border-cached/25 bg-cached/10 text-cached",
+          <div className="animate-fade-up border-bdr/60 mt-3 space-y-3 border-t pt-3">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex min-w-0 flex-wrap items-center gap-2.5">
+                <span
+                  className={cn(
+                    "rounded-xs flex items-center gap-1.5 border px-2.5 py-1 font-mono text-[11px] font-semibold uppercase tracking-[0.08em]",
+                    checkResult.blocked
+                      ? "border-blocked/25 bg-blocked/10 text-blocked"
+                      : "border-cached/25 bg-cached/10 text-cached",
+                  )}
+                >
+                  {checkResult.blocked ? <Ban size={12} /> : <CheckCircle2 size={12} />}
+                  {checkResult.blocked
+                    ? t("blocklist.status_blocked")
+                    : t("blocklist.status_allowed")}
+                </span>
+                <span className="text-heading min-w-0 truncate font-mono text-sm">
+                  {checkResult.domain}
+                </span>
+                {checkResult.whitelisted && (
+                  <span className="border-upstream/25 bg-upstream/10 text-upstream rounded-xs border px-2 py-0.5 text-[10px] font-medium">
+                    {t("blocklist.whitelisted")}
+                  </span>
                 )}
-              >
-                {checkResult.blocked ? <Ban size={12} /> : <CheckCircle2 size={12} />}
-                {checkResult.blocked
-                  ? t("blocklist.status_blocked")
-                  : t("blocklist.status_allowed")}
-              </span>
-              <span className="text-heading min-w-0 truncate font-mono text-sm">
-                {checkResult.domain}
-              </span>
-              {checkResult.whitelisted && (
-                <span className="border-upstream/25 bg-upstream/10 text-upstream rounded-xs border px-2 py-0.5 text-[10px] font-medium">
-                  {t("blocklist.whitelisted")}
-                </span>
-              )}
-              {inBlack && (
-                <span className="border-blocked/25 bg-blocked/10 text-blocked rounded-xs border px-2 py-0.5 text-[10px] font-medium">
-                  {t("blocklist.in_blacklist")}
-                </span>
-              )}
+                {inBlack && (
+                  <span className="border-blocked/25 bg-blocked/10 text-blocked rounded-xs border px-2 py-0.5 text-[10px] font-medium">
+                    {t("blocklist.in_blacklist")}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex shrink-0 gap-2">
+                {checkResult.blocked && !inWhite && (
+                  <Btn variant="ghost" disabled={quickActing} onClick={() => quickAdd("white")}>
+                    <ShieldPlus size={12} /> {t("blocklist.add_to_whitelist")}
+                  </Btn>
+                )}
+                {!checkResult.blocked && !inBlack && (
+                  <Btn variant="ghost" disabled={quickActing} onClick={() => quickAdd("black")}>
+                    <ShieldMinus size={12} /> {t("blocklist.add_to_blacklist")}
+                  </Btn>
+                )}
+              </div>
             </div>
 
-            <div className="flex shrink-0 gap-2">
-              {checkResult.blocked && !inWhite && (
-                <Btn variant="ghost" disabled={quickActing} onClick={() => quickAdd("white")}>
-                  <ShieldPlus size={12} /> {t("blocklist.add_to_whitelist")}
-                </Btn>
-              )}
-              {!checkResult.blocked && !inBlack && (
-                <Btn variant="ghost" disabled={quickActing} onClick={() => quickAdd("black")}>
-                  <ShieldMinus size={12} /> {t("blocklist.add_to_blacklist")}
-                </Btn>
-              )}
-            </div>
+            {/* Why: the whitelist entry that exempts it, and which sources match. */}
+            {checkResult.whitelist_match && (
+              <p className="text-muted text-xs">
+                {t("blocklist.why_whitelisted", { defaultValue: "Whitelisted by" })}{" "}
+                <span className="text-upstream font-mono">{checkResult.whitelist_match.entry}</span>
+                {checkResult.whitelist_match.matched !== checkResult.domain && (
+                  <span className="text-muted/70">
+                    {" "}
+                    ({t("blocklist.matched_on", { defaultValue: "matched on" })}{" "}
+                    <span className="font-mono">{checkResult.whitelist_match.matched}</span>)
+                  </span>
+                )}
+              </p>
+            )}
+            {(checkResult.sources?.length ?? 0) > 0 && (
+              <div className="space-y-1.5">
+                <p className="text-muted text-[11px] uppercase tracking-[0.1em]">
+                  {t("blocklist.matched_sources", { defaultValue: "Matched by" })}
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {checkResult.sources!.map((s, i) => (
+                    <span
+                      key={`${s.kind}-${s.name}-${i}`}
+                      className="border-bdr/70 rounded-xs flex items-center gap-1.5 border px-2 py-1 text-[11px]"
+                      title={`${t("blocklist.matched_on", { defaultValue: "matched on" })} ${s.matched}`}
+                    >
+                      <span className="text-muted/70 font-mono text-[10px] uppercase">{s.kind}</span>
+                      <span className="font-mono">{s.name}</span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </Card>

@@ -8,7 +8,8 @@
     "custom_dns": "DNS personalizado",
     "settings": "Ajustes",
     "tunnels": "Túneles",
-    "logs": "Registros"
+    "logs": "Registros",
+    "tools": "Herramientas"
   },
   "sidebar": {
     "collapse": "Contraer",
@@ -26,8 +27,7 @@
     "uk": "Українська",
     "es": "Español",
     "de": "Deutsch",
-    "fr": "Français",
-    "pl": "Polski"
+    "fr": "Français"
   },
   "common": {
     "refresh": "Actualizar",
@@ -166,6 +166,9 @@
     "add_to_whitelist": "Añadir a lista blanca",
     "add_to_blacklist": "Añadir a lista negra",
     "in_blacklist": "En lista negra",
+    "why_whitelisted": "Permitido por",
+    "matched_on": "coincide en",
+    "matched_sources": "Bloqueado por",
     "added_toast": "\"{{domain}}\" añadido a {{list}}"
   },
   "lists": {
@@ -250,6 +253,8 @@
     "web_dir_sub": "Ruta de assets web; vacio = por defecto",
     "blocking_enabled": "Filtrado por blocklist",
     "blocking_enabled_sub": "Interruptor principal de bloqueo DNS; DNS y logs siguen funcionando",
+    "debug_logging": "Registro de depuracion",
+    "debug_logging_sub": "Registros detallados para diagnosticar problemas. Activado por defecto; desactivalo si es demasiado. Se aplica de inmediato.",
     "log_ignore": "Patrones ignorados del log",
     "log_ignore_sub": "Dominios que coincidan se resuelven, pero no se guardan en el log",
     "no_patterns": "Sin patrones — se registran todas las consultas",
@@ -275,6 +280,9 @@
     "upstream_tls_name": "Nombre TLS",
     "upstream_url": "URL",
     "upstream_bootstrap": "IP de bootstrap",
+    "upstream_egress": "A través del túnel",
+    "upstream_egress_direct": "Directo (sin túnel)",
+    "upstream_egress_help": "Enviar las consultas de este resolver por el túnel. Recurre a directo si el túnel está caído.",
     "upstream_plain": "Simple",
     "upstream_tls": "TLS",
     "upstream_https": "HTTPS",
@@ -359,20 +367,29 @@
     "invalid_client_key": "El cliente debe ser una direccion IP o MAC valida.",
     "web_update_incompatible": "Esta actualizacion de web UI requiere otra version del servidor."
   },
+  "tools": {
+    "title": "Herramientas",
+    "subtitle": "Consulta DNS y WHOIS, desde el servidor a través de sus resolvers.",
+    "dns_lookup": "Consulta DNS",
+    "whois": "WHOIS",
+    "lookup": "Consultar",
+    "via": "vía",
+    "server": "servidor",
+    "no_answers": "Sin registros.",
+    "col_name": "Nombre",
+    "col_type": "Tipo",
+    "col_data": "Datos"
+  },
   "tunnels": {
     "title": "Túneles",
     "subtitle": "Enruta los dominios elegidos a través de un túnel o proxy. Los dominios coincidentes se resuelven a ferrite, que los reenvía por la salida seleccionada.",
     "saved": "Guardado",
-    "saved_restart": "Guardado. Reinicia ferrite para que el cambio surta efecto.",
-    "restart_pending": "La configuración del listener (activado / puertos / conexiones máx.) difiere del servidor en ejecución: reinicia para aplicar.",
     "general": "General",
     "enabled": "Activar enrutamiento selectivo",
     "advertise_ipv4": "Anunciar IPv4",
     "advertise_ipv6": "Anunciar IPv6",
     "auto": "autodetectar",
     "optional": "opcional",
-    "http_port": "Puerto HTTP",
-    "https_port": "Puerto HTTPS",
     "max_connections": "Conexiones máx.",
     "egresses": "Salidas",
     "add_egress": "Añadir salida",
@@ -390,13 +407,23 @@
     "wg_config": "Configuración de WireGuard (.conf)",
     "rules": "Reglas",
     "add_rule": "Añadir regla",
-    "no_rules": "Sin reglas. Una regla asigna un dominio (o *.dominio) a una salida.",
+    "no_rules": "Sin reglas. Un dominio simple (example.com) enruta el dominio y todos sus subdominios; *.example.com solo los subdominios.",
     "rule_pattern": "Patrón de dominio",
     "rule_egress": "Salida",
     "fail_closed": "Fail-closed",
+    "rule_all_devices": "Todos los dispositivos",
+    "rule_n_devices": "{{count}} dispositivo(s)",
+    "no_known_devices": "Aún no se han visto dispositivos — aparecen tras su primera consulta.",
     "save": "Guardar cambios",
     "up": "activo",
-    "down": "inactivo"
+    "down": "inactivo",
+    "seg_position": "Posición de corte",
+    "evasion_help": "Divide el ClientHello de TLS en varios segmentos TCP para que el DPI basado en SNI no pueda leer el nombre del host. Déjalo en blanco para dividir automáticamente dentro del SNI.",
+    "wg_hidden_hint": "La PrivateKey se muestra enmascarada (********). Déjala tal cual para conservar la clave, o pega un .conf nuevo para reemplazarla.",
+    "buffer": "Búfer (KB)",
+    "buffer_hint": "Máx/conexión ≈ {{a}} Mbit @20ms · {{b}} @50ms · {{c}} @100ms RTT · ~{{ram}} MB RAM/conexión",
+    "buffer_over": "{{buf}} KB en descargas paralelas pueden superar el búfer UDP compartido del kernel (~{{max}} KB) — el contenido puede cortarse a media carga. Súbelo: sudo sysctl -w net.core.rmem_max={{rec}} (o usa un búfer menor).",
+    "kernel_buffer": "Búfer UDP del kernel ≈ {{max}} KB (sube net.core.rmem_max para más)"
   },
   "logs": {
     "title": "Registros",

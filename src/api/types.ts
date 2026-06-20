@@ -238,10 +238,53 @@ export interface DomainWhitelistResult {
   status: "whitelisted" | "removed";
 }
 
+/** A source that matches a domain in the block-check attribution. */
+export interface BlockSource {
+  kind: "blacklist" | "wildcard" | "list" | string;
+  name: string; // list name, "manual blacklist", or the wildcard pattern
+  matched: string; // the key/pattern that matched (domain or a parent of it)
+}
+
+/** The whitelist entry that exempts a domain. */
+export interface WhitelistMatch {
+  entry: string; // the configured whitelist entry (exact key or wildcard)
+  matched: string; // where it matched (the domain or a parent of it)
+}
+
 export interface DomainCheckResult {
   domain: string;
   blocked: boolean;
   whitelisted: boolean;
+  /** Present when whitelisted — which entry exempted it. */
+  whitelist_match?: WhitelistMatch;
+  /** Every source that would block this domain (may be non-empty even when
+   *  `blocked` is false, if a whitelist entry overrides it). */
+  sources?: BlockSource[];
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Diagnostic tools (DNS lookup + WHOIS)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface ResolveAnswer {
+  name: string;
+  type: string;
+  ttl: number;
+  data: string;
+}
+
+export interface ResolveResult {
+  query: string;
+  type: string;
+  rcode: string;
+  upstream: string;
+  answers: ResolveAnswer[];
+}
+
+export interface WhoisResult {
+  query: string;
+  server: string;
+  result: string;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -356,6 +399,10 @@ export interface UpstreamConfig {
   tls_name?: string;
   url?: string;
   bootstrap_ip?: string;
+  /** Route this resolver's DNS through a named egress (tunnel). Only for
+   *  `plain`/`tls`. Empty/absent = direct; falls back to direct if the tunnel
+   *  is down. */
+  egress?: string;
 }
 
 export interface ZoneConfig {
@@ -402,6 +449,7 @@ export interface Settings {
   blocklist?: BlocklistConfig;
   custom_records?: CustomRecord[];
   web_dir?: string;
+  debug_logging?: boolean;
 }
 
 /** Only runtime-patchable fields */
@@ -415,6 +463,7 @@ export interface PatchSettingsBody {
   log_retention_days?: number;
   blocklist_enabled?: boolean;
   blocklist_client_bypass?: string[];
+  debug_logging?: boolean;
   dns_bind_addr?: string;
   dns_cache_size?: number;
   blocklist_decision_cache_size?: number;
@@ -490,7 +539,7 @@ export interface UpdateApplyResponse {
 
 // ── Proxy / selective routing ───────────────────────────────────────────────
 
-export type EgressKind = "direct" | "socks5" | "wireguard";
+export type EgressKind = "direct" | "socks5" | "wireguard" | "evasion";
 
 export interface ProxyEgress {
   id: string;
@@ -506,12 +555,19 @@ export interface ProxyEgress {
   password?: string | null;
   /** wireguard: raw `.conf` text (`[Interface]`/`[Peer]`). */
   config?: string | null;
+  /** evasion: ClientHello split offset (blank = auto-split at the SNI). */
+  seg_position?: number | null;
+  /** wireguard: per-connection socket buffer in KiB (blank = default). */
+  buffer_kb?: number | null;
 }
 
 export interface ProxyRule {
   pattern: string;
   egress: string;
   fail_closed: boolean;
+  /** Restrict the rule to these device tokens (MAC or IP). Empty/absent = all
+   *  clients. Matches the server's per-rule client scoping. */
+  clients?: string[];
 }
 
 export interface ProxyConfig {
@@ -528,12 +584,12 @@ export interface ProxyConfig {
 export interface ProxyStateResponse {
   proxy: ProxyConfig;
   egress_health: Record<string, "up" | "down">;
-  restart_pending: boolean;
+  /** Effective kernel UDP recv-buffer ceiling (KiB); WG buffers above it may stall. */
+  max_buffer_kb?: number | null;
 }
 
 export interface PutProxyResponse {
   status: string;
-  restart_required: boolean;
   persisted: boolean;
   saved_to?: string | null;
 }

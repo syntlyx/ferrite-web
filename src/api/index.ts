@@ -20,6 +20,7 @@ import * as settings from "./settings";
 import * as proxy from "./proxy";
 import * as logs from "./logs";
 import * as updates from "./updates";
+import * as tools from "./tools";
 
 import type {
   QueryFilters,
@@ -98,6 +99,10 @@ export const api = {
   checkUpdate: updates.check,
   updateServer: updates.updateServer,
   updateWeb: updates.updateWeb,
+
+  // ── Diagnostic tools ──────────────────────────────────────────────────────────
+  toolsResolve: (name: string, type: string) => tools.resolve(name, type),
+  toolsWhois: (query: string) => tools.whois(query),
 };
 
 export { getToken };

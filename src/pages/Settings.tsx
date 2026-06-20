@@ -32,7 +32,16 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { Card } from "@/components/layout/Card";
 import { Spinner } from "@/components/feedback/Spinner";
 import { Err } from "@/components/feedback/Err";
-import { Input, Btn, Switch, Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui";
+import {
+  Input,
+  Select,
+  Btn,
+  Switch,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui";
 import { useToast } from "@/hooks/use-toast";
 import type {
   PatchSettingsBody,
@@ -71,6 +80,7 @@ type UpstreamDraft = {
   tls_name: string;
   url: string;
   bootstrap_ip: string;
+  egress: string;
 };
 
 type ZoneDraft = {
@@ -85,6 +95,7 @@ const DEFAULT_UPSTREAM_DRAFT: UpstreamDraft = {
   tls_name: "",
   url: "",
   bootstrap_ip: "",
+  egress: "",
 };
 
 const UPSTREAM_PRESETS: { label: string; draft: UpstreamDraft }[] = [
@@ -97,6 +108,7 @@ const UPSTREAM_PRESETS: { label: string; draft: UpstreamDraft }[] = [
       tls_name: "cloudflare-dns.com",
       url: "",
       bootstrap_ip: "",
+      egress: "",
     },
   },
   {
@@ -108,6 +120,7 @@ const UPSTREAM_PRESETS: { label: string; draft: UpstreamDraft }[] = [
       tls_name: "dns.google",
       url: "",
       bootstrap_ip: "",
+      egress: "",
     },
   },
   {
@@ -119,6 +132,7 @@ const UPSTREAM_PRESETS: { label: string; draft: UpstreamDraft }[] = [
       tls_name: "dns.quad9.net",
       url: "",
       bootstrap_ip: "",
+      egress: "",
     },
   },
   {
@@ -130,6 +144,7 @@ const UPSTREAM_PRESETS: { label: string; draft: UpstreamDraft }[] = [
       tls_name: "",
       url: "https://cloudflare-dns.com/dns-query",
       bootstrap_ip: "1.1.1.1",
+      egress: "",
     },
   },
 ];
@@ -148,6 +163,7 @@ function upstreamToDraft(upstream: UpstreamConfig): UpstreamDraft {
     tls_name: upstream.tls_name ?? "",
     url: upstream.url ?? "",
     bootstrap_ip: upstream.bootstrap_ip ?? "",
+    egress: upstream.egress ?? "",
   };
 }
 
@@ -166,6 +182,11 @@ function draftToUpstream(draft: UpstreamDraft): UpstreamConfig {
     port: Number(draft.port),
   };
   if (type === "tls" || type === "quic") upstream.tls_name = draft.tls_name.trim();
+  // Tunneling is supported for plain DNS-over-TCP and DoT only (both ride a byte
+  // stream); DoH/DoQ can't go through the userspace egress.
+  if ((type === "plain" || type === "tls") && draft.egress.trim()) {
+    upstream.egress = draft.egress.trim();
+  }
   return upstream;
 }
 
@@ -196,6 +217,7 @@ type HotForm = {
   api_key: string;
   password: string;
   blocklist_enabled: boolean;
+  debug_logging: boolean;
 };
 
 type RestartForm = {
@@ -218,6 +240,7 @@ function hotFormFromSettings(s: SettingsType): Omit<HotForm, "api_key" | "passwo
     log_retention_days: String(s.storage?.log_retention_days ?? ""),
     web_dir: String(s.web_dir ?? ""),
     blocklist_enabled: s.blocklist?.enabled ?? true,
+    debug_logging: s.debug_logging ?? true,
   };
 }
 
@@ -261,6 +284,8 @@ function buildHotPatch(
   if (form.password !== "") patch.password = form.password;
   if (form.blocklist_enabled !== (settings.blocklist?.enabled ?? true))
     patch.blocklist_enabled = form.blocklist_enabled;
+  if (form.debug_logging !== (settings.debug_logging ?? true))
+    patch.debug_logging = form.debug_logging;
   const originalIgnore = settings.dns?.log_ignore ?? [];
   if (JSON.stringify(logIgnore) !== JSON.stringify(originalIgnore))
     patch.dns_log_ignore = logIgnore;
@@ -635,6 +660,15 @@ function UpstreamEditor({
   onChange: (next: UpstreamDraft[]) => void;
 }) {
   const { t } = useTranslation();
+  // Egresses (tunnels) available to route a resolver through. Best-effort: an
+  // empty list just means the "Through tunnel" dropdown offers only "Direct".
+  const [egresses, setEgresses] = useState<{ id: string; name: string }[]>([]);
+  useEffect(() => {
+    api
+      .getProxy()
+      .then((d) => setEgresses(d.proxy.egresses.map((e) => ({ id: e.id, name: e.name }))))
+      .catch(() => {});
+  }, []);
 
   function update(index: number, patch: Partial<UpstreamDraft>) {
     onChange(
@@ -742,6 +776,37 @@ function UpstreamEditor({
                 </label>
               )}
             </div>
+          )}
+
+          {/* Through-tunnel routing: plain & DoT only (both ride a byte stream),
+              and only when a tunnel exists (or this upstream already names one). */}
+          {(item.type === "plain" || item.type === "tls") &&
+            (egresses.length > 0 || item.egress) && (
+              <label className="mt-2 block min-w-0 space-y-1">
+                <FieldLabel>
+                  {t("settings.upstream_egress", { defaultValue: "Through tunnel" })}
+                </FieldLabel>
+              <Select
+                value={item.egress}
+                onChange={(e) => update(index, { egress: e.target.value })}
+                className="w-full"
+              >
+                <option value="">
+                  {t("settings.upstream_egress_direct", { defaultValue: "Direct (no tunnel)" })}
+                </option>
+                {egresses.map((eg) => (
+                  <option key={eg.id} value={eg.id}>
+                    {eg.name || eg.id}
+                  </option>
+                ))}
+              </Select>
+              <span className="text-muted block text-[10px] leading-snug">
+                {t("settings.upstream_egress_help", {
+                  defaultValue:
+                    "Send this resolver's queries through the tunnel. Falls back to direct if the tunnel is down.",
+                })}
+              </span>
+            </label>
           )}
         </div>
       ))}
@@ -1044,6 +1109,7 @@ export default function Settings() {
     api_key: "",
     password: "",
     blocklist_enabled: true,
+    debug_logging: true,
   });
   const [logIgnore, setLogIgnore] = useState<string[]>([]);
   const [logIgnoreInput, setLogIgnoreInput] = useState("");
@@ -1286,6 +1352,27 @@ export default function Settings() {
                     checked={form.blocklist_enabled}
                     onCheckedChange={(checked) =>
                       setForm((p) => ({ ...p, blocklist_enabled: checked }))
+                    }
+                  />
+                </SettingRow>
+                <SettingRow
+                  label={t("settings.debug_logging", { defaultValue: "Debug logging" })}
+                  sub={t("settings.debug_logging_sub", {
+                    defaultValue:
+                      "Verbose logs for diagnosing issues. On by default; turn off if too noisy. Applied immediately.",
+                  })}
+                  badge={
+                    <StatusBadge
+                      set={form.debug_logging}
+                      labelSet={t("common.enabled")}
+                      labelUnset={t("common.disabled")}
+                    />
+                  }
+                >
+                  <Switch
+                    checked={form.debug_logging}
+                    onCheckedChange={(checked) =>
+                      setForm((p) => ({ ...p, debug_logging: checked }))
                     }
                   />
                 </SettingRow>

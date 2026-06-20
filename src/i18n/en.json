@@ -8,6 +8,7 @@
     "custom_dns": "Custom DNS",
     "tunnels": "Tunnels",
     "logs": "Logs",
+    "tools": "Tools",
     "settings": "Settings"
   },
   "sidebar": {
@@ -26,8 +27,7 @@
     "uk": "Українська",
     "es": "Español",
     "de": "Deutsch",
-    "fr": "Français",
-    "pl": "Polski"
+    "fr": "Français"
   },
   "common": {
     "refresh": "Refresh",
@@ -166,6 +166,9 @@
     "add_to_whitelist": "Add to whitelist",
     "add_to_blacklist": "Add to blacklist",
     "in_blacklist": "In blacklist",
+    "why_whitelisted": "Whitelisted by",
+    "matched_on": "matched on",
+    "matched_sources": "Matched by",
     "added_toast": "\"{{domain}}\" added to {{list}}"
   },
   "lists": {
@@ -250,6 +253,8 @@
     "web_dir_sub": "Override web assets path; blank = default",
     "blocking_enabled": "Blocklist filtering",
     "blocking_enabled_sub": "Master switch for DNS blocking; allowed DNS and logging keep running",
+    "debug_logging": "Debug logging",
+    "debug_logging_sub": "Verbose logs for diagnosing issues. On by default; turn off if too noisy. Applied immediately.",
     "log_ignore": "Log ignore patterns",
     "log_ignore_sub": "Domains matching these patterns are resolved normally but hidden from the query log",
     "no_patterns": "No patterns — all queries are logged",
@@ -275,6 +280,9 @@
     "upstream_tls_name": "TLS name",
     "upstream_url": "URL",
     "upstream_bootstrap": "Bootstrap IP",
+    "upstream_egress": "Through tunnel",
+    "upstream_egress_direct": "Direct (no tunnel)",
+    "upstream_egress_help": "Send this resolver's queries through the tunnel. Falls back to direct if the tunnel is down.",
     "upstream_plain": "Plain",
     "upstream_tls": "TLS",
     "upstream_https": "HTTPS",
@@ -359,20 +367,29 @@
     "invalid_client_key": "Client must be a valid IP address or MAC address.",
     "web_update_incompatible": "This web UI update requires a different server version."
   },
+  "tools": {
+    "title": "Tools",
+    "subtitle": "DNS lookup and WHOIS, run from the server through its own resolvers.",
+    "dns_lookup": "DNS lookup",
+    "whois": "WHOIS",
+    "lookup": "Look up",
+    "via": "via",
+    "server": "server",
+    "no_answers": "No records.",
+    "col_name": "Name",
+    "col_type": "Type",
+    "col_data": "Data"
+  },
   "tunnels": {
     "title": "Tunnels",
     "subtitle": "Route chosen domains through a tunnel or proxy. Matching domains resolve to ferrite, which forwards them through the selected egress.",
     "saved": "Saved",
-    "saved_restart": "Saved. Restart ferrite for the change to take effect.",
-    "restart_pending": "Listener settings (enabled / ports / max connections) differ from the running server — restart to apply.",
     "general": "General",
     "enabled": "Enable selective routing",
     "advertise_ipv4": "Advertise IPv4",
     "advertise_ipv6": "Advertise IPv6",
     "auto": "auto-detect",
     "optional": "optional",
-    "http_port": "HTTP port",
-    "https_port": "HTTPS port",
     "max_connections": "Max connections",
     "egresses": "Egresses",
     "add_egress": "Add egress",
@@ -390,13 +407,23 @@
     "wg_config": "WireGuard config (.conf)",
     "rules": "Rules",
     "add_rule": "Add rule",
-    "no_rules": "No rules. A rule maps a domain (or *.domain) to an egress.",
+    "no_rules": "No rules. A plain domain (example.com) routes it and all its subdomains; *.example.com routes subdomains only.",
     "rule_pattern": "Domain pattern",
     "rule_egress": "Egress",
     "fail_closed": "Fail-closed",
+    "rule_all_devices": "All devices",
+    "rule_n_devices": "{{count}} device(s)",
+    "no_known_devices": "No devices seen yet — they appear once they query.",
     "save": "Save changes",
     "up": "up",
-    "down": "down"
+    "down": "down",
+    "seg_position": "Split position",
+    "evasion_help": "Splits the TLS ClientHello across TCP segments so SNI-based DPI can't read the host name. Leave blank to split automatically inside the SNI.",
+    "wg_hidden_hint": "The PrivateKey is shown masked (********). Leave it as-is to keep the stored key, or paste a fresh .conf to replace it.",
+    "buffer": "Buffer (KB)",
+    "buffer_hint": "Max/conn ≈ {{a}} Mbit @20ms · {{b}} @50ms · {{c}} @100ms RTT · ~{{ram}} MB RAM/conn",
+    "buffer_over": "{{buf}} KB across parallel downloads can exceed the egress's shared kernel UDP buffer (~{{max}} KB) — media may stall mid-load. Raise it: sudo sysctl -w net.core.rmem_max={{rec}} (or use a smaller buffer).",
+    "kernel_buffer": "Kernel UDP buffer ≈ {{max}} KB (raise net.core.rmem_max for more)"
   },
   "logs": {
     "title": "Logs",

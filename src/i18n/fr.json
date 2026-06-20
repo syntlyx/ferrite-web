@@ -8,7 +8,8 @@
     "custom_dns": "DNS perso",
     "settings": "Parametres",
     "tunnels": "Tunnels",
-    "logs": "Journaux"
+    "logs": "Journaux",
+    "tools": "Outils"
   },
   "sidebar": {
     "collapse": "Reduire",
@@ -26,8 +27,7 @@
     "uk": "Українська",
     "es": "Español",
     "de": "Deutsch",
-    "fr": "Français",
-    "pl": "Polski"
+    "fr": "Français"
   },
   "common": {
     "refresh": "Rafraichir",
@@ -166,6 +166,9 @@
     "add_to_whitelist": "Ajouter à la liste blanche",
     "add_to_blacklist": "Ajouter à la liste noire",
     "in_blacklist": "Dans la liste noire",
+    "why_whitelisted": "Autorisé par",
+    "matched_on": "correspond à",
+    "matched_sources": "Bloqué par",
     "added_toast": "« {{domain}} » ajouté à {{list}}"
   },
   "lists": {
@@ -250,6 +253,8 @@
     "web_dir_sub": "Chemin des assets web; vide = defaut",
     "blocking_enabled": "Filtrage blocklist",
     "blocking_enabled_sub": "Interrupteur principal du blocage DNS; DNS et logs continuent",
+    "debug_logging": "Journaux de debogage",
+    "debug_logging_sub": "Journaux detailles pour diagnostiquer les problemes. Active par defaut; desactivez si trop verbeux. Applique immediatement.",
     "log_ignore": "Motifs ignores du log",
     "log_ignore_sub": "Les domaines correspondants sont resolus mais non journalises",
     "no_patterns": "Aucun motif — toutes les requetes sont journalisees",
@@ -275,6 +280,9 @@
     "upstream_tls_name": "Nom TLS",
     "upstream_url": "URL",
     "upstream_bootstrap": "IP de bootstrap",
+    "upstream_egress": "Via le tunnel",
+    "upstream_egress_direct": "Direct (sans tunnel)",
+    "upstream_egress_help": "Envoyer les requêtes de ce résolveur par le tunnel. Repli en direct si le tunnel est hors service.",
     "upstream_plain": "Simple",
     "upstream_tls": "TLS",
     "upstream_https": "HTTPS",
@@ -359,20 +367,29 @@
     "invalid_client_key": "Le client doit etre une adresse IP ou MAC valide.",
     "web_update_incompatible": "Cette mise a jour de la web UI necessite une autre version du serveur."
   },
+  "tools": {
+    "title": "Outils",
+    "subtitle": "Requête DNS et WHOIS, depuis le serveur via ses propres résolveurs.",
+    "dns_lookup": "Requête DNS",
+    "whois": "WHOIS",
+    "lookup": "Rechercher",
+    "via": "via",
+    "server": "serveur",
+    "no_answers": "Aucun enregistrement.",
+    "col_name": "Nom",
+    "col_type": "Type",
+    "col_data": "Données"
+  },
   "tunnels": {
     "title": "Tunnels",
     "subtitle": "Acheminez les domaines choisis via un tunnel ou un proxy. Les domaines correspondants sont résolus vers ferrite, qui les transmet par la sortie sélectionnée.",
     "saved": "Enregistré",
-    "saved_restart": "Enregistré. Redémarrez ferrite pour appliquer la modification.",
-    "restart_pending": "Les paramètres de l'écouteur (activé / ports / connexions max.) diffèrent du serveur en cours — redémarrez pour appliquer.",
     "general": "Général",
     "enabled": "Activer le routage sélectif",
     "advertise_ipv4": "Annoncer IPv4",
     "advertise_ipv6": "Annoncer IPv6",
     "auto": "détection auto",
     "optional": "facultatif",
-    "http_port": "Port HTTP",
-    "https_port": "Port HTTPS",
     "max_connections": "Connexions max.",
     "egresses": "Sorties",
     "add_egress": "Ajouter une sortie",
@@ -390,13 +407,23 @@
     "wg_config": "Configuration WireGuard (.conf)",
     "rules": "Règles",
     "add_rule": "Ajouter une règle",
-    "no_rules": "Aucune règle. Une règle associe un domaine (ou *.domaine) à une sortie.",
+    "no_rules": "Aucune règle. Un domaine simple (example.com) achemine le domaine et tous ses sous-domaines ; *.example.com seulement les sous-domaines.",
     "rule_pattern": "Modèle de domaine",
     "rule_egress": "Sortie",
     "fail_closed": "Fail-closed",
+    "rule_all_devices": "Tous les appareils",
+    "rule_n_devices": "{{count}} appareil(s)",
+    "no_known_devices": "Aucun appareil détecté pour l'instant — ils apparaissent dès leur première requête.",
     "save": "Enregistrer les modifications",
     "up": "actif",
-    "down": "inactif"
+    "down": "inactif",
+    "seg_position": "Position de coupe",
+    "evasion_help": "Découpe le ClientHello TLS sur plusieurs segments TCP pour qu'un DPI basé sur le SNI ne puisse pas lire le nom d'hôte. Laisser vide pour découper automatiquement à l'intérieur du SNI.",
+    "wg_hidden_hint": "La PrivateKey est affichée masquée (********). Laissez-la telle quelle pour conserver la clé, ou collez un nouveau .conf pour la remplacer.",
+    "buffer": "Tampon (Ko)",
+    "buffer_hint": "Max/conn. ≈ {{a}} Mbit @20ms · {{b}} @50ms · {{c}} @100ms RTT · ~{{ram}} Mo RAM/conn.",
+    "buffer_over": "{{buf}} Ko sur des téléchargements parallèles peuvent dépasser le tampon UDP partagé du noyau (~{{max}} Ko) — les médias peuvent caler en cours. Augmentez : sudo sysctl -w net.core.rmem_max={{rec}} (ou réduisez le tampon).",
+    "kernel_buffer": "Tampon UDP du noyau ≈ {{max}} Ko (augmentez net.core.rmem_max pour plus)"
   },
   "logs": {
     "title": "Journaux",

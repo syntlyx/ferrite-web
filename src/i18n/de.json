@@ -8,7 +8,8 @@
     "custom_dns": "Eigenes DNS",
     "settings": "Einstellungen",
     "tunnels": "Tunnel",
-    "logs": "Protokolle"
+    "logs": "Protokolle",
+    "tools": "Werkzeuge"
   },
   "sidebar": {
     "collapse": "Einklappen",
@@ -26,8 +27,7 @@
     "uk": "Українська",
     "es": "Español",
     "de": "Deutsch",
-    "fr": "Français",
-    "pl": "Polski"
+    "fr": "Français"
   },
   "common": {
     "refresh": "Aktualisieren",
@@ -166,6 +166,9 @@
     "add_to_whitelist": "Zur Whitelist hinzufügen",
     "add_to_blacklist": "Zur Blacklist hinzufügen",
     "in_blacklist": "In Blacklist",
+    "why_whitelisted": "Erlaubt durch",
+    "matched_on": "Treffer bei",
+    "matched_sources": "Geblockt durch",
     "added_toast": "\"{{domain}}\" zu {{list}} hinzugefügt"
   },
   "lists": {
@@ -250,6 +253,8 @@
     "web_dir_sub": "Pfad zu Web-Assets; leer = Standard",
     "blocking_enabled": "Blocklisten-Filterung",
     "blocking_enabled_sub": "Hauptschalter fur DNS-Blocking; DNS und Logs laufen weiter",
+    "debug_logging": "Debug-Logging",
+    "debug_logging_sub": "Ausfuhrliche Logs zur Fehlerdiagnose. Standardmaßig an; bei zu viel ausschalten. Sofort wirksam.",
     "log_ignore": "Log-Ignoriermuster",
     "log_ignore_sub": "Passende Domains werden aufgelost, aber nicht protokolliert",
     "no_patterns": "Keine Muster — alle Abfragen werden protokolliert",
@@ -275,6 +280,9 @@
     "upstream_tls_name": "TLS-Name",
     "upstream_url": "URL",
     "upstream_bootstrap": "Bootstrap-IP",
+    "upstream_egress": "Über Tunnel",
+    "upstream_egress_direct": "Direkt (kein Tunnel)",
+    "upstream_egress_help": "Anfragen dieses Resolvers durch den Tunnel senden. Fällt auf direkt zurück, wenn der Tunnel ausfällt.",
     "upstream_plain": "Einfach",
     "upstream_tls": "TLS",
     "upstream_https": "HTTPS",
@@ -359,20 +367,29 @@
     "invalid_client_key": "Der Client muss eine gultige IP-Adresse oder MAC-Adresse sein.",
     "web_update_incompatible": "Dieses Web-UI-Update benotigt eine andere Serverversion."
   },
+  "tools": {
+    "title": "Werkzeuge",
+    "subtitle": "DNS-Abfrage und WHOIS, vom Server über dessen eigene Resolver.",
+    "dns_lookup": "DNS-Abfrage",
+    "whois": "WHOIS",
+    "lookup": "Abfragen",
+    "via": "über",
+    "server": "Server",
+    "no_answers": "Keine Einträge.",
+    "col_name": "Name",
+    "col_type": "Typ",
+    "col_data": "Daten"
+  },
   "tunnels": {
     "title": "Tunnel",
     "subtitle": "Leite ausgewählte Domains durch einen Tunnel oder Proxy. Passende Domains werden zu ferrite aufgelöst, das sie über den gewählten Ausgang weiterleitet.",
     "saved": "Gespeichert",
-    "saved_restart": "Gespeichert. Starte ferrite neu, damit die Änderung wirksam wird.",
-    "restart_pending": "Listener-Einstellungen (aktiviert / Ports / max. Verbindungen) weichen vom laufenden Server ab — zum Anwenden neu starten.",
     "general": "Allgemein",
     "enabled": "Selektives Routing aktivieren",
     "advertise_ipv4": "IPv4 ankündigen",
     "advertise_ipv6": "IPv6 ankündigen",
     "auto": "automatisch",
     "optional": "optional",
-    "http_port": "HTTP-Port",
-    "https_port": "HTTPS-Port",
     "max_connections": "Max. Verbindungen",
     "egresses": "Ausgänge",
     "add_egress": "Ausgang hinzufügen",
@@ -390,13 +407,23 @@
     "wg_config": "WireGuard-Konfiguration (.conf)",
     "rules": "Regeln",
     "add_rule": "Regel hinzufügen",
-    "no_rules": "Keine Regeln. Eine Regel ordnet eine Domain (oder *.domain) einem Ausgang zu.",
+    "no_rules": "Keine Regeln. Eine einfache Domain (example.com) leitet sie und alle Subdomains; *.example.com nur die Subdomains.",
     "rule_pattern": "Domain-Muster",
     "rule_egress": "Ausgang",
     "fail_closed": "Fail-closed",
+    "rule_all_devices": "Alle Geräte",
+    "rule_n_devices": "{{count}} Gerät(e)",
+    "no_known_devices": "Noch keine Geräte gesehen — sie erscheinen nach der ersten Anfrage.",
     "save": "Änderungen speichern",
     "up": "aktiv",
-    "down": "inaktiv"
+    "down": "inaktiv",
+    "seg_position": "Trennposition",
+    "evasion_help": "Teilt den TLS-ClientHello über mehrere TCP-Segmente, damit SNI-basierte DPI den Hostnamen nicht lesen kann. Leer lassen, um automatisch innerhalb des SNI zu teilen.",
+    "wg_hidden_hint": "Der PrivateKey wird maskiert angezeigt (********). So lassen, um den gespeicherten Schlüssel zu behalten, oder eine neue .conf einfügen.",
+    "buffer": "Puffer (KB)",
+    "buffer_hint": "Max/Verb. ≈ {{a}} Mbit @20ms · {{b}} @50ms · {{c}} @100ms RTT · ~{{ram}} MB RAM/Verb.",
+    "buffer_over": "{{buf}} KB über parallele Downloads können den gemeinsamen Kernel-UDP-Puffer (~{{max}} KB) übersteigen — Medien brechen evtl. mittendrin ab. Erhöhe: sudo sysctl -w net.core.rmem_max={{rec}} (oder kleineren Puffer).",
+    "kernel_buffer": "Kernel-UDP-Puffer ≈ {{max}} KB (net.core.rmem_max erhöhen für mehr)"
   },
   "logs": {
     "title": "Protokolle",
