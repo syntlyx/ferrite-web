@@ -346,7 +346,7 @@ function TopClients({
   navigate,
   topLoading,
 }: {
-  rows: { name: string; total: number; ips: string[] }[];
+  rows: { name: string; total: number; ips: string[]; macs: string[] }[];
   navigate: (to: string) => void;
   topLoading: boolean;
 }) {
@@ -368,9 +368,12 @@ function TopClients({
             <button
               key={c.name}
               onClick={() => {
-                const ips = c.ips.length > 0 ? c.ips : isIpv4(c.name) ? [c.name] : [];
-                if (ips.length > 0) {
-                  navigate(`/queries?client_ip=${encodeURIComponent(ips.join(","))}`);
+                // Prefer the device's MAC (covers all its IPs); else its IPs; else
+                // the name only when it is itself an IP (a hostname can't be filtered).
+                const tokens =
+                  c.macs.length > 0 ? c.macs : c.ips.length > 0 ? c.ips : isIpv4(c.name) ? [c.name] : [];
+                if (tokens.length > 0) {
+                  navigate(`/queries?device=${encodeURIComponent(tokens.join(","))}`);
                 } else {
                   navigate("/clients");
                 }

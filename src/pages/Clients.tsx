@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { FormEvent } from "react";
+import type { SubmitEvent } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { RefreshCw, Plus, Trash2 } from "lucide-react";
@@ -25,6 +25,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useConfirm } from "@/hooks/use-confirm";
 import { fmt, fmtRelTime } from "@/lib/format";
+import { deviceTokens } from "@/api/clients";
 import type { AddAliasBody, ClientAlias, ClientEntry } from "@/api/types";
 
 // ── Aliases panel ─────────────────────────────────────────────────────────────
@@ -105,7 +106,7 @@ function AliasesPanel() {
   const placeholder =
     addrType === "MAC" ? t("clients.mac_placeholder") : t("clients.ip_placeholder");
 
-  async function handleAdd(e: FormEvent) {
+  async function handleAdd(e: SubmitEvent) {
     e.preventDefault();
     const addr = form.address.trim();
     if (!addr || !form.name.trim()) return;
@@ -365,7 +366,7 @@ export default function Clients() {
                       <Td className="text-muted tabular-nums">{i + 1}</Td>
                       <Td>
                         <Link
-                          to={`/queries?client_ip=${encodeURIComponent((c.ips.length > 0 ? c.ips : [c.name]).join(","))}`}
+                          to={`/queries?device=${encodeURIComponent(deviceTokens(c).join(","))}`}
                           className="text-heading hover:text-ember font-medium transition-colors"
                         >
                           {c.name}

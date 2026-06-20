@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { api } from "@/api";
 import { useTheme } from "@/providers/ThemeProvider";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import { Select } from "@/components/ui";
 
 const LANGS = [
@@ -127,9 +128,8 @@ export default function AppShell({ children }: { children: ReactNode }) {
   const { t, i18n } = useTranslation();
   const [reloadKey, setReloadKey] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [collapsed, setCollapsed] = useState(
-    () => localStorage.getItem("sidebar-collapsed") === "true",
-  );
+  const [collapsedRaw, setCollapsedRaw] = useLocalStorage("sidebar-collapsed", "false");
+  const collapsed = collapsedRaw === "true";
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [blockingEnabled, setBlockingEnabled] = useState(true);
   const { theme, toggle: toggleTheme } = useTheme();
@@ -167,10 +167,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
   }, []);
 
   function toggleCollapsed() {
-    setCollapsed((v) => {
-      localStorage.setItem("sidebar-collapsed", String(!v));
-      return !v;
-    });
+    setCollapsedRaw(String(!collapsed));
   }
 
   function switchLang(code: LangCode) {
@@ -221,7 +218,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
       <>
         {!compact && (
           <div className="control-surface-muted plate-ticks border-bdr/70 rounded-xs mb-2 border p-3">
-            <div className="text-heading mb-1.5 flex items-center gap-2 font-mono text-[11px] font-medium uppercase tracking-[0.1em]">
+            <div className="text-heading mb-1.5 flex items-center gap-2 font-mono text-[11px] font-medium uppercase tracking-widest">
               <span className="relative flex h-2 w-2">
                 {blockingEnabled && (
                   <span className="bg-ember absolute inline-flex h-full w-full animate-ping opacity-50" />

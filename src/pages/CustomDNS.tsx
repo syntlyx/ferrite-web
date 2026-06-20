@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { ChangeEvent, FormEvent } from "react";
+import type { ChangeEvent, SubmitEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { Plus, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -60,7 +60,7 @@ export default function CustomDNS() {
       .finally(() => setLoading(false));
   }, []);
 
-  async function handleAdd(e: FormEvent) {
+  async function handleAdd(e: SubmitEvent) {
     e.preventDefault();
     if (!form.domain.trim() || !form.value.trim()) return;
     setAdding(true);

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import type { FormEvent } from "react";
+import type { SubmitEvent } from "react";
 import { useTranslation } from "react-i18next";
-import { Plus, Trash2, RefreshCw, ExternalLink, Check } from "lucide-react";
+import { Plus, Trash2, RefreshCw, ExternalLink, Check, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { fmt } from "@/lib/format";
 import { api } from "@/api";
@@ -25,7 +25,19 @@ import { useToast } from "@/hooks/use-toast";
 import { useConfirm } from "@/hooks/use-confirm";
 import type { SubscriptionList } from "@/api/types";
 import { LIST_CATALOG } from "@/data/list-catalog";
-import type { CatalogList } from "@/data/list-catalog";
+import type { CatalogCategory, CatalogList } from "@/data/list-catalog";
+
+/** Badge colour per catalog category. Typed as a full Record so adding a new
+ *  category to the catalog forces an update here (compile error otherwise). */
+const CATEGORY_BADGE: Record<CatalogCategory, string> = {
+  general: "bg-upstream/10 text-upstream",
+  ads: "bg-ember/10 text-ember",
+  tracking: "bg-warn/10 text-warn",
+  malware: "bg-blocked/10 text-blocked",
+  phishing: "bg-blocked/10 text-blocked",
+  adult: "bg-white/5 text-muted",
+  gambling: "bg-white/5 text-muted",
+};
 
 export default function Lists() {
   const { t } = useTranslation();
@@ -60,7 +72,7 @@ export default function Lists() {
       .finally(() => setLoading(false));
   }, []);
 
-  async function handleAdd(e: FormEvent) {
+  async function handleAdd(e: SubmitEvent) {
     e.preventDefault();
     if (!form.url.trim() || !form.name.trim()) return;
     setAdding(true);
@@ -247,14 +259,18 @@ export default function Lists() {
                 <span className="min-w-0 flex-1">
                   <span className="flex items-center gap-1.5">
                     <span className="text-heading truncate text-xs font-medium">{item.name}</span>
+                    {item.recommended && (
+                      <span
+                        title={t("lists.recommended_badge", { defaultValue: "Recommended" })}
+                        className="shrink-0"
+                      >
+                        <Star size={10} className="fill-ember text-ember" />
+                      </span>
+                    )}
                     <span
                       className={cn(
                         "rounded-xs shrink-0 px-1 py-0.5 text-[9px] uppercase tracking-wide",
-                        item.category === "malware"
-                          ? "bg-blocked/10 text-blocked"
-                          : item.category === "tracking"
-                            ? "bg-ember/10 text-ember"
-                            : "bg-white/5 text-muted",
+                        CATEGORY_BADGE[item.category],
                       )}
                     >
                       {item.category}

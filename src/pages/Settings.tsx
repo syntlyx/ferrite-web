@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import type { ChangeEvent, ComponentType, FormEvent, InputHTMLAttributes, ReactNode } from "react";
+import type { ChangeEvent, ComponentType, SubmitEvent, InputHTMLAttributes, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Save,
@@ -1141,7 +1141,7 @@ export default function Settings() {
   const restartNeeded = Object.keys(restartPatch).length > 0;
   const dirty = Object.keys(hotPatch).length > 0 || restartNeeded;
 
-  async function handleSave(e: FormEvent) {
+  async function handleSave(e: SubmitEvent) {
     e.preventDefault();
     const patch: PatchSettingsBody = { ...hotPatch, ...restartPatch };
     if (Object.keys(patch).length === 0) {

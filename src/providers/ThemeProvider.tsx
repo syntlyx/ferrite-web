@@ -1,5 +1,6 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, use } from "react";
 import type { ReactNode } from "react";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 
 type Theme = "dark" | "light";
 
@@ -10,22 +11,25 @@ interface ThemeCtxValue {
 
 const ThemeCtx = createContext<ThemeCtxValue>({ theme: "dark", toggle: () => {} });
 
-function readTheme(): Theme {
-  return localStorage.getItem("theme") === "light" ? "light" : "dark";
+function applyTheme(theme: Theme) {
+  if (theme === "light") document.documentElement.dataset.theme = "light";
+  else delete document.documentElement.dataset.theme;
 }
+
+// Apply once at module load so the first paint matches the stored theme.
+applyTheme(localStorage.getItem("theme") === "light" ? "light" : "dark");
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>(readTheme);
+  const [stored, setStored] = useLocalStorage("theme", "dark");
+  const theme: Theme = stored === "light" ? "light" : "dark";
 
-  useEffect(() => {
-    if (theme === "light") document.documentElement.dataset.theme = "light";
-    else delete document.documentElement.dataset.theme;
-    localStorage.setItem("theme", theme);
-  }, [theme]);
+  const toggle = () => {
+    const next: Theme = theme === "dark" ? "light" : "dark";
+    applyTheme(next);
+    setStored(next);
+  };
 
-  const toggle = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
-
-  return <ThemeCtx.Provider value={{ theme, toggle }}>{children}</ThemeCtx.Provider>;
+  return <ThemeCtx value={{ theme, toggle }}>{children}</ThemeCtx>;
 }
 
-export const useTheme = () => useContext(ThemeCtx);
+export const useTheme = () => use(ThemeCtx);

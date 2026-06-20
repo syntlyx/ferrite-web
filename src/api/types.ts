@@ -147,7 +147,8 @@ export interface QueryEntry {
   timestamp: string; // ISO 8601, e.g. "2025-04-22T14:03:12Z"
   domain: string;
   query_type: QueryTypeNum;
-  client_ip: string;
+  client_ip: string; // source IP at query time
+  device: string; // stable device identity: MAC when known, else the IP (fallback)
   client_name?: string; // resolved PTR or alias; absent if unknown
   status: QueryStatus;
   latency_ms: number;
@@ -160,6 +161,9 @@ export interface QueryFilters {
   to_ts?: number;
   domain?: string;
   client_ip?: string;
+  /** Device identity token(s) (MAC or IP fallback), comma-separated. Returns all
+   *  of a device's queries across every IP it used. OR-combined with client_ip. */
+  device?: string;
   status?: QueryStatus | "";
   limit?: number;
   before_id?: number;

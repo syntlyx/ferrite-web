@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import type { FormEvent } from "react";
+import { useActionState, useEffect, useMemo, useState } from "react";
+import type { SubmitEvent } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Ban,
@@ -32,37 +32,28 @@ function AddDomainForm({
 }) {
   const { t } = useTranslation();
   const [value, setValue] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [err, setErr] = useState("");
 
-  async function handle(e: FormEvent) {
-    e.preventDefault();
+  const [err, submit, pending] = useActionState<string, FormData>(async () => {
     const domain = value.trim().toLowerCase();
-    if (!domain) return;
-    setLoading(true);
-    setErr("");
+    if (!domain) return "";
     try {
       await onAdd(domain);
       setValue("");
+      return "";
     } catch (e) {
-      setErr((e as Error).message);
-    } finally {
-      setLoading(false);
+      return (e as Error).message;
     }
-  }
+  }, "");
 
   return (
-    <form onSubmit={handle} className="grid grid-cols-[minmax(0,1fr)_auto] gap-2">
+    <form action={submit} className="grid grid-cols-[minmax(0,1fr)_auto] gap-2">
       <Input
         value={value}
-        onChange={(e) => {
-          setValue(e.target.value);
-          setErr("");
-        }}
+        onChange={(e) => setValue(e.target.value)}
         placeholder={placeholder}
         className="min-w-0 font-mono"
       />
-      <Btn type="submit" disabled={loading || !value.trim()}>
+      <Btn type="submit" disabled={pending || !value.trim()}>
         <Plus size={12} /> {t("blocklist.add")}
       </Btn>
       {err && <p className="text-blocked col-span-full text-xs">{err}</p>}
@@ -193,7 +184,7 @@ export default function Blocklist() {
     }
   }
 
-  async function handleCheck(e: FormEvent) {
+  async function handleCheck(e: SubmitEvent) {
     e.preventDefault();
     const d = checkDomain.trim().toLowerCase();
     if (!d) return;

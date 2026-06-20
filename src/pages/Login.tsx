@@ -1,5 +1,4 @@
-import { useState } from "react";
-import type { FormEvent } from "react";
+import { useActionState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api } from "@/api";
@@ -8,24 +7,17 @@ import { FerriteMark } from "@/components/layout/Brand";
 
 export default function Login() {
   const { t } = useTranslation();
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
+  const [error, submit, pending] = useActionState<string, FormData>(async (_prev, formData) => {
     try {
-      await api.login(password);
+      await api.login(String(formData.get("password") ?? ""));
       navigate("/");
+      return "";
     } catch {
-      setError(t("login.invalid_password"));
-    } finally {
-      setLoading(false);
+      return t("login.invalid_password");
     }
-  }
+  }, "");
 
   return (
     <div className="app-canvas bg-void flex min-h-screen items-center justify-center p-6">
@@ -39,7 +31,7 @@ export default function Login() {
         </div>
 
         <form
-          onSubmit={handleSubmit}
+          action={submit}
           className="control-surface plate-ticks ember-seam border-bdr/85 rounded-xs space-y-4 border p-6"
         >
           <h2 className="text-heading text-center font-mono text-xs font-medium uppercase tracking-[0.14em]">
@@ -49,11 +41,7 @@ export default function Login() {
             <label className="text-muted block text-xs">{t("login.password_label")}</label>
             <Input
               type="password"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                setError("");
-              }}
+              name="password"
               autoFocus
               autoComplete="current-password"
               placeholder="••••••••"
@@ -61,8 +49,8 @@ export default function Login() {
             />
           </div>
           {error && <p className="text-blocked text-xs">{error}</p>}
-          <Btn type="submit" disabled={loading} className="w-full justify-center py-2">
-            {loading ? t("login.submitting") : t("login.submit")}
+          <Btn type="submit" disabled={pending} className="w-full justify-center py-2">
+            {pending ? t("login.submitting") : t("login.submit")}
           </Btn>
         </form>
       </div>

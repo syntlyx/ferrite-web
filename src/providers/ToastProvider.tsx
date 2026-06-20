@@ -32,7 +32,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   );
 
   return (
-    <ToastContext.Provider value={toast}>
+    <ToastContext value={toast}>
       {children}
 
       <div className="z-100 pointer-events-none fixed bottom-4 right-4 flex flex-col gap-2">
@@ -52,6 +52,6 @@ export function ToastProvider({ children }: { children: ReactNode }) {
           </div>
         ))}
       </div>
-    </ToastContext.Provider>
+    </ToastContext>
   );
 }

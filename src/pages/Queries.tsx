@@ -15,6 +15,7 @@ import { useConfirm } from "@/hooks/use-confirm";
 import { usePageVisible } from "@/hooks/use-page-visible";
 import { RCODE_LABEL, RCODE_COLOR, qtypeName } from "@/lib/dns";
 import { fmt } from "@/lib/format";
+import { deviceTokens } from "@/api/clients";
 import type { QueryEntry, QueryFilters, QueryStatus, ClientEntry } from "@/api/types";
 
 // ── DNS helpers ───────────────────────────────────────────────────────────────
@@ -235,11 +236,13 @@ export default function Queries() {
   const { confirm, ConfirmDialog } = useConfirm();
 
   const initialClientIps = searchParams.get("client_ip") ?? "";
+  const initialDevices = searchParams.get("device") ?? "";
 
   const [domainInput, setDomainInput] = useState(searchParams.get("domain") ?? "");
   const [filters, setFilters] = useState<QueryFilters>({
     domain: searchParams.get("domain") ?? "",
     client_ip: initialClientIps,
+    device: initialDevices,
     status: (searchParams.get("status") as QueryStatus) ?? "",
     limit: 100,
   });
@@ -311,19 +314,26 @@ export default function Queries() {
       .clients(200)
       .then((r) => {
         setClientList(r.clients);
-        // Pre-select clients matching URL params
-        if (initialClientIps) {
-          const ipSet = new Set(initialClientIps.split(","));
+        // Pre-select clients matching URL params (by IP, MAC, or name token).
+        if (initialClientIps || initialDevices) {
+          const tokens = new Set(
+            [...initialClientIps.split(","), ...initialDevices.split(",")].filter(Boolean),
+          );
           const matched = new Set(
             r.clients
-              .filter((c) => c.ips.some((ip) => ipSet.has(ip)) || ipSet.has(c.name))
+              .filter(
+                (c) =>
+                  c.ips.some((ip) => tokens.has(ip)) ||
+                  c.macs.some((m) => tokens.has(m)) ||
+                  tokens.has(c.name),
+              )
               .map((c) => c.name),
           );
           if (matched.size > 0) setSelectedClients(matched);
         }
       })
       .catch((e) => console.warn("Failed to load clients:", e));
-  }, [load, initialClientIps]);
+  }, [load, initialClientIps, initialDevices]);
 
   // Debounced domain filter
   const initializedDomain = useRef(false);
@@ -340,7 +350,7 @@ export default function Queries() {
   // so a filtered view falls back to a full silent reload.
   const refresh = useCallback(async () => {
     const f = filtersRef.current;
-    const hasFilters = Boolean(f.domain || f.client_ip || f.status);
+    const hasFilters = Boolean(f.domain || f.client_ip || f.device || f.status);
     const newestId = rowsRef.current[0]?.id;
     if (hasFilters || newestId === undefined) {
       return load(undefined, { silent: true });
@@ -393,11 +403,13 @@ export default function Queries() {
 
   function handleClientChange(names: Set<string>) {
     setSelectedClients(names);
-    const ips = clientList
+    // Filter by device token (MAC when known) so a client's history spans every
+    // IP it used. Clear client_ip so the two identity filters don't both apply.
+    const devices = clientList
       .filter((c) => names.has(c.name))
-      .flatMap((c) => (c.ips.length > 0 ? c.ips : [c.name]))
+      .flatMap(deviceTokens)
       .join(",");
-    resetPagination({ ...filtersRef.current, client_ip: ips });
+    resetPagination({ ...filtersRef.current, device: devices, client_ip: "" });
   }
 
   function paginate(delta: number) {
@@ -447,13 +459,22 @@ export default function Queries() {
     setDomainInput(domain);
   }
 
-  function filterByClient(ip: string) {
-    const client = clientList.find((c) => c.ips.includes(ip) || c.name === ip);
+  function filterByClient(row: QueryEntry) {
+    const client = clientList.find(
+      (c) =>
+        c.ips.includes(row.client_ip) ||
+        c.name === row.client_ip ||
+        c.macs.includes(row.device),
+    );
     if (client) {
       handleClientChange(new Set([client.name]));
     } else {
-      // Unknown client — fall back to raw IP
-      resetPagination({ ...filtersRef.current, client_ip: ip });
+      // Unknown client — fall back to the row's own device token.
+      resetPagination({
+        ...filtersRef.current,
+        device: row.device || row.client_ip,
+        client_ip: "",
+      });
     }
   }
 
@@ -600,7 +621,7 @@ export default function Queries() {
                         <span className="group flex items-center gap-0.5">
                           <button
                             className="text-body hover:text-ember cursor-pointer font-mono transition-colors"
-                            onClick={() => filterByClient(r.client_ip)}
+                            onClick={() => filterByClient(r)}
                             title={`Filter by ${r.client_ip}`}
                           >
                             {r.client_ip}
