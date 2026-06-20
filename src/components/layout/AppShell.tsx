@@ -11,6 +11,7 @@ import {
   Shield,
   Globe,
   Server,
+  Waypoints,
   Settings,
   LogOut,
   Menu,
@@ -55,6 +56,7 @@ const NAV = [
   { to: "/blocklist", icon: Shield, key: "nav.blocklist" },
   { to: "/lists", icon: Globe, key: "nav.subscriptions" },
   { to: "/dns", icon: Server, key: "nav.custom_dns" },
+  { to: "/tunnels", icon: Waypoints, key: "nav.tunnels" },
   { to: "/settings", icon: Settings, key: "nav.settings" },
 ];
 

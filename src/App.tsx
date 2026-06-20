@@ -43,6 +43,7 @@ const Clients = lazy(() => import("@/pages/Clients"));
 const Blocklist = lazy(() => import("@/pages/Blocklist"));
 const Lists = lazy(() => import("@/pages/Lists"));
 const CustomDNS = lazy(() => import("@/pages/CustomDNS"));
+const Tunnels = lazy(() => import("@/pages/Tunnels"));
 const Settings = lazy(() => import("@/pages/Settings"));
 
 function RequireAuth({ children }: { children: ReactNode }) {
@@ -128,6 +129,7 @@ export default function App() {
                             <Route path="/blocklist" element={<Blocklist />} />
                             <Route path="/lists" element={<Lists />} />
                             <Route path="/dns" element={<CustomDNS />} />
+                            <Route path="/tunnels" element={<Tunnels />} />
                             <Route path="/settings" element={<Settings />} />
                           </Routes>
                         </Suspense>

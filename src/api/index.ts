@@ -17,6 +17,7 @@ import * as blocklist from "./blocklist";
 import * as lists from "./lists";
 import * as dns from "./dns";
 import * as settings from "./settings";
+import * as proxy from "./proxy";
 import * as updates from "./updates";
 
 import type {
@@ -26,6 +27,7 @@ import type {
   AddCustomRecordBody,
   PatchSettingsBody,
   AddAliasBody,
+  ProxyConfig,
 } from "./types";
 
 export const api = {
@@ -83,6 +85,10 @@ export const api = {
   // ── Settings ────────────────────────────────────────────────────────────────
   getSettings: settings.get,
   patchSettings: (body: PatchSettingsBody) => settings.patch(body),
+
+  // ── Proxy / Tunnels ───────────────────────────────────────────────────────────
+  getProxy: proxy.get,
+  putProxy: (body: ProxyConfig) => proxy.put(body),
 
   // ── Updates ─────────────────────────────────────────────────────────────────
   checkUpdate: updates.check,

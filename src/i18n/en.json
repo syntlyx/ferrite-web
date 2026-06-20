@@ -6,6 +6,7 @@
     "blocklist": "Blocklist",
     "subscriptions": "Subscriptions",
     "custom_dns": "Custom DNS",
+    "tunnels": "Tunnels",
     "settings": "Settings"
   },
   "sidebar": {

@@ -487,3 +487,51 @@ export interface UpdateApplyResponse {
   status: "updated" | "up_to_date";
   version: string;
 }
+
+// ── Proxy / selective routing ───────────────────────────────────────────────
+
+export type EgressKind = "direct" | "socks5";
+
+export interface ProxyEgress {
+  id: string;
+  name: string;
+  enabled: boolean;
+  kind: EgressKind;
+  /** socks5: proxy host */
+  address?: string | null;
+  /** socks5: proxy port */
+  port?: number | null;
+  username?: string | null;
+  /** Redacted (null) on GET; leave blank on save to keep the stored one. */
+  password?: string | null;
+}
+
+export interface ProxyRule {
+  pattern: string;
+  egress: string;
+  fail_closed: boolean;
+}
+
+export interface ProxyConfig {
+  enabled: boolean;
+  http_port: number;
+  https_port: number;
+  advertise_ipv4?: string | null;
+  advertise_ipv6?: string | null;
+  max_connections: number;
+  egresses: ProxyEgress[];
+  rules: ProxyRule[];
+}
+
+export interface ProxyStateResponse {
+  proxy: ProxyConfig;
+  egress_health: Record<string, "up" | "down">;
+  restart_pending: boolean;
+}
+
+export interface PutProxyResponse {
+  status: string;
+  restart_required: boolean;
+  persisted: boolean;
+  saved_to?: string | null;
+}
