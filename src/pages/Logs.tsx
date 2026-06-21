@@ -5,11 +5,13 @@ import { cn } from "@/lib/utils";
 import { api } from "@/api";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Card } from "@/components/layout/Card";
-import { Select, Btn } from "@/components/ui";
+import { Btn } from "@/components/ui";
 import { usePageVisible } from "@/hooks/use-page-visible";
 import type { LogEntry } from "@/api/types";
 
-const LEVELS = ["", "error", "warn", "info", "debug"] as const;
+// Levels the user can toggle off (exclude). Anything not listed (e.g. TRACE) is
+// always shown — `hidden` is an exclude set, so unlisted levels are never hidden.
+const LEVEL_TOGGLES = ["ERROR", "WARN", "INFO", "DEBUG"] as const;
 const LEVEL_COLOR: Record<string, string> = {
   ERROR: "text-blocked",
   WARN: "text-warn",
@@ -24,37 +26,33 @@ export default function Logs() {
   const { t } = useTranslation();
   const visible = usePageVisible();
   const [logs, setLogs] = useState<LogEntry[]>([]);
-  const [level, setLevel] = useState("");
+  // Excluded levels (uppercase). Empty = show everything; uncheck a chip to hide
+  // that level. Filtering is client-side so any combination works instantly.
+  const [hidden, setHidden] = useState<Set<string>>(() => new Set());
   const [paused, setPaused] = useState(false);
   const lastId = useRef(0);
   const scrollRef = useRef<HTMLDivElement>(null);
   const followRef = useRef(true);
 
-  const load = useCallback(
-    async (reset: boolean) => {
-      try {
-        const res = await api.getLogs({
-          after_id: reset ? 0 : lastId.current,
-          level: level || undefined,
-          limit: 1000,
-        });
-        if (res.logs.length) lastId.current = res.logs[res.logs.length - 1].id;
-        setLogs((prev) => {
-          const next = reset ? res.logs : [...prev, ...res.logs];
-          return next.length > MAX_LINES ? next.slice(next.length - MAX_LINES) : next;
-        });
-      } catch {
-        /* transient — the next tick retries */
-      }
-    },
-    [level],
-  );
+  const load = useCallback(async (reset: boolean) => {
+    try {
+      // Fetch all levels; the level filter is applied client-side (exclude set).
+      const res = await api.getLogs({
+        after_id: reset ? 0 : lastId.current,
+        limit: 1000,
+      });
+      if (res.logs.length) lastId.current = res.logs[res.logs.length - 1].id;
+      setLogs((prev) => {
+        const next = reset ? res.logs : [...prev, ...res.logs];
+        return next.length > MAX_LINES ? next.slice(next.length - MAX_LINES) : next;
+      });
+    } catch {
+      /* transient — the next tick retries */
+    }
+  }, []);
 
-  // Reset and reload whenever the level filter changes.
+  // Initial load.
   useEffect(() => {
-    lastId.current = 0;
-    followRef.current = true;
-    setLogs([]);
     void load(true);
   }, [load]);
 
@@ -77,6 +75,15 @@ export default function Logs() {
     if (el) followRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < 60;
   }
 
+  const shown = logs.filter((e) => !hidden.has(e.level.toUpperCase()));
+  const toggle = (lv: string) =>
+    setHidden((h) => {
+      const next = new Set(h);
+      if (next.has(lv)) next.delete(lv);
+      else next.add(lv);
+      return next;
+    });
+
   return (
     <div className="p-6">
       <PageHeader
@@ -87,16 +94,30 @@ export default function Logs() {
       />
 
       <Card className="mb-3 flex flex-wrap items-center gap-3">
-        <label className="flex items-center gap-2">
-          <span className="text-muted text-xs">{t("logs.level", { defaultValue: "Level" })}</span>
-          <Select value={level} onChange={(e) => setLevel(e.target.value)}>
-            {LEVELS.map((l) => (
-              <option key={l} value={l}>
-                {l === "" ? t("logs.all", { defaultValue: "all" }) : l}
-              </option>
-            ))}
-          </Select>
-        </label>
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="text-muted mr-1 text-xs">
+            {t("logs.levels", { defaultValue: "Levels" })}
+          </span>
+          {LEVEL_TOGGLES.map((lv) => {
+            const off = hidden.has(lv);
+            return (
+              <button
+                key={lv}
+                type="button"
+                onClick={() => toggle(lv)}
+                aria-pressed={!off}
+                className={cn(
+                  "rounded-xs border px-2 py-0.5 font-mono text-[10px] font-semibold uppercase transition-colors",
+                  off
+                    ? "border-bdr/40 text-muted/40 line-through"
+                    : cn("border-bdr/70", LEVEL_COLOR[lv]),
+                )}
+              >
+                {lv}
+              </button>
+            );
+          })}
+        </div>
         <Btn variant="ghost" onClick={() => setPaused((p) => !p)} className="h-7">
           {paused ? <Play size={12} /> : <Pause size={12} />}
           {paused ? t("logs.resume", { defaultValue: "Resume" }) : t("logs.pause", { defaultValue: "Pause" })}
@@ -111,7 +132,7 @@ export default function Logs() {
         >
           <Trash2 size={12} /> {t("logs.clear", { defaultValue: "Clear view" })}
         </Btn>
-        <span className="text-muted ml-auto text-xs tabular-nums">{logs.length}</span>
+        <span className="text-muted ml-auto text-xs tabular-nums">{shown.length}</span>
       </Card>
 
       <Card className="p-0! overflow-hidden">
@@ -120,10 +141,10 @@ export default function Logs() {
           onScroll={onScroll}
           className="h-[70vh] overflow-y-auto p-3 font-mono text-xs leading-relaxed"
         >
-          {logs.length === 0 ? (
+          {shown.length === 0 ? (
             <p className="text-muted">{t("logs.empty", { defaultValue: "No log records yet." })}</p>
           ) : (
-            logs.map((e) => (
+            shown.map((e) => (
               <div key={e.id} className="flex gap-2 break-all whitespace-pre-wrap">
                 <span className="text-muted shrink-0">
                   {new Date(e.timestamp).toLocaleTimeString()}

@@ -12,7 +12,7 @@ const RECORD_TYPES = ["A", "AAAA", "CNAME", "MX", "TXT", "NS", "SOA", "PTR", "SR
 export default function Tools() {
   const { t } = useTranslation();
   return (
-    <div>
+    <div className="p-6">
       <PageHeader
         title={t("tools.title", { defaultValue: "Tools" })}
         subtitle={t("tools.subtitle", {

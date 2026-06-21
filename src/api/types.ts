@@ -390,6 +390,8 @@ export interface DnsConfig {
   min_ttl: number;
   max_ttl: number;
   log_ignore?: string[];
+  strip_ecs?: boolean;
+  dnssec?: boolean;
 }
 
 export interface UpstreamConfig {
@@ -466,6 +468,8 @@ export interface PatchSettingsBody {
   debug_logging?: boolean;
   dns_bind_addr?: string;
   dns_cache_size?: number;
+  dns_strip_ecs?: boolean;
+  dns_dnssec?: boolean;
   blocklist_decision_cache_size?: number;
   api_bind_addr?: string;
   upstream?: UpstreamConfig[];
