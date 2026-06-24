@@ -2,14 +2,36 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import type { MouseEvent as ReactMouseEvent } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Search, RefreshCw, Download, Copy, Check, Trash2, ChevronDown, Users } from "lucide-react";
+import {
+  Search,
+  RefreshCw,
+  Download,
+  Copy,
+  Check,
+  Trash2,
+  ChevronDown,
+  ChevronsLeft,
+  Users,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { api } from "@/api";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { PageContainer } from "@/components/layout/PageContainer";
 import { Card } from "@/components/layout/Card";
+import { FilterBar } from "@/components/layout/FilterBar";
 import { Badge } from "@/components/feedback/Badge";
 import { Err } from "@/components/feedback/Err";
-import { SearchInput, Select, Btn, Th, Td, TableRow, EmptyRow, Skeleton } from "@/components/ui";
+import {
+  SearchInput,
+  Select,
+  Btn,
+  Th,
+  Td,
+  TableRow,
+  EmptyRow,
+  Skeleton,
+  Tooltip,
+} from "@/components/ui";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useConfirm } from "@/hooks/use-confirm";
 import { usePageVisible } from "@/hooks/use-page-visible";
@@ -76,6 +98,7 @@ function exportCSV(rows: QueryEntry[]) {
     "Status",
     "Latency ms",
     "RCode",
+    "Upstream",
   ];
   const escape = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
   const lines = rows.map((r) =>
@@ -88,6 +111,7 @@ function exportCSV(rows: QueryEntry[]) {
       r.status,
       r.latency_ms ?? "",
       r.rcode,
+      r.upstream ?? "",
     ]
       .map(escape)
       .join(","),
@@ -462,9 +486,7 @@ export default function Queries() {
   function filterByClient(row: QueryEntry) {
     const client = clientList.find(
       (c) =>
-        c.ips.includes(row.client_ip) ||
-        c.name === row.client_ip ||
-        c.macs.includes(row.device),
+        c.ips.includes(row.client_ip) || c.name === row.client_ip || c.macs.includes(row.device),
     );
     if (client) {
       handleClientChange(new Set([client.name]));
@@ -483,7 +505,7 @@ export default function Queries() {
   const pageEnd = pageIndex * currentLimit + rows.length;
 
   return (
-    <div className="p-6">
+    <PageContainer>
       {ConfirmDialog}
       <PageHeader
         title={t("queries.title")}
@@ -519,45 +541,58 @@ export default function Queries() {
         }
       />
 
-      <Card className="mb-4 p-3">
-        <div className="grid grid-cols-1 gap-2 lg:grid-cols-[minmax(18rem,1fr)_minmax(10rem,14rem)_minmax(9rem,10rem)_8rem]">
-          <SearchInput
-            icon={Search}
-            placeholder={t("queries.domain_placeholder")}
-            value={domainInput}
-            onChange={(e) => setDomainInput(e.target.value)}
-            className="min-w-0"
-            inputClass="h-9"
-          />
+      <FilterBar>
+        <SearchInput
+          icon={Search}
+          placeholder={t("queries.domain_placeholder")}
+          value={domainInput}
+          onChange={(e) => setDomainInput(e.target.value)}
+          className="w-full min-w-0 lg:flex-1"
+        />
+        <div className="w-full lg:w-56">
           <ClientMultiSelect
             clients={clientList}
             selected={selectedClients}
             onChange={handleClientChange}
           />
-          <Select
-            value={filters.status ?? ""}
-            onChange={(e) => handleSelectFilter("status", e.target.value as QueryStatus | "")}
-            className="w-full"
-          >
-            {STATUSES.map((s) => (
-              <option key={s} value={s}>
-                {s ? t(`queries.status_${s}`) : t("queries.all_statuses")}
-              </option>
-            ))}
-          </Select>
-          <Select
-            value={filters.limit}
-            onChange={(e) => handleSelectFilter("limit", Number(e.target.value))}
-            className="w-full"
-          >
-            {[50, 100, 250, 500].map((n) => (
-              <option key={n} value={n}>
-                {n} {t("common.rows")}
-              </option>
-            ))}
-          </Select>
         </div>
-      </Card>
+        <Select
+          value={filters.status ?? ""}
+          onChange={(e) => handleSelectFilter("status", e.target.value as QueryStatus | "")}
+          className="w-full lg:w-40"
+        >
+          {STATUSES.map((s) => (
+            <option key={s} value={s}>
+              {s ? t(`queries.status_${s}`) : t("queries.all_statuses")}
+            </option>
+          ))}
+        </Select>
+        <Select
+          value={filters.limit}
+          onChange={(e) => handleSelectFilter("limit", Number(e.target.value))}
+          className="w-full lg:w-32"
+        >
+          {[50, 100, 250, 500].map((n) => (
+            <option key={n} value={n}>
+              {n} {t("common.rows")}
+            </option>
+          ))}
+        </Select>
+      </FilterBar>
+
+      {!loading && !err && (rows.length > 0 || pageIndex > 0) && (
+        <div className="mb-3">
+          <Pager
+            pageIndex={pageIndex}
+            pageStart={pageStart}
+            pageEnd={pageEnd}
+            atEnd={rows.length < currentLimit}
+            onFirst={() => resetPagination(filtersRef.current)}
+            onPrev={() => paginate(-1)}
+            onNext={() => paginate(1)}
+          />
+        </div>
+      )}
 
       <Card className="p-0! overflow-hidden">
         {loading && (
@@ -634,7 +669,13 @@ export default function Queries() {
                       </Td>
 
                       <Td>
-                        <Badge status={r.status} />
+                        {r.upstream ? (
+                          <Tooltip content={r.upstream}>
+                            <Badge status={r.status} />
+                          </Tooltip>
+                        ) : (
+                          <Badge status={r.status} />
+                        )}
                       </Td>
                       <Td className="text-muted tabular-nums">
                         {r.latency_ms != null ? `${r.latency_ms}ms` : "—"}
@@ -651,21 +692,64 @@ export default function Queries() {
         )}
       </Card>
 
-      <div className="mt-3 flex items-center justify-end gap-3">
-        <Btn variant="ghost" disabled={pageIndex === 0} onClick={() => paginate(-1)}>
-          {t("common.prev")}
-        </Btn>
-        <span className="text-muted text-xs tabular-nums">
-          {pageStart}–{pageEnd}
-        </span>
-        <Btn
-          variant="ghost"
-          disabled={rows.length < (filters.limit ?? 100)}
-          onClick={() => paginate(1)}
-        >
-          {t("common.next")}
-        </Btn>
-      </div>
+      {!loading && !err && (rows.length > 0 || pageIndex > 0) && (
+        <div className="mt-3">
+          <Pager
+            pageIndex={pageIndex}
+            pageStart={pageStart}
+            pageEnd={pageEnd}
+            atEnd={rows.length < currentLimit}
+            onFirst={() => resetPagination(filtersRef.current)}
+            onPrev={() => paginate(-1)}
+            onNext={() => paginate(1)}
+          />
+        </div>
+      )}
+    </PageContainer>
+  );
+}
+
+/** First / prev / page+range / next pager, rendered identically above and below
+ *  the table. "First" also returns to page 0, which is the live-tailing view. */
+function Pager({
+  pageIndex,
+  pageStart,
+  pageEnd,
+  atEnd,
+  onFirst,
+  onPrev,
+  onNext,
+}: {
+  pageIndex: number;
+  pageStart: number;
+  pageEnd: number;
+  atEnd: boolean;
+  onFirst: () => void;
+  onPrev: () => void;
+  onNext: () => void;
+}) {
+  const { t } = useTranslation();
+  return (
+    <div className="flex items-center justify-end gap-2">
+      <Btn
+        size="sm"
+        variant="ghost"
+        disabled={pageIndex === 0}
+        onClick={onFirst}
+        title={t("queries.first_page", { defaultValue: "First page (live)" })}
+      >
+        <ChevronsLeft size={13} />
+      </Btn>
+      <Btn size="sm" variant="ghost" disabled={pageIndex === 0} onClick={onPrev}>
+        {t("common.prev")}
+      </Btn>
+      <span className="text-muted text-xs tabular-nums">
+        {t("queries.page", { n: pageIndex + 1, defaultValue: "Page {{n}}" })} · {pageStart}–
+        {pageEnd}
+      </span>
+      <Btn size="sm" variant="ghost" disabled={atEnd} onClick={onNext}>
+        {t("common.next")}
+      </Btn>
     </div>
   );
 }

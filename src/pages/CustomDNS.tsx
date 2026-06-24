@@ -5,8 +5,8 @@ import { Plus, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { api } from "@/api";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { PageContainer } from "@/components/layout/PageContainer";
 import { Card } from "@/components/layout/Card";
-import { Spinner } from "@/components/feedback/Spinner";
 import { Err } from "@/components/feedback/Err";
 import {
   Input,
@@ -14,6 +14,7 @@ import {
   Btn,
   IconBtn,
   SectionLabel,
+  Skeleton,
   Th,
   Td,
   TableRow,
@@ -102,7 +103,7 @@ export default function CustomDNS() {
   const normDomain = form.domain.trim().toLowerCase().replace(/\.+$/, "");
 
   return (
-    <div className="p-6">
+    <PageContainer>
       {ConfirmDialog}
       <PageHeader title={t("dns.title")} subtitle={t("dns.subtitle")} />
       {err && <Err msg={err} />}
@@ -151,11 +152,7 @@ export default function CustomDNS() {
               className="w-full text-right font-mono tabular-nums"
             />
           </div>
-          <Btn
-            type="submit"
-            disabled={adding || !form.domain.trim() || !form.value.trim()}
-            className="h-8 justify-center"
-          >
+          <Btn type="submit" disabled={adding || !form.domain.trim() || !form.value.trim()}>
             <Plus size={12} />{" "}
             {records.some((r) => r.domain === normDomain) ? t("dns.update") : t("dns.add")}
           </Btn>
@@ -167,7 +164,18 @@ export default function CustomDNS() {
 
       {/* Table */}
       <Card className="p-0! overflow-x-auto">
-        {loading && <Spinner />}
+        {loading && (
+          <div className="space-y-3 p-4">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="flex items-center gap-4">
+                <Skeleton className="h-4 w-40" />
+                <Skeleton className="h-4 w-10" />
+                <Skeleton className="h-4 flex-1" />
+                <Skeleton className="h-4 w-12" />
+              </div>
+            ))}
+          </div>
+        )}
         {!loading && (
           <table className="w-full text-xs">
             <thead>
@@ -225,6 +233,6 @@ export default function CustomDNS() {
           </table>
         )}
       </Card>
-    </div>
+    </PageContainer>
   );
 }

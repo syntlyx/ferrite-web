@@ -251,6 +251,19 @@ export interface WhitelistMatch {
   matched: string; // where it matched (the domain or a parent of it)
 }
 
+/** Selective-routing decision for a domain in the block-check. */
+export interface DomainRouting {
+  /** Whether selective routing is enabled at all. */
+  enabled: boolean;
+  /** The matched rule, or null when the domain routes direct. */
+  match: {
+    egress: string;
+    /** Rule is scoped to specific clients only. */
+    client_scoped: boolean;
+    healthy: boolean;
+  } | null;
+}
+
 export interface DomainCheckResult {
   domain: string;
   blocked: boolean;
@@ -260,6 +273,8 @@ export interface DomainCheckResult {
   /** Every source that would block this domain (may be non-empty even when
    *  `blocked` is false, if a whitelist entry overrides it). */
   sources?: BlockSource[];
+  /** Selective-routing decision: whether/where this domain's traffic is tunneled. */
+  routing?: DomainRouting;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -285,6 +300,70 @@ export interface WhoisResult {
   query: string;
   server: string;
   result: string;
+}
+
+/** DNSSEC validation check for `name`/`type`, resolved fresh through upstream. */
+export interface DnssecResult {
+  query: string;
+  type: string;
+  rcode: string;
+  /** The DNSSEC AD (Authenticated Data) flag from the upstream response. */
+  authenticated: boolean;
+  /** Number of RRSIG records returned with the answer. */
+  rrsig_count: number;
+  upstream: string;
+  answers: ResolveAnswer[];
+}
+
+/** Egress reachability check: connects out through `egress` (or direct when
+ *  null) and reports the observed exit IP via Cloudflare's trace endpoint. */
+export interface EgressCheckResult {
+  /** The egress id checked, or null for the box's own direct exit. */
+  egress: string | null;
+  /** null when the check could not complete. */
+  healthy: boolean | null;
+  connect_ms: number;
+  exit_ip: string | null;
+  country: string | null;
+  colo: string | null;
+  tls: string | null;
+}
+
+/** One link in a TLS certificate chain. Either a parsed cert or a parse failure. */
+export interface CertEntry {
+  is_leaf: boolean;
+  sha256: string;
+  /** Present on parse failure; the parsed fields below are absent then. */
+  parse_error?: string;
+  subject?: string;
+  issuer?: string;
+  sans?: string[];
+  not_before?: string;
+  not_before_unix?: number;
+  not_after?: string;
+  not_after_unix?: number;
+  serial?: string;
+  sig_alg?: string;
+}
+
+export interface CertResult {
+  host: string;
+  port: number;
+  egress: string | null;
+  connect_ms: number;
+  /** The leaf is `chain[0]` (`is_leaf: true`). */
+  chain: CertEntry[];
+}
+
+/** TCP reachability probe. A refused/timed-out connection returns
+ *  `reachable: false` (HTTP 200), not an error response. */
+export interface TcpProbeResult {
+  host: string;
+  port: number;
+  egress: string | null;
+  reachable: boolean;
+  connect_ms?: number;
+  error?: string;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

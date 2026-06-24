@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { api } from "@/api";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { PageContainer } from "@/components/layout/PageContainer";
 import { Card } from "@/components/layout/Card";
 import { Err } from "@/components/feedback/Err";
 import { Bar, Skeleton, Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui";
@@ -371,7 +372,13 @@ function TopClients({
                 // Prefer the device's MAC (covers all its IPs); else its IPs; else
                 // the name only when it is itself an IP (a hostname can't be filtered).
                 const tokens =
-                  c.macs.length > 0 ? c.macs : c.ips.length > 0 ? c.ips : isIpv4(c.name) ? [c.name] : [];
+                  c.macs.length > 0
+                    ? c.macs
+                    : c.ips.length > 0
+                      ? c.ips
+                      : isIpv4(c.name)
+                        ? [c.name]
+                        : [];
                 if (tokens.length > 0) {
                   navigate(`/queries?device=${encodeURIComponent(tokens.join(","))}`);
                 } else {
@@ -991,7 +998,7 @@ export default function Dashboard() {
   );
 
   return (
-    <div className="max-w-385 mx-auto p-4 sm:p-5 lg:p-6">
+    <PageContainer>
       <PageHeader
         title={t("dashboard.title")}
         subtitle={t("dashboard.subtitle")}
@@ -1211,6 +1218,6 @@ export default function Dashboard() {
           </div>
         </>
       )}
-    </div>
+    </PageContainer>
   );
 }

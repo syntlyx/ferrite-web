@@ -1,18 +1,35 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { SubmitEvent } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { RefreshCw, Plus, Trash2 } from "lucide-react";
+import {
+  RefreshCw,
+  Plus,
+  Trash2,
+  Search,
+  Users,
+  Activity,
+  BarChart3,
+  ShieldOff,
+  ChevronUp,
+  ChevronDown,
+  ChevronsUpDown,
+  Tag,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { api } from "@/api";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { PageContainer } from "@/components/layout/PageContainer";
 import { Card } from "@/components/layout/Card";
+import { FilterBar } from "@/components/layout/FilterBar";
+import { StatusTile } from "@/components/layout/SettingsPanel";
 import { Spinner } from "@/components/feedback/Spinner";
 import { Err } from "@/components/feedback/Err";
 import {
   Btn,
   IconBtn,
   Input,
+  SearchInput,
   Bar,
   SectionLabel,
   Skeleton,
@@ -33,6 +50,10 @@ import type { AddAliasBody, ClientAlias, ClientEntry } from "@/api/types";
 const addrTypeBadgeCls = "rounded px-1.5 py-0.5 text-[10px] font-medium";
 type AliasKeyType = "IP" | "MAC";
 
+/** A request from a client row to prefill the aliases form. `nonce` bumps on each
+ *  click so re-naming the same device re-triggers the prefill effect. */
+type AliasPrefill = { type: AliasKeyType; address: string; nonce: number };
+
 function TypeToggle({
   value,
   onChange,
@@ -41,17 +62,17 @@ function TypeToggle({
   onChange: (type: AliasKeyType) => void;
 }) {
   return (
-    <div className="flex shrink-0">
+    <div className="border-bdr/80 rounded-xs flex w-fit shrink-0 overflow-hidden border">
       {(["IP", "MAC"] as const).map((t) => (
         <button
           key={t}
           type="button"
           onClick={() => onChange(t)}
           className={cn(
-            "border-bdr -mr-px border px-3 py-2 text-xs transition-colors first:rounded-l-lg last:mr-0 last:rounded-r-lg",
+            "border-bdr/60 not-last:border-r px-3.5 py-2 font-mono text-[11px] font-medium uppercase tracking-[0.06em] transition-colors",
             value === t
-              ? "border-ember/40 bg-ember/15 text-ember relative z-10"
-              : "bg-sidebar text-muted hover:text-body",
+              ? "bg-ember-dim text-ember"
+              : "bg-sidebar/90 text-muted hover:bg-white/4 hover:text-heading",
           )}
         >
           {t}
@@ -81,7 +102,15 @@ function clientBlockingKeys(client: ClientEntry): string[] {
   return uniqueKeys([...client.ips, ...client.macs]);
 }
 
-function AliasesPanel() {
+/** Recency dot: live (<5 min, glowing), recent (<24h), or idle. */
+function lastSeenDot(lastSeen: number): string {
+  const age = Date.now() / 1000 - lastSeen;
+  if (age < 300) return "bg-ember shadow-[0_0_6px_var(--color-ember)]";
+  if (age < 86400) return "bg-ember/40";
+  return "bg-muted/30";
+}
+
+function AliasesPanel({ prefill }: { prefill: AliasPrefill | null }) {
   const { t } = useTranslation();
   const toast = useToast();
   const { confirm, ConfirmDialog } = useConfirm();
@@ -102,6 +131,17 @@ function AliasesPanel() {
       .catch((e: Error) => setErr(e.message))
       .finally(() => setLoading(false));
   }, []);
+
+  // A client row asked to name a device: fill in its address + type, then scroll
+  // to and focus the name field so the user only types the label.
+  useEffect(() => {
+    if (!prefill) return;
+    setAddrType(prefill.type);
+    setForm((p) => ({ ...p, address: prefill.address }));
+    const el = document.getElementById("alias-name-input");
+    el?.scrollIntoView({ behavior: "smooth", block: "center" });
+    el?.focus({ preventScroll: true });
+  }, [prefill]);
 
   const placeholder =
     addrType === "MAC" ? t("clients.mac_placeholder") : t("clients.ip_placeholder");
@@ -156,10 +196,8 @@ function AliasesPanel() {
         onSubmit={handleAdd}
         className="mb-4 grid grid-cols-1 gap-2 lg:grid-cols-[auto_minmax(16rem,1fr)_minmax(10rem,14rem)_auto] lg:items-end"
       >
-        <div className="space-y-1">
-          <span className="text-muted block text-[10px] uppercase tracking-wider">
-            {t("clients.col_type")}
-          </span>
+        <div className="flex min-w-0 flex-col gap-1">
+          <span className="text-muted text-xs">{t("clients.col_type")}</span>
           <TypeToggle
             value={addrType}
             onChange={(t) => {
@@ -168,10 +206,8 @@ function AliasesPanel() {
             }}
           />
         </div>
-        <label className="min-w-0 space-y-1">
-          <span className="text-muted block text-[10px] uppercase tracking-wider">
-            {t("clients.col_address")}
-          </span>
+        <label className="flex min-w-0 flex-col gap-1">
+          <span className="text-muted text-xs">{t("clients.col_address")}</span>
           <Input
             value={form.address}
             onChange={(e) => setForm((p) => ({ ...p, address: e.target.value }))}
@@ -179,22 +215,17 @@ function AliasesPanel() {
             className="w-full font-mono"
           />
         </label>
-        <label className="min-w-0 space-y-1">
-          <span className="text-muted block text-[10px] uppercase tracking-wider">
-            {t("clients.col_name")}
-          </span>
+        <label className="flex min-w-0 flex-col gap-1">
+          <span className="text-muted text-xs">{t("clients.col_name")}</span>
           <Input
+            id="alias-name-input"
             value={form.name}
             onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
             placeholder={t("clients.alias_name_placeholder")}
             className="w-full"
           />
         </label>
-        <Btn
-          type="submit"
-          disabled={adding || !form.address.trim() || !form.name.trim()}
-          className="h-9"
-        >
+        <Btn type="submit" disabled={adding || !form.address.trim() || !form.name.trim()}>
           <Plus size={12} /> {t("clients.add_alias")}
         </Btn>
         {addErr && <p className="text-blocked text-xs lg:col-span-4">{addErr}</p>}
@@ -243,6 +274,54 @@ function AliasesPanel() {
   );
 }
 
+// ── Sortable column header ─────────────────────────────────────────────────────
+
+type SortKey = "name" | "total" | "blocked" | "last_seen";
+type SortState = { key: SortKey; dir: "asc" | "desc" };
+const LOAD_STEP = 100;
+
+function SortHeader({
+  label,
+  field,
+  sort,
+  onSort,
+  className,
+}: {
+  label: string;
+  field: SortKey;
+  sort: SortState;
+  onSort: (key: SortKey) => void;
+  className?: string;
+}) {
+  const active = sort.key === field;
+  return (
+    <Th className={className}>
+      <button
+        type="button"
+        onClick={() => onSort(field)}
+        className={cn(
+          "group inline-flex items-center gap-1 align-middle font-mono text-[10px] font-medium uppercase tracking-[0.12em] transition-colors hover:text-heading",
+          active ? "text-ember" : "text-muted",
+        )}
+      >
+        {label}
+        {active ? (
+          sort.dir === "asc" ? (
+            <ChevronUp size={11} />
+          ) : (
+            <ChevronDown size={11} />
+          )
+        ) : (
+          <ChevronsUpDown
+            size={11}
+            className="opacity-0 transition-opacity group-hover:opacity-40"
+          />
+        )}
+      </button>
+    </Th>
+  );
+}
+
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function Clients() {
@@ -250,17 +329,36 @@ export default function Clients() {
   const toast = useToast();
   const [clients, setClients] = useState<ClientEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [limit, setLimit] = useState(LOAD_STEP);
   const [err, setErr] = useState("");
   const [blockingEnabled, setBlockingEnabled] = useState(true);
   const [bypassKeys, setBypassKeys] = useState<string[]>([]);
   const [togglingBlocking, setTogglingBlocking] = useState("");
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState<SortState>({ key: "total", dir: "desc" });
+  const [prefill, setPrefill] = useState<AliasPrefill | null>(null);
 
-  async function load() {
+  // Hand a client's address to the aliases form below (prefer MAC — it follows
+  // the device across IPs). Clients with neither an IP nor MAC can't be aliased.
+  function nameDevice(c: ClientEntry) {
+    const mac = c.macs[0];
+    const ip = c.ips[0];
+    if (!mac && !ip) return;
+    setPrefill((p) => ({
+      type: mac ? "MAC" : "IP",
+      address: mac ?? ip,
+      nonce: (p?.nonce ?? 0) + 1,
+    }));
+  }
+
+  async function load(nextLimit = limit) {
     setLoading(true);
     setErr("");
     try {
-      const [data, settings] = await Promise.all([api.clients(100), api.getSettings()]);
+      const [data, settings] = await Promise.all([api.clients(nextLimit), api.getSettings()]);
       setClients(data.clients ?? []);
+      setLimit(nextLimit);
       setBlockingEnabled(settings.blocklist?.enabled ?? true);
       setBypassKeys(settings.blocklist?.client_bypass ?? []);
     } catch (e) {
@@ -274,7 +372,21 @@ export default function Clients() {
     load();
   }, []);
 
-  const maxTotal = clients[0]?.total ?? 1;
+  // Fetch a larger top-N and swap in the bigger list. The server has no total
+  // count, so "there may be more" is inferred from getting a full page back.
+  async function loadMore() {
+    const next = limit + LOAD_STEP;
+    setLoadingMore(true);
+    try {
+      const data = await api.clients(next);
+      setClients(data.clients ?? []);
+      setLimit(next);
+    } catch (e) {
+      toast((e as Error).message, "error");
+    } finally {
+      setLoadingMore(false);
+    }
+  }
 
   async function toggleClientBlocking(client: ClientEntry) {
     const keys = clientBlockingKeys(client);
@@ -309,13 +421,54 @@ export default function Clients() {
     }
   }
 
+  // Clients arrive sorted by query count; capture that rank before any re-sort so
+  // the "#" column always means "rank by queries", whatever the active sort is.
+  const maxTotal = clients[0]?.total ?? 1;
+  const rankOf = useMemo(
+    () => new Map(clients.map((c, i) => [c, i + 1] as const)),
+    [clients],
+  );
+  const hasMore = clients.length >= limit;
+
+  const nowSec = Date.now() / 1000;
+  const active24 = clients.filter((c) => nowSec - c.last_seen < 86400).length;
+  const totalQueries = clients.reduce((sum, c) => sum + c.total, 0);
+  const bypassing = clients.filter((c) => c.blocking_bypassed).length;
+
+  const onSort = (key: SortKey) =>
+    setSort((s) =>
+      s.key === key
+        ? { key, dir: s.dir === "asc" ? "desc" : "asc" }
+        : { key, dir: key === "name" ? "asc" : "desc" },
+    );
+
+  const view = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    const filtered = clients.filter(
+      (c) =>
+        !q ||
+        c.name.toLowerCase().includes(q) ||
+        c.ips.some((ip) => ip.toLowerCase().includes(q)) ||
+        c.macs.some((m) => m.toLowerCase().includes(q)),
+    );
+    const dir = sort.dir === "asc" ? 1 : -1;
+    return [...filtered].sort((a, b) => {
+      let d = 0;
+      if (sort.key === "name") d = a.name.localeCompare(b.name);
+      else if (sort.key === "total") d = a.total - b.total;
+      else if (sort.key === "blocked") d = a.blocked - b.blocked;
+      else d = a.last_seen - b.last_seen;
+      return d * dir;
+    });
+  }, [clients, search, sort]);
+
   return (
-    <div className="p-6">
+    <PageContainer>
       <PageHeader
         title={t("clients.title")}
         subtitle={t("clients.subtitle")}
         action={
-          <Btn variant="ghost" onClick={load} disabled={loading}>
+          <Btn variant="ghost" onClick={() => load()} disabled={loading}>
             <RefreshCw size={12} className={loading ? "animate-spin" : ""} /> {t("common.refresh")}
           </Btn>
         }
@@ -340,96 +493,216 @@ export default function Clients() {
       )}
 
       {clients.length > 0 && (
-        <Card className="p-0! mb-4 overflow-x-auto">
-          <table className="w-full text-xs">
-            <thead>
-              <tr className="border-bdr border-b">
-                <Th className="w-8">{t("clients.col_rank")}</Th>
-                <Th>{t("clients.col_client")}</Th>
-                <Th>{t("clients.col_ips")}</Th>
-                <Th className="w-36">{t("clients.col_activity")}</Th>
-                <Th className="text-right">{t("clients.col_total")}</Th>
-                <Th className="text-right">{t("clients.col_blocked")}</Th>
-                <Th className="text-right">{t("clients.col_filtering")}</Th>
-                <Th className="text-right">{t("clients.col_last_seen")}</Th>
-              </tr>
-            </thead>
-            <tbody>
-              {clients.length === 0 ? (
-                <EmptyRow cols={8} message={t("clients.no_data")} />
-              ) : (
-                clients.map((c, i) => {
-                  const blockedPct = c.total > 0 ? (c.blocked / c.total) * 100 : 0;
-                  const filteringOn = blockingEnabled && !c.blocking_bypassed;
-                  return (
-                    <TableRow key={c.name + i}>
-                      <Td className="text-muted tabular-nums">{i + 1}</Td>
-                      <Td>
-                        <Link
-                          to={`/queries?device=${encodeURIComponent(deviceTokens(c).join(","))}`}
-                          className="text-heading hover:text-ember font-medium transition-colors"
-                        >
-                          {c.name}
-                        </Link>
-                        {c.is_alias && (
-                          <span className="bg-ember/10 text-ember/70 ml-1.5 rounded px-1 py-0.5 text-[10px]">
-                            {t("clients.alias_badge")}
-                          </span>
-                        )}
-                      </Td>
-                      <Td>
-                        <div className="flex flex-wrap gap-1">
-                          {c.ips.map((ip) => (
-                            <span key={ip} className="text-muted font-mono text-[10px]">
-                              {ip}
-                            </span>
-                          ))}
-                        </div>
-                      </Td>
-                      <Td>
-                        <Bar
-                          value={(c.total / maxTotal) * 100}
-                          color={i === 0 ? "bg-ember" : "bg-ember/40"}
-                        />
-                      </Td>
-                      <Td className="text-body text-right tabular-nums">{fmt(c.total)}</Td>
-                      <Td className="text-right">
-                        <span className="text-blocked tabular-nums">{fmt(c.blocked)}</span>
-                        {c.total > 0 && (
-                          <span className="text-muted ml-1">({blockedPct.toFixed(0)}%)</span>
-                        )}
-                      </Td>
-                      <Td className="text-right">
-                        <div className="inline-flex items-center gap-2">
-                          <span
-                            className={cn(
-                              "rounded-full px-2 py-0.5 text-[10px] font-medium",
-                              filteringOn ? "bg-ember/10 text-ember" : "bg-warn/10 text-warn",
+        <>
+          {/* ── Overview ── */}
+          <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <StatusTile
+              icon={Users}
+              label={t("clients.tile_clients", { defaultValue: "Clients" })}
+              value={`${clients.length}${hasMore ? "+" : ""}`}
+              sub={t("clients.tile_clients_sub", { defaultValue: "tracked" })}
+            />
+            <StatusTile
+              icon={Activity}
+              label={t("clients.tile_active", { defaultValue: "Active (24h)" })}
+              value={active24}
+              sub={t("clients.tile_active_sub", { defaultValue: "seen recently" })}
+              tone="upstream"
+            />
+            <StatusTile
+              icon={BarChart3}
+              label={t("clients.tile_queries", { defaultValue: "Queries" })}
+              value={fmt(totalQueries)}
+              sub={t("clients.tile_queries_sub", { defaultValue: "across clients" })}
+            />
+            <StatusTile
+              icon={ShieldOff}
+              label={t("clients.tile_bypassing", { defaultValue: "Bypassing filter" })}
+              value={bypassing}
+              sub={t("clients.tile_bypassing_sub", { defaultValue: "clients" })}
+              tone={bypassing > 0 ? "warn" : "muted"}
+            />
+          </div>
+
+          {/* ── Toolbar ── */}
+          <FilterBar
+            meta={
+              <>
+                {search
+                  ? t("clients.count_filtered", {
+                      shown: view.length,
+                      total: clients.length,
+                      defaultValue: "{{shown}} of {{total}}",
+                    })
+                  : t("clients.count", {
+                      count: clients.length,
+                      defaultValue: "{{count}} clients",
+                    })}
+                {hasMore ? "+" : ""}
+              </>
+            }
+          >
+            <SearchInput
+              icon={Search}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={t("clients.filter_placeholder", {
+                defaultValue: "Filter by name, IP or MAC…",
+              })}
+              className="w-full min-w-0 lg:flex-1"
+              inputClass="font-mono"
+            />
+          </FilterBar>
+
+          <Card className="p-0! mb-4 overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="border-bdr border-b">
+                  <Th className="w-8">{t("clients.col_rank")}</Th>
+                  <SortHeader
+                    label={t("clients.col_client")}
+                    field="name"
+                    sort={sort}
+                    onSort={onSort}
+                  />
+                  <Th>{t("clients.col_ips")}</Th>
+                  <Th className="w-36">{t("clients.col_activity")}</Th>
+                  <SortHeader
+                    label={t("clients.col_total")}
+                    field="total"
+                    sort={sort}
+                    onSort={onSort}
+                    className="text-right"
+                  />
+                  <SortHeader
+                    label={t("clients.col_blocked")}
+                    field="blocked"
+                    sort={sort}
+                    onSort={onSort}
+                    className="text-right"
+                  />
+                  <Th className="text-right">{t("clients.col_filtering")}</Th>
+                  <SortHeader
+                    label={t("clients.col_last_seen")}
+                    field="last_seen"
+                    sort={sort}
+                    onSort={onSort}
+                    className="text-right"
+                  />
+                </tr>
+              </thead>
+              <tbody>
+                {view.length === 0 ? (
+                  <EmptyRow
+                    cols={8}
+                    message={t("clients.no_match", {
+                      defaultValue: "No clients match your filter.",
+                    })}
+                  />
+                ) : (
+                  view.map((c) => {
+                    const rank = rankOf.get(c) ?? 0;
+                    const blockedPct = c.total > 0 ? (c.blocked / c.total) * 100 : 0;
+                    const filteringOn = blockingEnabled && !c.blocking_bypassed;
+                    const canName = Boolean(c.macs[0] || c.ips[0]);
+                    return (
+                      <TableRow key={c.name + rank} className="group">
+                        <Td className="text-muted tabular-nums">{rank}</Td>
+                        <Td>
+                          <div className="flex items-center gap-1.5">
+                            <Link
+                              to={`/queries?device=${encodeURIComponent(deviceTokens(c).join(","))}`}
+                              className="text-heading hover:text-ember font-medium transition-colors"
+                            >
+                              {c.name}
+                            </Link>
+                            {c.is_alias && (
+                              <span className="bg-ember/10 text-ember/70 rounded px-1 py-0.5 text-[10px]">
+                                {t("clients.alias_badge")}
+                              </span>
                             )}
-                          >
-                            {!blockingEnabled
-                              ? t("clients.filtering_global_off")
-                              : c.blocking_bypassed
-                                ? t("clients.filtering_bypassed")
-                                : t("clients.filtering_on")}
-                          </span>
-                          <Switch
-                            checked={filteringOn}
-                            onCheckedChange={() => toggleClientBlocking(c)}
-                            disabled={!blockingEnabled || togglingBlocking === c.name}
+                            {canName && (
+                              <IconBtn
+                                onClick={() => nameDevice(c)}
+                                title={t("clients.name_device", { defaultValue: "Name this device" })}
+                                className="opacity-0 transition-opacity group-hover:opacity-100"
+                              >
+                                <Tag size={11} />
+                              </IconBtn>
+                            )}
+                          </div>
+                        </Td>
+                        <Td>
+                          <div className="flex flex-wrap gap-1">
+                            {c.ips.map((ip) => (
+                              <span key={ip} className="text-muted font-mono text-[10px]">
+                                {ip}
+                              </span>
+                            ))}
+                          </div>
+                        </Td>
+                        <Td>
+                          <Bar
+                            value={(c.total / maxTotal) * 100}
+                            color={rank === 1 ? "bg-ember" : "bg-ember/40"}
                           />
-                        </div>
-                      </Td>
-                      <Td className="text-muted whitespace-nowrap text-right">
-                        {fmtRelTime(c.last_seen)}
-                      </Td>
-                    </TableRow>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </Card>
+                        </Td>
+                        <Td className="text-body text-right tabular-nums">{fmt(c.total)}</Td>
+                        <Td className="text-right">
+                          <span className="text-blocked tabular-nums">{fmt(c.blocked)}</span>
+                          {c.total > 0 && (
+                            <span className="text-muted ml-1">({blockedPct.toFixed(0)}%)</span>
+                          )}
+                        </Td>
+                        <Td className="text-right">
+                          <div className="inline-flex items-center gap-2">
+                            <span
+                              className={cn(
+                                "rounded-full px-2 py-0.5 text-[10px] font-medium",
+                                filteringOn ? "bg-ember/10 text-ember" : "bg-warn/10 text-warn",
+                              )}
+                            >
+                              {!blockingEnabled
+                                ? t("clients.filtering_global_off")
+                                : c.blocking_bypassed
+                                  ? t("clients.filtering_bypassed")
+                                  : t("clients.filtering_on")}
+                            </span>
+                            <Switch
+                              checked={filteringOn}
+                              onCheckedChange={() => toggleClientBlocking(c)}
+                              disabled={!blockingEnabled || togglingBlocking === c.name}
+                            />
+                          </div>
+                        </Td>
+                        <Td className="text-muted whitespace-nowrap text-right">
+                          <span className="inline-flex items-center justify-end gap-1.5">
+                            <span
+                              className={cn(
+                                "h-1.5 w-1.5 shrink-0 rounded-full",
+                                lastSeenDot(c.last_seen),
+                              )}
+                            />
+                            {fmtRelTime(c.last_seen)}
+                          </span>
+                        </Td>
+                      </TableRow>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </Card>
+
+          {hasMore && (
+            <div className="mb-4 flex justify-center">
+              <Btn variant="ghost" onClick={loadMore} disabled={loadingMore}>
+                <ChevronDown size={12} className={loadingMore ? "animate-pulse" : ""} />
+                {t("clients.load_more", { defaultValue: "Load more" })}
+              </Btn>
+            </div>
+          )}
+        </>
       )}
 
       {!loading && clients.length === 0 && !err && (
@@ -438,7 +711,7 @@ export default function Clients() {
         </Card>
       )}
 
-      <AliasesPanel />
-    </div>
+      <AliasesPanel prefill={prefill} />
+    </PageContainer>
   );
 }

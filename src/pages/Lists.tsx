@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { fmt } from "@/lib/format";
 import { api } from "@/api";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { PageContainer } from "@/components/layout/PageContainer";
 import { Card } from "@/components/layout/Card";
 import { Err } from "@/components/feedback/Err";
 import {
@@ -170,7 +171,7 @@ export default function Lists() {
   }
 
   return (
-    <div className="p-6">
+    <PageContainer>
       {ConfirmDialog}
       <PageHeader
         title={t("lists.title")}
@@ -218,7 +219,7 @@ export default function Lists() {
           <Btn
             type="submit"
             disabled={adding || !form.url.trim() || !form.name.trim()}
-            className="justify-center self-end"
+            className="self-end"
           >
             <Plus size={12} /> {t("lists.add")}
           </Btn>
@@ -227,9 +228,7 @@ export default function Lists() {
 
       {/* Recommended catalog — add popular lists in one click */}
       <Card className="mb-4">
-        <SectionLabel>
-          {t("lists.recommended", { defaultValue: "Recommended lists" })}
-        </SectionLabel>
+        <SectionLabel>{t("lists.recommended", { defaultValue: "Recommended lists" })}</SectionLabel>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
           {LIST_CATALOG.map((item) => {
             const added = addedUrls.has(item.url);
@@ -416,6 +415,6 @@ export default function Lists() {
           </table>
         )}
       </Card>
-    </div>
+    </PageContainer>
   );
 }

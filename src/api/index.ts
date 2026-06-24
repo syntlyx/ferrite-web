@@ -103,6 +103,11 @@ export const api = {
   // ── Diagnostic tools ──────────────────────────────────────────────────────────
   toolsResolve: (name: string, type: string) => tools.resolve(name, type),
   toolsWhois: (query: string) => tools.whois(query),
+  toolsDnssec: (name: string, type: string) => tools.dnssec(name, type),
+  toolsEgressCheck: (egress?: string) => tools.egressCheck(egress),
+  toolsCert: (host: string, port?: number, egress?: string) => tools.cert(host, port, egress),
+  toolsTcpProbe: (host: string, port: number, egress?: string) =>
+    tools.tcpProbe(host, port, egress),
 };
 
 export { getToken };

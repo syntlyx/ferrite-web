@@ -1,6 +1,8 @@
 import { Component, lazy, Suspense, useCallback, useEffect, useState } from "react";
 import type { ErrorInfo, ReactNode } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { ShieldAlert, X } from "lucide-react";
 import { api } from "@/api";
 import { ApiClientError } from "@/api/client";
 import { ToastProvider } from "@/providers/ToastProvider";
@@ -48,8 +50,42 @@ const Logs = lazy(() => import("@/pages/Logs"));
 const Tools = lazy(() => import("@/pages/Tools"));
 const Settings = lazy(() => import("@/pages/Settings"));
 
+function PasswordBanner() {
+  const { t } = useTranslation();
+  const [dismissed, setDismissed] = useState(false);
+  if (dismissed) return null;
+  return (
+    <div className="border-warn/40 bg-warn/15 text-warn flex flex-wrap items-center gap-x-3 gap-y-1 border-b px-4 py-2.5 text-xs">
+      <ShieldAlert size={14} className="shrink-0" />
+      <span className="font-semibold">
+        {t("security.no_password", { defaultValue: "No password set" })}
+      </span>
+      <span className="text-body/80">
+        {t("security.no_password_sub", {
+          defaultValue: "Anyone on your network can open this panel.",
+        })}
+      </span>
+      <Link
+        to="/settings"
+        className="text-ember hover:text-ember-h ml-auto font-medium underline transition-colors"
+      >
+        {t("security.set_password", { defaultValue: "Set a password" })}
+      </Link>
+      <button
+        type="button"
+        onClick={() => setDismissed(true)}
+        className="text-muted hover:text-body shrink-0 transition-colors"
+        aria-label="Dismiss"
+      >
+        <X size={14} />
+      </button>
+    </div>
+  );
+}
+
 function RequireAuth({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState("checking");
+  const [noPassword, setNoPassword] = useState(false);
 
   const check = useCallback(() => {
     let cancelled = false;
@@ -57,7 +93,9 @@ function RequireAuth({ children }: { children: ReactNode }) {
     api
       .checkAuth()
       .then((d) => {
-        if (!cancelled) setStatus(!d.password_set || d.authenticated ? "ok" : "unauth");
+        if (cancelled) return;
+        setNoPassword(!d.password_set);
+        setStatus(!d.password_set || d.authenticated ? "ok" : "unauth");
       })
       .catch((e) => {
         if (cancelled) return;
@@ -92,7 +130,14 @@ function RequireAuth({ children }: { children: ReactNode }) {
     );
   }
 
-  return status === "unauth" ? <Navigate to="/login" replace /> : <>{children}</>;
+  return status === "unauth" ? (
+    <Navigate to="/login" replace />
+  ) : (
+    <>
+      {noPassword && <PasswordBanner />}
+      {children}
+    </>
+  );
 }
 
 const PageFallback = () => (

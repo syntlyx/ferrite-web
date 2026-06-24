@@ -4,6 +4,7 @@ import { Pause, Play, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { api } from "@/api";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { PageContainer } from "@/components/layout/PageContainer";
 import { Card } from "@/components/layout/Card";
 import { Btn } from "@/components/ui";
 import { usePageVisible } from "@/hooks/use-page-visible";
@@ -85,7 +86,7 @@ export default function Logs() {
     });
 
   return (
-    <div className="p-6">
+    <PageContainer>
       <PageHeader
         title={t("logs.title", { defaultValue: "Logs" })}
         subtitle={t("logs.subtitle", {
@@ -93,7 +94,7 @@ export default function Logs() {
         })}
       />
 
-      <Card className="mb-3 flex flex-wrap items-center gap-3">
+      <Card className="mb-4 flex flex-wrap items-center gap-3 p-3">
         <div className="flex flex-wrap items-center gap-1.5">
           <span className="text-muted mr-1 text-xs">
             {t("logs.levels", { defaultValue: "Levels" })}
@@ -118,9 +119,11 @@ export default function Logs() {
             );
           })}
         </div>
-        <Btn variant="ghost" onClick={() => setPaused((p) => !p)} className="h-7">
+        <Btn variant="ghost" onClick={() => setPaused((p) => !p)}>
           {paused ? <Play size={12} /> : <Pause size={12} />}
-          {paused ? t("logs.resume", { defaultValue: "Resume" }) : t("logs.pause", { defaultValue: "Pause" })}
+          {paused
+            ? t("logs.resume", { defaultValue: "Resume" })
+            : t("logs.pause", { defaultValue: "Pause" })}
         </Btn>
         <Btn
           variant="ghost"
@@ -128,11 +131,12 @@ export default function Logs() {
             setLogs([]);
             followRef.current = true;
           }}
-          className="h-7"
         >
           <Trash2 size={12} /> {t("logs.clear", { defaultValue: "Clear view" })}
         </Btn>
-        <span className="text-muted ml-auto text-xs tabular-nums">{shown.length}</span>
+        <span className="text-muted ml-auto text-xs tabular-nums">
+          {t("logs.line_count", { count: shown.length, defaultValue: "{{count}} lines" })}
+        </span>
       </Card>
 
       <Card className="p-0! overflow-hidden">
@@ -142,15 +146,20 @@ export default function Logs() {
           className="h-[70vh] overflow-y-auto p-3 font-mono text-xs leading-relaxed"
         >
           {shown.length === 0 ? (
-            <p className="text-muted">{t("logs.empty", { defaultValue: "No log records yet." })}</p>
+            <p className="text-muted py-10 text-center text-xs">
+              {t("logs.empty", { defaultValue: "No log records yet." })}
+            </p>
           ) : (
             shown.map((e) => (
-              <div key={e.id} className="flex gap-2 break-all whitespace-pre-wrap">
+              <div key={e.id} className="flex gap-2 whitespace-pre-wrap break-all">
                 <span className="text-muted shrink-0">
                   {new Date(e.timestamp).toLocaleTimeString()}
                 </span>
                 <span
-                  className={cn("shrink-0 font-semibold uppercase", LEVEL_COLOR[e.level] ?? "text-body")}
+                  className={cn(
+                    "shrink-0 font-semibold uppercase",
+                    LEVEL_COLOR[e.level] ?? "text-body",
+                  )}
                 >
                   {e.level}
                 </span>
@@ -161,6 +170,6 @@ export default function Logs() {
           )}
         </div>
       </Card>
-    </div>
+    </PageContainer>
   );
 }

@@ -49,7 +49,7 @@ export default function Login() {
             />
           </div>
           {error && <p className="text-blocked text-xs">{error}</p>}
-          <Btn type="submit" disabled={pending} className="w-full justify-center py-2">
+          <Btn type="submit" disabled={pending} block>
             {pending ? t("login.submitting") : t("login.submit")}
           </Btn>
         </form>

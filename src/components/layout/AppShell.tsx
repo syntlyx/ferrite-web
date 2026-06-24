@@ -29,7 +29,11 @@ import {
 import { api } from "@/api";
 import { useTheme } from "@/providers/ThemeProvider";
 import { useLocalStorage } from "@/hooks/use-local-storage";
+import { usePageVisible } from "@/hooks/use-page-visible";
 import { Select } from "@/components/ui";
+
+/** How often to re-check (cached) for available updates while the tab is visible. */
+const UPDATE_POLL_INTERVAL_MS = 30 * 60 * 1000; // 30 minutes
 
 const LANGS = [
   { code: "en", label: "EN" },
@@ -75,6 +79,8 @@ function NavItem({
   onClose,
   onActiveClick,
   badge,
+  badgeLabel,
+  badgeText,
 }: {
   to: string;
   icon: ComponentType<{ size?: number; className?: string }>;
@@ -83,6 +89,8 @@ function NavItem({
   onClose?: () => void;
   onActiveClick: (to: string) => void;
   badge?: boolean;
+  badgeLabel?: string;
+  badgeText?: string;
 }) {
   const { pathname } = useLocation();
 
@@ -113,13 +121,28 @@ function NavItem({
       <span className="relative shrink-0">
         <Icon size={14} />
         {badge && collapsed && (
-          <span className="bg-warn absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full" />
+          <span
+            role="img"
+            aria-label={badgeLabel}
+            title={badgeLabel}
+            className="bg-warn absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full"
+          />
         )}
       </span>
       {!collapsed && (
         <span className="flex flex-1 items-center justify-between">
           {label}
-          {badge && <span className="bg-warn h-1.5 w-1.5 rounded-full" />}
+          {badge && (
+            <span
+              role="img"
+              aria-label={badgeLabel}
+              title={badgeLabel}
+              className="bg-warn/15 text-warn inline-flex items-center gap-1.5 rounded-full px-1.5 py-0.5 text-[9px] font-medium normal-case tracking-normal"
+            >
+              <span className="bg-warn h-1.5 w-1.5 rounded-full" />
+              {badgeText}
+            </span>
+          )}
         </span>
       )}
       {collapsed && <span className="sidebar-tooltip">{label}</span>}
@@ -138,15 +161,32 @@ export default function AppShell({ children }: { children: ReactNode }) {
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [blockingEnabled, setBlockingEnabled] = useState(true);
   const { theme, toggle: toggleTheme } = useTheme();
+  const pageVisible = usePageVisible();
 
+  // Live "update available" indicator. The server re-checks upstream releases on
+  // its own schedule and caches the result, so we always ask for the CACHED
+  // answer (checkUpdate() without force) and just re-read it on an interval —
+  // one call per tick, only while the tab is visible.
   useEffect(() => {
-    api
-      .checkUpdate()
-      .then((r) => {
-        if (r.server.update_available || r.web.update_available) setUpdateAvailable(true);
-      })
-      .catch(() => {});
-  }, []);
+    if (!pageVisible) return;
+    let alive = true;
+
+    const refresh = () => {
+      api
+        .checkUpdate()
+        .then((r) => {
+          if (alive) setUpdateAvailable(r.server.update_available || r.web.update_available);
+        })
+        .catch(() => {});
+    };
+
+    refresh();
+    const id = setInterval(refresh, UPDATE_POLL_INTERVAL_MS);
+    return () => {
+      alive = false;
+      clearInterval(id);
+    };
+  }, [pageVisible]);
 
   useEffect(() => {
     let alive = true;
@@ -337,6 +377,10 @@ export default function AppShell({ children }: { children: ReactNode }) {
                 collapsed={collapsed}
                 onActiveClick={handleActiveNavClick}
                 badge={item.to === "/settings" && updateAvailable}
+                badgeLabel={t("sidebar.update_available", {
+                  defaultValue: "Update available — open Settings",
+                })}
+                badgeText={t("sidebar.update_badge", { defaultValue: "Update" })}
               />
             ))}
           </nav>
@@ -403,6 +447,10 @@ export default function AppShell({ children }: { children: ReactNode }) {
                     onClose={() => setMobileOpen(false)}
                     onActiveClick={handleActiveNavClick}
                     badge={item.to === "/settings" && updateAvailable}
+                    badgeLabel={t("sidebar.update_available", {
+                      defaultValue: "Update available — open Settings",
+                    })}
+                    badgeText={t("sidebar.update_badge", { defaultValue: "Update" })}
                   />
                 ))}
               </nav>

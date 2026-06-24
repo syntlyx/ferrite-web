@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { api } from "@/api";
 import type { DomainCheckResult } from "@/api/types";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { PageContainer } from "@/components/layout/PageContainer";
 import { Card } from "@/components/layout/Card";
 import { Err } from "@/components/feedback/Err";
 import { Input, SearchInput, Btn, IconBtn, SectionLabel, Skeleton } from "@/components/ui";
@@ -247,14 +248,14 @@ export default function Blocklist() {
   const inWhite = checkResult ? white.includes(checkResult.domain) : false;
 
   return (
-    <div className="p-6">
+    <PageContainer>
       {ConfirmDialog}
       <PageHeader title={t("blocklist.title")} subtitle={t("blocklist.subtitle")} />
       {err && <Err msg={err} />}
 
       {/* Domain inspector */}
       <Card className="plate-ticks mb-4">
-        <SectionLabel>{t("blocklist.check_btn")}</SectionLabel>
+        <SectionLabel>{t("blocklist.quick_curate", { defaultValue: "Quick curate" })}</SectionLabel>
         <form onSubmit={handleCheck} className="grid grid-cols-[minmax(0,1fr)_auto] gap-2">
           <SearchInput
             icon={Search}
@@ -265,14 +266,9 @@ export default function Blocklist() {
             }}
             placeholder={t("blocklist.check_placeholder")}
             className="min-w-0"
-            inputClass="h-9 font-mono"
+            inputClass="font-mono"
           />
-          <Btn
-            variant="ghost"
-            type="submit"
-            disabled={checking || !checkDomain.trim()}
-            className="h-9"
-          >
+          <Btn variant="ghost" type="submit" disabled={checking || !checkDomain.trim()}>
             {t("blocklist.check_btn")}
           </Btn>
         </form>
@@ -323,39 +319,13 @@ export default function Blocklist() {
               </div>
             </div>
 
-            {/* Why: the whitelist entry that exempts it, and which sources match. */}
-            {checkResult.whitelist_match && (
-              <p className="text-muted text-xs">
-                {t("blocklist.why_whitelisted", { defaultValue: "Whitelisted by" })}{" "}
-                <span className="text-upstream font-mono">{checkResult.whitelist_match.entry}</span>
-                {checkResult.whitelist_match.matched !== checkResult.domain && (
-                  <span className="text-muted/70">
-                    {" "}
-                    ({t("blocklist.matched_on", { defaultValue: "matched on" })}{" "}
-                    <span className="font-mono">{checkResult.whitelist_match.matched}</span>)
-                  </span>
-                )}
-              </p>
-            )}
-            {(checkResult.sources?.length ?? 0) > 0 && (
-              <div className="space-y-1.5">
-                <p className="text-muted text-[11px] uppercase tracking-[0.1em]">
-                  {t("blocklist.matched_sources", { defaultValue: "Matched by" })}
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {checkResult.sources!.map((s, i) => (
-                    <span
-                      key={`${s.kind}-${s.name}-${i}`}
-                      className="border-bdr/70 rounded-xs flex items-center gap-1.5 border px-2 py-1 text-[11px]"
-                      title={`${t("blocklist.matched_on", { defaultValue: "matched on" })} ${s.matched}`}
-                    >
-                      <span className="text-muted/70 font-mono text-[10px] uppercase">{s.kind}</span>
-                      <span className="font-mono">{s.name}</span>
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
+            {/* Full attribution (matched sources, whitelist reason, routing) lives
+             *  on the Tools page; here we keep only the quick add/exempt actions. */}
+            <p className="text-muted/70 text-[11px]">
+              {t("blocklist.full_check_hint", {
+                defaultValue: "Matched sources and routing are on the Tools page.",
+              })}
+            </p>
           </div>
         )}
       </Card>
@@ -393,6 +363,6 @@ export default function Blocklist() {
           />
         </div>
       )}
-    </div>
+    </PageContainer>
   );
 }

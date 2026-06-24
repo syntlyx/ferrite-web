@@ -14,7 +14,7 @@ export function FerriteMark({ className }: FerriteMarkProps) {
   return (
     <span
       className={cn(
-        "rounded-xs border-ember/30 relative inline-flex shrink-0 items-center justify-center overflow-hidden border bg-void shadow-[0_0_24px_rgba(255,106,56,0.22)]",
+        "rounded-xs border-ember/30 bg-void relative inline-flex shrink-0 items-center justify-center overflow-hidden border shadow-[0_0_24px_rgba(255,106,56,0.22)]",
         className,
       )}
     >
