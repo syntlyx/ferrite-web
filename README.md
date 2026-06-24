@@ -5,6 +5,26 @@ server. The web UI talks to the Ferrite HTTP API through same-origin `/api`
 requests and can be run either through Vite during development or as static
 files served by the Ferrite server.
 
+## Screenshots
+
+Captures live in [`screenshots/`](screenshots/), rendered from real (anonymized)
+API data using the harness.
+
+![Dashboard](screenshots/dashboard.png)
+_Live dashboard — counters, block rate, 24h chart, top domains, system metrics._
+
+![Tunnels](screenshots/tunnels.png)
+_Selective routing — per-device rules through Direct / SOCKS5 / WireGuard / DPI-evasion egresses._
+
+![Query log](screenshots/queries.png)
+_Query log with domain / client / status / time filters._
+
+![Blocklist check](screenshots/blocklist.png)
+_Why-blocked — which list or rule matched, and the whitelist entry that exempts a domain._
+
+![Tools](screenshots/tools.png)
+_Built-in DNS lookup (nslookup) and WHOIS._
+
 ## What It Includes
 
 - Live dashboard with query counters, block rate, 24h charts, top domains,
@@ -17,12 +37,14 @@ files served by the Ferrite server.
 - Selective routing (Tunnels): manage egresses (Direct, SOCKS5, WireGuard,
   DPI-evasion) and domain rules, with live egress health and a buffer-size speed
   calculator.
-- Live server logs viewer (in-memory, delta-polled, level filter).
+- Live server logs viewer (in-memory, delta-polled, per-level exclude filters).
+- Diagnostic tools: DNS lookup (nslookup) and WHOIS, plus a why-blocked domain
+  check that shows which list or rule matched.
 - Runtime settings for auth, DNS TTLs, log ignore patterns, log retention, API
   bind address, cache sizing, and the served `web_dir`.
 - Server and web update checks/actions.
 - Password/session-token login flow, light/dark theme, and a localized UI
-  (English, Ukrainian, Spanish, German, French, Polish).
+  (English, Ukrainian, Spanish, German, French).
 
 ## Stack
 
@@ -174,7 +196,7 @@ src/
   api/          typed API wrappers
   components/   shared layout, feedback, and UI primitives
   hooks/        local React hooks
-  i18n/         English and Ukrainian translations
+  i18n/         UI translations (en, uk, es, de, fr)
   lib/          DNS labels, formatting helpers, class utilities
   pages/        route-level screens
   providers/    theme and toast providers
@@ -191,6 +213,9 @@ Routes:
 /blocklist  Blacklist / whitelist
 /lists      Subscription lists
 /dns        Custom DNS records
+/tunnels    Selective routing (egresses + rules)
+/logs       Live server logs
+/tools      DNS lookup, WHOIS, why-blocked, diagnostics
 /settings   Runtime settings and updates
 /login      Password login
 ```
@@ -214,7 +239,7 @@ Any `401` response clears the token and redirects to `/login`.
   in `src/api/`.
 - Prefer adapting backend response shape in the owning API module when it makes
   page code simpler. `src/api/updates.ts` is the existing example.
-- Add new visible strings to both `src/i18n/en.json` and `src/i18n/uk.json`.
+- Add new visible strings to every locale file under `src/i18n/` (en, uk, es, de, fr).
 - The dashboard polls `GET /api/stats/summary` frequently, so avoid adding extra
   dashboard requests unless the backend contract requires it.
 - Production builds are static; runtime API routing is same-origin `/api`.
