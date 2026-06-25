@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { SubmitEvent } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -352,7 +352,9 @@ export default function Clients() {
     }));
   }
 
-  async function load(nextLimit = limit) {
+  // Stable identity (no closed-over reactive values) so the mount effect can
+  // depend on it without re-running; callers pass the limit explicitly.
+  const load = useCallback(async (nextLimit: number) => {
     setLoading(true);
     setErr("");
     try {
@@ -366,11 +368,11 @@ export default function Clients() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
   useEffect(() => {
-    load();
-  }, []);
+    load(LOAD_STEP);
+  }, [load]);
 
   // Fetch a larger top-N and swap in the bigger list. The server has no total
   // count, so "there may be more" is inferred from getting a full page back.
@@ -468,7 +470,7 @@ export default function Clients() {
         title={t("clients.title")}
         subtitle={t("clients.subtitle")}
         action={
-          <Btn variant="ghost" onClick={() => load()} disabled={loading}>
+          <Btn variant="ghost" onClick={() => load(limit)} disabled={loading}>
             <RefreshCw size={12} className={loading ? "animate-spin" : ""} /> {t("common.refresh")}
           </Btn>
         }

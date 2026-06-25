@@ -59,22 +59,23 @@ _Built-in DNS lookup (nslookup) and WHOIS._
 
 ## Requirements
 
-- A recent Node.js runtime.
-- npm, because this repo keeps `package-lock.json`.
+- A recent Node.js runtime with Corepack (bundled with Node) to provision the
+  pinned pnpm from the `packageManager` field.
 - A running Ferrite server for real API data.
 
 ## Quick Start
 
-Install dependencies:
+Install dependencies (Corepack provisions the pinned pnpm automatically):
 
 ```bash
-npm install
+corepack enable   # once per machine
+pnpm install
 ```
 
 Run the Vite dev server and proxy `/api` to a local Ferrite backend:
 
 ```bash
-VITE_API_TARGET=http://127.0.0.1:8080 npm run dev
+VITE_API_TARGET=http://127.0.0.1:8080 pnpm dev
 ```
 
 Open the URL printed by Vite, usually:
@@ -87,16 +88,16 @@ The app itself always fetches `/api/...`. In development, Vite proxies those
 requests to `VITE_API_TARGET`. If `VITE_API_TARGET` is not set, the current
 default is `http://192.168.1.10:80`.
 
-Restart `npm run dev` after changing `VITE_API_TARGET`; Vite reads it at server
+Restart `pnpm dev` after changing `VITE_API_TARGET`; Vite reads it at server
 startup.
 
 ## Scripts
 
 ```bash
-npm run dev      # start Vite with HMR
-npm run build    # create production files in dist/
-npm run preview  # serve dist/ locally with Vite
-npm run lint     # run ESLint
+pnpm dev      # start Vite with HMR
+pnpm build    # create production files in dist/
+pnpm preview  # serve dist/ locally with Vite
+pnpm lint     # run ESLint
 ```
 
 ## Serving Through Ferrite
@@ -104,7 +105,7 @@ npm run lint     # run ESLint
 Build the static bundle:
 
 ```bash
-npm run build
+pnpm build
 ```
 
 During development, point the running Ferrite server at this repo's `dist/`
@@ -139,7 +140,7 @@ This repo uses GitHub Actions workflows under `.github/workflows/`.
 `ci.yml` runs on `main` pushes and pull requests:
 
 ```text
-npm ci -> npm run lint -> npm run build -> validate dist.tar.gz
+pnpm install --frozen-lockfile -> pnpm run lint -> pnpm run build -> validate dist.tar.gz
 ```
 
 `release.yml` runs when a semver tag is pushed:
