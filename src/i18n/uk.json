@@ -22,7 +22,9 @@
     "control_plane": "Локальна DNS панель",
     "filtering_off_hint": "DNS працює без блокування",
     "update_badge": "Оновлення",
-    "update_available": "Доступне оновлення — відкрийте Налаштування"
+    "update_available": "Доступне оновлення — відкрийте Налаштування",
+    "tunnel_down": "Egress лежить — відкрийте Тунелі",
+    "tunnel_badge": "Down"
   },
   "lang": {
     "en": "English",
@@ -120,6 +122,7 @@
     "status_blocked": "заблоковано",
     "status_cached": "з кешу",
     "status_upstream": "upstream",
+    "status_routed": "смаршрутизовано",
     "page": "Стор. {{n}}",
     "first_page": "На першу (live)"
   },
@@ -518,7 +521,19 @@
     "tile_routing_sub": "вибіркова маршрутизація",
     "tile_egresses_sub": "увімкнено · справні",
     "tile_rules_sub": "доменні шаблони",
-    "tile_conns_sub": "одночасних"
+    "tile_traffic": "Трафік",
+    "stats_active": "активних",
+    "stats_conns": "з'єднань",
+    "stats_fails": "збоїв конекту",
+    "stats_drops": "fail-closed відкидань",
+    "handshake": "хендшейк",
+    "no_traffic": "трафіку ще немає",
+    "domains": "Маршрутизовані домени",
+    "col_hits": "Хіти",
+    "col_hits_hint": "З'єднання, змаршрутизовані цим правилом.",
+    "alert_webhook": "Webhook для алертів",
+    "alert_webhook_sub": "URL, на який POST'иться JSON-подія, коли egress лежить понад хвилину (і знову при відновленні). Працює з ntfy чи будь-яким JSON-приймачем. Порожньо = вимкнено.",
+    "down_for": "лежить"
   },
   "logs": {
     "title": "Логи",

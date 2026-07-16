@@ -91,6 +91,7 @@ export const api = {
   // ── Proxy / Tunnels ───────────────────────────────────────────────────────────
   getProxy: proxy.get,
   putProxy: (body: ProxyConfig) => proxy.put(body),
+  proxyStats: proxy.stats,
 
   // ── Server logs ───────────────────────────────────────────────────────────────
   getLogs: (params: { after_id?: number; level?: string; limit?: number }) => logs.get(params),

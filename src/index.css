@@ -35,6 +35,7 @@
   --color-blocked: #ff5c5c;
   --color-cached: #46d08e;
   --color-upstream: #5ea7ff;
+  --color-routed: #b58cff;
   --color-warn: #ffb224;
 }
 
@@ -279,6 +280,7 @@ body::after {
   --color-blocked: #d22d2d;
   --color-cached: #15894f;
   --color-upstream: #1e6cd2;
+  --color-routed: #7a3fd2;
   --color-warn: #b27205;
 }
 

@@ -22,7 +22,9 @@
     "control_plane": "Local DNS control plane",
     "filtering_off_hint": "DNS runs without blocking",
     "update_badge": "Update",
-    "update_available": "Update available — open Settings"
+    "update_available": "Update available — open Settings",
+    "tunnel_down": "An egress is down — open Tunnels",
+    "tunnel_badge": "Down"
   },
   "lang": {
     "en": "English",
@@ -120,6 +122,7 @@
     "status_blocked": "blocked",
     "status_cached": "cached",
     "status_upstream": "upstream",
+    "status_routed": "routed",
     "page": "Page {{n}}",
     "first_page": "First page (live)"
   },
@@ -518,7 +521,19 @@
     "tile_routing_sub": "selective routing",
     "tile_egresses_sub": "enabled · healthy",
     "tile_rules_sub": "domain patterns",
-    "tile_conns_sub": "concurrent"
+    "tile_traffic": "Traffic",
+    "stats_active": "active",
+    "stats_conns": "conns",
+    "stats_fails": "connect fails",
+    "stats_drops": "fail-closed drops",
+    "handshake": "handshake",
+    "no_traffic": "no traffic yet",
+    "domains": "Routed domains",
+    "col_hits": "Hits",
+    "col_hits_hint": "Connections routed by this rule.",
+    "alert_webhook": "Alert webhook",
+    "alert_webhook_sub": "URL POSTed a JSON event when an egress stays down for over a minute (and again on recovery). Works with ntfy or any JSON webhook receiver. Blank = off.",
+    "down_for": "down"
   },
   "logs": {
     "title": "Logs",

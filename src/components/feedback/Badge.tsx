@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-type BadgeStatus = "allowed" | "blocked" | "cached" | "upstream";
+type BadgeStatus = "allowed" | "blocked" | "cached" | "upstream" | "routed";
 
 interface BadgeProps {
   status: BadgeStatus;
@@ -12,6 +12,7 @@ export function Badge({ status }: BadgeProps) {
     blocked: "bg-blocked/10 text-blocked",
     cached: "bg-cached/10 text-cached",
     upstream: "bg-upstream/10 text-upstream",
+    routed: "bg-routed/10 text-routed",
   };
   return (
     <span

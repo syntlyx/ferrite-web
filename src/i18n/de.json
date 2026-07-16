@@ -22,7 +22,9 @@
     "control_plane": "Lokale DNS-Steuerung",
     "filtering_off_hint": "DNS lauft ohne Blockierung",
     "update_badge": "Update",
-    "update_available": "Update verfugbar - Einstellungen offnen"
+    "update_available": "Update verfugbar - Einstellungen offnen",
+    "tunnel_down": "Ein Egress ist down — Tunnel öffnen",
+    "tunnel_badge": "Down"
   },
   "lang": {
     "en": "English",
@@ -120,6 +122,7 @@
     "status_blocked": "blockiert",
     "status_cached": "cache",
     "status_upstream": "upstream",
+    "status_routed": "geroutet",
     "page": "Seite {{n}}",
     "first_page": "Erste Seite (live)"
   },
@@ -518,7 +521,19 @@
     "tile_routing_sub": "selektives Routing",
     "tile_egresses_sub": "aktiviert · gesund",
     "tile_rules_sub": "Domain-Muster",
-    "tile_conns_sub": "gleichzeitig"
+    "tile_traffic": "Datenverkehr",
+    "stats_active": "aktiv",
+    "stats_conns": "Verb.",
+    "stats_fails": "Verbindungsfehler",
+    "stats_drops": "Fail-closed-Drops",
+    "handshake": "Handshake",
+    "no_traffic": "noch kein Datenverkehr",
+    "domains": "Geroutete Domains",
+    "col_hits": "Treffer",
+    "col_hits_hint": "Über diese Regel geroutete Verbindungen.",
+    "alert_webhook": "Alarm-Webhook",
+    "alert_webhook_sub": "URL, an die ein JSON-Event per POST gesendet wird, wenn ein Egress länger als eine Minute ausfällt (und erneut bei Wiederherstellung). Funktioniert mit ntfy oder jedem JSON-Empfänger. Leer = aus.",
+    "down_for": "down seit"
   },
   "logs": {
     "title": "Protokolle",

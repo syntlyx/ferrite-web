@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -11,11 +11,12 @@ import {
   Search,
   Cable,
   ListFilter,
-  Gauge,
+  ArrowDownUp,
   SlidersHorizontal,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { api } from "@/api";
+import { fmt, formatBytes } from "@/lib/format";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { PageContainer } from "@/components/layout/PageContainer";
 import {
@@ -41,12 +42,33 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { usePageVisible } from "@/hooks/use-page-visible";
 import { deviceTokens } from "@/api/clients";
-import type { ClientEntry, EgressKind, ProxyConfig, ProxyEgress, ProxyRule } from "@/api/types";
+import type {
+  ClientEntry,
+  EgressKind,
+  EgressStats,
+  ProxyConfig,
+  ProxyEgress,
+  ProxyRule,
+  ProxyStatsResponse,
+} from "@/api/types";
 
 const KINDS: EgressKind[] = ["direct", "socks5", "wireguard", "evasion"];
 
 /** Shared grid template so the rules header and every rule row line up. */
-const RULE_COLS = "grid-cols-[minmax(0,1fr)_11rem_10rem_5.5rem_2rem]";
+const RULE_COLS = "grid-cols-[minmax(0,1fr)_11rem_10rem_5.5rem_3.5rem_2rem]";
+
+/** Per-egress ↑/↓ throughput (bytes/sec), derived from deltas between polls. */
+type Rates = Record<string, { up: number; down: number }>;
+
+/** "1.2 MB/s" for a bytes-per-second figure. */
+const fmtRate = (bps: number) => `${formatBytes(Math.round(bps))}/s`;
+
+/** Compact "12s / 3m / 2h ago"-style age. */
+const fmtAge = (secs: number) => {
+  if (secs < 60) return `${secs}s`;
+  if (secs < 3600) return `${Math.floor(secs / 60)}m`;
+  return `${Math.floor(secs / 3600)}h`;
+};
 
 /** Rounded Mbit/s a TCP window of `kb` KiB sustains over `rttMs` round-trip
  *  (throughput ≈ window / RTT). Drives the buffer-size speed calculator. */
@@ -81,6 +103,7 @@ const EMPTY: ProxyConfig = {
   advertise_ipv4: null,
   advertise_ipv6: null,
   max_connections: 128,
+  alert_webhook: null,
   egresses: [],
   rules: [],
 };
@@ -94,6 +117,13 @@ export default function Tunnels() {
   // draft drifts from it, and Reset restores it without a round-trip.
   const [savedJson, setSavedJson] = useState(() => JSON.stringify(EMPTY));
   const [health, setHealth] = useState<Record<string, "up" | "down">>({});
+  const [stats, setStats] = useState<ProxyStatsResponse | null>(null);
+  const [rates, setRates] = useState<Rates>({});
+  // Last poll's cumulative byte counters, for rate-from-delta computation.
+  const prevSample = useRef<{
+    t: number;
+    bytes: Record<string, { up: number; down: number }>;
+  } | null>(null);
   const [maxBuf, setMaxBuf] = useState<number | null>(null);
   const [knownClients, setKnownClients] = useState<ClientEntry[]>([]);
   const [openRule, setOpenRule] = useState<number | null>(null);
@@ -130,22 +160,63 @@ export default function Tunnels() {
       .catch(() => {});
   }, []);
 
-  // Refresh egress health on a timer WITHOUT clobbering the user's unsaved edits:
-  // update only `health`, never `cfg`. A WireGuard egress flips to "up" a few
-  // seconds after save once its handshake completes, so a one-shot reload would
-  // otherwise show a stale "down" until a manual page refresh.
+  // Refresh egress health + traffic stats on a timer WITHOUT clobbering the
+  // user's unsaved edits: update only `health`/`stats`, never `cfg`. A WireGuard
+  // egress flips to "up" a few seconds after save once its handshake completes,
+  // so a one-shot reload would otherwise show a stale "down" until a manual page
+  // refresh. Rates are cumulative-counter deltas between consecutive polls.
   const visible = usePageVisible();
   useEffect(() => {
     if (!visible) return;
-    const id = setInterval(() => {
+    const poll = () =>
       api
-        .getProxy()
+        .proxyStats()
         .then((d) => {
-          setHealth(d.egress_health ?? {});
+          setStats(d);
           setMaxBuf(d.max_buffer_kb ?? null);
+          setHealth(
+            Object.fromEntries(
+              Object.entries(d.egresses).map(([id, s]) => [id, s.healthy ? "up" : "down"]),
+            ),
+          );
+          const now = Date.now();
+          const prev = prevSample.current;
+          if (prev && now > prev.t) {
+            const dt = (now - prev.t) / 1000;
+            setRates(
+              Object.fromEntries(
+                Object.entries(d.egresses).flatMap(([id, s]) => {
+                  const p = prev.bytes[id];
+                  // max(0, …): a counter reset (egress deleted+recreated) must
+                  // not flash a huge negative-wrapped rate.
+                  return p
+                    ? [
+                        [
+                          id,
+                          {
+                            up: Math.max(0, s.bytes_up - p.up) / dt,
+                            down: Math.max(0, s.bytes_down - p.down) / dt,
+                          },
+                        ],
+                      ]
+                    : [];
+                }),
+              ),
+            );
+          }
+          prevSample.current = {
+            t: now,
+            bytes: Object.fromEntries(
+              Object.entries(d.egresses).map(([id, s]) => [
+                id,
+                { up: s.bytes_up, down: s.bytes_down },
+              ]),
+            ),
+          };
         })
         .catch(() => {});
-    }, 4000);
+    poll(); // first sample right away; rates appear from the second poll
+    const id = setInterval(poll, 4000);
     return () => clearInterval(id);
   }, [visible]);
 
@@ -256,6 +327,25 @@ export default function Tunnels() {
   const enabledEgresses = cfg.egresses.filter((e) => e.enabled);
   const egressUp = enabledEgresses.filter((e) => health[e.id] === "up").length;
 
+  // Overview traffic figures, summed across every egress.
+  const traffic = useMemo(() => {
+    const all = Object.values(stats?.egresses ?? {});
+    const rate = Object.values(rates);
+    return {
+      total: all.reduce((n, s) => n + s.bytes_up + s.bytes_down, 0),
+      active: all.reduce((n, s) => n + s.active, 0),
+      up: rate.reduce((n, r) => n + r.up, 0),
+      down: rate.reduce((n, r) => n + r.down, 0),
+    };
+  }, [stats, rates]);
+
+  // Rule hit counters keyed the same way the server reports them.
+  const ruleHits = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const r of stats?.rules ?? []) m.set(`${r.pattern}\u0001${r.egress}`, r.hits);
+    return m;
+  }, [stats]);
+
   const filteredRules = useMemo(() => {
     const q = filter.trim().toLowerCase();
     return cfg.rules
@@ -317,10 +407,13 @@ export default function Tunnels() {
               sub={t("tunnels.tile_rules_sub", { defaultValue: "domain patterns" })}
             />
             <StatusTile
-              icon={Gauge}
-              label={t("tunnels.max_connections", { defaultValue: "Max connections" })}
-              value={cfg.max_connections}
-              sub={t("tunnels.tile_conns_sub", { defaultValue: "concurrent" })}
+              icon={ArrowDownUp}
+              label={t("tunnels.tile_traffic", { defaultValue: "Traffic" })}
+              value={formatBytes(traffic.total)}
+              sub={`↓ ${fmtRate(traffic.down)} · ↑ ${fmtRate(traffic.up)} · ${traffic.active} ${t(
+                "tunnels.stats_active",
+                { defaultValue: "active" },
+              )}`}
               tone="muted"
             />
           </div>
@@ -401,6 +494,20 @@ export default function Tunnels() {
                     value={cfg.max_connections}
                     onChange={(e) => setField("max_connections", Number(e.target.value))}
                     className="w-full text-right font-mono tabular-nums"
+                  />
+                </SettingRow>
+                <SettingRow
+                  label={t("tunnels.alert_webhook", { defaultValue: "Alert webhook" })}
+                  sub={t("tunnels.alert_webhook_sub", {
+                    defaultValue:
+                      "URL POSTed a JSON event when an egress stays down for over a minute (and again on recovery). Works with ntfy or any JSON webhook receiver. Blank = off.",
+                  })}
+                >
+                  <Input
+                    value={cfg.alert_webhook ?? ""}
+                    onChange={(e) => setField("alert_webhook", e.target.value || null)}
+                    placeholder="https://ntfy.sh/my-ferrite"
+                    className="w-full font-mono"
                   />
                 </SettingRow>
               </SettingsPanel>
@@ -508,6 +615,8 @@ export default function Tunnels() {
                               <Trash2 size={13} />
                             </IconBtn>
                           </div>
+
+                          <EgressStatsRow stats={stats?.egresses[e.id]} rate={rates[e.id]} />
 
                           {e.kind === "socks5" && (
                             <div className="grid grid-cols-1 gap-3 md:col-span-6 md:grid-cols-4">
@@ -721,11 +830,11 @@ export default function Tunnels() {
                     </p>
                   ) : (
                     <div className="overflow-x-auto">
-                      <div className="min-w-[760px]">
+                      <div className="min-w-205">
                         {/* Column headers */}
                         <div
                           className={cn(
-                            "text-muted grid items-center gap-2 px-2 pb-1.5 font-mono text-[10px] uppercase tracking-[0.1em]",
+                            "text-muted grid items-center gap-2 px-2 pb-1.5 font-mono text-[10px] uppercase tracking-widest",
                             RULE_COLS,
                           )}
                         >
@@ -733,6 +842,9 @@ export default function Tunnels() {
                           <span>{t("tunnels.rule_egress", { defaultValue: "Egress" })}</span>
                           <span>{t("tunnels.col_devices", { defaultValue: "Devices" })}</span>
                           <span>{t("tunnels.fail_closed", { defaultValue: "Fail-closed" })}</span>
+                          <span className="text-right">
+                            {t("tunnels.col_hits", { defaultValue: "Hits" })}
+                          </span>
                           <span />
                         </div>
 
@@ -799,6 +911,14 @@ export default function Tunnels() {
                                       checked={r.fail_closed}
                                       onCheckedChange={(v) => updateRule(i, { fail_closed: v })}
                                     />
+                                  </span>
+                                  <span
+                                    className="text-muted text-right font-mono text-[11px] tabular-nums"
+                                    title={t("tunnels.col_hits_hint", {
+                                      defaultValue: "Connections routed by this rule.",
+                                    })}
+                                  >
+                                    {fmt(ruleHits.get(`${r.pattern}\u0001${r.egress}`) ?? 0)}
                                   </span>
                                   <IconBtn
                                     danger
@@ -898,6 +1018,95 @@ export default function Tunnels() {
         </div>
       )}
     </PageContainer>
+  );
+}
+
+/** Live per-egress traffic line + the recent routed domains, under the egress's
+ *  config row. Counters are cumulative since server start; rates come from poll
+ *  deltas (so they appear from the second poll onward). */
+function EgressStatsRow({
+  stats,
+  rate,
+}: {
+  stats?: EgressStats;
+  rate?: { up: number; down: number };
+}) {
+  const { t } = useTranslation();
+  if (!stats) return null;
+  const quiet = stats.total_conns === 0 && stats.connect_fails === 0 && stats.fail_closed_drops === 0;
+  return (
+    <div className="space-y-2 md:col-span-6">
+      <div className="text-muted flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] tabular-nums">
+        {quiet ? (
+          <span>{t("tunnels.no_traffic", { defaultValue: "no traffic yet" })}</span>
+        ) : (
+          <>
+            <span className={cn(stats.active > 0 && "text-ember")}>
+              {fmt(stats.active)} {t("tunnels.stats_active", { defaultValue: "active" })}
+            </span>
+            <span>
+              {fmt(stats.total_conns)} {t("tunnels.stats_conns", { defaultValue: "conns" })}
+            </span>
+            <span>
+              ↓ {formatBytes(stats.bytes_down)}
+              {rate && rate.down > 0 && ` (${fmtRate(rate.down)})`}
+            </span>
+            <span>
+              ↑ {formatBytes(stats.bytes_up)}
+              {rate && rate.up > 0 && ` (${fmtRate(rate.up)})`}
+            </span>
+            {stats.connect_fails > 0 && (
+              <span className="text-warn">
+                {fmt(stats.connect_fails)}{" "}
+                {t("tunnels.stats_fails", { defaultValue: "connect fails" })}
+              </span>
+            )}
+            {stats.fail_closed_drops > 0 && (
+              <span className="text-warn">
+                {fmt(stats.fail_closed_drops)}{" "}
+                {t("tunnels.stats_drops", { defaultValue: "fail-closed drops" })}
+              </span>
+            )}
+            {stats.handshake_age_secs != null && (
+              <span>
+                {t("tunnels.handshake", { defaultValue: "handshake" })}{" "}
+                {fmtAge(stats.handshake_age_secs)}
+              </span>
+            )}
+          </>
+        )}
+        {stats.down_since_secs != null && (
+          <span className="text-warn">
+            {t("tunnels.down_for", { defaultValue: "down" })} {fmtAge(stats.down_since_secs)}
+          </span>
+        )}
+      </div>
+
+      {stats.domains.length > 0 && (
+        <details className="group">
+          <summary className="text-muted hover:text-ember flex cursor-pointer select-none list-none items-center gap-1.5 text-xs transition-colors">
+            <ChevronRight size={12} className="transition-transform group-open:rotate-90" />
+            {t("tunnels.domains", { defaultValue: "Routed domains" })} · {stats.domains.length}
+          </summary>
+          <div className="mt-2 space-y-0.5">
+            {stats.domains.map((d) => (
+              <div
+                key={d.host}
+                className="text-muted grid grid-cols-[minmax(0,1fr)_4.5rem_6rem_6rem_4rem] items-center gap-2 font-mono text-[11px] tabular-nums"
+              >
+                <span className="text-body truncate">{d.host}</span>
+                <span className="text-right">
+                  {fmt(d.conns)} {t("tunnels.stats_conns", { defaultValue: "conns" })}
+                </span>
+                <span className="text-right">↓ {formatBytes(d.bytes_down)}</span>
+                <span className="text-right">↑ {formatBytes(d.bytes_up)}</span>
+                <span className="text-right opacity-70">{fmtAge(d.last_seen_secs_ago)}</span>
+              </div>
+            ))}
+          </div>
+        </details>
+      )}
+    </div>
   );
 }
 

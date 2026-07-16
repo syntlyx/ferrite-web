@@ -22,7 +22,9 @@
     "control_plane": "Panneau DNS local",
     "filtering_off_hint": "DNS fonctionne sans blocage",
     "update_badge": "Mise a jour",
-    "update_available": "Mise a jour disponible - ouvrir les Parametres"
+    "update_available": "Mise a jour disponible - ouvrir les Parametres",
+    "tunnel_down": "Un egress est hors service — ouvrir Tunnels",
+    "tunnel_badge": "Down"
   },
   "lang": {
     "en": "English",
@@ -120,6 +122,7 @@
     "status_blocked": "bloquee",
     "status_cached": "cache",
     "status_upstream": "upstream",
+    "status_routed": "routé",
     "page": "Page {{n}}",
     "first_page": "Première page (live)"
   },
@@ -518,7 +521,19 @@
     "tile_routing_sub": "routage sélectif",
     "tile_egresses_sub": "activées · saines",
     "tile_rules_sub": "motifs de domaine",
-    "tile_conns_sub": "simultanées"
+    "tile_traffic": "Trafic",
+    "stats_active": "actives",
+    "stats_conns": "conn.",
+    "stats_fails": "échecs de connexion",
+    "stats_drops": "rejets fail-closed",
+    "handshake": "handshake",
+    "no_traffic": "pas encore de trafic",
+    "domains": "Domaines routés",
+    "col_hits": "Hits",
+    "col_hits_hint": "Connexions routées par cette règle.",
+    "alert_webhook": "Webhook d'alerte",
+    "alert_webhook_sub": "URL recevant un POST JSON quand un egress reste hors service plus d'une minute (et à nouveau au rétablissement). Fonctionne avec ntfy ou tout récepteur JSON. Vide = désactivé.",
+    "down_for": "hors service"
   },
   "logs": {
     "title": "Journaux",

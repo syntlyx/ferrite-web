@@ -130,7 +130,7 @@ export interface TopBlockedParams {
 // Query log
 // ─────────────────────────────────────────────────────────────────────────────
 
-export type QueryStatus = "allowed" | "blocked" | "cached" | "upstream";
+export type QueryStatus = "allowed" | "blocked" | "cached" | "upstream" | "routed";
 
 /**
  * DNS query type number (1=A, 28=AAAA, 5=CNAME, 15=MX, 16=TXT, 12=PTR, 33=SRV, 65=HTTPS).
@@ -660,6 +660,8 @@ export interface ProxyConfig {
   advertise_ipv4?: string | null;
   advertise_ipv6?: string | null;
   max_connections: number;
+  /** POSTed a JSON event when an egress stays down past the alert grace. */
+  alert_webhook?: string | null;
   egresses: ProxyEgress[];
   rules: ProxyRule[];
 }
@@ -675,6 +677,47 @@ export interface PutProxyResponse {
   status: string;
   persisted: boolean;
   saved_to?: string | null;
+}
+
+/** One domain's traffic through an egress (server keeps a bounded LRU table). */
+export interface EgressDomainStats {
+  host: string;
+  conns: number;
+  bytes_up: number;
+  bytes_down: number;
+  last_seen_secs_ago: number;
+}
+
+/** Cumulative counters for one egress (since process start). */
+export interface EgressStats {
+  healthy: boolean;
+  active: number;
+  total_conns: number;
+  bytes_up: number;
+  bytes_down: number;
+  connect_fails: number;
+  fail_closed_drops: number;
+  /** WireGuard only: seconds since the last handshake (null = never / other kinds). */
+  handshake_age_secs?: number | null;
+  /** Seconds this egress has been unhealthy (null while healthy). */
+  down_since_secs?: number | null;
+  /** Down past the server's alert grace — what the sidebar badge keys on. */
+  alerting?: boolean;
+  /** Busiest first. */
+  domains: EgressDomainStats[];
+}
+
+export interface ProxyRuleHits {
+  pattern: string;
+  egress: string;
+  hits: number;
+}
+
+export interface ProxyStatsResponse {
+  egresses: Record<string, EgressStats>;
+  rules: ProxyRuleHits[];
+  /** Same kernel probe as GET /api/proxy, so the poll keeps it fresh. */
+  max_buffer_kb?: number | null;
 }
 
 // ── Server logs ─────────────────────────────────────────────────────────────

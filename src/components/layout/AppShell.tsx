@@ -35,6 +35,11 @@ import { Select } from "@/components/ui";
 /** How often to re-check (cached) for available updates while the tab is visible. */
 const UPDATE_POLL_INTERVAL_MS = 30 * 60 * 1000; // 30 minutes
 
+/** How often to check egress health for the Tunnels "Down" badge. The server's
+ *  alert watcher applies its own grace period, so this only affects how fast the
+ *  badge appears/clears — not when alerts fire. */
+const TUNNEL_POLL_INTERVAL_MS = 30 * 1000;
+
 const LANGS = [
   { code: "en", label: "EN" },
   { code: "uk", label: "UK" },
@@ -159,6 +164,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
   const [collapsedRaw, setCollapsedRaw] = useLocalStorage("sidebar-collapsed", "false");
   const collapsed = collapsedRaw === "true";
   const [updateAvailable, setUpdateAvailable] = useState(false);
+  const [tunnelDown, setTunnelDown] = useState(false);
   const [blockingEnabled, setBlockingEnabled] = useState(true);
   const { theme, toggle: toggleTheme } = useTheme();
   const pageVisible = usePageVisible();
@@ -187,6 +193,51 @@ export default function AppShell({ children }: { children: ReactNode }) {
       clearInterval(id);
     };
   }, [pageVisible]);
+
+  // "Tunnel down" badge on the Tunnels nav item: on when any egress has been
+  // unhealthy past the server's alert grace (`alerting`), so a routine blip
+  // (WireGuard rekey, breaker cooldown) never flashes the sidebar.
+  useEffect(() => {
+    if (!pageVisible) return;
+    let alive = true;
+
+    const refresh = () => {
+      api
+        .proxyStats()
+        .then((r) => {
+          if (alive) setTunnelDown(Object.values(r.egresses).some((e) => e.alerting));
+        })
+        .catch(() => {});
+    };
+
+    refresh();
+    const id = setInterval(refresh, TUNNEL_POLL_INTERVAL_MS);
+    return () => {
+      alive = false;
+      clearInterval(id);
+    };
+  }, [pageVisible]);
+
+  // Per-item nav badge: "Update" on Settings, "Down" on Tunnels.
+  const badgeFor = (to: string) => {
+    if (to === "/settings" && updateAvailable)
+      return {
+        badge: true,
+        badgeLabel: t("sidebar.update_available", {
+          defaultValue: "Update available — open Settings",
+        }),
+        badgeText: t("sidebar.update_badge", { defaultValue: "Update" }),
+      };
+    if (to === "/tunnels" && tunnelDown)
+      return {
+        badge: true,
+        badgeLabel: t("sidebar.tunnel_down", {
+          defaultValue: "An egress is down — open Tunnels",
+        }),
+        badgeText: t("sidebar.tunnel_badge", { defaultValue: "Down" }),
+      };
+    return { badge: false };
+  };
 
   useEffect(() => {
     let alive = true;
@@ -376,11 +427,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
                 label={t(item.key)}
                 collapsed={collapsed}
                 onActiveClick={handleActiveNavClick}
-                badge={item.to === "/settings" && updateAvailable}
-                badgeLabel={t("sidebar.update_available", {
-                  defaultValue: "Update available — open Settings",
-                })}
-                badgeText={t("sidebar.update_badge", { defaultValue: "Update" })}
+                {...badgeFor(item.to)}
               />
             ))}
           </nav>
@@ -446,11 +493,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
                     collapsed={false}
                     onClose={() => setMobileOpen(false)}
                     onActiveClick={handleActiveNavClick}
-                    badge={item.to === "/settings" && updateAvailable}
-                    badgeLabel={t("sidebar.update_available", {
-                      defaultValue: "Update available — open Settings",
-                    })}
-                    badgeText={t("sidebar.update_badge", { defaultValue: "Update" })}
+                    {...badgeFor(item.to)}
                   />
                 ))}
               </nav>

@@ -233,7 +233,7 @@ function ClientMultiSelect({
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-const STATUSES: (QueryStatus | "")[] = ["", "allowed", "blocked", "cached", "upstream"];
+const STATUSES: (QueryStatus | "")[] = ["", "allowed", "blocked", "cached", "upstream", "routed"];
 const AUTO_REFRESH = 15_000;
 
 type QueryCursor = Pick<QueryFilters, "before_id" | "before_ts">;

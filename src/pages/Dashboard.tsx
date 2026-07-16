@@ -414,6 +414,7 @@ const STATUS_DOT: Record<QueryStatus, string> = {
   blocked: "bg-blocked",
   cached: "bg-cached",
   upstream: "bg-upstream",
+  routed: "bg-routed",
 };
 
 const STATUS_LABEL: Record<QueryStatus, string> = {
@@ -421,6 +422,7 @@ const STATUS_LABEL: Record<QueryStatus, string> = {
   blocked: "text-blocked/80",
   cached: "text-cached/70",
   upstream: "text-upstream/70",
+  routed: "text-routed/70",
 };
 
 function FeedRows({ rows, navigate }: { rows: QueryEntry[]; navigate: (to: string) => void }) {
