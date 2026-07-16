@@ -181,6 +181,7 @@
     "status_allowed": "Allowed",
     "whitelisted": "Whitelisted",
     "blacklist": "Blacklist",
+    "manual_rules": "Manual rules",
     "whitelist": "Whitelist",
     "blacklist_placeholder": "ads.example.com",
     "whitelist_placeholder": "safe.example.com",
@@ -533,7 +534,11 @@
     "col_hits_hint": "Connections routed by this rule.",
     "alert_webhook": "Alert webhook",
     "alert_webhook_sub": "URL POSTed a JSON event when an egress stays down for over a minute (and again on recovery). Works with ntfy or any JSON webhook receiver. Blank = off.",
-    "down_for": "down"
+    "down_for": "down",
+    "probe_target": "Probe target",
+    "probe_target_sub": "host:port the health probe connects to through each egress to measure latency. Must be reachable through every tunnel (it gates fail-closed). Blank = 1.1.1.1:443.",
+    "probe_failed": "probe failed",
+    "probe_slow": "slow"
   },
   "logs": {
     "title": "Logs",
@@ -545,5 +550,21 @@
     "resume": "Resume",
     "clear": "Clear view",
     "empty": "No log records yet."
+  },
+  "profiles": {
+    "title": "Device profiles",
+    "add": "Add profile",
+    "help": "Apply a subset of the subscription lists to specific devices. Devices in no profile use all enabled lists. Manual block/allow entries and wildcards apply to everyone.",
+    "no_lists": "Add subscription lists first — profiles are built from them.",
+    "empty": "No profiles yet. Every device uses all enabled lists.",
+    "name_placeholder": "Kids' devices",
+    "lists": "Lists applied",
+    "devices": "Devices",
+    "no_devices": "No devices seen yet — they appear once they query.",
+    "remove_confirm": "Remove profile \"{{name}}\"?",
+    "saved": "Profiles saved",
+    "save": "Save profiles",
+    "block_here": "Block for these devices",
+    "allow_here": "Allow for these devices"
   }
 }

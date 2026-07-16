@@ -1,4 +1,4 @@
-import { useActionState, useEffect, useMemo, useState } from "react";
+import { useActionState, useCallback, useEffect, useMemo, useState } from "react";
 import type { SubmitEvent } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -10,17 +10,39 @@ import {
   ListFilter,
   ShieldPlus,
   ShieldMinus,
+  Save,
+  Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { api } from "@/api";
-import type { DomainCheckResult } from "@/api/types";
+import { deviceTokens } from "@/api/clients";
+import type { BlocklistProfile, ClientEntry, DomainCheckResult } from "@/api/types";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Card } from "@/components/layout/Card";
 import { Err } from "@/components/feedback/Err";
-import { Input, SearchInput, Btn, IconBtn, SectionLabel, Skeleton } from "@/components/ui";
+import {
+  Input,
+  SearchInput,
+  Btn,
+  IconBtn,
+  SectionLabel,
+  Skeleton,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui";
 import { useToast } from "@/hooks/use-toast";
 import { useConfirm } from "@/hooks/use-confirm";
+
+/** Slugify a display name into a stable profile id (mirrors the server). */
+const slug = (s: string) =>
+  s
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 
 // ── Add form ──────────────────────────────────────────────────────────────────
 
@@ -62,10 +84,11 @@ function AddDomainForm({
   );
 }
 
-// ── List column ───────────────────────────────────────────────────────────────
+// ── Rule list (one tab: blacklist or whitelist) ──────────────────────────────────
 
-function ListPanel({
-  label,
+/** The add form, filter, and scrollable domain list for one rule set. Rendered
+ *  inside a tab, so it carries no Card/heading of its own — the tab labels it. */
+function RuleList({
   tone,
   items,
   placeholder,
@@ -73,7 +96,6 @@ function ListPanel({
   onRemove,
   removing,
 }: {
-  label: string;
   tone: "blocked" | "ember";
   items: string[];
   placeholder: string;
@@ -89,30 +111,29 @@ function ListPanel({
     return q ? items.filter((d) => d.includes(q)) : items;
   }, [items, query]);
 
-  const badgeCls =
-    tone === "blocked"
-      ? "border-blocked/25 bg-blocked/10 text-blocked"
-      : "border-ember/25 bg-ember/10 text-ember";
+  // The left accent bar on each row echoes the rule kind (block = red, allow = ember).
+  const accent = tone === "blocked" ? "before:bg-blocked/60" : "before:bg-ember/60";
 
   return (
-    <Card className="flex min-w-0 flex-col">
-      <SectionLabel className="flex items-center">
-        {label}
-        <span className={cn("ml-auto rounded-full border px-2 py-0.5 tracking-normal", badgeCls)}>
-          {query.trim() ? `${filtered.length} / ${items.length}` : items.length}
-        </span>
-      </SectionLabel>
-
+    <div className="flex min-w-0 flex-col">
       <div className="mb-3 space-y-2">
         <AddDomainForm onAdd={onAdd} placeholder={placeholder} />
         {items.length > 5 && (
-          <SearchInput
-            icon={ListFilter}
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder={t("blocklist.filter_placeholder")}
-            inputClass="font-mono"
-          />
+          <div className="flex items-center gap-2">
+            <SearchInput
+              icon={ListFilter}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={t("blocklist.filter_placeholder")}
+              inputClass="font-mono"
+              className="flex-1"
+            />
+            {query.trim() && (
+              <span className="text-muted shrink-0 font-mono text-[11px] tabular-nums">
+                {filtered.length} / {items.length}
+              </span>
+            )}
+          </div>
         )}
       </div>
 
@@ -121,11 +142,15 @@ function ListPanel({
       ) : filtered.length === 0 ? (
         <p className="text-muted py-2 text-xs">{t("blocklist.no_matches")}</p>
       ) : (
-        <div className="max-h-96 space-y-0.5 overflow-y-auto">
+        <div className="max-h-[28rem] space-y-0.5 overflow-y-auto">
           {filtered.map((domain) => (
             <div
               key={domain}
-              className="hover:bg-white/3 rounded-xs group flex items-center justify-between gap-2 px-2 py-1.5"
+              className={cn(
+                "hover:bg-white/3 rounded-xs group relative flex items-center justify-between gap-2 py-1.5 pl-3 pr-2",
+                "before:absolute before:left-0 before:top-1/2 before:h-3.5 before:w-0.5 before:-translate-y-1/2 before:rounded-full",
+                accent,
+              )}
             >
               <span className="text-body min-w-0 truncate font-mono text-xs">{domain}</span>
               <IconBtn
@@ -141,11 +166,372 @@ function ListPanel({
           ))}
         </div>
       )}
-    </Card>
+    </div>
+  );
+}
+
+/** A tab trigger label with a tone-colored count pill. */
+function RuleTab({ label, count, tone }: { label: string; count: number; tone: "blocked" | "ember" }) {
+  const pill =
+    tone === "blocked"
+      ? "border-blocked/25 bg-blocked/10 text-blocked"
+      : "border-ember/25 bg-ember/10 text-ember";
+  return (
+    <span className="flex items-center gap-1.5">
+      {label}
+      <span className={cn("rounded-full border px-1.5 tabular-nums", pill)}>{count}</span>
+    </span>
   );
 }
 
 // ── Page ──────────────────────────────────────────────────────────────────────
+
+// ── Per-device profiles ─────────────────────────────────────────────────────────
+
+/** A profile's manual block or allow domain list, with an inline add box. Block
+ *  entries override the global whitelist for these devices; allow entries
+ *  override the global block and the profile's own lists. */
+function ManualRuleBox({
+  kind,
+  domains,
+  onAdd,
+  onRemove,
+}: {
+  kind: "block" | "allow";
+  domains: string[];
+  onAdd: (domain: string) => void;
+  onRemove: (domain: string) => void;
+}) {
+  const { t } = useTranslation();
+  const [value, setValue] = useState("");
+  const tone =
+    kind === "block"
+      ? "border-blocked/40 bg-blocked/10 text-blocked"
+      : "border-cached/40 bg-cached/10 text-cached";
+  const label =
+    kind === "block"
+      ? t("profiles.block_here", { defaultValue: "Block for these devices" })
+      : t("profiles.allow_here", { defaultValue: "Allow for these devices" });
+
+  const submit = () => {
+    onAdd(value);
+    setValue("");
+  };
+
+  return (
+    <div>
+      <span className="text-muted mb-1.5 flex items-center gap-1.5 text-[11px] uppercase tracking-[0.08em]">
+        {kind === "block" ? <Ban size={11} /> : <CheckCircle2 size={11} />} {label}
+      </span>
+      <div className="flex gap-1.5">
+        <Input
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              submit();
+            }
+          }}
+          placeholder="example.com"
+          className="min-w-0 flex-1 font-mono"
+        />
+        <IconBtn onClick={submit} disabled={!value.trim()} title={t("blocklist.add")}>
+          <Plus size={13} />
+        </IconBtn>
+      </div>
+      {domains.length > 0 && (
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {domains.map((d) => (
+            <span
+              key={d}
+              className={cn(
+                "rounded-xs group flex items-center gap-1 border px-2 py-1 font-mono text-[11px]",
+                tone,
+              )}
+            >
+              {d}
+              <button
+                type="button"
+                onClick={() => onRemove(d)}
+                className="opacity-50 transition-opacity hover:opacity-100"
+                title={t("common.delete")}
+              >
+                <Trash2 size={11} />
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** Apply a subset of the subscription lists to specific devices. Devices that
+ *  match no profile use all enabled lists (the default). Self-contained: loads
+ *  its own data and edits a local draft that Save persists. */
+function ProfilesPanel() {
+  const { t } = useTranslation();
+  const toast = useToast();
+  const { confirm, ConfirmDialog } = useConfirm();
+
+  const [profiles, setProfiles] = useState<BlocklistProfile[]>([]);
+  const [availableLists, setAvailableLists] = useState<string[]>([]);
+  const [knownClients, setKnownClients] = useState<ClientEntry[]>([]);
+  const [savedJson, setSavedJson] = useState("[]");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  const load = useCallback(() => {
+    return api
+      .getProfiles()
+      .then((d) => {
+        setProfiles(d.profiles ?? []);
+        setAvailableLists(d.available_lists ?? []);
+        setSavedJson(JSON.stringify(d.profiles ?? []));
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    void load();
+    api
+      .clients(200)
+      .then((r) => setKnownClients(r.clients))
+      .catch(() => {});
+  }, [load]);
+
+  const dirty = savedJson !== JSON.stringify(profiles);
+
+  const addProfile = () =>
+    setProfiles((p) => [
+      ...p,
+      { id: "", name: "", lists: [...availableLists], clients: [], block: [], allow: [] },
+    ]);
+
+  const removeProfile = async (i: number) => {
+    if (profiles[i].name && !(await confirm(t("profiles.remove_confirm", { name: profiles[i].name }))))
+      return;
+    setProfiles((p) => p.filter((_, idx) => idx !== i));
+  };
+
+  const rename = (i: number, name: string) =>
+    setProfiles((p) => p.map((pr, idx) => (idx === i ? { ...pr, name, id: slug(name) } : pr)));
+
+  const toggleList = (i: number, list: string) =>
+    setProfiles((p) =>
+      p.map((pr, idx) =>
+        idx === i
+          ? {
+              ...pr,
+              lists: pr.lists.includes(list)
+                ? pr.lists.filter((l) => l !== list)
+                : [...pr.lists, list],
+            }
+          : pr,
+      ),
+    );
+
+  const toggleDevice = (i: number, c: ClientEntry) => {
+    const tokens = deviceTokens(c).map((x) => x.toLowerCase());
+    setProfiles((p) =>
+      p.map((pr, idx) => {
+        if (idx !== i) return pr;
+        const cur = (pr.clients ?? []).map((x) => x.toLowerCase());
+        const on = tokens.some((tok) => cur.includes(tok));
+        const next = on
+          ? cur.filter((x) => !tokens.includes(x))
+          : [...cur, ...tokens.filter((tok) => !cur.includes(tok))];
+        return { ...pr, clients: next };
+      }),
+    );
+  };
+
+  // Add/remove a manual domain to a profile's block or allow set.
+  const addManual = (i: number, kind: "block" | "allow", domain: string) => {
+    const d = domain.trim().toLowerCase();
+    if (!d) return;
+    setProfiles((p) =>
+      p.map((pr, idx) =>
+        idx === i && !(pr[kind] ?? []).includes(d)
+          ? { ...pr, [kind]: [...(pr[kind] ?? []), d] }
+          : pr,
+      ),
+    );
+  };
+  const removeManual = (i: number, kind: "block" | "allow", domain: string) =>
+    setProfiles((p) =>
+      p.map((pr, idx) =>
+        idx === i ? { ...pr, [kind]: (pr[kind] ?? []).filter((d) => d !== domain) } : pr,
+      ),
+    );
+
+  async function save() {
+    setSaving(true);
+    try {
+      await api.putProfiles(profiles.map((p) => ({ ...p, id: slug(p.name) })));
+      toast(t("profiles.saved", { defaultValue: "Profiles saved" }));
+      await load();
+    } catch (e) {
+      toast((e as Error).message, "error");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <Card className="mt-4">
+      {ConfirmDialog}
+      <div className="flex items-center justify-between">
+        <SectionLabel>{t("profiles.title", { defaultValue: "Device profiles" })}</SectionLabel>
+        <Btn variant="ghost" onClick={addProfile}>
+          <Plus size={12} /> {t("profiles.add", { defaultValue: "Add profile" })}
+        </Btn>
+      </div>
+      <p className="text-muted mb-3 text-xs leading-relaxed">
+        {t("profiles.help", {
+          defaultValue:
+            "Apply a subset of the subscription lists to specific devices. Devices in no profile use all enabled lists. Manual block/allow entries and wildcards apply to everyone.",
+        })}
+      </p>
+
+      {loading ? (
+        <Skeleton className="h-20 w-full" />
+      ) : availableLists.length === 0 ? (
+        <p className="text-muted text-xs">
+          {t("profiles.no_lists", {
+            defaultValue: "Add subscription lists first — profiles are built from them.",
+          })}
+        </p>
+      ) : profiles.length === 0 ? (
+        <p className="text-muted text-xs">
+          {t("profiles.empty", {
+            defaultValue: "No profiles yet. Every device uses all enabled lists.",
+          })}
+        </p>
+      ) : (
+        <div className="space-y-3">
+          {profiles.map((pr, i) => {
+            const scoped = (pr.clients ?? []).map((x) => x.toLowerCase());
+            return (
+              <div key={i} className="border-bdr/70 rounded-xs space-y-3 border p-3">
+                <div className="flex items-center gap-2">
+                  <Input
+                    value={pr.name}
+                    onChange={(e) => rename(i, e.target.value)}
+                    placeholder={t("profiles.name_placeholder", { defaultValue: "Kids' devices" })}
+                    className="w-full"
+                  />
+                  {pr.id && (
+                    <span className="text-muted shrink-0 font-mono text-[10px] opacity-60">
+                      {pr.id}
+                    </span>
+                  )}
+                  <IconBtn danger onClick={() => void removeProfile(i)}>
+                    <Trash2 size={13} />
+                  </IconBtn>
+                </div>
+
+                {/* List subset */}
+                <div>
+                  <span className="text-muted mb-1.5 flex items-center gap-1.5 text-[11px] uppercase tracking-[0.08em]">
+                    <ListFilter size={11} /> {t("profiles.lists", { defaultValue: "Lists applied" })}
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {availableLists.map((list) => {
+                      const on = pr.lists.includes(list);
+                      return (
+                        <button
+                          key={list}
+                          type="button"
+                          onClick={() => toggleList(i, list)}
+                          className={cn(
+                            "rounded-xs border px-2 py-1 font-mono text-[11px] transition-colors",
+                            on
+                              ? "border-blocked/40 bg-blocked/10 text-blocked"
+                              : "border-bdr/70 text-muted hover:text-blocked hover:border-blocked/40",
+                          )}
+                        >
+                          {list}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Device scope */}
+                <div>
+                  <span className="text-muted mb-1.5 flex items-center gap-1.5 text-[11px] uppercase tracking-[0.08em]">
+                    <Users size={11} /> {t("profiles.devices", { defaultValue: "Devices" })}
+                  </span>
+                  {knownClients.length === 0 ? (
+                    <p className="text-muted text-xs">
+                      {t("profiles.no_devices", {
+                        defaultValue: "No devices seen yet — they appear once they query.",
+                      })}
+                    </p>
+                  ) : (
+                    <div className="flex flex-wrap gap-1.5">
+                      {knownClients.map((c) => {
+                        const tokens = deviceTokens(c).map((x) => x.toLowerCase());
+                        const on = tokens.some((tok) => scoped.includes(tok));
+                        return (
+                          <button
+                            key={c.name}
+                            type="button"
+                            onClick={() => toggleDevice(i, c)}
+                            title={c.ips.join(", ")}
+                            className={cn(
+                              "rounded-xs border px-2 py-1 font-mono text-[11px] transition-colors",
+                              on
+                                ? "border-ember/40 bg-ember/10 text-ember"
+                                : "border-bdr/70 text-muted hover:text-ember hover:border-ember/40",
+                            )}
+                          >
+                            {c.name}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                {/* Per-profile manual rules: block/allow just for these devices,
+                    overriding the global lists. */}
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <ManualRuleBox
+                    kind="block"
+                    domains={pr.block ?? []}
+                    onAdd={(d) => addManual(i, "block", d)}
+                    onRemove={(d) => removeManual(i, "block", d)}
+                  />
+                  <ManualRuleBox
+                    kind="allow"
+                    domains={pr.allow ?? []}
+                    onAdd={(d) => addManual(i, "allow", d)}
+                    onRemove={(d) => removeManual(i, "allow", d)}
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {dirty && (
+        <div className="mt-3 flex justify-end gap-2">
+          <Btn variant="ghost" onClick={() => void load()} disabled={saving}>
+            {t("common.reset", { defaultValue: "Reset" })}
+          </Btn>
+          <Btn onClick={() => void save()} disabled={saving}>
+            <Save size={13} /> {t("profiles.save", { defaultValue: "Save profiles" })}
+          </Btn>
+        </div>
+      )}
+    </Card>
+  );
+}
 
 export default function Blocklist() {
   const { t } = useTranslation();
@@ -330,7 +716,8 @@ export default function Blocklist() {
         )}
       </Card>
 
-      {/* Blacklist + Whitelist */}
+      {/* Manual rules — blacklist / whitelist as tabs so uneven counts never
+          leave one column dwarfing the other. */}
       {loading ? (
         <Card>
           <div className="space-y-3">
@@ -342,27 +729,42 @@ export default function Blocklist() {
           </div>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 items-start gap-4 md:grid-cols-2">
-          <ListPanel
-            label={t("blocklist.blacklist")}
-            tone="blocked"
-            items={black}
-            placeholder={t("blocklist.blacklist_placeholder")}
-            onAdd={addBlack}
-            onRemove={removeBlack}
-            removing={removing}
-          />
-          <ListPanel
-            label={t("blocklist.whitelist")}
-            tone="ember"
-            items={white}
-            placeholder={t("blocklist.whitelist_placeholder")}
-            onAdd={addWhite}
-            onRemove={removeWhite}
-            removing={removing}
-          />
-        </div>
+        <Card>
+          <SectionLabel>{t("blocklist.manual_rules", { defaultValue: "Manual rules" })}</SectionLabel>
+          <Tabs defaultValue="black" className="mt-1">
+            <TabsList className="mb-3">
+              <TabsTrigger value="black">
+                <RuleTab label={t("blocklist.blacklist")} count={black.length} tone="blocked" />
+              </TabsTrigger>
+              <TabsTrigger value="white">
+                <RuleTab label={t("blocklist.whitelist")} count={white.length} tone="ember" />
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="black">
+              <RuleList
+                tone="blocked"
+                items={black}
+                placeholder={t("blocklist.blacklist_placeholder")}
+                onAdd={addBlack}
+                onRemove={removeBlack}
+                removing={removing}
+              />
+            </TabsContent>
+            <TabsContent value="white">
+              <RuleList
+                tone="ember"
+                items={white}
+                placeholder={t("blocklist.whitelist_placeholder")}
+                onAdd={addWhite}
+                onRemove={removeWhite}
+                removing={removing}
+              />
+            </TabsContent>
+          </Tabs>
+        </Card>
       )}
+
+      {!loading && <ProfilesPanel />}
     </PageContainer>
   );
 }

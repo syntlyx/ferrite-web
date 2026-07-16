@@ -5,6 +5,9 @@ import type {
   DomainBlacklistResult,
   DomainWhitelistResult,
   DomainCheckResult,
+  BlocklistProfile,
+  ProfilesResponse,
+  PutProfilesResponse,
 } from "./types";
 
 // ── Blacklist ─────────────────────────────────────────────────────────────────
@@ -40,4 +43,16 @@ export function removeWhitelist(domain: string): Promise<DomainWhitelistResult> 
 /** Check whether a domain would be blocked (considers whitelist override) */
 export function checkDomain(domain: string): Promise<DomainCheckResult> {
   return http.get(`/blocklist/check/${encodeURIComponent(domain)}`);
+}
+
+// ── Per-device profiles ───────────────────────────────────────────────────────
+
+/** Configured profiles + the list names available to build them from. */
+export function getProfiles(): Promise<ProfilesResponse> {
+  return http.get("/blocklist/profiles");
+}
+
+/** Replace the whole profile set; hot-reloads and persists. */
+export function putProfiles(profiles: BlocklistProfile[]): Promise<PutProfilesResponse> {
+  return http.put("/blocklist/profiles", profiles);
 }

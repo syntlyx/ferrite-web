@@ -181,6 +181,7 @@
     "status_allowed": "Erlaubt",
     "whitelisted": "Auf Whitelist",
     "blacklist": "Blacklist",
+    "manual_rules": "Manuelle Regeln",
     "whitelist": "Whitelist",
     "blacklist_placeholder": "ads.example.com",
     "whitelist_placeholder": "safe.example.com",
@@ -533,7 +534,11 @@
     "col_hits_hint": "Über diese Regel geroutete Verbindungen.",
     "alert_webhook": "Alarm-Webhook",
     "alert_webhook_sub": "URL, an die ein JSON-Event per POST gesendet wird, wenn ein Egress länger als eine Minute ausfällt (und erneut bei Wiederherstellung). Funktioniert mit ntfy oder jedem JSON-Empfänger. Leer = aus.",
-    "down_for": "down seit"
+    "down_for": "down seit",
+    "probe_target": "Prüf-Ziel",
+    "probe_target_sub": "host:port, zu dem die Prüfung durch jeden Egress verbindet, um die Latenz zu messen. Muss über jeden Tunnel erreichbar sein (steuert Fail-closed). Leer = 1.1.1.1:443.",
+    "probe_failed": "Prüfung fehlgeschlagen",
+    "probe_slow": "langsam"
   },
   "logs": {
     "title": "Protokolle",
@@ -545,5 +550,21 @@
     "resume": "Fortsetzen",
     "clear": "Ansicht leeren",
     "empty": "Noch keine Protokolleinträge."
+  },
+  "profiles": {
+    "title": "Geräteprofile",
+    "add": "Profil hinzufügen",
+    "help": "Wende eine Teilmenge der Abo-Listen auf bestimmte Geräte an. Geräte ohne Profil nutzen alle aktivierten Listen. Manuelle Sperr-/Erlauben-Einträge und Platzhalter gelten für alle.",
+    "no_lists": "Füge zuerst Abo-Listen hinzu — Profile bauen darauf auf.",
+    "empty": "Noch keine Profile. Jedes Gerät nutzt alle aktivierten Listen.",
+    "name_placeholder": "Kindergeräte",
+    "lists": "Angewendete Listen",
+    "devices": "Geräte",
+    "no_devices": "Noch keine Geräte gesehen — sie erscheinen nach der ersten Anfrage.",
+    "remove_confirm": "Profil „{{name}}“ entfernen?",
+    "saved": "Profile gespeichert",
+    "save": "Profile speichern",
+    "block_here": "Für diese Geräte sperren",
+    "allow_here": "Für diese Geräte erlauben"
   }
 }

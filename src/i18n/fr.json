@@ -181,6 +181,7 @@
     "status_allowed": "Autorise",
     "whitelisted": "Dans la whitelist",
     "blacklist": "Blacklist",
+    "manual_rules": "Règles manuelles",
     "whitelist": "Whitelist",
     "blacklist_placeholder": "ads.example.com",
     "whitelist_placeholder": "safe.example.com",
@@ -533,7 +534,11 @@
     "col_hits_hint": "Connexions routées par cette règle.",
     "alert_webhook": "Webhook d'alerte",
     "alert_webhook_sub": "URL recevant un POST JSON quand un egress reste hors service plus d'une minute (et à nouveau au rétablissement). Fonctionne avec ntfy ou tout récepteur JSON. Vide = désactivé.",
-    "down_for": "hors service"
+    "down_for": "hors service",
+    "probe_target": "Cible de sonde",
+    "probe_target_sub": "host:port auquel la sonde se connecte via chaque egress pour mesurer la latence. Doit être joignable par chaque tunnel (conditionne le fail-closed). Vide = 1.1.1.1:443.",
+    "probe_failed": "sonde en échec",
+    "probe_slow": "lent"
   },
   "logs": {
     "title": "Journaux",
@@ -545,5 +550,21 @@
     "resume": "Reprendre",
     "clear": "Effacer la vue",
     "empty": "Aucun journal pour l'instant."
+  },
+  "profiles": {
+    "title": "Profils d'appareil",
+    "add": "Ajouter un profil",
+    "help": "Appliquez un sous-ensemble des listes d'abonnement à des appareils précis. Les appareils sans profil utilisent toutes les listes activées. Les entrées manuelles de blocage/autorisation et les jokers s'appliquent à tous.",
+    "no_lists": "Ajoutez d'abord des listes d'abonnement — les profils s'en servent.",
+    "empty": "Aucun profil pour l'instant. Chaque appareil utilise toutes les listes activées.",
+    "name_placeholder": "Appareils des enfants",
+    "lists": "Listes appliquées",
+    "devices": "Appareils",
+    "no_devices": "Aucun appareil vu pour l'instant — ils apparaissent après leur première requête.",
+    "remove_confirm": "Supprimer le profil « {{name}} » ?",
+    "saved": "Profils enregistrés",
+    "save": "Enregistrer les profils",
+    "block_here": "Bloquer pour ces appareils",
+    "allow_here": "Autoriser pour ces appareils"
   }
 }

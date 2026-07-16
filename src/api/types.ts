@@ -277,6 +277,35 @@ export interface DomainCheckResult {
   routing?: DomainRouting;
 }
 
+// ── Per-device blocking profiles ──────────────────────────────────────────────
+
+/** A profile applies a subset of the subscription lists to specific clients. */
+export interface BlocklistProfile {
+  /** Stable slug; derived from the name client-side. */
+  id: string;
+  name: string;
+  /** Subscription list names this profile includes (subset of all lists). */
+  lists: string[];
+  /** Client IPs/MACs this profile applies to. */
+  clients: string[];
+  /** Domains blocked only for this profile (overrides the global whitelist). */
+  block: string[];
+  /** Domains allowed only for this profile (overrides the global block + lists). */
+  allow: string[];
+}
+
+export interface ProfilesResponse {
+  profiles: BlocklistProfile[];
+  /** Subscription list names available to build profiles from. */
+  available_lists: string[];
+}
+
+export interface PutProfilesResponse {
+  status: string;
+  persisted: boolean;
+  saved_to?: string | null;
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Diagnostic tools (DNS lookup + WHOIS)
 // ─────────────────────────────────────────────────────────────────────────────
@@ -662,6 +691,8 @@ export interface ProxyConfig {
   max_connections: number;
   /** POSTed a JSON event when an egress stays down past the alert grace. */
   alert_webhook?: string | null;
+  /** host:port the active probe connects to through each egress (blank = default). */
+  probe_target?: string | null;
   egresses: ProxyEgress[];
   rules: ProxyRule[];
 }
@@ -703,8 +734,20 @@ export interface EgressStats {
   down_since_secs?: number | null;
   /** Down past the server's alert grace — what the sidebar badge keys on. */
   alerting?: boolean;
+  /** Last active-probe result (latency + reachability); null until first probe. */
+  probe?: EgressProbe | null;
   /** Busiest first. */
   domains: EgressDomainStats[];
+}
+
+/** The last active-probe measurement through an egress. */
+export interface EgressProbe {
+  /** Round-trip of the last successful probe (ms); null if it failed. */
+  rtt_ms: number | null;
+  /** Did the last probe succeed? */
+  ok: boolean;
+  /** Seconds since the last probe ran. */
+  last_probe_secs_ago: number;
 }
 
 export interface ProxyRuleHits {

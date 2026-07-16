@@ -45,6 +45,7 @@ import { deviceTokens } from "@/api/clients";
 import type {
   ClientEntry,
   EgressKind,
+  EgressProbe,
   EgressStats,
   ProxyConfig,
   ProxyEgress,
@@ -104,6 +105,7 @@ const EMPTY: ProxyConfig = {
   advertise_ipv6: null,
   max_connections: 128,
   alert_webhook: null,
+  probe_target: null,
   egresses: [],
   rules: [],
 };
@@ -507,6 +509,20 @@ export default function Tunnels() {
                     value={cfg.alert_webhook ?? ""}
                     onChange={(e) => setField("alert_webhook", e.target.value || null)}
                     placeholder="https://ntfy.sh/my-ferrite"
+                    className="w-full font-mono"
+                  />
+                </SettingRow>
+                <SettingRow
+                  label={t("tunnels.probe_target", { defaultValue: "Probe target" })}
+                  sub={t("tunnels.probe_target_sub", {
+                    defaultValue:
+                      "host:port the health probe connects to through each egress to measure latency. Must be reachable through every tunnel (it gates fail-closed). Blank = 1.1.1.1:443.",
+                  })}
+                >
+                  <Input
+                    value={cfg.probe_target ?? ""}
+                    onChange={(e) => setField("probe_target", e.target.value || null)}
+                    placeholder="1.1.1.1:443"
                     className="w-full font-mono"
                   />
                 </SettingRow>
@@ -1080,6 +1096,7 @@ function EgressStatsRow({
             {t("tunnels.down_for", { defaultValue: "down" })} {fmtAge(stats.down_since_secs)}
           </span>
         )}
+        {stats.probe && <ProbeChip probe={stats.probe} />}
       </div>
 
       {stats.domains.length > 0 && (
@@ -1107,6 +1124,28 @@ function EgressStatsRow({
         </details>
       )}
     </div>
+  );
+}
+
+/** RTT above this reads as "degraded" (works, but slow) — amber, not red. */
+const DEGRADED_RTT_MS = 300;
+
+/** Active-probe latency chip: green RTT when healthy, amber when slow, red when
+ *  the last probe failed. Shows even for an idle egress (the probe runs anyway). */
+function ProbeChip({ probe }: { probe: EgressProbe }) {
+  const { t } = useTranslation();
+  if (!probe.ok || probe.rtt_ms == null) {
+    return (
+      <span className="text-warn">
+        {t("tunnels.probe_failed", { defaultValue: "probe failed" })}
+      </span>
+    );
+  }
+  const degraded = probe.rtt_ms >= DEGRADED_RTT_MS;
+  return (
+    <span className={cn(degraded ? "text-warn" : "text-cached")}>
+      {probe.rtt_ms} ms{degraded && ` · ${t("tunnels.probe_slow", { defaultValue: "slow" })}`}
+    </span>
   );
 }
 

@@ -30,6 +30,7 @@ import type {
   PatchSettingsBody,
   AddAliasBody,
   ProxyConfig,
+  BlocklistProfile,
 } from "./types";
 
 export const api = {
@@ -70,6 +71,9 @@ export const api = {
   removeWhitelist: (domain: string) => blocklist.removeWhitelist(domain),
 
   checkDomain: (domain: string) => blocklist.checkDomain(domain),
+
+  getProfiles: blocklist.getProfiles,
+  putProfiles: (profiles: BlocklistProfile[]) => blocklist.putProfiles(profiles),
 
   // ── Subscription lists ──────────────────────────────────────────────────────
   getLists: lists.getAll,

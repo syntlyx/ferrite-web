@@ -181,6 +181,7 @@
     "status_allowed": "Permitido",
     "whitelisted": "En lista blanca",
     "blacklist": "Lista negra",
+    "manual_rules": "Reglas manuales",
     "whitelist": "Lista blanca",
     "blacklist_placeholder": "ads.example.com",
     "whitelist_placeholder": "safe.example.com",
@@ -533,7 +534,11 @@
     "col_hits_hint": "Conexiones enrutadas por esta regla.",
     "alert_webhook": "Webhook de alertas",
     "alert_webhook_sub": "URL que recibe un POST JSON cuando un egress lleva caído más de un minuto (y otro al recuperarse). Funciona con ntfy o cualquier receptor JSON. Vacío = desactivado.",
-    "down_for": "caído"
+    "down_for": "caído",
+    "probe_target": "Destino de sonda",
+    "probe_target_sub": "host:port al que la sonda se conecta a través de cada egress para medir la latencia. Debe ser alcanzable por todos los túneles (controla el fail-closed). Vacío = 1.1.1.1:443.",
+    "probe_failed": "sonda fallida",
+    "probe_slow": "lento"
   },
   "logs": {
     "title": "Registros",
@@ -545,5 +550,21 @@
     "resume": "Reanudar",
     "clear": "Limpiar vista",
     "empty": "Aún no hay registros."
+  },
+  "profiles": {
+    "title": "Perfiles de dispositivo",
+    "add": "Añadir perfil",
+    "help": "Aplica un subconjunto de las listas de suscripción a dispositivos concretos. Los dispositivos sin perfil usan todas las listas activas. Las entradas manuales de bloqueo/permiso y los comodines se aplican a todos.",
+    "no_lists": "Añade primero listas de suscripción: los perfiles se construyen a partir de ellas.",
+    "empty": "Aún no hay perfiles. Cada dispositivo usa todas las listas activas.",
+    "name_placeholder": "Dispositivos infantiles",
+    "lists": "Listas aplicadas",
+    "devices": "Dispositivos",
+    "no_devices": "Aún no se ven dispositivos: aparecen cuando consultan.",
+    "remove_confirm": "¿Eliminar el perfil «{{name}}»?",
+    "saved": "Perfiles guardados",
+    "save": "Guardar perfiles",
+    "block_here": "Bloquear para estos dispositivos",
+    "allow_here": "Permitir para estos dispositivos"
   }
 }
