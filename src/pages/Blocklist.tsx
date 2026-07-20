@@ -8,6 +8,7 @@ import {
   Trash2,
   Search,
   ListFilter,
+  ShieldBan,
   ShieldPlus,
   ShieldMinus,
   Save,
@@ -28,6 +29,7 @@ import {
   IconBtn,
   SectionLabel,
   Skeleton,
+  Switch,
   Tabs,
   TabsContent,
   TabsList,
@@ -277,6 +279,7 @@ function ProfilesPanel() {
 
   const [profiles, setProfiles] = useState<BlocklistProfile[]>([]);
   const [availableLists, setAvailableLists] = useState<string[]>([]);
+  const [availableAllowlists, setAvailableAllowlists] = useState<string[]>([]);
   const [knownClients, setKnownClients] = useState<ClientEntry[]>([]);
   const [savedJson, setSavedJson] = useState("[]");
   const [loading, setLoading] = useState(true);
@@ -288,6 +291,7 @@ function ProfilesPanel() {
       .then((d) => {
         setProfiles(d.profiles ?? []);
         setAvailableLists(d.available_lists ?? []);
+        setAvailableAllowlists(d.available_allowlists ?? []);
         setSavedJson(JSON.stringify(d.profiles ?? []));
       })
       .catch(() => {})
@@ -307,7 +311,16 @@ function ProfilesPanel() {
   const addProfile = () =>
     setProfiles((p) => [
       ...p,
-      { id: "", name: "", lists: [...availableLists], clients: [], block: [], allow: [] },
+      {
+        id: "",
+        name: "",
+        lists: [...availableLists],
+        clients: [],
+        block: [],
+        allow: [],
+        allowlists: [],
+        default_deny: false,
+      },
     ]);
 
   const removeProfile = async (i: number) => {
@@ -331,6 +344,23 @@ function ProfilesPanel() {
             }
           : pr,
       ),
+    );
+
+  const toggleAllowlist = (i: number, list: string) =>
+    setProfiles((p) =>
+      p.map((pr, idx) => {
+        if (idx !== i) return pr;
+        const cur = pr.allowlists ?? [];
+        return {
+          ...pr,
+          allowlists: cur.includes(list) ? cur.filter((l) => l !== list) : [...cur, list],
+        };
+      }),
+    );
+
+  const toggleDefaultDeny = (i: number) =>
+    setProfiles((p) =>
+      p.map((pr, idx) => (idx === i ? { ...pr, default_deny: !pr.default_deny } : pr)),
     );
 
   const toggleDevice = (i: number, c: ClientEntry) => {
@@ -460,6 +490,43 @@ function ProfilesPanel() {
                   </div>
                 </div>
 
+                {/* Allowlist subset — empty selection inherits every enabled allowlist */}
+                {availableAllowlists.length > 0 && (
+                  <div>
+                    <span className="text-muted mb-1.5 flex items-center gap-1.5 text-[11px] uppercase tracking-[0.08em]">
+                      <CheckCircle2 size={11} />{" "}
+                      {t("profiles.allowlists", { defaultValue: "Allowlists applied" })}
+                    </span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {availableAllowlists.map((list) => {
+                        const on = (pr.allowlists ?? []).includes(list);
+                        return (
+                          <button
+                            key={list}
+                            type="button"
+                            onClick={() => toggleAllowlist(i, list)}
+                            className={cn(
+                              "rounded-xs border px-2 py-1 font-mono text-[11px] transition-colors",
+                              on
+                                ? "border-cached/40 bg-cached/10 text-cached"
+                                : "border-bdr/70 text-muted hover:text-cached hover:border-cached/40",
+                            )}
+                          >
+                            {list}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    {(pr.allowlists ?? []).length === 0 && (
+                      <p className="text-muted mt-1.5 text-[11px]">
+                        {t("profiles.allowlists_inherit", {
+                          defaultValue: "None selected — all enabled allowlists apply.",
+                        })}
+                      </p>
+                    )}
+                  </div>
+                )}
+
                 {/* Device scope */}
                 <div>
                   <span className="text-muted mb-1.5 flex items-center gap-1.5 text-[11px] uppercase tracking-[0.08em]">
@@ -511,6 +578,43 @@ function ProfilesPanel() {
                     domains={pr.allow ?? []}
                     onAdd={(d) => addManual(i, "allow", d)}
                     onRemove={(d) => removeManual(i, "allow", d)}
+                  />
+                </div>
+
+                {/* Default-deny mode */}
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <span
+                      className={cn(
+                        "flex items-center gap-1.5 text-[11px] uppercase tracking-[0.08em]",
+                        pr.default_deny ? "text-warn" : "text-muted",
+                      )}
+                    >
+                      <ShieldBan size={11} />{" "}
+                      {t("profiles.default_deny", {
+                        defaultValue: "Block everything except allowed",
+                      })}
+                    </span>
+                    <p className="text-muted mt-1 text-[11px] leading-relaxed">
+                      {t("profiles.default_deny_hint", {
+                        defaultValue:
+                          "Only allowed domains resolve for these devices: manual allows plus the allowlists above. Local network names (PTR, .lan, .local, your zones) keep working.",
+                      })}
+                    </p>
+                    {pr.default_deny &&
+                      (pr.allow ?? []).length === 0 &&
+                      availableAllowlists.length === 0 && (
+                        <p className="text-warn mt-1 text-[11px]">
+                          {t("profiles.default_deny_warn", {
+                            defaultValue:
+                              "Nothing is allowed yet — these devices will effectively lose DNS. Add allow entries or an allowlist first.",
+                          })}
+                        </p>
+                      )}
+                  </div>
+                  <Switch
+                    checked={!!pr.default_deny}
+                    onCheckedChange={() => toggleDefaultDeny(i)}
                   />
                 </div>
               </div>

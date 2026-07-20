@@ -83,6 +83,13 @@ export const api = {
   refreshList: (name: string) => lists.refresh(name),
   refreshAllLists: lists.refreshAll,
 
+  // ── Allowlist subscriptions ─────────────────────────────────────────────────
+  getAllowlists: lists.getAllAllow,
+  addAllowlist: (body: AddListBody) => lists.addAllow(body),
+  toggleAllowlist: (name: string, body: PatchListBody) => lists.toggleAllow(name, body),
+  removeAllowlist: (name: string) => lists.removeAllow(name),
+  refreshAllowlist: (name: string) => lists.refreshAllow(name),
+
   // ── Custom DNS ──────────────────────────────────────────────────────────────
   getCustomRecords: dns.getAll,
   addCustomRecord: (body: AddCustomRecordBody) => dns.add(body),

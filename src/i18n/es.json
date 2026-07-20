@@ -226,7 +226,13 @@
     "remove_confirm": "Eliminar la lista \"{{name}}\"? No se puede deshacer.",
     "refresh_toast": "\"{{name}}\" actualizada — {{count}} dominios",
     "refresh_all_toast": "{{count}} listas actualizadas — {{total}} dominios en total",
-    "refreshing_all": "Actualizando…"
+    "refreshing_all": "Actualizando…",
+    "allow_section": "Listas de permitidos",
+    "allow_hint": "Los dominios de estas listas nunca se bloquean — úsalas para corregir falsos positivos de las listas de bloqueo de arriba. Se actualizan junto con las listas de bloqueo.",
+    "allow_add_list": "Añadir lista de permitidos",
+    "allow_no_lists": "No hay listas de permitidos configuradas",
+    "allow_remove_confirm": "¿Eliminar la lista de permitidos \"{{name}}\"? Esta acción no se puede deshacer.",
+    "allow_skipped_title": "Reglas no aplicadas"
   },
   "dns": {
     "title": "Registros DNS personalizados",
@@ -565,6 +571,11 @@
     "saved": "Perfiles guardados",
     "save": "Guardar perfiles",
     "block_here": "Bloquear para estos dispositivos",
-    "allow_here": "Permitir para estos dispositivos"
+    "allow_here": "Permitir para estos dispositivos",
+    "allowlists": "Listas de permitidos aplicadas",
+    "allowlists_inherit": "Ninguna seleccionada — se aplican todas las listas de permitidos habilitadas.",
+    "default_deny": "Bloquear todo excepto lo permitido",
+    "default_deny_hint": "Para estos dispositivos solo se resuelven dominios permitidos: permisos manuales más las listas de permitidos de arriba. Los nombres de red local (PTR, .lan, .local, tus zonas) siguen funcionando.",
+    "default_deny_warn": "Aún no hay nada permitido — estos dispositivos se quedarán prácticamente sin DNS. Añade primero permisos o una lista de permitidos."
   }
 }

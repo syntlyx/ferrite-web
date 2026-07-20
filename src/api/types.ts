@@ -292,12 +292,19 @@ export interface BlocklistProfile {
   block: string[];
   /** Domains allowed only for this profile (overrides the global block + lists). */
   allow: string[];
+  /** Allowlist subscription names this profile includes. Empty = inherit
+   *  every enabled allowlist. */
+  allowlists: string[];
+  /** Block everything not explicitly allowed (local network names exempt). */
+  default_deny: boolean;
 }
 
 export interface ProfilesResponse {
   profiles: BlocklistProfile[];
   /** Subscription list names available to build profiles from. */
   available_lists: string[];
+  /** Allowlist subscription names available for per-profile selection. */
+  available_allowlists: string[];
 }
 
 export interface PutProfilesResponse {

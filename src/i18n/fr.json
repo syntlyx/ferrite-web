@@ -226,7 +226,13 @@
     "remove_confirm": "Supprimer la liste \"{{name}}\"? Action irreversible.",
     "refresh_toast": "\"{{name}}\" rafraichie — {{count}} domaines",
     "refresh_all_toast": "{{count}} listes rafraichies — {{total}} domaines au total",
-    "refreshing_all": "Actualisation…"
+    "refreshing_all": "Actualisation…",
+    "allow_section": "Listes d'autorisation",
+    "allow_hint": "Les domaines de ces listes ne sont jamais bloqués — utilisez-les pour corriger les faux positifs des listes de blocage ci-dessus. Actualisées avec les listes de blocage.",
+    "allow_add_list": "Ajouter une liste d'autorisation",
+    "allow_no_lists": "Aucune liste d'autorisation configurée",
+    "allow_remove_confirm": "Supprimer la liste d'autorisation \"{{name}}\" ? Cette action est irréversible.",
+    "allow_skipped_title": "Règles non appliquées"
   },
   "dns": {
     "title": "Enregistrements DNS perso",
@@ -565,6 +571,11 @@
     "saved": "Profils enregistrés",
     "save": "Enregistrer les profils",
     "block_here": "Bloquer pour ces appareils",
-    "allow_here": "Autoriser pour ces appareils"
+    "allow_here": "Autoriser pour ces appareils",
+    "allowlists": "Listes d'autorisation appliquées",
+    "allowlists_inherit": "Aucune sélectionnée — toutes les listes d'autorisation activées s'appliquent.",
+    "default_deny": "Tout bloquer sauf ce qui est autorisé",
+    "default_deny_hint": "Pour ces appareils, seuls les domaines autorisés sont résolus : autorisations manuelles plus les listes d'autorisation ci-dessus. Les noms du réseau local (PTR, .lan, .local, vos zones) continuent de fonctionner.",
+    "default_deny_warn": "Rien n'est encore autorisé — ces appareils perdront pratiquement le DNS. Ajoutez d'abord des autorisations ou une liste d'autorisation."
   }
 }

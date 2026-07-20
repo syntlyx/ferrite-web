@@ -226,7 +226,13 @@
     "remove_confirm": "Remove subscription list \"{{name}}\"? This cannot be undone.",
     "refresh_toast": "\"{{name}}\" refreshed — {{count}} domains",
     "refresh_all_toast": "All {{count}} lists refreshed — {{total}} total domains",
-    "refreshing_all": "Refreshing…"
+    "refreshing_all": "Refreshing…",
+    "allow_section": "Allowlists",
+    "allow_hint": "Domains on these lists are never blocked — use them to undo false positives from the blocklists above. Refreshed together with blocklists.",
+    "allow_add_list": "Add allowlist",
+    "allow_no_lists": "No allowlists configured",
+    "allow_remove_confirm": "Remove allowlist \"{{name}}\"? This cannot be undone.",
+    "allow_skipped_title": "Rules not applied"
   },
   "dns": {
     "title": "Custom DNS Records",
@@ -565,6 +571,11 @@
     "saved": "Profiles saved",
     "save": "Save profiles",
     "block_here": "Block for these devices",
-    "allow_here": "Allow for these devices"
+    "allow_here": "Allow for these devices",
+    "allowlists": "Allowlists applied",
+    "allowlists_inherit": "None selected — all enabled allowlists apply.",
+    "default_deny": "Block everything except allowed",
+    "default_deny_hint": "Only allowed domains resolve for these devices: manual allows plus the allowlists above. Local network names (PTR, .lan, .local, your zones) keep working.",
+    "default_deny_warn": "Nothing is allowed yet — these devices will effectively lose DNS. Add allow entries or an allowlist first."
   }
 }
