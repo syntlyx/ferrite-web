@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import type { ComponentType, MouseEvent as ReactMouseEvent, ReactNode } from "react";
-import { NavLink, Link, useNavigate, useLocation } from "react-router-dom";
+import { NavLink, Link, useNavigate, useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { FerriteBrand } from "@/components/layout/Brand";

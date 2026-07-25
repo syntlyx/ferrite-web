@@ -1,6 +1,6 @@
 import { Component, lazy, Suspense, useCallback, useEffect, useState } from "react";
 import type { ErrorInfo, ReactNode } from "react";
-import { BrowserRouter, Routes, Route, Navigate, Link } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { ShieldAlert, X } from "lucide-react";
 import { api } from "@/api";
