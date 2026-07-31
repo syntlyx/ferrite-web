@@ -251,7 +251,8 @@ function hotFormFromSettings(s: SettingsType): Omit<HotForm, "api_key" | "passwo
     log_retention_days: String(s.storage?.log_retention_days ?? ""),
     web_dir: String(s.web_dir ?? ""),
     blocklist_enabled: s.blocklist?.enabled ?? true,
-    debug_logging: s.debug_logging ?? true,
+    // Matches the server default: debug logging is off unless turned on.
+    debug_logging: s.debug_logging ?? false,
   };
 }
 
@@ -297,7 +298,7 @@ function buildHotPatch(
   if (form.password !== "") patch.password = form.password;
   if (form.blocklist_enabled !== (settings.blocklist?.enabled ?? true))
     patch.blocklist_enabled = form.blocklist_enabled;
-  if (form.debug_logging !== (settings.debug_logging ?? true))
+  if (form.debug_logging !== (settings.debug_logging ?? false))
     patch.debug_logging = form.debug_logging;
   const originalIgnore = settings.dns?.log_ignore ?? [];
   if (JSON.stringify(logIgnore) !== JSON.stringify(originalIgnore))
@@ -991,7 +992,7 @@ export default function Settings() {
     api_key: "",
     password: "",
     blocklist_enabled: true,
-    debug_logging: true,
+    debug_logging: false,
   });
   const [logIgnore, setLogIgnore] = useState<string[]>([]);
   const [logIgnoreInput, setLogIgnoreInput] = useState("");
