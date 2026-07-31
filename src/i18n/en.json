@@ -273,7 +273,7 @@
     "entries_unit": "entries",
     "general": "General settings",
     "min_ttl": "Min TTL",
-    "min_ttl_sub": "Minimum TTL for responses cached by ferrite (s)",
+    "min_ttl_sub": "Minimum TTL for responses cached by ferrite (s). 0 = keep exactly as long as the origin said.",
     "max_ttl": "Max TTL",
     "max_ttl_sub": "Maximum TTL for responses cached by ferrite (s)",
     "client_ttl": "Client TTL",

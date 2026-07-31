@@ -273,7 +273,7 @@
     "entries_unit": "entrees",
     "general": "Parametres generaux",
     "min_ttl": "TTL min.",
-    "min_ttl_sub": "TTL minimum pour les réponses mises en cache par ferrite (s)",
+    "min_ttl_sub": "TTL minimum pour les réponses mises en cache par ferrite (s). 0 = conserver exactement la durée indiquée par l'origine.",
     "max_ttl": "TTL max.",
     "max_ttl_sub": "TTL maximum pour les réponses mises en cache par ferrite (s)",
     "client_ttl": "TTL client",

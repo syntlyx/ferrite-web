@@ -1194,7 +1194,7 @@ export default function Settings() {
                 <SettingRow label={t("settings.min_ttl")} sub={t("settings.min_ttl_sub")}>
                   <UnitInput
                     type="number"
-                    min={60}
+                    min={0}
                     max={3600}
                     unit="s"
                     value={form.dns_min_ttl}
@@ -1204,7 +1204,7 @@ export default function Settings() {
                 <SettingRow label={t("settings.max_ttl")} sub={t("settings.max_ttl_sub")}>
                   <UnitInput
                     type="number"
-                    min={60}
+                    min={0}
                     max={3600}
                     unit="s"
                     value={form.dns_max_ttl}

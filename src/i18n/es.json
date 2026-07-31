@@ -273,7 +273,7 @@
     "entries_unit": "entradas",
     "general": "Ajustes generales",
     "min_ttl": "TTL min.",
-    "min_ttl_sub": "TTL mínimo para respuestas almacenadas por ferrite (s)",
+    "min_ttl_sub": "TTL mínimo para respuestas almacenadas por ferrite (s). 0 = conservar exactamente lo que indicó el origen.",
     "max_ttl": "TTL max.",
     "max_ttl_sub": "TTL máximo para respuestas almacenadas por ferrite (s)",
     "client_ttl": "TTL de cliente",

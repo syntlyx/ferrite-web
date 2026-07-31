@@ -273,7 +273,7 @@
     "entries_unit": "Eintrage",
     "general": "Allgemeine Einstellungen",
     "min_ttl": "Min. TTL",
-    "min_ttl_sub": "Minimale TTL für von ferrite zwischengespeicherte Antworten (s)",
+    "min_ttl_sub": "Minimale TTL für von ferrite zwischengespeicherte Antworten (s). 0 = genau so lange behalten, wie die Quelle angab.",
     "max_ttl": "Max. TTL",
     "max_ttl_sub": "Maximale TTL für von ferrite zwischengespeicherte Antworten (s)",
     "client_ttl": "Client-TTL",
