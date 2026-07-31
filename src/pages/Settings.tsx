@@ -221,6 +221,7 @@ function stableJson(value: unknown): string {
 type HotForm = {
   dns_min_ttl: string;
   dns_max_ttl: string;
+  dns_client_ttl: string;
   log_retention_days: string;
   web_dir: string;
   api_key: string;
@@ -248,6 +249,7 @@ function hotFormFromSettings(s: SettingsType): Omit<HotForm, "api_key" | "passwo
   return {
     dns_min_ttl: String(s.dns?.min_ttl ?? ""),
     dns_max_ttl: String(s.dns?.max_ttl ?? ""),
+    dns_client_ttl: String(s.dns?.client_ttl ?? ""),
     log_retention_days: String(s.storage?.log_retention_days ?? ""),
     web_dir: String(s.web_dir ?? ""),
     blocklist_enabled: s.blocklist?.enabled ?? true,
@@ -286,6 +288,9 @@ function buildHotPatch(
     patch.dns_min_ttl = Number(form.dns_min_ttl);
   if (form.dns_max_ttl !== "" && Number(form.dns_max_ttl) !== settings.dns?.max_ttl)
     patch.dns_max_ttl = Number(form.dns_max_ttl);
+  // 0 is a real value here ("clients must not cache"), so only "" means unset.
+  if (form.dns_client_ttl !== "" && Number(form.dns_client_ttl) !== settings.dns?.client_ttl)
+    patch.dns_client_ttl = Number(form.dns_client_ttl);
   if (
     form.log_retention_days !== "" &&
     Number(form.log_retention_days) !== settings.storage?.log_retention_days
@@ -987,6 +992,7 @@ export default function Settings() {
   const [form, setForm] = useState<HotForm>({
     dns_min_ttl: "",
     dns_max_ttl: "",
+    dns_client_ttl: "",
     log_retention_days: "",
     web_dir: "",
     api_key: "",
@@ -1203,6 +1209,16 @@ export default function Settings() {
                     unit="s"
                     value={form.dns_max_ttl}
                     onChange={setF("dns_max_ttl")}
+                  />
+                </SettingRow>
+                <SettingRow label={t("settings.client_ttl")} sub={t("settings.client_ttl_sub")}>
+                  <UnitInput
+                    type="number"
+                    min={0}
+                    max={3600}
+                    unit="s"
+                    value={form.dns_client_ttl}
+                    onChange={setF("dns_client_ttl")}
                   />
                 </SettingRow>
                 <SettingRow

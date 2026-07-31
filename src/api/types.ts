@@ -502,8 +502,11 @@ export interface RemoveCustomRecordResponse {
 export interface DnsConfig {
   bind_addr: string;
   cache_size: number;
+  /** Bounds for ferrite's *own* cache — not what client devices are told. */
   min_ttl: number;
   max_ttl: number;
+  /** Ceiling on the TTL advertised to client devices; `0` = don't cache. */
+  client_ttl?: number;
   log_ignore?: string[];
   strip_ecs?: boolean;
   dnssec?: boolean;
@@ -575,6 +578,7 @@ export interface PatchSettingsBody {
   password?: string | null;
   dns_min_ttl?: number;
   dns_max_ttl?: number;
+  dns_client_ttl?: number;
   dns_log_ignore?: string[];
   web_dir?: string | null;
   log_retention_days?: number;
