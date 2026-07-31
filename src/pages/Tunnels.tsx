@@ -714,37 +714,54 @@ export default function Tunnels() {
                                   })}
                                 </p>
                               </details>
-                              {/* Buffer input lives in the header row (next to Name); this is
-                                  the live size→speed readout for the current value. */}
-                              <p className="text-muted text-xs leading-relaxed">
-                                {t("tunnels.buffer_hint", {
-                                  defaultValue:
-                                    "Max/conn ≈ {{a}} Mbit @20ms · {{b}} @50ms · {{c}} @100ms RTT · ~{{ram}} MB RAM/conn",
-                                  a: mbit(e.buffer_kb ?? 256, 20),
-                                  b: mbit(e.buffer_kb ?? 256, 50),
-                                  c: mbit(e.buffer_kb ?? 256, 100),
-                                  ram: (((e.buffer_kb ?? 256) * 2) / 1024).toFixed(1),
-                                })}
-                              </p>
-                              {maxBuf != null && (
-                                <p className="text-muted text-[11px]">
-                                  {t("tunnels.kernel_buffer", {
+                              {/* Buffer input lives in the header row (next to Name). The
+                                  size→speed physics below only applies to the userspace
+                                  backend (static smoltcp window, shared UDP socket); on the
+                                  kernel backend the OS autotunes all of it, so the readouts
+                                  would be misinformation — swap them for a one-line note.
+                                  Null backend (disabled egress / older server) keeps the
+                                  userspace readouts, the only safe assumption. */}
+                              {stats?.egresses[e.id]?.backend === "kernel" ? (
+                                <p className="text-muted text-xs leading-relaxed">
+                                  {t("tunnels.kernel_backend_hint", {
                                     defaultValue:
-                                      "Kernel UDP buffer ≈ {{max}} KB (raise net.core.rmem_max for more)",
-                                    max: maxBuf,
+                                      "Kernel WireGuard — the OS handles buffering, congestion control and crypto (TCP autotuning, multi-core). The Buffer setting is ignored unless the tunnel falls back to the userspace backend.",
                                   })}
                                 </p>
-                              )}
-                              {maxBuf != null && maxBuf < wantBytes(e.buffer_kb ?? 256) / 1024 && (
-                                <div className="border-warn/40 bg-warn/10 text-warn rounded-xs border px-2 py-1.5 text-xs">
-                                  {t("tunnels.buffer_over", {
-                                    defaultValue:
-                                      "{{buf}} KB across parallel downloads can exceed the egress's shared kernel UDP buffer (~{{max}} KB) — media may stall mid-load. Raise it: sudo sysctl -w net.core.rmem_max={{rec}} (or use a smaller buffer).",
-                                    buf: e.buffer_kb ?? 256,
-                                    max: maxBuf,
-                                    rec: wantBytes(e.buffer_kb ?? 256),
-                                  })}
-                                </div>
+                              ) : (
+                                <>
+                                  <p className="text-muted text-xs leading-relaxed">
+                                    {t("tunnels.buffer_hint", {
+                                      defaultValue:
+                                        "Max/conn ≈ {{a}} Mbit @20ms · {{b}} @50ms · {{c}} @100ms RTT · ~{{ram}} MB RAM/conn",
+                                      a: mbit(e.buffer_kb ?? 256, 20),
+                                      b: mbit(e.buffer_kb ?? 256, 50),
+                                      c: mbit(e.buffer_kb ?? 256, 100),
+                                      ram: (((e.buffer_kb ?? 256) * 2) / 1024).toFixed(1),
+                                    })}
+                                  </p>
+                                  {maxBuf != null && (
+                                    <p className="text-muted text-[11px]">
+                                      {t("tunnels.kernel_buffer", {
+                                        defaultValue:
+                                          "Kernel UDP buffer ≈ {{max}} KB (raise net.core.rmem_max for more)",
+                                        max: maxBuf,
+                                      })}
+                                    </p>
+                                  )}
+                                  {maxBuf != null &&
+                                    maxBuf < wantBytes(e.buffer_kb ?? 256) / 1024 && (
+                                      <div className="border-warn/40 bg-warn/10 text-warn rounded-xs border px-2 py-1.5 text-xs">
+                                        {t("tunnels.buffer_over", {
+                                          defaultValue:
+                                            "{{buf}} KB across parallel downloads can exceed the egress's shared kernel UDP buffer (~{{max}} KB) — media may stall mid-load. Raise it: sudo sysctl -w net.core.rmem_max={{rec}} (or use a smaller buffer).",
+                                          buf: e.buffer_kb ?? 256,
+                                          max: maxBuf,
+                                          rec: wantBytes(e.buffer_kb ?? 256),
+                                        })}
+                                      </div>
+                                    )}
+                                </>
                               )}
                             </div>
                           )}
@@ -1053,6 +1070,15 @@ function EgressStatsRow({
   return (
     <div className="space-y-2 md:col-span-6">
       <div className="text-muted flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] tabular-nums">
+        {/* Which WireGuard implementation carries the tunnel. Kernel is the
+            fast path, so it gets the "good" accent; userspace stays muted. */}
+        {stats.backend && (
+          <span className={cn(stats.backend === "kernel" && "text-cached")}>
+            {stats.backend === "kernel"
+              ? t("tunnels.backend_kernel", { defaultValue: "kernel WG" })
+              : t("tunnels.backend_userspace", { defaultValue: "userspace WG" })}
+          </span>
+        )}
         {quiet ? (
           <span>{t("tunnels.no_traffic", { defaultValue: "no traffic yet" })}</span>
         ) : (

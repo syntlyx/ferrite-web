@@ -737,6 +737,9 @@ export interface EgressStats {
   fail_closed_drops: number;
   /** WireGuard only: seconds since the last handshake (null = never / other kinds). */
   handshake_age_secs?: number | null;
+  /** WireGuard only: which implementation carries the tunnel. Null for other
+   *  kinds, unbuilt/disabled egresses, and servers predating the field. */
+  backend?: "kernel" | "userspace" | null;
   /** Seconds this egress has been unhealthy (null while healthy). */
   down_since_secs?: number | null;
   /** Down past the server's alert grace — what the sidebar badge keys on. */
