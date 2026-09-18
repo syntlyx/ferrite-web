@@ -20,6 +20,8 @@ import { cn } from "@/lib/utils";
 import { api } from "@/api";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { PageContainer } from "@/components/layout/PageContainer";
+import { Notice } from "@/components/feedback/Notice";
+import { useSettings } from "@/stores/settings";
 import { Card } from "@/components/layout/Card";
 import { FilterBar } from "@/components/layout/FilterBar";
 import { StatusTile } from "@/components/layout/SettingsPanel";
@@ -332,8 +334,12 @@ export default function Clients() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [limit, setLimit] = useState(LOAD_STEP);
   const [err, setErr] = useState("");
-  const [blockingEnabled, setBlockingEnabled] = useState(true);
-  const [bypassKeys, setBypassKeys] = useState<string[]>([]);
+  const settings = useSettings();
+  const blockingEnabled = settings?.blocklist?.enabled ?? true;
+  const bypassKeys = settings?.blocklist?.client_bypass ?? [];
+  // This whole page is the per-device counters, so it empties with the
+  // statistics switch — say so rather than let it read as "no devices".
+  const statsDisabled = settings?.storage?.keep_stats === false;
   const [togglingBlocking, setTogglingBlocking] = useState("");
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<SortState>({ key: "total", dir: "desc" });
@@ -358,11 +364,9 @@ export default function Clients() {
     setLoading(true);
     setErr("");
     try {
-      const [data, settings] = await Promise.all([api.clients(nextLimit), api.getSettings()]);
+      const data = await api.clients(nextLimit);
       setClients(data.clients ?? []);
       setLimit(nextLimit);
-      setBlockingEnabled(settings.blocklist?.enabled ?? true);
-      setBypassKeys(settings.blocklist?.client_bypass ?? []);
     } catch (e) {
       setErr((e as Error).message);
     } finally {
@@ -402,8 +406,8 @@ export default function Clients() {
         : uniqueKeys([...bypassKeys, ...keys]);
 
       await api.patchSettings({ blocklist_client_bypass: nextBypass });
+      // The store re-reads on this event, which is what refreshes bypassKeys.
       window.dispatchEvent(new Event("ferrite:settings-changed"));
-      setBypassKeys(nextBypass);
       setClients((prev) =>
         prev.map((item) =>
           item === client || item.name === client.name
@@ -476,6 +480,7 @@ export default function Clients() {
         }
       />
       {err && <Err msg={err} />}
+      {statsDisabled && <Notice>{t("clients.stats_disabled")}</Notice>}
 
       {loading && !clients.length && (
         <Card className="p-0! mb-4 overflow-hidden">

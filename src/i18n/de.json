@@ -95,7 +95,8 @@
     "reclaimable": "cache",
     "sensor_unavailable": "Sensor nicht verfugbar",
     "swap_off": "Swap aus",
-    "of_ram": "% RAM"
+    "of_ram": "% RAM",
+    "stats_disabled": "Statistiken sind unter Einstellungen → Datenschutz ausgeschaltet. Die Summen seit dem Start laufen weiter; Top-Listen und Graph bleiben leer, und frühere Statistiken werden nicht zurückgeliefert."
   },
   "queries": {
     "title": "Abfrageprotokoll",
@@ -117,14 +118,16 @@
     "no_queries": "Keine Abfragen gefunden",
     "csv": "CSV",
     "clear_log": "Leeren",
-    "clear_confirm": "Dadurch werden alle Abfragen dauerhaft geloscht.",
+    "clear_confirm": "Damit werden alle Einträge des Anfrage-Logs endgültig gelöscht, samt aller daraus gebauten Statistiken: Top-Listen, 24-Stunden-Graph, Gerätezähler und Host-Listen pro Tunnel. Nicht rückgängig zu machen.",
     "status_allowed": "erlaubt",
     "status_blocked": "blockiert",
     "status_cached": "cache",
     "status_upstream": "upstream",
     "status_routed": "geroutet",
     "page": "Seite {{n}}",
-    "first_page": "Erste Seite (live)"
+    "first_page": "Erste Seite (live)",
+    "log_disabled": "Das Anfrage-Log ist unter Einstellungen → Privatsphäre abgeschaltet. Anfragen werden weiterhin beantwortet, nur nicht aufgezeichnet.",
+    "no_queries_log_off": "Es wird nichts aufgezeichnet"
   },
   "clients": {
     "title": "Clients",
@@ -169,7 +172,8 @@
     "tile_queries_sub": "über alle Clients",
     "tile_bypassing": "Filter umgehen",
     "tile_bypassing_sub": "Clients",
-    "name_device": "Gerät benennen"
+    "name_device": "Gerät benennen",
+    "stats_disabled": "Statistiken sind unter Einstellungen → Datenschutz ausgeschaltet. Diese Seite wird aus den Gerätezählern gebaut und bleibt daher leer. Namen und Aliase funktionieren weiterhin."
   },
   "blocklist": {
     "title": "Blockliste",
@@ -298,6 +302,22 @@
     "debug_logging_sub": "Ausfuhrliche Logs zur Fehlerdiagnose. Standardmaßig an; bei zu viel ausschalten. Sofort wirksam.",
     "log_ignore": "Log-Ignoriermuster",
     "log_ignore_sub": "Passende Domains werden aufgelost, aber nicht protokolliert",
+    "privacy": "Privatsphäre",
+    "privacy_sub": "Was ferrite über die beantworteten Anfragen aufzeichnet. Beide Schalter greifen beim Speichern, ohne Neustart.",
+    "log_queries": "Anfrage-Log",
+    "log_queries_sub": "Einen Eintrag pro Anfrage behalten — die Seite Anfragen und der Verlauf je Gerät. Aus: zu einzelnen Anfragen wird nichts gespeichert. Die Statistiken führen ihre aggregierten Top-Listen weiter, solange sie nicht ebenfalls abgeschaltet sind.",
+    "keep_stats": "Statistiken",
+    "keep_stats_sub": "Top-Domains, Top-Clients und den 24-Stunden-Graphen behalten. Aus: Das Dashboard behält nur die Summen seit dem Start, die weder Domain noch Gerät enthalten. Auch Top-Listen, die Clients-Seite und Gerätestatistiken werden nicht mehr ausgeliefert, einschließlich früher Gespeichertem.",
+    "record_nothing": "Nichts wird aufgezeichnet",
+    "record_nothing_sub": "Sind beide aus, filtert ferrite weiter, speichert aber nichts über das Aufgelöste. Auch der Neustart-Snapshot behält keine gecachten Domains mehr, der Cache startet also kalt.",
+    "purge_data": "Gespeicherte Daten",
+    "purge_data_sub": "Das Abschalten stoppt nur neue Daten. Dies löscht das bereits Gespeicherte — Log, Statistiken und Zähler — und komprimiert die Datenbank.",
+    "purge_data_action": "Gespeicherte Daten löschen",
+    "purging": "Wird gelöscht…",
+    "purge_data_confirm": "Das gesamte Anfrage-Log und alle Statistiken löschen? Das lässt sich nicht rückgängig machen.",
+    "purged": "Gespeicherte Daten gelöscht",
+    "purged_no_vacuum": "Daten gelöscht, aber die Datenbank konnte nicht komprimiert werden — freien Speicherplatz prüfen.",
+    "purged_vacuum_running": "Daten gelöscht. Die Datenbank wird noch neu aufgebaut — der Speicherplatz wird in Kürze frei.",
     "no_patterns": "Keine Muster — alle Abfragen werden protokolliert",
     "add_pattern": "Hinzufugen",
     "save": "Speichern",

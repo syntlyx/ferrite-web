@@ -95,7 +95,8 @@
     "reclaimable": "cache",
     "sensor_unavailable": "capteur indisponible",
     "swap_off": "swap desactive",
-    "of_ram": "% de RAM"
+    "of_ram": "% de RAM",
+    "stats_disabled": "Les statistiques sont désactivées dans Réglages → Confidentialité. Les totaux depuis le démarrage continuent ; les classements et le graphique restent vides, et les statistiques antérieures ne sont pas renvoyées."
   },
   "queries": {
     "title": "Journal des requetes",
@@ -117,14 +118,16 @@
     "no_queries": "Aucune requete trouvee",
     "csv": "CSV",
     "clear_log": "Effacer",
-    "clear_confirm": "Cela supprimera definitivement toutes les requetes.",
+    "clear_confirm": "Cela supprimera définitivement toutes les entrées du journal de requêtes, ainsi que toutes les statistiques qui en découlent : classements, graphique 24 h, compteurs par appareil et listes d'hôtes par tunnel. Action irréversible.",
     "status_allowed": "autorisee",
     "status_blocked": "bloquee",
     "status_cached": "cache",
     "status_upstream": "upstream",
     "status_routed": "routé",
     "page": "Page {{n}}",
-    "first_page": "Première page (live)"
+    "first_page": "Première page (live)",
+    "log_disabled": "Le journal des requêtes est désactivé dans Paramètres → Confidentialité. Les requêtes sont toujours résolues, simplement pas enregistrées.",
+    "no_queries_log_off": "Rien n'est enregistré"
   },
   "clients": {
     "title": "Clients",
@@ -169,7 +172,8 @@
     "tile_queries_sub": "sur tous les clients",
     "tile_bypassing": "Contournent le filtre",
     "tile_bypassing_sub": "clients",
-    "name_device": "Nommer cet appareil"
+    "name_device": "Nommer cet appareil",
+    "stats_disabled": "Les statistiques sont désactivées dans Réglages → Confidentialité. Cette page est construite à partir des compteurs par appareil, elle reste donc vide. Les noms et alias fonctionnent toujours."
   },
   "blocklist": {
     "title": "Liste de blocage",
@@ -298,6 +302,22 @@
     "debug_logging_sub": "Journaux detailles pour diagnostiquer les problemes. Active par defaut; desactivez si trop verbeux. Applique immediatement.",
     "log_ignore": "Motifs ignores du log",
     "log_ignore_sub": "Les domaines correspondants sont resolus mais non journalises",
+    "privacy": "Confidentialité",
+    "privacy_sub": "Ce que ferrite enregistre sur les requêtes qu'il résout. Les deux interrupteurs s'appliquent à l'enregistrement, sans redémarrage.",
+    "log_queries": "Journal des requêtes",
+    "log_queries_sub": "Conserver un enregistrement par requête — la page Requêtes et l'historique par appareil. Désactivé : rien n'est stocké sur les requêtes individuelles. Les statistiques conservent leurs tops agrégés tant que vous ne les désactivez pas aussi.",
+    "keep_stats": "Statistiques",
+    "keep_stats_sub": "Conserver les domaines et clients principaux et le graphique 24 h. Désactivé : le tableau de bord ne garde que les totaux depuis le démarrage, qui ne portent ni domaine ni appareil. Les classements, la page Clients et les stats par appareil cessent aussi d'être servis, y compris ce qui a été stocké avant.",
+    "record_nothing": "Aucun enregistrement",
+    "record_nothing_sub": "Les deux désactivés, ferrite continue de filtrer mais ne conserve rien de ce qui a été résolu. L'instantané de redémarrage cesse aussi de garder les domaines en cache : le cache repart à froid.",
+    "purge_data": "Données stockées",
+    "purge_data_sub": "Désactiver l'enregistrement n'arrête que les nouvelles données. Ceci efface ce qui est déjà stocké — journal, statistiques et compteurs — et compacte la base.",
+    "purge_data_action": "Effacer les données",
+    "purging": "Effacement…",
+    "purge_data_confirm": "Effacer tout le journal des requêtes et toutes les statistiques ? Action irréversible.",
+    "purged": "Données effacées",
+    "purged_no_vacuum": "Données effacées, mais la base n'a pas pu être compactée — vérifiez l'espace disque libre.",
+    "purged_vacuum_running": "Données effacées. La base est encore en cours de reconstruction — l'espace disque sera libéré sous peu.",
     "no_patterns": "Aucun motif — toutes les requetes sont journalisees",
     "add_pattern": "Ajouter",
     "save": "Enregistrer",

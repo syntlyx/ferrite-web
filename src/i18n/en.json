@@ -95,7 +95,8 @@
     "reclaimable": "cache",
     "sensor_unavailable": "sensor unavailable",
     "swap_off": "swap off",
-    "of_ram": "% of RAM"
+    "of_ram": "% of RAM",
+    "stats_disabled": "Statistics are switched off in Settings → Privacy. The totals since start still update; the top lists and the graph stay empty, and earlier statistics are not served back."
   },
   "queries": {
     "title": "Query Log",
@@ -117,14 +118,16 @@
     "no_queries": "No queries found",
     "csv": "CSV",
     "clear_log": "Clear",
-    "clear_confirm": "This will permanently delete all query log entries.",
+    "clear_confirm": "This will permanently delete all query log entries, along with every statistic built from them: top lists, the 24-hour graph, per-device counters and the per-tunnel host lists. This cannot be undone.",
     "status_allowed": "allowed",
     "status_blocked": "blocked",
     "status_cached": "cached",
     "status_upstream": "upstream",
     "status_routed": "routed",
     "page": "Page {{n}}",
-    "first_page": "First page (live)"
+    "first_page": "First page (live)",
+    "log_disabled": "The query log is switched off in Settings → Privacy. Queries are still answered, just not recorded.",
+    "no_queries_log_off": "Nothing is being recorded"
   },
   "clients": {
     "title": "Clients",
@@ -169,7 +172,8 @@
     "tile_queries_sub": "across clients",
     "tile_bypassing": "Bypassing filter",
     "tile_bypassing_sub": "clients",
-    "name_device": "Name this device"
+    "name_device": "Name this device",
+    "stats_disabled": "Statistics are switched off in Settings → Privacy. This page is built from per-device counters, so it stays empty. Names and aliases still work."
   },
   "blocklist": {
     "title": "Blocklist",
@@ -298,6 +302,22 @@
     "debug_logging_sub": "Verbose logs for diagnosing issues. On by default; turn off if too noisy. Applied immediately.",
     "log_ignore": "Log ignore patterns",
     "log_ignore_sub": "Domains matching these patterns are resolved normally but hidden from the query log",
+    "privacy": "Privacy",
+    "privacy_sub": "What ferrite records about the queries it answers. Both switches take effect on Save, without a restart.",
+    "log_queries": "Query log",
+    "log_queries_sub": "Keep one record per query — the Queries page and per-device history. Off: nothing about individual lookups is stored. Statistics keep their own aggregate top lists unless you switch those off as well.",
+    "keep_stats": "Statistics",
+    "keep_stats_sub": "Keep top domains, top clients and the 24-hour graph. Off: the dashboard keeps only the totals since start, which carry no domain or device identity. Top lists, the Clients page and per-device stats stop being served too, including what was stored earlier.",
+    "record_nothing": "Recording nothing",
+    "record_nothing_sub": "With both off ferrite keeps filtering but stores nothing about what was resolved. The restart snapshot also stops keeping cached domains, so a restart begins with a cold cache.",
+    "purge_data": "Stored data",
+    "purge_data_sub": "Switching recording off only stops new data. This deletes what is already stored — query log, statistics and counters — and vacuums the database.",
+    "purge_data_action": "Delete stored data",
+    "purging": "Deleting…",
+    "purge_data_confirm": "Delete the entire query log and all statistics? This cannot be undone.",
+    "purged": "Stored data deleted",
+    "purged_no_vacuum": "Stored data deleted, but the database could not be vacuumed — check the free disk space.",
+    "purged_vacuum_running": "Stored data deleted. The database is still being rebuilt — the disk space will come back shortly.",
     "no_patterns": "No patterns — all queries are logged",
     "add_pattern": "Add",
     "save": "Save",

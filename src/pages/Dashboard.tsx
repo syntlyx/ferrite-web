@@ -30,8 +30,10 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Card } from "@/components/layout/Card";
 import { Err } from "@/components/feedback/Err";
+import { Notice } from "@/components/feedback/Notice";
 import { Bar, Skeleton, Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui";
 import { usePageVisible } from "@/hooks/use-page-visible";
+import { useSettings } from "@/stores/settings";
 import { QTYPE, RCODE_LABEL } from "@/lib/dns";
 import { fmt, pct, formatBytes, formatUptime } from "@/lib/format";
 import type {
@@ -877,6 +879,11 @@ export default function Dashboard() {
   const [sysStats, setSysStats] = useState<SystemStats | null>(null);
   const [err, setErr] = useState("");
   const [updatedAt, setUpdatedAt] = useState<Date | null>(null);
+  // Statistics can be switched off in Settings -> Privacy: the counters below
+  // keep working, the top lists and the graph deliberately stay empty. Read
+  // from the shared store, so toggling the switch anywhere updates this banner
+  // without a remount.
+  const statsDisabled = useSettings()?.storage?.keep_stats === false;
 
   // Top domains / clients time range
   const [topHours, setTopHours] = useState<TopHours>(0);
@@ -1017,6 +1024,7 @@ export default function Dashboard() {
       />
 
       {err && <Err msg={err} />}
+      {statsDisabled && <Notice>{t("dashboard.stats_disabled")}</Notice>}
       {!stats && !err && <DashboardSkeleton />}
 
       {stats && stats.dropped_stats > 0 && (

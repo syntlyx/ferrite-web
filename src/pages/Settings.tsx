@@ -52,6 +52,7 @@ import {
   TabsTrigger,
 } from "@/components/ui";
 import { useToast } from "@/hooks/use-toast";
+import { useConfirm } from "@/hooks/use-confirm";
 import type {
   PatchSettingsBody,
   Settings as SettingsType,
@@ -228,6 +229,8 @@ type HotForm = {
   password: string;
   blocklist_enabled: boolean;
   debug_logging: boolean;
+  log_queries: boolean;
+  keep_stats: boolean;
 };
 
 type RestartForm = {
@@ -255,6 +258,9 @@ function hotFormFromSettings(s: SettingsType): Omit<HotForm, "api_key" | "passwo
     blocklist_enabled: s.blocklist?.enabled ?? true,
     // Matches the server default: debug logging is off unless turned on.
     debug_logging: s.debug_logging ?? false,
+    // Recording is on unless the operator switched it off.
+    log_queries: s.storage?.log_queries ?? true,
+    keep_stats: s.storage?.keep_stats ?? true,
   };
 }
 
@@ -305,6 +311,10 @@ function buildHotPatch(
     patch.blocklist_enabled = form.blocklist_enabled;
   if (form.debug_logging !== (settings.debug_logging ?? false))
     patch.debug_logging = form.debug_logging;
+  if (form.log_queries !== (settings.storage?.log_queries ?? true))
+    patch.log_queries = form.log_queries;
+  if (form.keep_stats !== (settings.storage?.keep_stats ?? true))
+    patch.keep_stats = form.keep_stats;
   const originalIgnore = settings.dns?.log_ignore ?? [];
   if (JSON.stringify(logIgnore) !== JSON.stringify(originalIgnore))
     patch.dns_log_ignore = logIgnore;
@@ -999,6 +1009,8 @@ export default function Settings() {
     password: "",
     blocklist_enabled: true,
     debug_logging: false,
+    log_queries: true,
+    keep_stats: true,
   });
   const [logIgnore, setLogIgnore] = useState<string[]>([]);
   const [logIgnoreInput, setLogIgnoreInput] = useState("");
@@ -1023,6 +1035,35 @@ export default function Settings() {
     panel_url: "",
   });
   const [restarting, setRestarting] = useState(false);
+  const [purging, setPurging] = useState(false);
+  const { confirm, ConfirmDialog } = useConfirm();
+
+  /** Delete every stored query, rollup and counter, then vacuum the database.
+   *  Switching recording off stops new data; this is what removes the old. */
+  async function handlePurge() {
+    if (!(await confirm(t("settings.purge_data_confirm")))) return;
+    setPurging(true);
+    try {
+      const res = await api.purgeQueryLog();
+      // The rows are gone either way; only the disk space is in question, so
+      // don't claim it came back until the rebuild says so.
+      toast(
+        res.vacuum === "failed"
+          ? t("settings.purged_no_vacuum")
+          : res.vacuum === "running"
+            ? t("settings.purged_vacuum_running")
+            : t("settings.purged"),
+      );
+    } catch (e) {
+      // A toast, not the page-level error banner: that banner renders at the very
+      // top, and this button sits far below the fold inside a tab — the failure
+      // would land where nobody is looking, and the button flipping back from
+      // "Deleting…" reads as success.
+      toast((e as Error).message);
+    } finally {
+      setPurging(false);
+    }
+  }
 
   const loadSettings = useCallback(async () => {
     setLoading(true);
@@ -1139,7 +1180,13 @@ export default function Settings() {
     }
   }
 
-  type TextFormField = Exclude<keyof HotForm, "blocklist_enabled">;
+  // Every boolean field, not just the first one that existed: `setF` assigns
+  // `e.target.value`, so letting a boolean through would silently store a string
+  // in it.
+  type TextFormField = Exclude<
+    keyof HotForm,
+    "blocklist_enabled" | "debug_logging" | "log_queries" | "keep_stats"
+  >;
   const setF = (key: TextFormField) => (e: ChangeEvent<HTMLInputElement>) =>
     setForm((p) => ({ ...p, [key]: e.target.value }));
   type RestartTextField = Exclude<
@@ -1151,6 +1198,7 @@ export default function Settings() {
 
   return (
     <PageContainer>
+      {ConfirmDialog}
       <PageHeader
         title={t("settings.title")}
         subtitle={t("settings.subtitle")}
@@ -1332,6 +1380,59 @@ export default function Settings() {
                       </Btn>
                     </div>
                   </div>
+                </SettingRow>
+              </SettingsPanel>
+
+              <SettingsPanel
+                title={t("settings.privacy")}
+                sub={t("settings.privacy_sub")}
+                icon={EyeOff}
+              >
+                <SettingRow
+                  label={t("settings.log_queries")}
+                  sub={t("settings.log_queries_sub")}
+                  badge={
+                    <StatusBadge
+                      set={form.log_queries}
+                      labelSet={t("common.enabled")}
+                      labelUnset={t("common.disabled")}
+                    />
+                  }
+                >
+                  <Switch
+                    checked={form.log_queries}
+                    onCheckedChange={(checked) => setForm((p) => ({ ...p, log_queries: checked }))}
+                  />
+                </SettingRow>
+                <SettingRow
+                  label={t("settings.keep_stats")}
+                  sub={t("settings.keep_stats_sub")}
+                  badge={
+                    <StatusBadge
+                      set={form.keep_stats}
+                      labelSet={t("common.enabled")}
+                      labelUnset={t("common.disabled")}
+                    />
+                  }
+                >
+                  <Switch
+                    checked={form.keep_stats}
+                    onCheckedChange={(checked) => setForm((p) => ({ ...p, keep_stats: checked }))}
+                  />
+                </SettingRow>
+                {!form.log_queries && !form.keep_stats && (
+                  <SettingRow
+                    label={t("settings.record_nothing")}
+                    sub={t("settings.record_nothing_sub")}
+                  >
+                    <span />
+                  </SettingRow>
+                )}
+                <SettingRow label={t("settings.purge_data")} sub={t("settings.purge_data_sub")}>
+                  <Btn type="button" variant="danger" onClick={handlePurge} disabled={purging}>
+                    <Trash2 size={12} />
+                    {purging ? t("settings.purging") : t("settings.purge_data_action")}
+                  </Btn>
                 </SettingRow>
               </SettingsPanel>
             </TabsContent>

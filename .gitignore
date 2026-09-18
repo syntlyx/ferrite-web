@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local TypeScript build cache — regenerated on every build.
+tsconfig.tsbuildinfo

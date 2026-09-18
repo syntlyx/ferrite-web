@@ -30,6 +30,7 @@ import { api } from "@/api";
 import { useTheme } from "@/providers/ThemeProvider";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { usePageVisible } from "@/hooks/use-page-visible";
+import { useSettings } from "@/stores/settings";
 import { Select } from "@/components/ui";
 
 /** How often to re-check (cached) for available updates while the tab is visible. */
@@ -165,7 +166,9 @@ export default function AppShell({ children }: { children: ReactNode }) {
   const collapsed = collapsedRaw === "true";
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [tunnelDown, setTunnelDown] = useState(false);
-  const [blockingEnabled, setBlockingEnabled] = useState(true);
+  // Until the first response lands, assume filtering is on: the neutral badge
+  // beats flashing "filtering off" at someone whose filtering is fine.
+  const blockingEnabled = useSettings()?.blocklist?.enabled ?? true;
   const { theme, toggle: toggleTheme } = useTheme();
   const pageVisible = usePageVisible();
 
@@ -238,29 +241,6 @@ export default function AppShell({ children }: { children: ReactNode }) {
       };
     return { badge: false };
   };
-
-  useEffect(() => {
-    let alive = true;
-
-    const loadBlockingState = () => {
-      api
-        .getSettings()
-        .then((settings) => {
-          if (alive) setBlockingEnabled(settings.blocklist?.enabled ?? true);
-        })
-        .catch(() => {});
-    };
-
-    loadBlockingState();
-    window.addEventListener("focus", loadBlockingState);
-    window.addEventListener("ferrite:settings-changed", loadBlockingState);
-
-    return () => {
-      alive = false;
-      window.removeEventListener("focus", loadBlockingState);
-      window.removeEventListener("ferrite:settings-changed", loadBlockingState);
-    };
-  }, []);
 
   function toggleCollapsed() {
     setCollapsedRaw(String(!collapsed));

@@ -95,7 +95,8 @@
     "reclaimable": "cache",
     "sensor_unavailable": "sensor no disponible",
     "swap_off": "swap desactivado",
-    "of_ram": "% de RAM"
+    "of_ram": "% de RAM",
+    "stats_disabled": "Las estadísticas están desactivadas en Ajustes → Privacidad. Los totales desde el arranque siguen actualizándose; los tops y el gráfico quedan vacíos, y las estadísticas anteriores no se devuelven."
   },
   "queries": {
     "title": "Registro de consultas",
@@ -117,14 +118,16 @@
     "no_queries": "No se encontraron consultas",
     "csv": "CSV",
     "clear_log": "Limpiar",
-    "clear_confirm": "Esto eliminara permanentemente todas las consultas.",
+    "clear_confirm": "Esto borrará permanentemente todas las entradas del log de consultas, junto con todas las estadísticas derivadas: tops, gráfico de 24 horas, contadores por dispositivo y listas de hosts por túnel. No se puede deshacer.",
     "status_allowed": "permitida",
     "status_blocked": "bloqueada",
     "status_cached": "cacheada",
     "status_upstream": "upstream",
     "status_routed": "enrutado",
     "page": "Página {{n}}",
-    "first_page": "Primera página (en vivo)"
+    "first_page": "Primera página (en vivo)",
+    "log_disabled": "El log de consultas está desactivado en Ajustes → Privacidad. Las consultas se responden, solo que no se registran.",
+    "no_queries_log_off": "No se está registrando nada"
   },
   "clients": {
     "title": "Clientes",
@@ -169,7 +172,8 @@
     "tile_queries_sub": "en todos los clientes",
     "tile_bypassing": "Omiten el filtro",
     "tile_bypassing_sub": "clientes",
-    "name_device": "Nombrar este dispositivo"
+    "name_device": "Nombrar este dispositivo",
+    "stats_disabled": "Las estadísticas están desactivadas en Ajustes → Privacidad. Esta página se construye con los contadores por dispositivo, así que queda vacía. Los nombres y alias siguen funcionando."
   },
   "blocklist": {
     "title": "Lista de bloqueo",
@@ -298,6 +302,22 @@
     "debug_logging_sub": "Registros detallados para diagnosticar problemas. Activado por defecto; desactivalo si es demasiado. Se aplica de inmediato.",
     "log_ignore": "Patrones ignorados del log",
     "log_ignore_sub": "Dominios que coincidan se resuelven, pero no se guardan en el log",
+    "privacy": "Privacidad",
+    "privacy_sub": "Lo que ferrite registra sobre las consultas que responde. Ambos interruptores se aplican al guardar, sin reiniciar.",
+    "log_queries": "Log de consultas",
+    "log_queries_sub": "Guardar un registro por consulta — la página Consultas y el historial por dispositivo. Desactivado: no se guarda nada sobre consultas individuales. Las estadísticas siguen manteniendo sus tops agregados salvo que también las desactives.",
+    "keep_stats": "Estadísticas",
+    "keep_stats_sub": "Guardar dominios y clientes top y el gráfico de 24 horas. Desactivado: el panel conserva solo los totales desde el arranque, que no contienen dominio ni dispositivo. Los tops, la página Clientes y las estadísticas por dispositivo tampoco se sirven, incluido lo almacenado antes.",
+    "record_nothing": "Sin registro alguno",
+    "record_nothing_sub": "Con ambos desactivados, ferrite sigue filtrando pero no guarda nada sobre lo resuelto. El snapshot de reinicio también deja de guardar dominios en caché, así que tras reiniciar la caché empieza fría.",
+    "purge_data": "Datos guardados",
+    "purge_data_sub": "Desactivar el registro solo detiene los datos nuevos. Esto borra lo ya guardado — log, estadísticas y contadores — y compacta la base de datos.",
+    "purge_data_action": "Borrar datos guardados",
+    "purging": "Borrando…",
+    "purge_data_confirm": "¿Borrar todo el log de consultas y todas las estadísticas? No se puede deshacer.",
+    "purged": "Datos guardados borrados",
+    "purged_no_vacuum": "Datos borrados, pero no se pudo compactar la base de datos — revisa el espacio libre en disco.",
+    "purged_vacuum_running": "Datos borrados. La base de datos aún se está reconstruyendo — el espacio en disco se liberará en breve.",
     "no_patterns": "Sin patrones — se registran todas las consultas",
     "add_pattern": "Añadir",
     "save": "Guardar",

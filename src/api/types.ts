@@ -534,6 +534,10 @@ export interface StorageConfig {
   backend: string;
   path: string;
   log_retention_days?: number;
+  /** Privacy switch: keep a per-query log. Absent means the server default (on). */
+  log_queries?: boolean;
+  /** Privacy switch: keep aggregate statistics. Absent means the server default (on). */
+  keep_stats?: boolean;
 }
 
 export interface ApiConfig {
@@ -582,6 +586,8 @@ export interface PatchSettingsBody {
   dns_log_ignore?: string[];
   web_dir?: string | null;
   log_retention_days?: number;
+  log_queries?: boolean;
+  keep_stats?: boolean;
   blocklist_enabled?: boolean;
   blocklist_client_bypass?: string[];
   debug_logging?: boolean;

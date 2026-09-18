@@ -21,6 +21,7 @@ import { Card } from "@/components/layout/Card";
 import { FilterBar } from "@/components/layout/FilterBar";
 import { Badge } from "@/components/feedback/Badge";
 import { Err } from "@/components/feedback/Err";
+import { Notice } from "@/components/feedback/Notice";
 import {
   SearchInput,
   Select,
@@ -35,6 +36,7 @@ import {
 import { useDebounce } from "@/hooks/use-debounce";
 import { useConfirm } from "@/hooks/use-confirm";
 import { usePageVisible } from "@/hooks/use-page-visible";
+import { useSettings } from "@/stores/settings";
 import { RCODE_LABEL, RCODE_COLOR, qtypeName } from "@/lib/dns";
 import { fmt } from "@/lib/format";
 import { deviceTokens } from "@/api/clients";
@@ -275,6 +277,9 @@ export default function Queries() {
 
   // Client multi-select
   const [clientList, setClientList] = useState<ClientEntry[]>([]);
+  // The query log can be switched off in Settings -> Privacy. An empty table
+  // then means "nothing is being recorded", not "no traffic" — say which.
+  const logDisabled = useSettings()?.storage?.log_queries === false;
   const [selectedClients, setSelectedClients] = useState<Set<string>>(new Set());
 
   const debouncedDomain = useDebounce(domainInput, 300);
@@ -402,13 +407,18 @@ export default function Queries() {
     }
   }, [load]);
 
-  // Auto-refresh: only on the live first page and only while the tab is
-  // visible. On return to a visible tab, catch up immediately.
+  // Auto-refresh: only on the live first page, only while the tab is visible,
+  // and only while there is something to poll for. On return to a visible tab,
+  // catch up immediately.
   const isLive = pageIndex === 0;
   const pageVisible = usePageVisible();
   const wasHidden = useRef(false);
   useEffect(() => {
     if (!isLive) return;
+    // With the log off the server answers every shape of this request with an
+    // empty list, and the rows stay empty — so the delta cursor never exists and
+    // each tick would fire a *full* list request, four times a minute, forever.
+    if (logDisabled) return;
     if (!pageVisible) {
       wasHidden.current = true;
       return;
@@ -419,7 +429,7 @@ export default function Queries() {
     }
     const id = setInterval(refresh, AUTO_REFRESH);
     return () => clearInterval(id);
-  }, [isLive, pageVisible, refresh]);
+  }, [isLive, pageVisible, refresh, logDisabled]);
 
   function handleSelectFilter(key: keyof QueryFilters, val: QueryFilters[keyof QueryFilters]) {
     resetPagination({ ...filtersRef.current, [key]: val });
@@ -541,6 +551,8 @@ export default function Queries() {
         }
       />
 
+      {logDisabled && <Notice>{t("queries.log_disabled")}</Notice>}
+
       <FilterBar>
         <SearchInput
           icon={Search}
@@ -629,7 +641,14 @@ export default function Queries() {
               </thead>
               <tbody>
                 {rows.length === 0 ? (
-                  <EmptyRow cols={7} message={t("queries.no_queries")} />
+                  <EmptyRow
+                    cols={7}
+                    message={
+                      // "No queries found" would read as "no traffic"; the log is
+                      // simply not being kept.
+                      logDisabled ? t("queries.no_queries_log_off") : t("queries.no_queries")
+                    }
+                  />
                 ) : (
                   rows.map((r) => (
                     <TableRow key={r.id}>
