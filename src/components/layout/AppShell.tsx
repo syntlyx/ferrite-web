@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import type { ComponentType, MouseEvent as ReactMouseEvent, ReactNode } from "react";
 import { NavLink, Link, useNavigate, useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
+import { loadLanguage } from "@/i18n";
 import { cn } from "@/lib/utils";
 import { FerriteBrand } from "@/components/layout/Brand";
 import {
@@ -247,7 +248,9 @@ export default function AppShell({ children }: { children: ReactNode }) {
   }
 
   function switchLang(code: LangCode) {
-    i18n.changeLanguage(code);
+    // The strings for a language other than English arrive with this call, so
+    // the switch lands once they are in rather than flashing the fallback.
+    void loadLanguage(code);
     localStorage.setItem("lang", code);
   }
 
