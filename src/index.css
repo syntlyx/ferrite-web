@@ -3,8 +3,8 @@
 
 @theme {
   /* Typography — Archivo variable (width axis) + IBM Plex Mono */
-  --font-sans: "Archivo", "Avenir Next", "Segoe UI", system-ui, sans-serif;
-  --font-display: "Archivo", "Avenir Next", system-ui, sans-serif;
+  --font-sans: "Archivo", "Inter", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --font-display: "Archivo", "Inter", "Avenir Next", system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", "SF Mono", "Cascadia Code", ui-monospace, Menlo, monospace;
 
   /* Animations */
