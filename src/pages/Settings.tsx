@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import type { ChangeEvent, SubmitEvent, InputHTMLAttributes } from "react";
 import { useTranslation } from "react-i18next";
+import { useRowKeys } from "@/hooks/use-row-keys";
 import {
   Save,
   RefreshCw,
@@ -729,6 +730,9 @@ function ZonesEditor({
   onChange: (next: ZoneDraft[]) => void;
 }) {
   const { t } = useTranslation();
+  // Rows are deleted by index and their name field is editable, so neither can
+  // serve as the key — see `useRowKeys`.
+  const rowKeys = useRowKeys(value.length);
 
   function update(index: number, patch: Partial<ZoneDraft>) {
     onChange(value.map((item, i) => (i === index ? { ...item, ...patch } : item)));
@@ -750,7 +754,7 @@ function ZonesEditor({
           </div>
           {value.map((item, index) => (
             <div
-              key={index}
+              key={rowKeys.keyAt(index)}
               className="grid grid-cols-[minmax(0,1fr)_1.5rem_minmax(0,1fr)_1.5rem] items-center gap-2"
             >
               <Input
@@ -768,7 +772,10 @@ function ZonesEditor({
               />
               <button
                 type="button"
-                onClick={() => onChange(value.filter((_, i) => i !== index))}
+                onClick={() => {
+                  rowKeys.remove(index);
+                  onChange(value.filter((_, i) => i !== index));
+                }}
                 className="text-muted hover:text-blocked justify-self-center transition-colors"
                 title={t("common.delete")}
               >
@@ -781,9 +788,10 @@ function ZonesEditor({
       <Btn
         type="button"
         variant="ghost"
-        onClick={() =>
-          onChange([...value, { name: "1.168.192.in-addr.arpa", upstream: "192.168.1.1:53" }])
-        }
+        onClick={() => {
+          rowKeys.add();
+          onChange([...value, { name: "1.168.192.in-addr.arpa", upstream: "192.168.1.1:53" }]);
+        }}
       >
         <Plus size={12} /> {t("settings.add_zone")}
       </Btn>

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useRowKeys } from "@/hooks/use-row-keys";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -128,6 +129,10 @@ export default function Tunnels() {
   } | null>(null);
   const [maxBuf, setMaxBuf] = useState<number | null>(null);
   const [knownClients, setKnownClients] = useState<ClientEntry[]>([]);
+  // Both lists are edited and deleted by index, so their rows carry identity of
+  // their own — see `useRowKeys`. The expanded rule is tracked by that key too.
+  const egressKeys = useRowKeys(cfg.egresses.length);
+  const ruleKeys = useRowKeys(cfg.rules.length);
   const [openRule, setOpenRule] = useState<number | null>(null);
   const [filter, setFilter] = useState("");
   const [egressFilter, setEgressFilter] = useState("");
@@ -140,6 +145,8 @@ export default function Tunnels() {
       .getProxy()
       .then((d) => {
         setCfg(d.proxy);
+        egressKeys.reset(d.proxy.egresses.length);
+        ruleKeys.reset(d.proxy.rules.length);
         setSavedJson(JSON.stringify(d.proxy));
         setHealth(d.egress_health ?? {});
         setMaxBuf(d.max_buffer_kb ?? null);
@@ -147,7 +154,7 @@ export default function Tunnels() {
       })
       .catch((e: Error) => setErr(e.message))
       .finally(() => setLoading(false));
-  }, []);
+  }, [, egressKeys, ruleKeys]);
 
   useEffect(() => {
     void load();
@@ -246,14 +253,18 @@ export default function Tunnels() {
       };
     });
 
-  const addEgress = () =>
+  const addEgress = () => {
+    egressKeys.add();
     setCfg((c) => ({
       ...c,
       egresses: [...c.egresses, { id: "", name: "", enabled: true, kind: "direct" }],
     }));
+  };
 
-  const removeEgress = (i: number) =>
+  const removeEgress = (i: number) => {
+    egressKeys.remove(i);
     setCfg((c) => ({ ...c, egresses: c.egresses.filter((_, idx) => idx !== i) }));
+  };
 
   // Toggle a whole device in/out of a rule's scope. A device contributes all its
   // tokens (MAC(s) preferred, else IP(s)) so it matches across every IP it uses;
@@ -285,6 +296,7 @@ export default function Tunnels() {
   const addRule = () => {
     setFilter("");
     setEgressFilter("");
+    ruleKeys.add();
     setCfg((c) => ({
       ...c,
       rules: [
@@ -294,11 +306,16 @@ export default function Tunnels() {
     }));
   };
 
-  const removeRule = (i: number) =>
+  const removeRule = (i: number) => {
+    ruleKeys.remove(i);
     setCfg((c) => ({ ...c, rules: c.rules.filter((_, idx) => idx !== i) }));
+  };
 
   function reset() {
-    setCfg(JSON.parse(savedJson) as ProxyConfig);
+    const restored = JSON.parse(savedJson) as ProxyConfig;
+    setCfg(restored);
+    egressKeys.reset(restored.egresses.length);
+    ruleKeys.reset(restored.rules.length);
     setOpenRule(null);
   }
 
@@ -562,7 +579,7 @@ export default function Tunnels() {
                     <div className="space-y-3">
                       {cfg.egresses.map((e, i) => (
                         <div
-                          key={i}
+                          key={egressKeys.keyAt(i)}
                           className="border-bdr/70 rounded-xs grid grid-cols-1 items-end gap-3 border p-3 md:grid-cols-[1fr_auto_auto_auto_auto_auto]"
                         >
                           <Field
@@ -884,12 +901,13 @@ export default function Tunnels() {
                         <div className="border-bdr/70 divide-bdr/55 rounded-xs divide-y border">
                           {filteredRules.map(({ r, i }) => {
                             const scoped = (r.clients ?? []).map((x) => x.toLowerCase());
-                            const isOpen = openRule === i;
+                            const rowKey = ruleKeys.keyAt(i);
+                            const isOpen = openRule === rowKey;
                             const selectedCount = knownClients.filter((c) =>
                               deviceTokens(c).some((tok) => scoped.includes(tok.toLowerCase())),
                             ).length;
                             return (
-                              <div key={i} className="px-2 py-2">
+                              <div key={rowKey} className="px-2 py-2">
                                 <div className={cn("grid items-center gap-2", RULE_COLS)}>
                                   <Input
                                     value={r.pattern}
@@ -910,7 +928,7 @@ export default function Tunnels() {
                                   </Select>
                                   <button
                                     type="button"
-                                    onClick={() => setOpenRule(isOpen ? null : i)}
+                                    onClick={() => setOpenRule(isOpen ? null : rowKey)}
                                     className={cn(
                                       "flex items-center gap-1 truncate text-left text-xs transition-colors",
                                       isOpen ? "text-ember" : "text-muted hover:text-ember",
