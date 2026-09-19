@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./fonts.css";
 
 @theme {
   /* Typography — Archivo variable (width axis) + IBM Plex Mono */
