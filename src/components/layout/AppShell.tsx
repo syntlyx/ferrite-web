@@ -385,8 +385,11 @@ export default function AppShell({ children }: { children: ReactNode }) {
     <div className="app-canvas bg-void flex h-screen justify-center overflow-hidden">
       <div className="border-bdr/70 bg-void/50 max-w-420 relative flex h-screen w-full border-x shadow-[0_0_90px_rgba(0,0,0,0.5)]">
         {/* ── Desktop sidebar ─────────────────────────────────────────────── */}
+        {/* `relative z-20` keeps the rail above the content column: <main> carries a
+            transform (the page fade), which makes it a stacking context of its own and
+            would otherwise paint over the collapsed rail's hover tooltips. */}
         <aside
-          className={`border-bdr/85 bg-sidebar/95 hidden h-screen shrink-0 flex-col border-r shadow-[18px_0_44px_rgba(0,0,0,0.2)] backdrop-blur-xl transition-[width] duration-200 md:flex ${collapsed ? "w-16" : "w-60"}`}
+          className={`border-bdr/85 bg-sidebar/95 relative z-20 hidden h-screen shrink-0 flex-col border-r shadow-[18px_0_44px_rgba(0,0,0,0.2)] backdrop-blur-xl transition-[width] duration-200 md:flex ${collapsed ? "w-16" : "w-60"}`}
         >
           <Link
             to="/"
