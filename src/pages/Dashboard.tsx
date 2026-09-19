@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useState, useRef, useMemo } from "react";
+import { useEffect, useCallback, useState, useRef, useMemo, memo } from "react";
 import type { ComponentType, ReactNode } from "react";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
@@ -61,6 +61,8 @@ const isIpv4 = (s: string) => /^\d+\.\d+\.\d+\.\d+$/.test(s);
 
 const BUCKET_SIZE = 600;
 const NUM_BUCKETS = 144;
+
+type ChartPoint = ReturnType<typeof buildChartData>[number];
 
 function buildChartData(buckets: TimeseriesBucket[]) {
   const map = new Map(buckets.map((b) => [b.bucket, b]));
@@ -871,6 +873,114 @@ function DashboardSkeleton() {
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
+/**
+ * The 24-hour traffic chart, kept out of the page's render.
+ *
+ * The dashboard polls two things on their own five-second timers — the summary
+ * and the system stats — and every tick of either used to re-render this card.
+ * Recharts then rebuilt an SVG of 144 points across four series for a number in
+ * the CPU gauge changing. `chartData` only changes when the summary does, so
+ * memoising on it leaves the chart alone the rest of the time.
+ */
+const TrafficChart = memo(function TrafficChart({ data }: { data: ChartPoint[] }) {
+  const { t } = useTranslation();
+  return (
+    <Card className="mb-4 overflow-hidden p-5">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <p className="text-muted text-[10px] font-semibold uppercase tracking-wider">
+          {t("dashboard.traffic_chart")}
+        </p>
+        <div className="text-muted flex items-center gap-3 text-[10px]">
+          <span className="flex items-center gap-1.5">
+            <span className="h-1.5 w-1.5 rounded-full bg-slate-300" />
+            {t("dashboard.total_queries")}
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="bg-blocked h-1.5 w-1.5 rounded-full" />
+            {t("dashboard.blocked")}
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="bg-cached h-1.5 w-1.5 rounded-full" />
+            {t("dashboard.cached")}
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="bg-upstream h-1.5 w-1.5 rounded-full" />
+            {t("dashboard.upstream")}
+          </span>
+        </div>
+      </div>
+      <ResponsiveContainer width="100%" height={220}>
+        <AreaChart data={data} margin={{ top: 6, right: 8, bottom: 0, left: -14 }}>
+          <defs>
+            <linearGradient id="gT" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#d4c8bb" stopOpacity={0.2} />
+              <stop offset="95%" stopColor="#d4c8bb" stopOpacity={0} />
+            </linearGradient>
+            <linearGradient id="gB" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#ff5c5c" stopOpacity={0.25} />
+              <stop offset="95%" stopColor="#ff5c5c" stopOpacity={0} />
+            </linearGradient>
+            <linearGradient id="gC" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#46d08e" stopOpacity={0.2} />
+              <stop offset="95%" stopColor="#46d08e" stopOpacity={0} />
+            </linearGradient>
+            <linearGradient id="gU" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#5ea7ff" stopOpacity={0.18} />
+              <stop offset="95%" stopColor="#5ea7ff" stopOpacity={0} />
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--color-bdr)" vertical={false} />
+          <XAxis
+            dataKey="t"
+            tick={{ fontSize: 10, fill: "var(--color-muted)" }}
+            tickLine={false}
+            axisLine={false}
+            interval={17}
+          />
+          <YAxis
+            tick={{ fontSize: 10, fill: "var(--color-muted)" }}
+            tickLine={false}
+            axisLine={false}
+          />
+          <Tooltip content={<ChartTooltip />} />
+          <Area
+            type="monotone"
+            dataKey="Queries"
+            stroke="#d4c8bb"
+            strokeWidth={2}
+            fill="url(#gT)"
+            dot={false}
+          />
+          <Area
+            type="monotone"
+            dataKey="Blocked"
+            stroke="#ff5c5c"
+            strokeWidth={1.8}
+            fill="url(#gB)"
+            dot={false}
+          />
+          <Area
+            type="monotone"
+            dataKey="Cached"
+            stroke="#46d08e"
+            strokeWidth={1.6}
+            fill="url(#gC)"
+            dot={false}
+          />
+          <Area
+            type="monotone"
+            dataKey="Upstream"
+            stroke="#5ea7ff"
+            strokeWidth={1.6}
+            fill="url(#gU)"
+            dot={false}
+          />
+        </AreaChart>
+      </ResponsiveContainer>
+    </Card>
+  );
+});
+
 export default function Dashboard() {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -1113,99 +1223,7 @@ export default function Dashboard() {
           {sysStats && <SystemBar sys={sysStats} />}
 
           {/* ── Full-width chart ───────────────────────────────────────────── */}
-          <Card className="mb-4 overflow-hidden p-5">
-            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-              <p className="text-muted text-[10px] font-semibold uppercase tracking-wider">
-                {t("dashboard.traffic_chart")}
-              </p>
-              <div className="text-muted flex items-center gap-3 text-[10px]">
-                <span className="flex items-center gap-1.5">
-                  <span className="h-1.5 w-1.5 rounded-full bg-slate-300" />
-                  {t("dashboard.total_queries")}
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="bg-blocked h-1.5 w-1.5 rounded-full" />
-                  {t("dashboard.blocked")}
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="bg-cached h-1.5 w-1.5 rounded-full" />
-                  {t("dashboard.cached")}
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="bg-upstream h-1.5 w-1.5 rounded-full" />
-                  {t("dashboard.upstream")}
-                </span>
-              </div>
-            </div>
-            <ResponsiveContainer width="100%" height={220}>
-              <AreaChart data={chartData} margin={{ top: 6, right: 8, bottom: 0, left: -14 }}>
-                <defs>
-                  <linearGradient id="gT" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#d4c8bb" stopOpacity={0.2} />
-                    <stop offset="95%" stopColor="#d4c8bb" stopOpacity={0} />
-                  </linearGradient>
-                  <linearGradient id="gB" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#ff5c5c" stopOpacity={0.25} />
-                    <stop offset="95%" stopColor="#ff5c5c" stopOpacity={0} />
-                  </linearGradient>
-                  <linearGradient id="gC" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#46d08e" stopOpacity={0.2} />
-                    <stop offset="95%" stopColor="#46d08e" stopOpacity={0} />
-                  </linearGradient>
-                  <linearGradient id="gU" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#5ea7ff" stopOpacity={0.18} />
-                    <stop offset="95%" stopColor="#5ea7ff" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--color-bdr)" vertical={false} />
-                <XAxis
-                  dataKey="t"
-                  tick={{ fontSize: 10, fill: "var(--color-muted)" }}
-                  tickLine={false}
-                  axisLine={false}
-                  interval={17}
-                />
-                <YAxis
-                  tick={{ fontSize: 10, fill: "var(--color-muted)" }}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <Tooltip content={<ChartTooltip />} />
-                <Area
-                  type="monotone"
-                  dataKey="Queries"
-                  stroke="#d4c8bb"
-                  strokeWidth={2}
-                  fill="url(#gT)"
-                  dot={false}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="Blocked"
-                  stroke="#ff5c5c"
-                  strokeWidth={1.8}
-                  fill="url(#gB)"
-                  dot={false}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="Cached"
-                  stroke="#46d08e"
-                  strokeWidth={1.6}
-                  fill="url(#gC)"
-                  dot={false}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="Upstream"
-                  stroke="#5ea7ff"
-                  strokeWidth={1.6}
-                  fill="url(#gU)"
-                  dot={false}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </Card>
+          <TrafficChart data={chartData} />
 
           {/* ── Bottom row ─────────────────────────────────────────────────── */}
           <div className="grid grid-cols-1 gap-3 xl:grid-cols-[minmax(0,0.95fr)_minmax(460px,1.05fr)]">
