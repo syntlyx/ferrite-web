@@ -3,15 +3,8 @@ import type { ComponentType, ReactNode } from "react";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
-} from "recharts";
+import { AreaTrend } from "@/components/charts/AreaTrend";
+import type { TrendSeries } from "@/components/charts/AreaTrend";
 import {
   Activity,
   Zap,
@@ -873,6 +866,14 @@ function DashboardSkeleton() {
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
+/** The four lines the traffic chart draws, in the order they stack visually. */
+const TRAFFIC_SERIES: TrendSeries<ChartPoint>[] = [
+  { key: "Queries", label: "Total Queries", color: "#d4c8bb", strokeWidth: 2, fillOpacity: 0.2 },
+  { key: "Blocked", label: "Blocked", color: "#ff5c5c", strokeWidth: 1.8, fillOpacity: 0.25 },
+  { key: "Cached", label: "Cached", color: "#46d08e", strokeWidth: 1.6, fillOpacity: 0.2 },
+  { key: "Upstream", label: "Upstream", color: "#5ea7ff", strokeWidth: 1.6, fillOpacity: 0.18 },
+];
+
 /**
  * The 24-hour traffic chart, kept out of the page's render.
  *
@@ -909,74 +910,14 @@ const TrafficChart = memo(function TrafficChart({ data }: { data: ChartPoint[] }
           </span>
         </div>
       </div>
-      <ResponsiveContainer width="100%" height={220}>
-        <AreaChart data={data} margin={{ top: 6, right: 8, bottom: 0, left: -14 }}>
-          <defs>
-            <linearGradient id="gT" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#d4c8bb" stopOpacity={0.2} />
-              <stop offset="95%" stopColor="#d4c8bb" stopOpacity={0} />
-            </linearGradient>
-            <linearGradient id="gB" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#ff5c5c" stopOpacity={0.25} />
-              <stop offset="95%" stopColor="#ff5c5c" stopOpacity={0} />
-            </linearGradient>
-            <linearGradient id="gC" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#46d08e" stopOpacity={0.2} />
-              <stop offset="95%" stopColor="#46d08e" stopOpacity={0} />
-            </linearGradient>
-            <linearGradient id="gU" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#5ea7ff" stopOpacity={0.18} />
-              <stop offset="95%" stopColor="#5ea7ff" stopOpacity={0} />
-            </linearGradient>
-          </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="var(--color-bdr)" vertical={false} />
-          <XAxis
-            dataKey="t"
-            tick={{ fontSize: 10, fill: "var(--color-muted)" }}
-            tickLine={false}
-            axisLine={false}
-            interval={17}
-          />
-          <YAxis
-            tick={{ fontSize: 10, fill: "var(--color-muted)" }}
-            tickLine={false}
-            axisLine={false}
-          />
-          <Tooltip content={<ChartTooltip />} />
-          <Area
-            type="monotone"
-            dataKey="Queries"
-            stroke="#d4c8bb"
-            strokeWidth={2}
-            fill="url(#gT)"
-            dot={false}
-          />
-          <Area
-            type="monotone"
-            dataKey="Blocked"
-            stroke="#ff5c5c"
-            strokeWidth={1.8}
-            fill="url(#gB)"
-            dot={false}
-          />
-          <Area
-            type="monotone"
-            dataKey="Cached"
-            stroke="#46d08e"
-            strokeWidth={1.6}
-            fill="url(#gC)"
-            dot={false}
-          />
-          <Area
-            type="monotone"
-            dataKey="Upstream"
-            stroke="#5ea7ff"
-            strokeWidth={1.6}
-            fill="url(#gU)"
-            dot={false}
-          />
-        </AreaChart>
-      </ResponsiveContainer>
+      <AreaTrend
+        data={data}
+        labelKey="t"
+        series={TRAFFIC_SERIES}
+        tooltip={(point, values) => (
+          <ChartTooltip active label={point.t} payload={values.map((v) => ({ ...v, name: v.label }))} />
+        )}
+      />
     </Card>
   );
 });
