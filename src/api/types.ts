@@ -530,10 +530,41 @@ export interface ZoneConfig {
   upstream: string;
 }
 
+/** Which store holds the query log. `memory` writes nothing to disk and keeps
+ *  nothing across a restart. Configuration is in config.toml either way. */
+export type StorageBackend = "sqlite" | "memory";
+
+/** One place the database could be put, as reported by
+ *  `GET /api/storage/locations`. */
+export interface StorageSuggestion {
+  /** Full database path — what `storage_path` would be set to. */
+  path: string;
+  /** The mount it sits on. */
+  dir: string;
+  /** Filesystem type, or "disk" when it wasn't detected. */
+  fstype: string;
+  /** In RAM: no flash wear, and empty again after a reboot. */
+  ram_backed: boolean;
+  total_bytes?: number | null;
+  available_bytes?: number | null;
+  /** True for the location currently configured. */
+  current: boolean;
+}
+
+export interface StorageLocations {
+  backend: StorageBackend;
+  current: string;
+  default: string;
+  suggestions: StorageSuggestion[];
+}
+
 export interface StorageConfig {
-  backend: string;
+  backend?: StorageBackend;
+  /** Where the database file lives. Unused by the `memory` backend. */
   path: string;
   log_retention_days?: number;
+  /** Cap the query log at this many MB, oldest first. 0/absent = no size cap. */
+  log_max_mb?: number;
   /** Privacy switch: keep a per-query log. Absent means the server default (on). */
   log_queries?: boolean;
   /** Privacy switch: keep aggregate statistics. Absent means the server default (on). */
@@ -550,9 +581,20 @@ export interface BlocklistConfig {
   enabled?: boolean;
   decision_cache_size?: number;
   lists?: SubscriptionList[];
+  /** Manual block entries: exact domains and `*.wildcard` patterns alike. */
+  domains?: string[];
+  /** @deprecated Folded into `domains` by the server on load. */
   wildcard_block?: string[];
+  /** @deprecated Folded into `allowlist.domains` by the server on load. */
   whitelist?: string[];
   client_bypass?: string[];
+}
+
+/** A manual client name alias. Exactly one of `ip`/`mac` is set. */
+export interface ClientAliasConfig {
+  ip?: string;
+  mac?: string;
+  name: string;
 }
 
 export interface PanelConfig {
@@ -572,6 +614,7 @@ export interface Settings {
   panel?: PanelConfig;
   blocklist?: BlocklistConfig;
   custom_records?: CustomRecord[];
+  client_aliases?: ClientAliasConfig[];
   web_dir?: string;
   debug_logging?: boolean;
 }
@@ -586,6 +629,11 @@ export interface PatchSettingsBody {
   dns_log_ignore?: string[];
   web_dir?: string | null;
   log_retention_days?: number;
+  log_max_mb?: number;
+  /** Restart required — the store is built once, at startup. */
+  storage_backend?: StorageBackend;
+  /** Restart required. Validated server-side before it is saved. */
+  storage_path?: string;
   log_queries?: boolean;
   keep_stats?: boolean;
   blocklist_enabled?: boolean;

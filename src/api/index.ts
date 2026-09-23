@@ -98,6 +98,7 @@ export const api = {
   // ── Settings ────────────────────────────────────────────────────────────────
   getSettings: settings.get,
   patchSettings: (body: PatchSettingsBody) => settings.patch(body),
+  storageLocations: settings.locations,
 
   // ── Proxy / Tunnels ───────────────────────────────────────────────────────────
   getProxy: proxy.get,

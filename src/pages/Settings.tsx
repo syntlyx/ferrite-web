@@ -28,6 +28,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { formatBytes } from "@/lib/format";
 import { api } from "@/api";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { PageContainer } from "@/components/layout/PageContainer";
@@ -57,6 +58,9 @@ import { useConfirm } from "@/hooks/use-confirm";
 import type {
   PatchSettingsBody,
   Settings as SettingsType,
+  StorageBackend,
+  StorageLocations,
+  StorageSuggestion,
   UpdateApplyResponse,
   UpdateCheckResponse,
   UpstreamConfig,
@@ -225,6 +229,7 @@ type HotForm = {
   dns_max_ttl: string;
   dns_client_ttl: string;
   log_retention_days: string;
+  log_max_mb: string;
   web_dir: string;
   api_key: string;
   password: string;
@@ -235,6 +240,8 @@ type HotForm = {
 };
 
 type RestartForm = {
+  storage_backend: StorageBackend;
+  storage_path: string;
   dns_bind_addr: string;
   dns_cache_size: string;
   dns_strip_ecs: boolean;
@@ -255,6 +262,7 @@ function hotFormFromSettings(s: SettingsType): Omit<HotForm, "api_key" | "passwo
     dns_max_ttl: String(s.dns?.max_ttl ?? ""),
     dns_client_ttl: String(s.dns?.client_ttl ?? ""),
     log_retention_days: String(s.storage?.log_retention_days ?? ""),
+    log_max_mb: String(s.storage?.log_max_mb ?? ""),
     web_dir: String(s.web_dir ?? ""),
     blocklist_enabled: s.blocklist?.enabled ?? true,
     // Matches the server default: debug logging is off unless turned on.
@@ -269,6 +277,8 @@ function hotFormFromSettings(s: SettingsType): Omit<HotForm, "api_key" | "passwo
  *  load and the post-restart poll so the two stay in sync. */
 function restartFormFromSettings(s: SettingsType): RestartForm {
   return {
+    storage_backend: s.storage?.backend ?? "sqlite",
+    storage_path: s.storage?.path ?? "",
     dns_bind_addr: s.dns?.bind_addr ?? "",
     dns_cache_size: String(s.dns?.cache_size ?? ""),
     dns_strip_ecs: s.dns?.strip_ecs ?? true,
@@ -303,6 +313,8 @@ function buildHotPatch(
     Number(form.log_retention_days) !== settings.storage?.log_retention_days
   )
     patch.log_retention_days = Number(form.log_retention_days);
+  if (form.log_max_mb !== "" && Number(form.log_max_mb) !== (settings.storage?.log_max_mb ?? 0))
+    patch.log_max_mb = Number(form.log_max_mb);
   const nextWebDir = form.web_dir.trim();
   const currentWebDir = settings.web_dir ?? "";
   if (nextWebDir !== currentWebDir) patch.web_dir = nextWebDir === "" ? null : nextWebDir;
@@ -325,6 +337,15 @@ function buildHotPatch(
 /** Diff the restart-required fields against the loaded settings. */
 function buildRestartPatch(form: RestartForm, settings: SettingsType): PatchSettingsBody {
   const patch: PatchSettingsBody = {};
+  if (form.storage_backend !== (settings.storage?.backend ?? "sqlite"))
+    patch.storage_backend = form.storage_backend;
+  // Only meaningful for the sqlite backend, and only when it actually moved.
+  if (
+    form.storage_backend === "sqlite" &&
+    form.storage_path.trim() !== "" &&
+    form.storage_path.trim() !== (settings.storage?.path ?? "")
+  )
+    patch.storage_path = form.storage_path.trim();
   if (form.dns_bind_addr !== (settings.dns?.bind_addr ?? ""))
     patch.dns_bind_addr = form.dns_bind_addr;
   if (form.dns_cache_size !== String(settings.dns?.cache_size ?? ""))
@@ -381,23 +402,23 @@ function UnitInput({
     <div className="group relative w-full">
       <Input
         className={cn(
-          "w-full font-mono tabular-nums [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none",
+          "w-full [appearance:textfield] font-mono tabular-nums [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none",
           unit ? "pr-28" : "pr-16",
           className,
         )}
         {...props}
       />
       {unit && (
-        <span className="text-muted/60 pointer-events-none absolute right-16 top-1/2 -translate-y-1/2 text-[10px]">
+        <span className="pointer-events-none absolute top-1/2 right-16 -translate-y-1/2 text-[10px] text-muted/60">
           {unit}
         </span>
       )}
-      <div className="border-bdr/70 bg-panel/80 absolute right-1.5 top-1/2 grid h-6 -translate-y-1/2 grid-cols-2 overflow-hidden rounded border opacity-40 shadow-[0_6px_16px_rgba(0,0,0,0.18)] transition-opacity group-focus-within:opacity-100 group-hover:opacity-100">
+      <div className="absolute top-1/2 right-1.5 grid h-6 -translate-y-1/2 grid-cols-2 overflow-hidden rounded border border-bdr/70 bg-panel/80 opacity-40 shadow-[0_6px_16px_rgba(0,0,0,0.18)] transition-opacity group-focus-within:opacity-100 group-hover:opacity-100">
         <button
           type="button"
           onClick={() => changeBy(-1)}
           disabled={props.disabled}
-          className="hover:bg-white/7 text-muted hover:text-heading border-bdr/60 flex w-6 items-center justify-center border-r transition-colors disabled:opacity-30"
+          className="flex w-6 items-center justify-center border-r border-bdr/60 text-muted transition-colors hover:bg-white/7 hover:text-heading disabled:opacity-30"
           aria-label="Decrease"
         >
           <Minus size={10} />
@@ -406,7 +427,7 @@ function UnitInput({
           type="button"
           onClick={() => changeBy(1)}
           disabled={props.disabled}
-          className="hover:bg-white/7 text-muted hover:text-heading flex w-6 items-center justify-center transition-colors disabled:opacity-30"
+          className="flex w-6 items-center justify-center text-muted transition-colors hover:bg-white/7 hover:text-heading disabled:opacity-30"
           aria-label="Increase"
         >
           <Plus size={10} />
@@ -434,7 +455,7 @@ function SecretInput({
       />
       <button
         type="button"
-        className="text-muted hover:text-heading absolute right-2.5 top-1/2 -translate-y-1/2 transition-colors"
+        className="absolute top-1/2 right-2.5 -translate-y-1/2 text-muted transition-colors hover:text-heading"
         onClick={onToggle}
         aria-label={shown ? "Hide" : "Show"}
       >
@@ -442,6 +463,14 @@ function SecretInput({
       </button>
     </div>
   );
+}
+
+/** The database file's name, for the retention tile's subtitle. The full path
+ *  is rarely short enough to read there, and the name alone still tells you
+ *  which file the retention setting is pruning. */
+function dbFileName(path?: string): string {
+  const name = path?.split("/").pop();
+  return name && name.length > 0 ? name : "sqlite";
 }
 
 function SettingsOverview({
@@ -485,7 +514,7 @@ function SettingsOverview({
               ? t("settings.forever")
               : `${retention}d`
         }
-        sub={settings.storage?.backend ?? "storage"}
+        sub={dbFileName(settings.storage?.path)}
         tone="upstream"
       />
       <StatusTile
@@ -499,10 +528,64 @@ function SettingsOverview({
   );
 }
 
+/** Is this path on a RAM-backed mount? Used to warn that a reboot clears it.
+ *  Matched by directory prefix, so a hand-typed path under a detected mount is
+ *  recognised too, not only the exact suggestion. */
+function isRamPath(path: string, locations?: StorageLocations | null): boolean {
+  if (!path || !locations) return false;
+  const p = path.replace(/\/+$/, "");
+  return locations.suggestions.some(
+    (s) => s.ram_backed && (p === s.dir || p.startsWith(`${s.dir}/`)),
+  );
+}
+
+/** One chip per place this box offers, for a path field. `pick` maps a
+ *  suggestion to the value the field takes — the database file, or its
+ *  directory. */
+function LocationChips({
+  locations,
+  value,
+  pick,
+  onPick,
+}: {
+  locations: StorageLocations | null;
+  value: string;
+  pick: (s: StorageSuggestion) => string;
+  onPick: (v: string) => void;
+}) {
+  const { t } = useTranslation();
+  if (!locations || locations.suggestions.length === 0) return null;
+  return (
+    <div className="flex flex-wrap gap-1.5">
+      {locations.suggestions.map((sug) => {
+        const v = pick(sug);
+        return (
+          <button
+            key={v}
+            type="button"
+            onClick={() => onPick(v)}
+            title={v}
+            className={cn(
+              "rounded-full border px-2 py-0.5 text-[10px] transition-colors",
+              value === v
+                ? "border-ember/40 bg-ember/10 text-ember"
+                : "border-border text-muted-foreground hover:border-ember/30",
+            )}
+          >
+            {sug.ram_backed ? "RAM" : t("settings.storage_disk")} · {sug.dir}
+            {sug.available_bytes != null &&
+              ` · ${formatBytes(sug.available_bytes)} ${t("settings.storage_free")}`}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 function RestartBadge() {
   const { t } = useTranslation();
   return (
-    <span className="bg-warn/10 text-warn flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium">
+    <span className="flex items-center gap-1 rounded-full bg-warn/10 px-2 py-0.5 text-[10px] font-medium text-warn">
       <AlertTriangle size={9} /> {t("settings.requires_restart")}
     </span>
   );
@@ -515,14 +598,14 @@ const UPSTREAM_TYPES = ["plain", "tls", "https", "quic"] as const;
 function TypeSegments({ value, onChange }: { value: string; onChange: (type: string) => void }) {
   const { t } = useTranslation();
   return (
-    <div className="border-bdr/80 rounded-xs flex w-fit overflow-hidden border">
+    <div className="flex w-fit overflow-hidden rounded-xs border border-bdr/80">
       {UPSTREAM_TYPES.map((type) => (
         <button
           key={type}
           type="button"
           onClick={() => onChange(type)}
           className={cn(
-            "border-bdr/60 not-last:border-r px-2.5 py-1.5 font-mono text-[10px] font-medium uppercase tracking-[0.08em] transition-colors",
+            "border-bdr/60 px-2.5 py-1.5 font-mono text-[10px] font-medium tracking-[0.08em] uppercase transition-colors not-last:border-r",
             type === value
               ? "bg-ember-dim text-ember"
               : "text-muted hover:bg-white/4 hover:text-heading",
@@ -577,11 +660,11 @@ function UpstreamEditor({
       {value.map((item, index) => (
         <div
           key={`${index}-${item.type}`}
-          className="control-surface-muted border-bdr/70 rounded-xs border p-3"
+          className="control-surface-muted rounded-xs border border-bdr/70 p-3"
         >
           <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-3">
-              <span className="text-ember font-mono text-[11px] font-semibold tabular-nums">
+              <span className="font-mono text-[11px] font-semibold text-ember tabular-nums">
                 #{index + 1}
               </span>
               <TypeSegments value={item.type} onChange={(type) => update(index, { type })} />
@@ -590,7 +673,7 @@ function UpstreamEditor({
               type="button"
               onClick={() => remove(index)}
               disabled={value.length <= 1}
-              className="text-muted hover:text-blocked transition-colors disabled:opacity-30"
+              className="text-muted transition-colors hover:text-blocked disabled:opacity-30"
               title={t("common.delete")}
             >
               <Trash2 size={13} />
@@ -683,7 +766,7 @@ function UpstreamEditor({
                     </option>
                   ))}
                 </Select>
-                <span className="text-muted block text-[10px] leading-snug">
+                <span className="block text-[10px] leading-snug text-muted">
                   {t("settings.upstream_egress_help", {
                     defaultValue:
                       "Send this resolver's queries through the tunnel. Falls back to direct if the tunnel is down.",
@@ -702,7 +785,7 @@ function UpstreamEditor({
         >
           <Plus size={12} /> {t("settings.add_upstream")}
         </Btn>
-        <span className="text-muted/70 font-mono text-[10px] uppercase tracking-[0.12em]">
+        <span className="font-mono text-[10px] tracking-[0.12em] text-muted/70 uppercase">
           {t("settings.quick_add")}:
         </span>
         {UPSTREAM_PRESETS.map((preset) => (
@@ -710,7 +793,7 @@ function UpstreamEditor({
             key={preset.label}
             type="button"
             onClick={() => onChange([...value, { ...preset.draft }])}
-            className="border-bdr/80 text-muted hover:border-ember/40 hover:text-ember rounded-xs border px-2 py-1 font-mono text-[10px] transition-colors"
+            className="rounded-xs border border-bdr/80 px-2 py-1 font-mono text-[10px] text-muted transition-colors hover:border-ember/40 hover:text-ember"
           >
             {preset.label}
           </button>
@@ -741,12 +824,12 @@ function ZonesEditor({
   return (
     <div className="w-full space-y-2">
       {value.length === 0 ? (
-        <p className="border-bdr/70 bg-sidebar/60 text-muted rounded-xs border px-3 py-3 text-xs">
+        <p className="rounded-xs border border-bdr/70 bg-sidebar/60 px-3 py-3 text-xs text-muted">
           {t("settings.zones_empty")}
         </p>
       ) : (
         <div className="space-y-1.5">
-          <div className="text-muted grid grid-cols-[minmax(0,1fr)_1.5rem_minmax(0,1fr)_1.5rem] items-center gap-2 px-1">
+          <div className="grid grid-cols-[minmax(0,1fr)_1.5rem_minmax(0,1fr)_1.5rem] items-center gap-2 px-1 text-muted">
             <FieldLabel>{t("settings.zone_name")}</FieldLabel>
             <span />
             <FieldLabel>{t("settings.zone_upstream")}</FieldLabel>
@@ -763,7 +846,7 @@ function ZonesEditor({
                 placeholder="lan.home.arpa"
                 className="w-full font-mono"
               />
-              <MoveRight size={13} className="text-ember/70 justify-self-center" />
+              <MoveRight size={13} className="justify-self-center text-ember/70" />
               <Input
                 value={item.upstream}
                 onChange={(e) => update(index, { upstream: e.target.value })}
@@ -776,7 +859,7 @@ function ZonesEditor({
                   rowKeys.remove(index);
                   onChange(value.filter((_, i) => i !== index));
                 }}
-                className="text-muted hover:text-blocked justify-self-center transition-colors"
+                className="justify-self-center text-muted transition-colors hover:text-blocked"
                 title={t("common.delete")}
               >
                 <Trash2 size={13} />
@@ -807,12 +890,12 @@ function ConfigSection({ title, value }: { title: string; value: unknown }) {
 
   return (
     <div className="mb-3 last:mb-0">
-      <p className="text-ember mb-1.5 text-xs font-medium">{title}</p>
-      <div className="border-bdr space-y-1 border-l pl-2">
+      <p className="mb-1.5 text-xs font-medium text-ember">{title}</p>
+      <div className="space-y-1 border-l border-bdr pl-2">
         {entries.map(([k, v]) => (
           <div key={String(k)} className="flex justify-between gap-4 text-xs">
-            <span className="text-muted shrink-0 font-mono">{String(k)}</span>
-            <span className="text-body truncate text-right font-mono">{formatConfigValue(v)}</span>
+            <span className="shrink-0 font-mono text-muted">{String(k)}</span>
+            <span className="truncate text-right font-mono text-body">{formatConfigValue(v)}</span>
           </div>
         ))}
       </div>
@@ -830,21 +913,21 @@ function CollapsibleConfig({ settings }: { settings: SettingsType }) {
         onClick={() => setOpen((p) => !p)}
       >
         <span>
-          <span className="text-heading block text-sm font-semibold">
+          <span className="block text-sm font-semibold text-heading">
             {t("settings.current_config")}
           </span>
-          <span className="text-muted mt-0.5 block text-xs">
+          <span className="mt-0.5 block text-xs text-muted">
             {t("settings.current_config_sub")}
           </span>
         </span>
         {open ? (
-          <ChevronUp size={13} className="text-muted shrink-0" />
+          <ChevronUp size={13} className="shrink-0 text-muted" />
         ) : (
-          <ChevronDown size={13} className="text-muted shrink-0" />
+          <ChevronDown size={13} className="shrink-0 text-muted" />
         )}
       </button>
       {open && (
-        <div className="border-bdr/55 max-h-120 overflow-auto border-t px-4 py-4">
+        <div className="max-h-120 overflow-auto border-t border-bdr/55 px-4 py-4">
           {Object.entries(settings).map(([k, v]) => (
             <ConfigSection key={k} title={k} value={v} />
           ))}
@@ -929,14 +1012,14 @@ function UpdatesCard() {
     return (
       <div className="space-y-1 text-xs">
         <div className="flex items-center gap-3">
-          <span className="text-muted w-20">{label}</span>
-          <span className="text-heading font-mono">{component.current}</span>
+          <span className="w-20 text-muted">{label}</span>
+          <span className="font-mono text-heading">{component.current}</span>
           {component.update_available ? (
-            <span className="bg-ember/10 text-ember flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium">
+            <span className="flex items-center gap-1 rounded-full bg-ember/10 px-2 py-0.5 text-[10px] font-medium text-ember">
               → {component.latest}
             </span>
           ) : component.blocked ? (
-            <span className="bg-upstream/10 text-upstream flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium">
+            <span className="flex items-center gap-1 rounded-full bg-upstream/10 px-2 py-0.5 text-[10px] font-medium text-upstream">
               {t("settings.update_blocked")} {component.blocked.version}
             </span>
           ) : (
@@ -944,7 +1027,7 @@ function UpdatesCard() {
           )}
         </div>
         {component.blocked && (
-          <p className="text-muted/70 ml-23 text-[11px] leading-relaxed">
+          <p className="ml-23 text-[11px] leading-relaxed text-muted/70">
             {component.blocked.reason}
           </p>
         )}
@@ -990,9 +1073,9 @@ function UpdatesCard() {
         </div>
       )}
 
-      {!info && !msg && <p className="text-muted py-4 text-xs">{t("settings.updates_empty")}</p>}
+      {!info && !msg && <p className="py-4 text-xs text-muted">{t("settings.updates_empty")}</p>}
 
-      {msg && <p className="text-upstream py-4 text-xs">{msg}</p>}
+      {msg && <p className="py-4 text-xs text-upstream">{msg}</p>}
     </SettingsPanel>
   );
 }
@@ -1012,6 +1095,7 @@ export default function Settings() {
     dns_max_ttl: "",
     dns_client_ttl: "",
     log_retention_days: "",
+    log_max_mb: "",
     web_dir: "",
     api_key: "",
     password: "",
@@ -1029,6 +1113,8 @@ export default function Settings() {
   const [passwordSet, setPasswordSet] = useState(false);
 
   const [restartForm, setRestartForm] = useState<RestartForm>({
+    storage_backend: "sqlite",
+    storage_path: "",
     dns_bind_addr: "",
     dns_cache_size: "",
     dns_strip_ecs: true,
@@ -1043,6 +1129,7 @@ export default function Settings() {
     panel_url: "",
   });
   const [restarting, setRestarting] = useState(false);
+  const [storageLocations, setStorageLocations] = useState<StorageLocations | null>(null);
   const [purging, setPurging] = useState(false);
   const { confirm, ConfirmDialog } = useConfirm();
 
@@ -1088,6 +1175,12 @@ export default function Settings() {
       api
         .checkAuth()
         .then((a) => setPasswordSet(a.password_set))
+        .catch(() => {});
+      // Best-effort: the path field works without the suggestions, so a
+      // failure here leaves the operator typing rather than stuck.
+      api
+        .storageLocations()
+        .then(setStorageLocations)
         .catch(() => {});
     } catch (e) {
       setErr((e as Error).message);
@@ -1221,7 +1314,7 @@ export default function Settings() {
       {loading && <Spinner />}
 
       {restarting && (
-        <div className="border-warn/30 bg-warn/5 text-warn rounded-xs mb-4 flex items-center gap-2.5 border px-4 py-3 text-xs">
+        <div className="mb-4 flex items-center gap-2.5 rounded-xs border border-warn/30 bg-warn/5 px-4 py-3 text-xs text-warn">
           <RefreshCw size={13} className="shrink-0 animate-spin" />
           {t("settings.restarting")}
         </div>
@@ -1289,6 +1382,65 @@ export default function Settings() {
                     onChange={setF("log_retention_days")}
                   />
                 </SettingRow>
+                <SettingRow
+                  label={t("settings.storage_backend")}
+                  sub={
+                    restartForm.storage_backend === "memory"
+                      ? t("settings.storage_backend_memory_sub")
+                      : t("settings.storage_backend_sqlite_sub")
+                  }
+                  badge={<RestartBadge />}
+                >
+                  <Select
+                    value={restartForm.storage_backend}
+                    onChange={(e) =>
+                      setRestartForm((f) => ({
+                        ...f,
+                        storage_backend: e.target.value as StorageBackend,
+                      }))
+                    }
+                    className="w-full"
+                  >
+                    <option value="sqlite">{t("settings.storage_backend_sqlite")}</option>
+                    <option value="memory">{t("settings.storage_backend_memory")}</option>
+                  </Select>
+                </SettingRow>
+                {restartForm.storage_backend === "sqlite" && (
+                  <SettingRow
+                    label={t("settings.storage_path")}
+                    sub={t("settings.storage_path_sub")}
+                    badge={<RestartBadge />}
+                  >
+                    <div className="w-full space-y-1.5">
+                      <Input
+                        value={restartForm.storage_path}
+                        onChange={(e) =>
+                          setRestartForm((f) => ({ ...f, storage_path: e.target.value }))
+                        }
+                        placeholder={storageLocations?.default ?? "/var/lib/ferrite/ferrite.db"}
+                        className="w-full font-mono"
+                      />
+                      <LocationChips
+                        locations={storageLocations}
+                        value={restartForm.storage_path}
+                        pick={(sug) => sug.path}
+                        onPick={(v) => setRestartForm((f) => ({ ...f, storage_path: v }))}
+                      />
+                      {isRamPath(restartForm.storage_path, storageLocations) && (
+                        <p className="text-[11px] text-warn">{t("settings.storage_ram_warning")}</p>
+                      )}
+                    </div>
+                  </SettingRow>
+                )}
+                <SettingRow label={t("settings.log_max_mb")} sub={t("settings.log_max_mb_sub")}>
+                  <UnitInput
+                    type="number"
+                    min={0}
+                    unit="MB"
+                    value={form.log_max_mb}
+                    onChange={setF("log_max_mb")}
+                  />
+                </SettingRow>
                 <SettingRow label={t("settings.web_dir")} sub={t("settings.web_dir_sub")}>
                   <Input
                     value={form.web_dir}
@@ -1342,9 +1494,9 @@ export default function Settings() {
                   align="start"
                 >
                   <div className="w-full space-y-3">
-                    <div className="border-bdr/70 bg-sidebar/60 min-h-18 rounded-xs border p-2">
+                    <div className="min-h-18 rounded-xs border border-bdr/70 bg-sidebar/60 p-2">
                       {logIgnore.length === 0 ? (
-                        <span className="text-muted/60 block px-1 py-1 text-xs italic">
+                        <span className="block px-1 py-1 text-xs text-muted/60 italic">
                           {t("settings.no_patterns")}
                         </span>
                       ) : (
@@ -1352,7 +1504,7 @@ export default function Settings() {
                           {logIgnore.map((pattern) => (
                             <span
                               key={pattern}
-                              className="border-bdr/80 bg-panel text-body rounded-xs flex max-w-full items-center gap-1.5 border px-2 py-1 font-mono text-[11px]"
+                              className="flex max-w-full items-center gap-1.5 rounded-xs border border-bdr/80 bg-panel px-2 py-1 font-mono text-[11px] text-body"
                             >
                               <span className="truncate">{pattern}</span>
                               <button
@@ -1360,7 +1512,7 @@ export default function Settings() {
                                 onClick={() =>
                                   setLogIgnore((prev) => prev.filter((x) => x !== pattern))
                                 }
-                                className="text-muted hover:text-blocked shrink-0 transition-colors"
+                                className="shrink-0 text-muted transition-colors hover:text-blocked"
                                 aria-label={t("common.delete")}
                               >
                                 <X size={10} />
@@ -1707,10 +1859,10 @@ export default function Settings() {
           </Tabs>
 
           {dirty && (
-            <div className="control-surface plate-ticks border-bdr/85 rounded-xs animate-fade-up sticky bottom-4 z-10 flex flex-col gap-3 border px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="control-surface plate-ticks sticky bottom-4 z-10 flex animate-fade-up flex-col gap-3 rounded-xs border border-bdr/85 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-2.5 text-xs">
-                <span className="bg-warn h-1.5 w-1.5 animate-pulse" />
-                <span className="text-heading font-medium">{t("settings.unsaved_changes")}</span>
+                <span className="h-1.5 w-1.5 animate-pulse bg-warn" />
+                <span className="font-medium text-heading">{t("settings.unsaved_changes")}</span>
                 {restartNeeded && <RestartBadge />}
               </div>
               <div className="flex gap-2">
