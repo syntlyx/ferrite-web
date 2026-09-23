@@ -556,12 +556,21 @@ export interface StorageLocations {
   current: string;
   default: string;
   suggestions: StorageSuggestion[];
+  /** The compiled blocklist cache, placed from the same suggestions — each
+   *  one's `dir` is what `blocklist_cache_dir` would be set to. */
+  blocklist_cache?: {
+    current: string;
+    default: string;
+    available_bytes?: number | null;
+  };
 }
 
 export interface StorageConfig {
   backend?: StorageBackend;
   /** Where the database file lives. Unused by the `memory` backend. */
   path: string;
+  /** Directory for the compiled blocklist (FSTs and per-list caches). */
+  blocklist_cache_dir?: string;
   log_retention_days?: number;
   /** Cap the query log at this many MB, oldest first. 0/absent = no size cap. */
   log_max_mb?: number;
@@ -634,6 +643,8 @@ export interface PatchSettingsBody {
   storage_backend?: StorageBackend;
   /** Restart required. Validated server-side before it is saved. */
   storage_path?: string;
+  /** Restart required. Validated server-side before it is saved. */
+  blocklist_cache_dir?: string;
   log_queries?: boolean;
   keep_stats?: boolean;
   blocklist_enabled?: boolean;

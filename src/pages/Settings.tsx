@@ -242,6 +242,7 @@ type HotForm = {
 type RestartForm = {
   storage_backend: StorageBackend;
   storage_path: string;
+  blocklist_cache_dir: string;
   dns_bind_addr: string;
   dns_cache_size: string;
   dns_strip_ecs: boolean;
@@ -279,6 +280,7 @@ function restartFormFromSettings(s: SettingsType): RestartForm {
   return {
     storage_backend: s.storage?.backend ?? "sqlite",
     storage_path: s.storage?.path ?? "",
+    blocklist_cache_dir: s.storage?.blocklist_cache_dir ?? "",
     dns_bind_addr: s.dns?.bind_addr ?? "",
     dns_cache_size: String(s.dns?.cache_size ?? ""),
     dns_strip_ecs: s.dns?.strip_ecs ?? true,
@@ -346,6 +348,12 @@ function buildRestartPatch(form: RestartForm, settings: SettingsType): PatchSett
     form.storage_path.trim() !== (settings.storage?.path ?? "")
   )
     patch.storage_path = form.storage_path.trim();
+  // Independent of the backend: the memory backend still keeps this on disk.
+  if (
+    form.blocklist_cache_dir.trim() !== "" &&
+    form.blocklist_cache_dir.trim() !== (settings.storage?.blocklist_cache_dir ?? "")
+  )
+    patch.blocklist_cache_dir = form.blocklist_cache_dir.trim();
   if (form.dns_bind_addr !== (settings.dns?.bind_addr ?? ""))
     patch.dns_bind_addr = form.dns_bind_addr;
   if (form.dns_cache_size !== String(settings.dns?.cache_size ?? ""))
@@ -1115,6 +1123,7 @@ export default function Settings() {
   const [restartForm, setRestartForm] = useState<RestartForm>({
     storage_backend: "sqlite",
     storage_path: "",
+    blocklist_cache_dir: "",
     dns_bind_addr: "",
     dns_cache_size: "",
     dns_strip_ecs: true,
@@ -1432,6 +1441,35 @@ export default function Settings() {
                     </div>
                   </SettingRow>
                 )}
+                <SettingRow
+                  label={t("settings.blocklist_cache_dir")}
+                  sub={t("settings.blocklist_cache_dir_sub")}
+                  badge={<RestartBadge />}
+                >
+                  <div className="w-full space-y-1.5">
+                    <Input
+                      value={restartForm.blocklist_cache_dir}
+                      onChange={(e) =>
+                        setRestartForm((f) => ({ ...f, blocklist_cache_dir: e.target.value }))
+                      }
+                      placeholder={
+                        storageLocations?.blocklist_cache?.default ?? "~/.local/share/ferrite"
+                      }
+                      className="w-full font-mono"
+                    />
+                    <LocationChips
+                      locations={storageLocations}
+                      value={restartForm.blocklist_cache_dir.replace(/\/+$/, "")}
+                      pick={(sug) => sug.dir}
+                      onPick={(v) => setRestartForm((f) => ({ ...f, blocklist_cache_dir: v }))}
+                    />
+                    {isRamPath(restartForm.blocklist_cache_dir, storageLocations) && (
+                      <p className="text-[11px] text-warn">
+                        {t("settings.blocklist_cache_ram_warning")}
+                      </p>
+                    )}
+                  </div>
+                </SettingRow>
                 <SettingRow label={t("settings.log_max_mb")} sub={t("settings.log_max_mb_sub")}>
                   <UnitInput
                     type="number"
