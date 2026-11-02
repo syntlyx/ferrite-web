@@ -149,6 +149,11 @@ function stableJson(value: unknown): string {
   return JSON.stringify(value);
 }
 
+/** The stale window in whole hours, as the form shows it. */
+function staleHours(secs: number | undefined): string {
+  return String(Math.round((secs ?? 43200) / 3600));
+}
+
 export type HotForm = {
   dns_min_ttl: string;
   dns_max_ttl: string;
@@ -156,6 +161,10 @@ export type HotForm = {
   dns_serve_stale: boolean;
   /** Hours, as typed. */
   dns_stale_max_age_h: string;
+  dns_rate_limit: string;
+  /** One IP or CIDR range per line. */
+  dns_allowed_clients: string;
+  dns_denied_clients: string;
   log_retention_days: string;
   log_max_mb: string;
   web_dir: string;
@@ -194,7 +203,10 @@ export function hotFormFromSettings(s: SettingsType): Omit<HotForm, "api_key" | 
     dns_max_ttl: String(s.dns?.max_ttl ?? ""),
     dns_client_ttl: String(s.dns?.client_ttl ?? ""),
     dns_serve_stale: s.dns?.serve_stale ?? false,
-    dns_stale_max_age_h: String(Math.round((s.dns?.stale_max_age ?? 43200) / 3600)),
+    dns_stale_max_age_h: staleHours(s.dns?.stale_max_age),
+    dns_rate_limit: String(s.dns?.rate_limit ?? 0),
+    dns_allowed_clients: (s.dns?.allowed_clients ?? []).join("\n"),
+    dns_denied_clients: (s.dns?.denied_clients ?? []).join("\n"),
     log_retention_days: String(s.storage?.log_retention_days ?? ""),
     log_max_mb: String(s.storage?.log_max_mb ?? ""),
     web_dir: String(s.web_dir ?? ""),
@@ -248,11 +260,26 @@ export function buildHotPatch(
     patch.dns_client_ttl = Number(form.dns_client_ttl);
   if (form.dns_serve_stale !== (settings.dns?.serve_stale ?? false))
     patch.dns_serve_stale = form.dns_serve_stale;
+  // The field shows whole hours; compare in hours too, so a value set in
+  // seconds elsewhere (config file, API) isn't rewritten by an unrelated save.
   if (
     form.dns_stale_max_age_h !== "" &&
-    Number(form.dns_stale_max_age_h) * 3600 !== (settings.dns?.stale_max_age ?? 43200)
+    form.dns_stale_max_age_h !== staleHours(settings.dns?.stale_max_age)
   )
-    patch.dns_stale_max_age = Number(form.dns_stale_max_age_h) * 3600;
+    patch.dns_stale_max_age = Math.max(1, Number(form.dns_stale_max_age_h)) * 3600;
+  if (form.dns_rate_limit !== "" && Number(form.dns_rate_limit) !== (settings.dns?.rate_limit ?? 0))
+    patch.dns_rate_limit = Number(form.dns_rate_limit);
+  const lines = (text: string) =>
+    text
+      .split(/[\s,]+/)
+      .map((l) => l.trim())
+      .filter(Boolean);
+  const allowed = lines(form.dns_allowed_clients);
+  if (stableJson(allowed) !== stableJson(settings.dns?.allowed_clients ?? []))
+    patch.dns_allowed_clients = allowed;
+  const denied = lines(form.dns_denied_clients);
+  if (stableJson(denied) !== stableJson(settings.dns?.denied_clients ?? []))
+    patch.dns_denied_clients = denied;
   if (
     form.log_retention_days !== "" &&
     Number(form.log_retention_days) !== settings.storage?.log_retention_days

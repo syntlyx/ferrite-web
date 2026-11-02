@@ -452,7 +452,15 @@
     "serve_stale": "Caché optimista",
     "serve_stale_sub": "Responder al instante con una entrada caducada —durante 30 segundos— y renovarla en segundo plano. Los nombres siguen resolviéndose mientras el servidor superior está caído.",
     "stale_max_age": "Servir caducado hasta",
-    "stale_max_age_sub": "Cuánto puede envejecer una respuesta mientras no se alcanza el servidor superior."
+    "stale_max_age_sub": "Cuánto puede envejecer una respuesta mientras no se alcanza el servidor superior.",
+    "dns_clients": "Quién puede usar este DNS",
+    "dns_clients_sub": "Limita el resolutor a tu propia red y frena al dispositivo que lo inunde. El propio equipo siempre pasa.",
+    "rate_limit": "Consultas por dispositivo",
+    "rate_limit_sub": "La cuota de un minuto puede llegar de golpe; por encima, el dispositivo recibe REFUSED hasta que baje el ritmo. 0 = sin límite; 1000 va bien para un hogar.",
+    "allowed_clients": "Responder solo a",
+    "allowed_clients_sub": "IPs o rangos, uno por línea. Vacío responde a todos; rellénalo si el puerto 53 pudiera ser accesible desde fuera. El resto no recibe respuesta alguna.",
+    "denied_clients": "No responder nunca a",
+    "denied_clients_sub": "IPs o rangos, uno por línea. Prevalece sobre la lista de arriba."
   },
   "login": {
     "sign_in": "Iniciar sesión",

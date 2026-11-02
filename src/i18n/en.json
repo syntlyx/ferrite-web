@@ -452,7 +452,15 @@
     "serve_stale": "Optimistic cache",
     "serve_stale_sub": "Answer from an expired entry at once — for 30 seconds — and refresh it in the background. Names keep resolving while the upstream is down.",
     "stale_max_age": "Serve expired for up to",
-    "stale_max_age_sub": "How old an answer may get while the upstream can't be reached."
+    "stale_max_age_sub": "How old an answer may get while the upstream can't be reached.",
+    "dns_clients": "Who may use this DNS",
+    "dns_clients_sub": "Keep the resolver to your own network and slow down a device that floods it. The box itself always passes.",
+    "rate_limit": "Queries per device",
+    "rate_limit_sub": "A minute's worth may come in one burst; past it the device is answered REFUSED until it slows down. 0 = no limit; 1000 suits a household.",
+    "allowed_clients": "Only answer",
+    "allowed_clients_sub": "IPs or ranges, one per line. Empty answers everyone — set it if port 53 might be reachable from outside. Anyone else gets no reply at all.",
+    "denied_clients": "Never answer",
+    "denied_clients_sub": "IPs or ranges, one per line. Wins over the list above."
   },
   "login": {
     "sign_in": "Sign in",

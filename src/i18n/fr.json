@@ -452,7 +452,15 @@
     "serve_stale": "Cache optimiste",
     "serve_stale_sub": "Répondre aussitôt avec une entrée expirée — pour 30 secondes — et la rafraîchir en arrière-plan. Les noms continuent de se résoudre quand l'amont est hors service.",
     "stale_max_age": "Servir l'expiré jusqu'à",
-    "stale_max_age_sub": "L'âge maximal d'une réponse tant que l'amont est injoignable."
+    "stale_max_age_sub": "L'âge maximal d'une réponse tant que l'amont est injoignable.",
+    "dns_clients": "Qui peut utiliser ce DNS",
+    "dns_clients_sub": "Réservez le résolveur à votre réseau et freinez l'appareil qui l'inonde. La machine elle-même passe toujours.",
+    "rate_limit": "Requêtes par appareil",
+    "rate_limit_sub": "Le quota d'une minute peut arriver d'un coup ; au-delà, l'appareil reçoit REFUSED jusqu'à ce qu'il ralentisse. 0 = aucune limite ; 1000 convient à un foyer.",
+    "allowed_clients": "Ne répondre qu'à",
+    "allowed_clients_sub": "IP ou plages, une par ligne. Vide répond à tous — à remplir si le port 53 peut être joignable de l'extérieur. Les autres ne reçoivent aucune réponse.",
+    "denied_clients": "Ne jamais répondre à",
+    "denied_clients_sub": "IP ou plages, une par ligne. Prime sur la liste ci-dessus."
   },
   "login": {
     "sign_in": "Connexion",

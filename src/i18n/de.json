@@ -452,7 +452,15 @@
     "serve_stale": "Optimistischer Cache",
     "serve_stale_sub": "Sofort aus einem abgelaufenen Eintrag antworten — für 30 Sekunden — und ihn im Hintergrund erneuern. Namen lösen weiter auf, solange der Upstream ausfällt.",
     "stale_max_age": "Abgelaufenes ausliefern bis zu",
-    "stale_max_age_sub": "Wie alt eine Antwort werden darf, solange der Upstream nicht erreichbar ist."
+    "stale_max_age_sub": "Wie alt eine Antwort werden darf, solange der Upstream nicht erreichbar ist.",
+    "dns_clients": "Wer diesen DNS nutzen darf",
+    "dns_clients_sub": "Den Resolver auf das eigene Netz beschränken und ein Gerät bremsen, das ihn flutet. Die Box selbst darf immer.",
+    "rate_limit": "Anfragen pro Gerät",
+    "rate_limit_sub": "Das Kontingent einer Minute darf in einem Schwall kommen; darüber bekommt das Gerät REFUSED, bis es langsamer wird. 0 = kein Limit; 1000 passt für einen Haushalt.",
+    "allowed_clients": "Nur beantworten",
+    "allowed_clients_sub": "IPs oder Bereiche, einer pro Zeile. Leer beantwortet alle — setzen, wenn Port 53 von außen erreichbar sein könnte. Alle anderen bekommen gar keine Antwort.",
+    "denied_clients": "Nie beantworten",
+    "denied_clients_sub": "IPs oder Bereiche, einer pro Zeile. Geht der Liste oben vor."
   },
   "login": {
     "sign_in": "Anmelden",

@@ -822,6 +822,9 @@ export default function Settings() {
     dns_client_ttl: "",
     dns_serve_stale: false,
     dns_stale_max_age_h: "",
+    dns_rate_limit: "",
+    dns_allowed_clients: "",
+    dns_denied_clients: "",
     log_retention_days: "",
     log_max_mb: "",
     web_dir: "",
@@ -1723,6 +1726,61 @@ export default function Settings() {
                       <X size={13} />
                     </Btn>
                   </div>
+                </SettingRow>
+              </SettingsPanel>
+              <SettingsPanel
+                title={t("settings.dns_clients", { defaultValue: "Who may use this DNS" })}
+                sub={t("settings.dns_clients_sub", {
+                  defaultValue:
+                    "Keep the resolver to your own network and slow down a device that floods it. The box itself always passes.",
+                })}
+                icon={RadioTower}
+              >
+                <SettingRow
+                  label={t("settings.rate_limit", { defaultValue: "Queries per device" })}
+                  sub={t("settings.rate_limit_sub", {
+                    defaultValue:
+                      "A minute's worth may come in one burst; past it the device is answered REFUSED until it slows down. 0 = no limit; 1000 suits a household.",
+                  })}
+                >
+                  <UnitInput
+                    type="number"
+                    min={0}
+                    unit="/min"
+                    value={form.dns_rate_limit}
+                    onChange={setF("dns_rate_limit")}
+                  />
+                </SettingRow>
+                <SettingRow
+                  label={t("settings.allowed_clients", { defaultValue: "Only answer" })}
+                  sub={t("settings.allowed_clients_sub", {
+                    defaultValue:
+                      "IPs or ranges, one per line. Empty answers everyone — set it if port 53 might be reachable from outside. Anyone else gets no reply at all.",
+                  })}
+                >
+                  <textarea
+                    value={form.dns_allowed_clients}
+                    onChange={(e) => setForm((p) => ({ ...p, dns_allowed_clients: e.target.value }))}
+                    rows={3}
+                    spellCheck={false}
+                    placeholder={"192.168.1.0/24\nfd00::/8"}
+                    className="border-bdr/90 bg-sidebar/90 text-body placeholder:text-muted/60 hover:border-ember/35 focus:border-ember focus:ring-ember/15 rounded-xs w-full border p-2.5 font-mono text-xs leading-relaxed shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] transition-colors focus:outline-none focus:ring-2"
+                  />
+                </SettingRow>
+                <SettingRow
+                  label={t("settings.denied_clients", { defaultValue: "Never answer" })}
+                  sub={t("settings.denied_clients_sub", {
+                    defaultValue: "IPs or ranges, one per line. Wins over the list above.",
+                  })}
+                >
+                  <textarea
+                    value={form.dns_denied_clients}
+                    onChange={(e) => setForm((p) => ({ ...p, dns_denied_clients: e.target.value }))}
+                    rows={2}
+                    spellCheck={false}
+                    placeholder="192.168.1.66"
+                    className="border-bdr/90 bg-sidebar/90 text-body placeholder:text-muted/60 hover:border-ember/35 focus:border-ember focus:ring-ember/15 rounded-xs w-full border p-2.5 font-mono text-xs leading-relaxed shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] transition-colors focus:outline-none focus:ring-2"
+                  />
                 </SettingRow>
               </SettingsPanel>
               {passwordSet && <SessionsCard />}

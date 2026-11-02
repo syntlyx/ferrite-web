@@ -579,6 +579,12 @@ export interface DnsConfig {
   serve_stale?: boolean;
   /** Seconds past expiry an entry may still be served. */
   stale_max_age?: number;
+  /** Queries per client per minute; 0 = no limit. */
+  rate_limit?: number;
+  /** IPs / CIDR ranges answered; empty = everyone. */
+  allowed_clients?: string[];
+  /** IPs / CIDR ranges never answered. */
+  denied_clients?: string[];
   log_ignore?: string[];
   strip_ecs?: boolean;
   dnssec?: boolean;
@@ -716,6 +722,9 @@ export interface PatchSettingsBody {
   dns_client_ttl?: number;
   dns_serve_stale?: boolean;
   dns_stale_max_age?: number;
+  dns_rate_limit?: number;
+  dns_allowed_clients?: string[];
+  dns_denied_clients?: string[];
   dns_log_ignore?: string[];
   web_dir?: string | null;
   log_retention_days?: number;
