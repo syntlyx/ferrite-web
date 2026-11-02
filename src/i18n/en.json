@@ -10,7 +10,11 @@
     "tunnels": "Tunnels",
     "logs": "Logs",
     "tools": "Tools",
-    "settings": "Settings"
+    "settings": "Settings",
+    "group_overview": "Overview",
+    "group_filtering": "Filtering",
+    "group_network": "Network",
+    "group_system": "System"
   },
   "sidebar": {
     "collapse": "Collapse",
@@ -62,7 +66,8 @@
     "all": "All",
     "search": "Search",
     "reset": "Reset",
-    "undo": "Undo"
+    "undo": "Undo",
+    "close": "Close"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -99,7 +104,9 @@
     "swap_off": "swap off",
     "of_ram": "% of RAM",
     "stats_disabled": "Statistics are switched off in Settings → Privacy. The totals since start still update; the top lists and the graph stay empty, and earlier statistics are not served back.",
-    "dropped_stats_warning": "{{count}} query stats were dropped under load — counters and the live feed may be undercounting."
+    "dropped_stats_warning": "{{count}} query stats were dropped under load — counters and the live feed may be undercounting.",
+    "system_more": "Details",
+    "system_less": "Less"
   },
   "queries": {
     "title": "Query Log",
@@ -135,7 +142,9 @@
     "group_repeats_hint": "Fold identical queries in a row into one line",
     "repeat_count_hint": "{{count}} identical queries in a row",
     "safe_tag": "safe",
-    "safe_hint": "Safe search: answered with {{host}}"
+    "safe_hint": "Safe search: answered with {{host}}",
+    "compact": "Compact",
+    "compact_hint": "Tighter rows, more of the log on screen"
   },
   "clients": {
     "title": "Clients",
@@ -751,5 +760,45 @@
     "no_key": "Set an API key above first — assistants sign in with it. Without one, anyone on the network who finds the endpoint can use it.",
     "connect": "Connect Claude Code",
     "connect_other": "Other assistants: Streamable HTTP at {{url}}, header Authorization: Bearer <API key>."
+  },
+  "palette": {
+    "open": "Search",
+    "placeholder": "Search pages and devices, or type a domain…",
+    "check": "Check {{domain}}",
+    "domain": "Domain",
+    "pages": "Pages",
+    "devices": "Devices",
+    "actions": "Actions",
+    "pause": "Pause filtering for {{label}}",
+    "resume": "Resume filtering",
+    "refresh": "Refresh all lists",
+    "refreshed": "Lists refreshed",
+    "empty": "Nothing matches."
+  },
+  "domain": {
+    "title": "Domain",
+    "open": "Details",
+    "for_client": "for {{client}}",
+    "profile": "profile {{id}}",
+    "filtering_off": "Filtering is off for this device right now (paused or bypassed).",
+    "safe_search": "Answered with {{host}} — safe search.",
+    "differs_allowed": "Blocked for other devices; this device's profile lets it through.",
+    "differs_blocked": "Allowed for other devices; this device's profile blocks it.",
+    "why": "Why",
+    "allowed_by": "Allowed by {{entry}}",
+    "no_match": "No list, rule or service matches it network-wide.",
+    "routing": "Routing",
+    "routed": "Through tunnel {{egress}}",
+    "egress_down": "down",
+    "routing_off": "A tunnel rule matches, but routing is off.",
+    "direct": "Direct — no tunnel rule matches.",
+    "recent": "Recent queries",
+    "devices": "devices: {{count}}",
+    "no_recent": "Nothing in the query log.",
+    "block": "Block",
+    "allow": "Allow",
+    "show_in_log": "Query Log",
+    "blocked_toast": "{{domain}} blocked for every device",
+    "allowed_toast": "{{domain}} allowed for every device"
   }
 }

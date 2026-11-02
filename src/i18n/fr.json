@@ -10,7 +10,11 @@
     "settings": "Paramètres",
     "tunnels": "Tunnels",
     "logs": "Journaux",
-    "tools": "Outils"
+    "tools": "Outils",
+    "group_overview": "Vue d'ensemble",
+    "group_filtering": "Filtrage",
+    "group_network": "Réseau",
+    "group_system": "Système"
   },
   "sidebar": {
     "collapse": "Réduire",
@@ -62,7 +66,8 @@
     "all": "Tout",
     "search": "Rechercher",
     "reset": "Réinitialiser",
-    "undo": "Annuler"
+    "undo": "Annuler",
+    "close": "Fermer"
   },
   "dashboard": {
     "title": "Tableau de bord",
@@ -99,7 +104,9 @@
     "swap_off": "swap désactivé",
     "of_ram": "% de RAM",
     "stats_disabled": "Les statistiques sont désactivées dans Réglages → Confidentialité. Les totaux depuis le démarrage continuent ; les classements et le graphique restent vides, et les statistiques antérieures ne sont pas renvoyées.",
-    "dropped_stats_warning": "{{count}} statistiques de requêtes perdues sous charge — les compteurs et le flux en direct peuvent être sous-estimés."
+    "dropped_stats_warning": "{{count}} statistiques de requêtes perdues sous charge — les compteurs et le flux en direct peuvent être sous-estimés.",
+    "system_more": "Détails",
+    "system_less": "Moins"
   },
   "queries": {
     "title": "Journal des requêtes",
@@ -135,7 +142,9 @@
     "group_repeats_hint": "Regrouper en une ligne les requêtes identiques successives",
     "repeat_count_hint": "{{count}} requêtes identiques successives",
     "safe_tag": "sécurisé",
-    "safe_hint": "Recherche sécurisée : répondu avec {{host}}"
+    "safe_hint": "Recherche sécurisée : répondu avec {{host}}",
+    "compact": "Compact",
+    "compact_hint": "Lignes resserrées, plus de journal à l'écran"
   },
   "clients": {
     "title": "Clients",
@@ -751,5 +760,45 @@
     "no_key": "Définissez d'abord une clé d'API ci-dessus : les assistants s'en servent pour se connecter. Sans clé, n'importe qui sur le réseau qui trouve le point d'accès peut l'utiliser.",
     "connect": "Connecter Claude Code",
     "connect_other": "Autres assistants : Streamable HTTP à {{url}}, en-tête Authorization: Bearer <clé d'API>."
+  },
+  "palette": {
+    "open": "Rechercher",
+    "placeholder": "Cherchez des pages et des appareils, ou tapez un domaine…",
+    "check": "Vérifier {{domain}}",
+    "domain": "Domaine",
+    "pages": "Pages",
+    "devices": "Appareils",
+    "actions": "Actions",
+    "pause": "Suspendre le filtrage {{label}}",
+    "resume": "Reprendre le filtrage",
+    "refresh": "Actualiser toutes les listes",
+    "refreshed": "Listes actualisées",
+    "empty": "Aucun résultat."
+  },
+  "domain": {
+    "title": "Domaine",
+    "open": "Détails",
+    "for_client": "pour {{client}}",
+    "profile": "profil {{id}}",
+    "filtering_off": "Le filtrage est désactivé pour cet appareil en ce moment (pause ou exemption).",
+    "safe_search": "Répondu avec {{host}} — recherche sécurisée.",
+    "differs_allowed": "Bloqué pour les autres appareils ; le profil de celui-ci le laisse passer.",
+    "differs_blocked": "Autorisé pour les autres appareils ; le profil de celui-ci le bloque.",
+    "why": "Pourquoi",
+    "allowed_by": "Autorisé par {{entry}}",
+    "no_match": "Aucune liste, règle ou service ne le touche pour tout le réseau.",
+    "routing": "Routage",
+    "routed": "Par le tunnel {{egress}}",
+    "egress_down": "en panne",
+    "routing_off": "Une règle de tunnel correspond, mais le routage est désactivé.",
+    "direct": "Direct — aucune règle de tunnel ne correspond.",
+    "recent": "Requêtes récentes",
+    "devices": "appareils : {{count}}",
+    "no_recent": "Rien dans le journal des requêtes.",
+    "block": "Bloquer",
+    "allow": "Autoriser",
+    "show_in_log": "Journal des requêtes",
+    "blocked_toast": "{{domain}} bloqué pour tous les appareils",
+    "allowed_toast": "{{domain}} autorisé pour tous les appareils"
   }
 }

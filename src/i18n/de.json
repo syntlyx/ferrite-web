@@ -10,7 +10,11 @@
     "settings": "Einstellungen",
     "tunnels": "Tunnel",
     "logs": "Protokolle",
-    "tools": "Werkzeuge"
+    "tools": "Werkzeuge",
+    "group_overview": "Übersicht",
+    "group_filtering": "Filterung",
+    "group_network": "Netzwerk",
+    "group_system": "System"
   },
   "sidebar": {
     "collapse": "Einklappen",
@@ -62,7 +66,8 @@
     "all": "Alle",
     "search": "Suchen",
     "reset": "Zurücksetzen",
-    "undo": "Rückgängig"
+    "undo": "Rückgängig",
+    "close": "Schließen"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -99,7 +104,9 @@
     "swap_off": "Swap aus",
     "of_ram": "% RAM",
     "stats_disabled": "Statistiken sind unter Einstellungen → Datenschutz ausgeschaltet. Die Summen seit dem Start laufen weiter; Top-Listen und Graph bleiben leer, und frühere Statistiken werden nicht zurückgeliefert.",
-    "dropped_stats_warning": "{{count}} Abfragestatistiken wurden unter Last verworfen — Zähler und Live-Feed können zu niedrig liegen."
+    "dropped_stats_warning": "{{count}} Abfragestatistiken wurden unter Last verworfen — Zähler und Live-Feed können zu niedrig liegen.",
+    "system_more": "Details",
+    "system_less": "Weniger"
   },
   "queries": {
     "title": "Abfrageprotokoll",
@@ -135,7 +142,9 @@
     "group_repeats_hint": "Gleiche Anfragen in Folge zu einer Zeile zusammenfassen",
     "repeat_count_hint": "{{count}} gleiche Anfragen in Folge",
     "safe_tag": "safe",
-    "safe_hint": "SafeSearch: beantwortet mit {{host}}"
+    "safe_hint": "SafeSearch: beantwortet mit {{host}}",
+    "compact": "Kompakt",
+    "compact_hint": "Engere Zeilen, mehr vom Protokoll auf dem Bildschirm"
   },
   "clients": {
     "title": "Clients",
@@ -751,5 +760,45 @@
     "no_key": "Zuerst oben einen API-Schlüssel festlegen — Assistenten melden sich damit an. Ohne ihn kann jeder im Netzwerk, der den Endpunkt findet, ihn nutzen.",
     "connect": "Claude Code verbinden",
     "connect_other": "Andere Assistenten: Streamable HTTP unter {{url}}, Header Authorization: Bearer <API-Schlüssel>."
+  },
+  "palette": {
+    "open": "Suche",
+    "placeholder": "Seiten und Geräte suchen oder eine Domain eingeben…",
+    "check": "{{domain}} prüfen",
+    "domain": "Domain",
+    "pages": "Seiten",
+    "devices": "Geräte",
+    "actions": "Aktionen",
+    "pause": "Filterung für {{label}} pausieren",
+    "resume": "Filterung fortsetzen",
+    "refresh": "Alle Listen aktualisieren",
+    "refreshed": "Listen aktualisiert",
+    "empty": "Keine Treffer."
+  },
+  "domain": {
+    "title": "Domain",
+    "open": "Details",
+    "for_client": "für {{client}}",
+    "profile": "Profil {{id}}",
+    "filtering_off": "Die Filterung ist für dieses Gerät gerade aus (pausiert oder ausgenommen).",
+    "safe_search": "Beantwortet mit {{host}} — SafeSearch.",
+    "differs_allowed": "Für andere Geräte gesperrt; das Profil dieses Geräts lässt es durch.",
+    "differs_blocked": "Für andere Geräte erlaubt; das Profil dieses Geräts sperrt es.",
+    "why": "Warum",
+    "allowed_by": "Erlaubt durch {{entry}}",
+    "no_match": "Keine Liste, Regel oder Dienst trifft netzwerkweit zu.",
+    "routing": "Routing",
+    "routed": "Durch Tunnel {{egress}}",
+    "egress_down": "ausgefallen",
+    "routing_off": "Eine Tunnelregel trifft zu, aber das Routing ist aus.",
+    "direct": "Direkt — keine Tunnelregel trifft zu.",
+    "recent": "Letzte Anfragen",
+    "devices": "Geräte: {{count}}",
+    "no_recent": "Nichts im Abfrageprotokoll.",
+    "block": "Sperren",
+    "allow": "Erlauben",
+    "show_in_log": "Abfrageprotokoll",
+    "blocked_toast": "{{domain}} für alle Geräte gesperrt",
+    "allowed_toast": "{{domain}} für alle Geräte erlaubt"
   }
 }

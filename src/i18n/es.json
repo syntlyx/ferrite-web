@@ -10,7 +10,11 @@
     "settings": "Ajustes",
     "tunnels": "Túneles",
     "logs": "Registros",
-    "tools": "Herramientas"
+    "tools": "Herramientas",
+    "group_overview": "Resumen",
+    "group_filtering": "Filtrado",
+    "group_network": "Red",
+    "group_system": "Sistema"
   },
   "sidebar": {
     "collapse": "Contraer",
@@ -62,7 +66,8 @@
     "all": "Todo",
     "search": "Buscar",
     "reset": "Restablecer",
-    "undo": "Deshacer"
+    "undo": "Deshacer",
+    "close": "Cerrar"
   },
   "dashboard": {
     "title": "Panel",
@@ -99,7 +104,9 @@
     "swap_off": "swap desactivado",
     "of_ram": "% de RAM",
     "stats_disabled": "Las estadísticas están desactivadas en Ajustes → Privacidad. Los totales desde el arranque siguen actualizándose; los tops y el gráfico quedan vacíos, y las estadísticas anteriores no se devuelven.",
-    "dropped_stats_warning": "Se descartaron {{count}} estadísticas de consultas por carga — los contadores y el feed en vivo pueden quedarse cortos."
+    "dropped_stats_warning": "Se descartaron {{count}} estadísticas de consultas por carga — los contadores y el feed en vivo pueden quedarse cortos.",
+    "system_more": "Detalles",
+    "system_less": "Menos"
   },
   "queries": {
     "title": "Registro de consultas",
@@ -135,7 +142,9 @@
     "group_repeats_hint": "Juntar en una línea las consultas idénticas seguidas",
     "repeat_count_hint": "{{count}} consultas idénticas seguidas",
     "safe_tag": "segura",
-    "safe_hint": "Búsqueda segura: respondido con {{host}}"
+    "safe_hint": "Búsqueda segura: respondido con {{host}}",
+    "compact": "Compacto",
+    "compact_hint": "Filas más juntas, más registro en pantalla"
   },
   "clients": {
     "title": "Clientes",
@@ -751,5 +760,45 @@
     "no_key": "Primero define una clave de API arriba: los asistentes inician sesión con ella. Sin clave, cualquiera en la red que encuentre el endpoint puede usarlo.",
     "connect": "Conectar Claude Code",
     "connect_other": "Otros asistentes: Streamable HTTP en {{url}}, cabecera Authorization: Bearer <clave de API>."
+  },
+  "palette": {
+    "open": "Buscar",
+    "placeholder": "Busca páginas y dispositivos, o escribe un dominio…",
+    "check": "Comprobar {{domain}}",
+    "domain": "Dominio",
+    "pages": "Páginas",
+    "devices": "Dispositivos",
+    "actions": "Acciones",
+    "pause": "Pausar el filtrado {{label}}",
+    "resume": "Reanudar el filtrado",
+    "refresh": "Actualizar todas las listas",
+    "refreshed": "Listas actualizadas",
+    "empty": "Nada coincide."
+  },
+  "domain": {
+    "title": "Dominio",
+    "open": "Detalles",
+    "for_client": "para {{client}}",
+    "profile": "perfil {{id}}",
+    "filtering_off": "El filtrado está desactivado para este dispositivo ahora mismo (pausado o exento).",
+    "safe_search": "Respondido con {{host}}: búsqueda segura.",
+    "differs_allowed": "Bloqueado para otros dispositivos; el perfil de este lo deja pasar.",
+    "differs_blocked": "Permitido para otros dispositivos; el perfil de este lo bloquea.",
+    "why": "Por qué",
+    "allowed_by": "Permitido por {{entry}}",
+    "no_match": "Ninguna lista, regla o servicio de toda la red lo afecta.",
+    "routing": "Enrutamiento",
+    "routed": "Por el túnel {{egress}}",
+    "egress_down": "caído",
+    "routing_off": "Una regla de túnel coincide, pero el enrutamiento está desactivado.",
+    "direct": "Directo: ninguna regla de túnel coincide.",
+    "recent": "Consultas recientes",
+    "devices": "dispositivos: {{count}}",
+    "no_recent": "Nada en el registro de consultas.",
+    "block": "Bloquear",
+    "allow": "Permitir",
+    "show_in_log": "Registro de consultas",
+    "blocked_toast": "{{domain}} bloqueado para todos los dispositivos",
+    "allowed_toast": "{{domain}} permitido para todos los dispositivos"
   }
 }
