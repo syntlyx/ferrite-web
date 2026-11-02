@@ -183,7 +183,7 @@ export default function CustomDNS() {
                 <Th>{t("dns.col_domain")}</Th>
                 <Th>{t("dns.col_type")}</Th>
                 <Th>{t("dns.col_value")}</Th>
-                <Th>{t("dns.col_ttl")}</Th>
+                <Th className="hidden sm:table-cell">{t("dns.col_ttl")}</Th>
                 <Th />
               </tr>
             </thead>
@@ -213,7 +213,7 @@ export default function CustomDNS() {
                       </span>
                     </Td>
                     <Td className="text-body font-mono">{r.value}</Td>
-                    <Td className="text-muted tabular-nums">{r.ttl}s</Td>
+                    <Td className="text-muted hidden tabular-nums sm:table-cell">{r.ttl}s</Td>
                     <Td className="text-right">
                       <IconBtn
                         danger

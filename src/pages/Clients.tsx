@@ -40,6 +40,7 @@ import {
   TableRow,
   EmptyRow,
   Switch,
+  Tooltip,
 } from "@/components/ui";
 import { useToast } from "@/hooks/use-toast";
 import { useConfirm } from "@/hooks/use-confirm";
@@ -80,6 +81,49 @@ function TypeToggle({
           {t}
         </button>
       ))}
+    </div>
+  );
+}
+
+/** How telling an address is about the device: IPv4 first, then routable
+ *  IPv6, with link-local `fe80::` — one per interface, rarely what anyone
+ *  looks for — last. */
+function ipRank(ip: string): number {
+  if (!ip.includes(":")) return 0;
+  return ip.toLowerCase().startsWith("fe80:") ? 2 : 1;
+}
+
+const IP_PREVIEW = 2;
+
+/** A device's addresses, the most telling ones first. A phone or laptop
+ *  collects a handful of IPv6 addresses; past the first two they fold into a
+ *  "+N" chip whose tooltip lists the lot. */
+function IpList({ ips }: { ips: string[] }) {
+  const sorted = [...ips].sort((a, b) => ipRank(a) - ipRank(b));
+  const shown = sorted.slice(0, IP_PREVIEW);
+  const rest = sorted.length - shown.length;
+  return (
+    <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+      {shown.map((ip) => (
+        <span key={ip} className="text-muted font-mono text-[10px]">
+          {ip}
+        </span>
+      ))}
+      {rest > 0 && (
+        <Tooltip
+          content={
+            <span className="flex flex-col gap-0.5 font-mono text-[10px]">
+              {sorted.map((ip) => (
+                <span key={ip}>{ip}</span>
+              ))}
+            </span>
+          }
+        >
+          <span className="border-bdr/70 text-muted rounded-xs cursor-default border px-1 font-mono text-[10px]">
+            +{rest}
+          </span>
+        </Tooltip>
+      )}
     </div>
   );
 }
@@ -502,7 +546,7 @@ export default function Clients() {
       {clients.length > 0 && (
         <>
           {/* ── Overview ── */}
-          <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="mb-4 grid grid-cols-2 gap-3 xl:grid-cols-4">
             <StatusTile
               icon={Users}
               label={t("clients.tile_clients", { defaultValue: "Clients" })}
@@ -640,13 +684,7 @@ export default function Clients() {
                           </div>
                         </Td>
                         <Td>
-                          <div className="flex flex-wrap gap-1">
-                            {c.ips.map((ip) => (
-                              <span key={ip} className="text-muted font-mono text-[10px]">
-                                {ip}
-                              </span>
-                            ))}
-                          </div>
+                          <IpList ips={c.ips} />
                         </Td>
                         <Td>
                           <Bar

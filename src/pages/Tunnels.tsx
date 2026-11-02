@@ -400,7 +400,7 @@ export default function Tunnels() {
       ) : (
         <div className="space-y-4">
           {/* ── Overview ── */}
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
             <StatusTile
               icon={Waypoints}
               label={t("tunnels.tile_routing", { defaultValue: "Routing" })}

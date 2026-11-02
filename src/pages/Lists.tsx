@@ -30,6 +30,15 @@ import type { CatalogCategory, CatalogList } from "@/data/list-catalog";
 
 /** Badge colour per catalog category. Typed as a full Record so adding a new
  *  category to the catalog forces an update here (compile error otherwise). */
+/** A list URL's host, to tell lists apart where the full URL doesn't fit. */
+function urlHost(url: string): string {
+  try {
+    return new URL(url).host;
+  } catch {
+    return url;
+  }
+}
+
 const CATEGORY_BADGE: Record<CatalogCategory, string> = {
   general: "bg-upstream/10 text-upstream",
   ads: "bg-ember/10 text-ember",
@@ -235,7 +244,7 @@ function SubscriptionTable({
           <thead>
             <tr className="border-bdr border-b">
               <Th>{t("lists.col_name")}</Th>
-              <Th>{t("lists.col_url")}</Th>
+              <Th className="hidden sm:table-cell">{t("lists.col_url")}</Th>
               <Th>{t("lists.col_domains")}</Th>
               <Th>{t("lists.col_enabled")}</Th>
               <Th />
@@ -247,8 +256,13 @@ function SubscriptionTable({
             ) : (
               lists.map((l) => (
                 <TableRow key={l.name}>
-                  <Td className="text-heading font-medium">{l.name}</Td>
-                  <Td className="text-muted max-w-xs font-mono">
+                  <Td className="text-heading font-medium">
+                    {l.name}
+                    <span className="text-muted block max-w-40 truncate font-mono text-[10px] font-normal sm:hidden">
+                      {urlHost(l.url)}
+                    </span>
+                  </Td>
+                  <Td className="text-muted hidden max-w-xs font-mono sm:table-cell">
                     <a
                       href={l.url}
                       target="_blank"

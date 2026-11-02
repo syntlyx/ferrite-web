@@ -819,7 +819,9 @@ function SystemBar({ sys }: { sys: SystemStats }) {
 function DashboardSkeleton() {
   return (
     <>
-      <div className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-5">
+      <div
+        className="mb-5 grid grid-cols-2 gap-3 xl:grid-cols-5 [&>*:last-child:nth-child(odd)]:col-span-2 xl:[&>*:last-child:nth-child(odd)]:col-span-1"
+      >
         {[...Array(5)].map((_, i) => (
           <Card key={i}>
             <Skeleton className="mb-3 h-2.5 w-16" />
@@ -1091,7 +1093,9 @@ export default function Dashboard() {
       {stats && (
         <>
           {/* ── Stat cards ─────────────────────────────────────────────────── */}
-          <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-5">
+          <div
+            className="mb-4 grid grid-cols-2 gap-3 xl:grid-cols-5 [&>*:last-child:nth-child(odd)]:col-span-2 xl:[&>*:last-child:nth-child(odd)]:col-span-1"
+          >
             <StatCard
               label={t("dashboard.total_queries")}
               value={fmt(total)}

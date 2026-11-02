@@ -207,7 +207,7 @@ function SettingsOverview({
   const bypassCount = settings.blocklist?.client_bypass?.length ?? 0;
 
   return (
-    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+    <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
       <StatusTile
         icon={Clock3}
         label={t("settings.ttl_window")}

@@ -632,11 +632,11 @@ export default function Queries() {
                 <tr className="border-bdr border-b">
                   <Th>{t("queries.col_time")}</Th>
                   <Th>{t("queries.col_domain")}</Th>
-                  <Th>{t("queries.col_type")}</Th>
-                  <Th>{t("queries.col_client")}</Th>
+                  <Th className="hidden sm:table-cell">{t("queries.col_type")}</Th>
+                  <Th className="hidden sm:table-cell">{t("queries.col_client")}</Th>
                   <Th>{t("queries.col_status")}</Th>
-                  <Th>{t("queries.col_latency")}</Th>
-                  <Th>{t("queries.col_rcode")}</Th>
+                  <Th className="hidden md:table-cell">{t("queries.col_latency")}</Th>
+                  <Th className="hidden md:table-cell">{t("queries.col_rcode")}</Th>
                 </tr>
               </thead>
               <tbody>
@@ -656,7 +656,7 @@ export default function Queries() {
                         {new Date(r.timestamp).toLocaleTimeString()}
                       </Td>
 
-                      <Td className="text-heading max-w-xs font-mono">
+                      <Td className="text-heading max-w-44 font-mono sm:max-w-xs">
                         <span className="group flex items-center">
                           <button
                             className="hover:text-ember cursor-pointer truncate text-left transition-colors"
@@ -667,11 +667,17 @@ export default function Queries() {
                           </button>
                           <CopyBtn text={r.domain} />
                         </span>
+                        {/* The columns a phone hides, folded under the domain. */}
+                        <span className="text-muted block truncate text-[10px] sm:hidden">
+                          {qtypeName(r.query_type)} · {r.client_name || r.client_ip}
+                        </span>
                       </Td>
 
-                      <Td className="text-muted font-mono">{qtypeName(r.query_type)}</Td>
+                      <Td className="text-muted hidden font-mono sm:table-cell">
+                        {qtypeName(r.query_type)}
+                      </Td>
 
-                      <Td>
+                      <Td className="hidden sm:table-cell">
                         <span className="group flex items-center gap-0.5">
                           <button
                             className="text-body hover:text-ember cursor-pointer font-mono transition-colors"
@@ -696,10 +702,10 @@ export default function Queries() {
                           <Badge status={r.status} />
                         )}
                       </Td>
-                      <Td className="text-muted tabular-nums">
+                      <Td className="text-muted hidden tabular-nums md:table-cell">
                         {r.latency_ms != null ? `${r.latency_ms}ms` : "—"}
                       </Td>
-                      <Td>
+                      <Td className="hidden md:table-cell">
                         <RCodeBadge code={r.rcode} />
                       </Td>
                     </TableRow>
