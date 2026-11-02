@@ -9,6 +9,7 @@ import {
   ListFilter,
   Plus,
   Save,
+  SearchCheck,
   ShieldBan,
   Trash2,
   Users,
@@ -19,13 +20,19 @@ import { api } from "@/api";
 import { deviceTokens } from "@/api/clients";
 import { DevicePicker } from "@/components/DevicePicker";
 import { ServicePicker } from "@/components/ServicePicker";
+import { SafeSearchControls } from "@/components/SafeSearchControls";
 import {
   ScheduleEditor,
   formatWeekMinute,
   scheduleActive,
   useWeekdayNames,
 } from "@/components/ScheduleEditor";
-import type { BlocklistProfile, ClientEntry, ServiceCatalog } from "@/api/types";
+import type {
+  BlocklistProfile,
+  ClientEntry,
+  SafeSearchSettings,
+  ServiceCatalog,
+} from "@/api/types";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Card } from "@/components/layout/Card";
@@ -52,6 +59,8 @@ const withDefaults = (p: BlocklistProfile): BlocklistProfile => ({
   allowlists: p.allowlists ?? [],
   services: p.services ?? [],
   schedule: p.schedule ?? [],
+  safe_search: p.safe_search ?? false,
+  youtube_restricted: p.youtube_restricted ?? "off",
 });
 
 /** The box's minute of the week, kept ticking from the snapshot the server
@@ -230,6 +239,7 @@ export default function Profiles() {
   const [availableAllowlists, setAvailableAllowlists] = useState<string[]>([]);
   const [knownClients, setKnownClients] = useState<ClientEntry[]>([]);
   const [catalog, setCatalog] = useState<ServiceCatalog | null>(null);
+  const [networkSafe, setNetworkSafe] = useState<SafeSearchSettings | undefined>(undefined);
   const [clock, setClock] = useState<{ minute: number; at: number; offset: string } | null>(null);
   const boxMinute = useBoxMinute(clock);
   const dayNames = useWeekdayNames();
@@ -267,6 +277,10 @@ export default function Profiles() {
       .serviceCatalog()
       .then(setCatalog)
       .catch(() => {});
+    api
+      .getSafeSearch()
+      .then(setNetworkSafe)
+      .catch(() => {});
   }, [load]);
 
   const dirty = savedJson !== JSON.stringify(profiles);
@@ -289,6 +303,8 @@ export default function Profiles() {
         services: [],
         default_deny: false,
         schedule: [],
+        safe_search: false,
+        youtube_restricted: "off",
       },
     ]);
   };
@@ -560,6 +576,22 @@ export default function Profiles() {
                   ) : (
                     <Skeleton className="h-16 w-full" />
                   )}
+                </div>
+
+                {/* Safe search */}
+                <div>
+                  <Field
+                    icon={SearchCheck}
+                    label={t("safesearch.title", { defaultValue: "Safe search" })}
+                  />
+                  <SafeSearchControls
+                    value={{
+                      safe_search: pr.safe_search,
+                      youtube_restricted: pr.youtube_restricted,
+                    }}
+                    floor={networkSafe}
+                    onChange={(v) => update(i, (p) => ({ ...p, ...v }))}
+                  />
                 </div>
 
                 {/* Own block/allow entries */}

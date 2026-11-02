@@ -34,6 +34,7 @@ import type {
   AddAliasBody,
   ProxyConfig,
   BlocklistProfile,
+  SafeSearchSettings,
 } from "./types";
 
 export const api = {
@@ -82,6 +83,8 @@ export const api = {
   serviceCatalog: services.catalog,
   getBlockedServices: services.getBlocked,
   putBlockedServices: (ids: string[]) => services.putBlocked(ids),
+  getSafeSearch: services.getSafeSearch,
+  putSafeSearch: (body: SafeSearchSettings) => services.putSafeSearch(body),
 
   // ── Subscription lists ──────────────────────────────────────────────────────
   getLists: lists.getAll,

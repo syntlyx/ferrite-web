@@ -1,5 +1,10 @@
 import { http } from "./client";
-import type { BlockedServicesResponse, PutBlockedServicesResponse, ServiceCatalog } from "./types";
+import type {
+  BlockedServicesResponse,
+  PutBlockedServicesResponse,
+  SafeSearchSettings,
+  ServiceCatalog,
+} from "./types";
 
 let catalogCache: Promise<ServiceCatalog> | null = null;
 
@@ -21,4 +26,14 @@ export function getBlocked(): Promise<BlockedServicesResponse> {
 /** Replace the services blocked for every device; live at once and persisted. */
 export function putBlocked(services: string[]): Promise<PutBlockedServicesResponse> {
   return http.put("/blocklist/services", { services });
+}
+
+/** Network-wide SafeSearch / YouTube Restricted Mode. */
+export function getSafeSearch(): Promise<SafeSearchSettings> {
+  return http.get("/blocklist/safe-search");
+}
+
+/** Replace the network-wide SafeSearch setting; live at once and persisted. */
+export function putSafeSearch(body: SafeSearchSettings): Promise<{ status: string }> {
+  return http.put("/blocklist/safe-search", body);
 }

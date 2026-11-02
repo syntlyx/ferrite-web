@@ -298,6 +298,11 @@ export interface BlocklistProfile {
   services: string[];
   /** Weekly windows when the profile applies (box-local time). Empty = always. */
   schedule: ScheduleWindow[];
+  /** Force SafeSearch for these devices (on top of the network-wide setting). */
+  safe_search: boolean;
+  /** YouTube Restricted Mode for these devices; the stricter of this and the
+   *  network-wide setting applies. */
+  youtube_restricted: YoutubeRestrict;
   /** Allowlist subscription names this profile includes. Empty = inherit
    *  every enabled allowlist. */
   allowlists: string[];
@@ -930,4 +935,14 @@ export interface PutBlockedServicesResponse {
   services: string[];
   persisted: boolean;
   saved_to?: string | null;
+}
+
+// ── SafeSearch ────────────────────────────────────────────────────────────────
+
+export type YoutubeRestrict = "off" | "moderate" | "strict";
+
+/** Network-wide SafeSearch / YouTube Restricted Mode. */
+export interface SafeSearchSettings {
+  safe_search: boolean;
+  youtube_restricted: YoutubeRestrict;
 }

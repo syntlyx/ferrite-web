@@ -15,7 +15,13 @@ import { Link } from "react-router";
 import { cn } from "@/lib/utils";
 import { api } from "@/api";
 import { ServicePicker } from "@/components/ServicePicker";
-import type { DomainCheckResult, ServiceCatalog, ServiceInfo } from "@/api/types";
+import { SafeSearchControls } from "@/components/SafeSearchControls";
+import type {
+  DomainCheckResult,
+  SafeSearchSettings,
+  ServiceCatalog,
+  ServiceInfo,
+} from "@/api/types";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Card } from "@/components/layout/Card";
@@ -250,6 +256,55 @@ function BlockedServicesCard() {
   );
 }
 
+// ── Network-wide safe search ───────────────────────────────────────────────────
+
+/** SafeSearch and YouTube Restricted Mode for every device; applies at once. */
+function SafeSearchCard() {
+  const { t } = useTranslation();
+  const toast = useToast();
+  const [value, setValue] = useState<SafeSearchSettings | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    api
+      .getSafeSearch()
+      .then(setValue)
+      .catch(() => {});
+  }, []);
+
+  async function change(next: SafeSearchSettings) {
+    const prev = value;
+    setValue(next);
+    setBusy(true);
+    try {
+      await api.putSafeSearch(next);
+      toast(t("safesearch.saved", { defaultValue: "Safe search updated" }));
+    } catch (e) {
+      setValue(prev);
+      toast((e as Error).message, "error");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Card className="mb-4">
+      <SectionLabel>{t("safesearch.title", { defaultValue: "Safe search" })}</SectionLabel>
+      <p className="text-muted -mt-1 mb-3 text-xs leading-relaxed">
+        {t("safesearch.help", {
+          defaultValue:
+            "Filtered results on Google, Bing and DuckDuckGo, and Restricted Mode on YouTube, for every device — whatever the browser or app is set to. A profile can make it stricter for its devices.",
+        })}
+      </p>
+      {value ? (
+        <SafeSearchControls value={value} onChange={(v) => void change(v)} disabled={busy} />
+      ) : (
+        <Skeleton className="h-16 w-full" />
+      )}
+    </Card>
+  );
+}
+
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function Blocklist() {
@@ -436,6 +491,7 @@ export default function Blocklist() {
       </Card>
 
       <BlockedServicesCard />
+      <SafeSearchCard />
 
       {/* Manual rules — blacklist / whitelist as tabs so uneven counts never
           leave one column dwarfing the other. */}
