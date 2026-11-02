@@ -8,6 +8,9 @@ import {
   Save,
   Waypoints,
   ChevronRight,
+  Check,
+  Pencil,
+  Users,
   RefreshCw,
   Search,
   Cable,
@@ -43,6 +46,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { usePageVisible } from "@/hooks/use-page-visible";
 import { deviceTokens } from "@/api/clients";
+import { DevicePicker } from "@/components/DevicePicker";
 import type {
   ClientEntry,
   EgressKind,
@@ -56,8 +60,19 @@ import type {
 
 const KINDS: EgressKind[] = ["direct", "socks5", "wireguard", "evasion"];
 
-/** Shared grid template so the rules header and every rule row line up. */
-const RULE_COLS = "grid-cols-[minmax(0,1fr)_11rem_10rem_5.5rem_3.5rem_2rem]";
+/** Shared grid template so the rules header and every rule row line up (from
+ *  `sm` up — a phone stacks each rule as a small card instead). */
+const RULE_COLS = "sm:grid-cols-[minmax(0,1fr)_10rem_9rem_5rem_3.5rem_3.75rem]";
+
+/** One colour per egress, by position, so a long rule list groups by tunnel at
+ *  a glance. */
+const EGRESS_TONES = [
+  "border-upstream/30 bg-upstream/8 text-upstream",
+  "border-routed/30 bg-routed/8 text-routed",
+  "border-ember/30 bg-ember/8 text-ember",
+  "border-cached/30 bg-cached/8 text-cached",
+  "border-warn/30 bg-warn/8 text-warn",
+];
 
 /** Per-egress ↑/↓ throughput (bytes/sec), derived from deltas between polls. */
 type Rates = Record<string, { up: number; down: number }>;
@@ -297,6 +312,7 @@ export default function Tunnels() {
     setFilter("");
     setEgressFilter("");
     ruleKeys.add();
+    setOpenRule(ruleKeys.keyAt(cfg.rules.length));
     setCfg((c) => ({
       ...c,
       rules: [
@@ -357,6 +373,18 @@ export default function Tunnels() {
       down: rate.reduce((n, r) => n + r.down, 0),
     };
   }, [stats, rates]);
+
+  const egressTone = useCallback(
+    (id: string) => {
+      const idx = cfg.egresses.findIndex((e) => e.id === id);
+      return idx < 0 ? "border-bdr text-muted" : EGRESS_TONES[idx % EGRESS_TONES.length];
+    },
+    [cfg.egresses],
+  );
+
+  const hitsHint = t("tunnels.col_hits_hint", {
+    defaultValue: "Connections routed by this rule since ferrite started.",
+  });
 
   // Rule hit counters keyed the same way the server reports them.
   const ruleHits = useMemo(() => {
@@ -879,144 +907,210 @@ export default function Tunnels() {
                       {t("tunnels.no_match", { defaultValue: "No rules match your filter." })}
                     </p>
                   ) : (
-                    <div className="overflow-x-auto">
-                      <div className="min-w-205">
-                        {/* Column headers */}
-                        <div
-                          className={cn(
-                            "text-muted grid items-center gap-2 px-2 pb-1.5 font-mono text-[10px] uppercase tracking-widest",
-                            RULE_COLS,
-                          )}
-                        >
-                          <span>{t("tunnels.col_domain", { defaultValue: "Domain" })}</span>
-                          <span>{t("tunnels.rule_egress", { defaultValue: "Egress" })}</span>
-                          <span>{t("tunnels.col_devices", { defaultValue: "Devices" })}</span>
-                          <span>{t("tunnels.fail_closed", { defaultValue: "Fail-closed" })}</span>
-                          <span className="text-right">
-                            {t("tunnels.col_hits", { defaultValue: "Hits" })}
-                          </span>
-                          <span />
-                        </div>
+                    <div>
+                      {/* Column headers — the phone layout labels its own fields. */}
+                      <div
+                        className={cn(
+                          "text-muted hidden items-center gap-2 px-3 pb-1.5 font-mono text-[10px] uppercase tracking-widest sm:grid",
+                          RULE_COLS,
+                        )}
+                      >
+                        <span>{t("tunnels.col_domain", { defaultValue: "Domain" })}</span>
+                        <span>{t("tunnels.rule_egress", { defaultValue: "Egress" })}</span>
+                        <span>{t("tunnels.col_devices", { defaultValue: "Devices" })}</span>
+                        <span>{t("tunnels.fail_closed", { defaultValue: "Fail-closed" })}</span>
+                        <span className="text-right" title={hitsHint}>
+                          {t("tunnels.col_hits", { defaultValue: "Hits" })}
+                        </span>
+                        <span />
+                      </div>
 
-                        <div className="border-bdr/70 divide-bdr/55 rounded-xs divide-y border">
-                          {filteredRules.map(({ r, i }) => {
-                            const scoped = (r.clients ?? []).map((x) => x.toLowerCase());
-                            const rowKey = ruleKeys.keyAt(i);
-                            const isOpen = openRule === rowKey;
-                            const selectedCount = knownClients.filter((c) =>
-                              deviceTokens(c).some((tok) => scoped.includes(tok.toLowerCase())),
-                            ).length;
-                            return (
-                              <div key={rowKey} className="px-2 py-2">
-                                <div className={cn("grid items-center gap-2", RULE_COLS)}>
-                                  <Input
-                                    value={r.pattern}
-                                    onChange={(ev) => updateRule(i, { pattern: ev.target.value })}
-                                    placeholder="example.com"
-                                    className="w-full font-mono"
-                                  />
-                                  <Select
-                                    value={r.egress}
-                                    onChange={(ev) => updateRule(i, { egress: ev.target.value })}
-                                    className="w-full"
-                                  >
-                                    {cfg.egresses.map((e) => (
-                                      <option key={e.id} value={e.id}>
-                                        {e.name || e.id}
-                                      </option>
-                                    ))}
-                                  </Select>
-                                  <button
-                                    type="button"
-                                    onClick={() => setOpenRule(isOpen ? null : rowKey)}
-                                    className={cn(
-                                      "flex items-center gap-1 truncate text-left text-xs transition-colors",
-                                      isOpen ? "text-ember" : "text-muted hover:text-ember",
-                                    )}
-                                  >
-                                    <ChevronRight
-                                      size={12}
-                                      className={cn(
-                                        "shrink-0 transition-transform",
-                                        isOpen && "rotate-90",
-                                      )}
-                                    />
-                                    <span className="truncate">
-                                      {scoped.length === 0
-                                        ? t("tunnels.rule_all_devices", {
-                                            defaultValue: "All devices",
-                                          })
-                                        : t("tunnels.rule_n_devices", {
-                                            count: selectedCount,
-                                            defaultValue: "{{count}} device(s)",
-                                          })}
-                                    </span>
-                                  </button>
-                                  <span
-                                    className="flex items-center"
-                                    title={t("tunnels.fail_closed_hint", {
-                                      defaultValue: "Drop traffic when the egress is down.",
+                      <div className="border-bdr/70 divide-bdr/55 rounded-xs divide-y border">
+                        {filteredRules.map(({ r, i }) => {
+                          const scoped = (r.clients ?? []).map((x) => x.toLowerCase());
+                          const rowKey = ruleKeys.keyAt(i);
+                          const isOpen = openRule === rowKey;
+                          const toggleOpen = () => setOpenRule(isOpen ? null : rowKey);
+                          const selectedCount = knownClients.filter((c) =>
+                            deviceTokens(c).some((tok) => scoped.includes(tok.toLowerCase())),
+                          ).length;
+                          const hits = ruleHits.get(`${r.pattern}\u0001${r.egress}`) ?? 0;
+
+                          const pattern = (
+                            <button
+                              type="button"
+                              onClick={toggleOpen}
+                              className="hover:text-ember min-w-0 flex-1 truncate text-left font-mono text-xs transition-colors"
+                            >
+                              {r.pattern.trim() ? (
+                                <span className="text-heading">{r.pattern}</span>
+                              ) : (
+                                <span className="text-warn italic">
+                                  {t("tunnels.rule_no_pattern", { defaultValue: "no domain yet" })}
+                                </span>
+                              )}
+                            </button>
+                          );
+                          const egress = (
+                            <EgressChip
+                              name={egressName(r.egress)}
+                              health={health[r.egress]}
+                              tone={egressTone(r.egress)}
+                            />
+                          );
+                          const devices = (
+                            <button
+                              type="button"
+                              onClick={toggleOpen}
+                              className={cn(
+                                "flex min-w-0 items-center gap-1 text-left text-xs transition-colors",
+                                isOpen ? "text-ember" : "text-muted hover:text-ember",
+                              )}
+                            >
+                              <Users size={11} className="shrink-0" />
+                              <span className="truncate">
+                                {scoped.length === 0
+                                  ? t("tunnels.rule_all_devices", { defaultValue: "All devices" })
+                                  : t("tunnels.rule_n_devices", {
+                                      count: selectedCount,
+                                      defaultValue: "{{count}} device(s)",
                                     })}
-                                  >
-                                    <Switch
-                                      checked={r.fail_closed}
-                                      onCheckedChange={(v) => updateRule(i, { fail_closed: v })}
-                                    />
-                                  </span>
-                                  <span
-                                    className="text-muted text-right font-mono text-[11px] tabular-nums"
-                                    title={t("tunnels.col_hits_hint", {
-                                      defaultValue: "Connections routed by this rule.",
-                                    })}
-                                  >
-                                    {fmt(ruleHits.get(`${r.pattern}\u0001${r.egress}`) ?? 0)}
-                                  </span>
-                                  <IconBtn
-                                    danger
-                                    onClick={() => removeRule(i)}
-                                    className="justify-self-center"
-                                  >
-                                    <Trash2 size={13} />
-                                  </IconBtn>
+                              </span>
+                            </button>
+                          );
+                          const failClosed = (
+                            <span
+                              className="flex items-center"
+                              title={t("tunnels.fail_closed_hint", {
+                                defaultValue: "Drop traffic when the egress is down.",
+                              })}
+                            >
+                              <Switch
+                                checked={r.fail_closed}
+                                onCheckedChange={(v) => updateRule(i, { fail_closed: v })}
+                              />
+                            </span>
+                          );
+                          const actions = (
+                            <span className="flex items-center justify-end gap-1">
+                              <IconBtn
+                                onClick={toggleOpen}
+                                title={t("tunnels.edit_rule", { defaultValue: "Edit rule" })}
+                                className={cn("p-1", isOpen && "text-ember")}
+                              >
+                                {isOpen ? <Check size={13} /> : <Pencil size={13} />}
+                              </IconBtn>
+                              <IconBtn danger onClick={() => removeRule(i)} className="p-1">
+                                <Trash2 size={13} />
+                              </IconBtn>
+                            </span>
+                          );
+
+                          return (
+                            <div
+                              key={rowKey}
+                              className={cn("px-3 py-2 transition-colors", isOpen && "bg-ember/3")}
+                            >
+                              {/* Wide screens: one aligned row. */}
+                              <div className={cn("hidden items-center gap-2 sm:grid", RULE_COLS)}>
+                                {pattern}
+                                <span className="min-w-0">{egress}</span>
+                                {devices}
+                                {failClosed}
+                                <span
+                                  className="text-muted text-right font-mono text-[11px] tabular-nums"
+                                  title={hitsHint}
+                                >
+                                  {fmt(hits)}
+                                </span>
+                                {actions}
+                              </div>
+
+                              {/* Phones: the domain on its own line, the rest beneath. */}
+                              <div className="space-y-1.5 sm:hidden">
+                                <div className="flex items-center gap-2">
+                                  {pattern}
+                                  {actions}
                                 </div>
+                                <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                                  {egress}
+                                  {devices}
+                                  <span className="text-muted flex items-center gap-1.5 text-[11px]">
+                                    {failClosed}
+                                    {t("tunnels.fail_closed", { defaultValue: "Fail-closed" })}
+                                  </span>
+                                  <span
+                                    className="text-muted font-mono text-[11px] tabular-nums"
+                                    title={hitsHint}
+                                  >
+                                    {t("tunnels.col_hits", { defaultValue: "Hits" })} {fmt(hits)}
+                                  </span>
+                                </div>
+                              </div>
 
-                                {/* Device scope: empty = all clients. Collapsed by default. */}
-                                {isOpen &&
-                                  (knownClients.length === 0 ? (
-                                    <p className="text-muted px-1 pt-2 text-xs">
-                                      {t("tunnels.no_known_devices", {
-                                        defaultValue:
-                                          "No devices seen yet — they appear once they query.",
+                              {/* Editor: the rule's fields and its device scope. */}
+                              {isOpen && (
+                                <div className="border-bdr/50 mt-2.5 space-y-3 border-t pt-3">
+                                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1fr)_14rem]">
+                                    <label className="space-y-1">
+                                      <span className="text-muted font-mono text-[10px] uppercase tracking-widest">
+                                        {t("tunnels.col_domain", { defaultValue: "Domain" })}
+                                      </span>
+                                      <Input
+                                        value={r.pattern}
+                                        onChange={(ev) => updateRule(i, { pattern: ev.target.value })}
+                                        placeholder="example.com"
+                                        className="w-full font-mono"
+                                        autoFocus={!r.pattern}
+                                      />
+                                    </label>
+                                    <label className="space-y-1">
+                                      <span className="text-muted font-mono text-[10px] uppercase tracking-widest">
+                                        {t("tunnels.rule_egress", { defaultValue: "Egress" })}
+                                      </span>
+                                      <Select
+                                        value={r.egress}
+                                        onChange={(ev) => updateRule(i, { egress: ev.target.value })}
+                                        className="w-full"
+                                      >
+                                        {cfg.egresses.map((e) => (
+                                          <option key={e.id} value={e.id}>
+                                            {e.name || e.id}
+                                          </option>
+                                        ))}
+                                      </Select>
+                                    </label>
+                                  </div>
+
+                                  <div className="space-y-1.5">
+                                    <span className="text-muted font-mono text-[10px] uppercase tracking-widest">
+                                      {t("tunnels.col_devices", { defaultValue: "Devices" })}
+                                    </span>
+                                    {knownClients.length === 0 ? (
+                                      <p className="text-muted text-xs">
+                                        {t("tunnels.no_known_devices", {
+                                          defaultValue:
+                                            "No devices seen yet — they appear once they query.",
+                                        })}
+                                      </p>
+                                    ) : (
+                                      <DevicePicker
+                                        clients={knownClients}
+                                        scoped={scoped}
+                                        onToggle={(c) => toggleDevice(i, c)}
+                                      />
+                                    )}
+                                    <p className="text-muted/80 text-[11px]">
+                                      {t("tunnels.rule_devices_hint", {
+                                        defaultValue: "None selected — the rule applies to every device.",
                                       })}
                                     </p>
-                                  ) : (
-                                    <div className="flex flex-wrap gap-1.5 px-1 pt-2.5">
-                                      {knownClients.map((c) => {
-                                        const tokens = deviceTokens(c).map((x) => x.toLowerCase());
-                                        const on = tokens.some((tok) => scoped.includes(tok));
-                                        return (
-                                          <button
-                                            key={c.name}
-                                            type="button"
-                                            onClick={() => toggleDevice(i, c)}
-                                            title={c.ips.join(", ")}
-                                            className={cn(
-                                              "rounded-xs border px-2 py-1 font-mono text-[11px] transition-colors",
-                                              on
-                                                ? "border-ember/40 bg-ember/10 text-ember"
-                                                : "border-bdr/70 text-muted hover:text-ember hover:border-ember/40",
-                                            )}
-                                          >
-                                            {c.name}
-                                          </button>
-                                        );
-                                      })}
-                                    </div>
-                                  ))}
-                              </div>
-                            );
-                          })}
-                        </div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
@@ -1199,6 +1293,35 @@ function Field({ label, children }: { label: ReactNode; children: ReactNode }) {
       <span className="text-muted truncate text-xs">{label}</span>
       {children}
     </div>
+  );
+}
+
+/** An egress as a chip: its own colour, so rules group by tunnel at a glance,
+ *  and a dot for its health. */
+function EgressChip({
+  name,
+  health,
+  tone,
+}: {
+  name: string;
+  health?: "up" | "down";
+  tone: string;
+}) {
+  return (
+    <span
+      className={cn(
+        "rounded-xs inline-flex max-w-full items-center gap-1.5 border px-2 py-0.5 text-[11px] font-medium",
+        tone,
+      )}
+    >
+      <span
+        className={cn(
+          "h-1.5 w-1.5 shrink-0 rounded-full",
+          health === "up" ? "bg-cached" : health === "down" ? "bg-blocked" : "bg-muted/50",
+        )}
+      />
+      <span className="truncate">{name}</span>
+    </span>
   );
 }
 

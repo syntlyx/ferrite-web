@@ -17,6 +17,7 @@ import {
 import { cn } from "@/lib/utils";
 import { api } from "@/api";
 import { deviceTokens } from "@/api/clients";
+import { DevicePicker } from "@/components/DevicePicker";
 import type { BlocklistProfile, ClientEntry, DomainCheckResult } from "@/api/types";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { PageContainer } from "@/components/layout/PageContainer";
@@ -539,28 +540,11 @@ function ProfilesPanel() {
                       })}
                     </p>
                   ) : (
-                    <div className="flex flex-wrap gap-1.5">
-                      {knownClients.map((c) => {
-                        const tokens = deviceTokens(c).map((x) => x.toLowerCase());
-                        const on = tokens.some((tok) => scoped.includes(tok));
-                        return (
-                          <button
-                            key={c.name}
-                            type="button"
-                            onClick={() => toggleDevice(i, c)}
-                            title={c.ips.join(", ")}
-                            className={cn(
-                              "rounded-xs border px-2 py-1 font-mono text-[11px] transition-colors",
-                              on
-                                ? "border-ember/40 bg-ember/10 text-ember"
-                                : "border-bdr/70 text-muted hover:text-ember hover:border-ember/40",
-                            )}
-                          >
-                            {c.name}
-                          </button>
-                        );
-                      })}
-                    </div>
+                    <DevicePicker
+                      clients={knownClients}
+                      scoped={scoped}
+                      onToggle={(c) => toggleDevice(i, c)}
+                    />
                   )}
                 </div>
 
