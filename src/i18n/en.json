@@ -128,7 +128,10 @@
     "page": "Page {{n}}",
     "first_page": "First page (live)",
     "log_disabled": "The query log is switched off in Settings → Privacy. Queries are still answered, just not recorded.",
-    "no_queries_log_off": "Nothing is being recorded"
+    "no_queries_log_off": "Nothing is being recorded",
+    "group_repeats": "Group",
+    "group_repeats_hint": "Fold identical queries in a row into one line",
+    "repeat_count_hint": "{{count}} identical queries in a row"
   },
   "clients": {
     "title": "Clients",
@@ -584,14 +587,17 @@
     "no_traffic": "no traffic yet",
     "domains": "Routed domains",
     "col_hits": "Hits",
-    "col_hits_hint": "Connections routed by this rule.",
+    "col_hits_hint": "Connections routed by this rule since ferrite started.",
     "alert_webhook": "Alert webhook",
     "alert_webhook_sub": "URL POSTed a JSON event when an egress stays down for over a minute (and again on recovery). Works with ntfy or any JSON webhook receiver. Blank = off.",
     "down_for": "down",
     "probe_target": "Probe target",
     "probe_target_sub": "host:port the health probe connects to through each egress to measure latency. Must be reachable through every tunnel (it gates fail-closed). Blank = 1.1.1.1:443.",
     "probe_failed": "probe failed",
-    "probe_slow": "slow"
+    "probe_slow": "slow",
+    "rule_no_pattern": "no domain yet",
+    "edit_rule": "Edit rule",
+    "rule_devices_hint": "None selected — the rule applies to every device."
   },
   "logs": {
     "title": "Logs",
