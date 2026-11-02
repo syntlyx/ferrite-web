@@ -11,6 +11,7 @@ import {
   Activity,
   BarChart3,
   ShieldOff,
+  Shield,
   ChevronUp,
   ChevronDown,
   ChevronsUpDown,
@@ -45,6 +46,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useConfirm } from "@/hooks/use-confirm";
 import { fmt, fmtRelTime } from "@/lib/format";
+import { DEVICE_ICON, deviceKind } from "@/lib/device-kind";
 import { deviceTokens } from "@/api/clients";
 import type { AddAliasBody, ClientAlias, ClientEntry } from "@/api/types";
 
@@ -609,36 +611,44 @@ export default function Clients() {
             <table className="w-full text-xs">
               <thead>
                 <tr className="border-bdr border-b">
-                  <Th className="w-8">{t("clients.col_rank")}</Th>
+                  <Th className="hidden w-8 sm:table-cell">{t("clients.col_rank")}</Th>
                   <SortHeader
                     label={t("clients.col_client")}
                     field="name"
                     sort={sort}
                     onSort={onSort}
+                    className="px-3 sm:px-4"
                   />
-                  <Th>{t("clients.col_ips")}</Th>
-                  <Th className="w-36">{t("clients.col_activity")}</Th>
+                  <Th className="hidden md:table-cell">{t("clients.col_ips")}</Th>
+                  <Th className="hidden w-36 lg:table-cell">{t("clients.col_activity")}</Th>
                   <SortHeader
                     label={t("clients.col_total")}
                     field="total"
                     sort={sort}
                     onSort={onSort}
-                    className="text-right"
+                    className="px-3 text-right sm:px-4"
                   />
                   <SortHeader
                     label={t("clients.col_blocked")}
                     field="blocked"
                     sort={sort}
                     onSort={onSort}
-                    className="text-right"
+                    className="px-3 text-right sm:px-4"
                   />
-                  <Th className="text-right">{t("clients.col_filtering")}</Th>
+                  <Th className="px-3 text-right sm:px-4">
+                    <span className="hidden sm:inline">{t("clients.col_filtering")}</span>
+                    <Shield
+                      size={11}
+                      className="ml-auto sm:hidden"
+                      aria-label={t("clients.col_filtering")}
+                    />
+                  </Th>
                   <SortHeader
                     label={t("clients.col_last_seen")}
                     field="last_seen"
                     sort={sort}
                     onSort={onSort}
-                    className="text-right"
+                    className="hidden text-right sm:table-cell"
                   />
                 </tr>
               </thead>
@@ -656,11 +666,23 @@ export default function Clients() {
                     const blockedPct = c.total > 0 ? (c.blocked / c.total) * 100 : 0;
                     const filteringOn = blockingEnabled && !c.blocking_bypassed;
                     const canName = Boolean(c.macs[0] || c.ips[0]);
+                    const kind = deviceKind(c.name);
+                    const DeviceIcon = DEVICE_ICON[kind];
                     return (
                       <TableRow key={c.name + rank} className="group">
-                        <Td className="text-muted tabular-nums">{rank}</Td>
-                        <Td>
+                        <Td className="text-muted hidden tabular-nums sm:table-cell">{rank}</Td>
+                        <Td className="px-3 sm:px-4">
                           <div className="flex items-center gap-1.5">
+                            <span
+                              className={cn(
+                                "rounded-xs flex h-6 w-6 shrink-0 items-center justify-center border",
+                                kind === "unknown"
+                                  ? "border-bdr/50 text-muted/60"
+                                  : "border-ember/20 bg-ember/5 text-ember/80",
+                              )}
+                            >
+                              <DeviceIcon size={13} />
+                            </span>
                             <Link
                               to={`/queries?device=${encodeURIComponent(deviceTokens(c).join(","))}`}
                               className="text-heading hover:text-ember font-medium transition-colors"
@@ -682,28 +704,37 @@ export default function Clients() {
                               </IconBtn>
                             )}
                           </div>
+                          {/* What a phone's hidden columns would have said. */}
+                          <span className="text-muted mt-0.5 block whitespace-nowrap pl-7.5 font-mono text-[10px] md:hidden">
+                            {[...c.ips].sort((a, b) => ipRank(a) - ipRank(b))[0]}
+                            <span className="sm:hidden"> · {fmtRelTime(c.last_seen)}</span>
+                          </span>
                         </Td>
-                        <Td>
+                        <Td className="hidden md:table-cell">
                           <IpList ips={c.ips} />
                         </Td>
-                        <Td>
+                        <Td className="hidden lg:table-cell">
                           <Bar
                             value={(c.total / maxTotal) * 100}
                             color={rank === 1 ? "bg-ember" : "bg-ember/40"}
                           />
                         </Td>
-                        <Td className="text-body text-right tabular-nums">{fmt(c.total)}</Td>
-                        <Td className="text-right">
+                        <Td className="text-body px-3 text-right tabular-nums sm:px-4">
+                          {fmt(c.total)}
+                        </Td>
+                        <Td className="px-3 text-right sm:px-4">
                           <span className="text-blocked tabular-nums">{fmt(c.blocked)}</span>
                           {c.total > 0 && (
-                            <span className="text-muted ml-1">({blockedPct.toFixed(0)}%)</span>
+                            <span className="text-muted ml-1 hidden sm:inline">
+                              ({blockedPct.toFixed(0)}%)
+                            </span>
                           )}
                         </Td>
-                        <Td className="text-right">
+                        <Td className="px-3 text-right sm:px-4">
                           <div className="inline-flex items-center gap-2">
                             <span
                               className={cn(
-                                "rounded-full px-2 py-0.5 text-[10px] font-medium",
+                                "hidden rounded-full px-2 py-0.5 text-[10px] font-medium sm:inline",
                                 filteringOn ? "bg-ember/10 text-ember" : "bg-warn/10 text-warn",
                               )}
                             >
@@ -720,7 +751,7 @@ export default function Clients() {
                             />
                           </div>
                         </Td>
-                        <Td className="text-muted whitespace-nowrap text-right">
+                        <Td className="text-muted hidden whitespace-nowrap text-right sm:table-cell">
                           <span className="inline-flex items-center justify-end gap-1.5">
                             <span
                               className={cn(

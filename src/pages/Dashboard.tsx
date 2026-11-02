@@ -29,6 +29,7 @@ import { usePageVisible } from "@/hooks/use-page-visible";
 import { useSettings } from "@/stores/settings";
 import { QTYPE, RCODE_LABEL } from "@/lib/dns";
 import { fmt, pct, formatBytes, formatUptime } from "@/lib/format";
+import { DEVICE_ICON, deviceKind } from "@/lib/device-kind";
 import type {
   SystemStats,
   QueryStatus,
@@ -362,42 +363,46 @@ function TopClients({
         <p className="text-muted py-2 text-xs">{t("dashboard.no_data")}</p>
       ) : (
         <div className="space-y-1">
-          {rows.slice(0, 10).map((c, i) => (
-            <button
-              key={c.name}
-              onClick={() => {
-                // Prefer the device's MAC (covers all its IPs); else its IPs; else
-                // the name only when it is itself an IP (a hostname can't be filtered).
-                const tokens =
-                  c.macs.length > 0
-                    ? c.macs
-                    : c.ips.length > 0
-                      ? c.ips
-                      : isIpv4(c.name)
-                        ? [c.name]
-                        : [];
-                if (tokens.length > 0) {
-                  navigate(`/queries?device=${encodeURIComponent(tokens.join(","))}`);
-                } else {
-                  navigate("/clients");
-                }
-              }}
-              className="hover:bg-white/4 rounded-xs group w-full cursor-pointer px-2 py-1.5 text-left transition-colors"
-            >
-              <div className="mb-1 flex items-center justify-between text-xs">
-                <div className="flex min-w-0 items-center gap-2">
-                  <span className="mono text-muted w-4 shrink-0 text-right text-[10px] tabular-nums">
-                    {i + 1}
-                  </span>
-                  <span className="mono text-body group-hover:text-ember truncate transition-colors">
-                    {c.name}
-                  </span>
+          {rows.slice(0, 10).map((c, i) => {
+            const DeviceIcon = DEVICE_ICON[deviceKind(c.name)];
+            return (
+              <button
+                key={c.name}
+                onClick={() => {
+                  // Prefer the device's MAC (covers all its IPs); else its IPs; else
+                  // the name only when it is itself an IP (a hostname can't be filtered).
+                  const tokens =
+                    c.macs.length > 0
+                      ? c.macs
+                      : c.ips.length > 0
+                        ? c.ips
+                        : isIpv4(c.name)
+                          ? [c.name]
+                          : [];
+                  if (tokens.length > 0) {
+                    navigate(`/queries?device=${encodeURIComponent(tokens.join(","))}`);
+                  } else {
+                    navigate("/clients");
+                  }
+                }}
+                className="hover:bg-white/4 rounded-xs group w-full cursor-pointer px-2 py-1.5 text-left transition-colors"
+              >
+                <div className="mb-1 flex items-center justify-between text-xs">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <span className="mono text-muted w-4 shrink-0 text-right text-[10px] tabular-nums">
+                      {i + 1}
+                    </span>
+                    <DeviceIcon size={12} className="text-muted/70 shrink-0" />
+                    <span className="mono text-body group-hover:text-ember truncate transition-colors">
+                      {c.name}
+                    </span>
+                  </div>
+                  <span className="mono text-muted ml-3 shrink-0 tabular-nums">{fmt(c.total)}</span>
                 </div>
-                <span className="mono text-muted ml-3 shrink-0 tabular-nums">{fmt(c.total)}</span>
-              </div>
-              <Bar value={(c.total / max) * 100} color="bg-upstream" className="h-1" />
-            </button>
-          ))}
+                <Bar value={(c.total / max) * 100} color="bg-upstream" className="h-1" />
+              </button>
+            );
+          })}
         </div>
       )}
     </Card>
