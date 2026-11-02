@@ -646,7 +646,21 @@
     "no_devices_selected": "No devices selected — this profile applies to nobody yet.",
     "services": "Blocked services",
     "no_lists_short": "No blocklists subscribed yet.",
-    "name_required": "Give every profile a name."
+    "name_required": "Give every profile a name.",
+    "on_now": "On now",
+    "off_now": "Off now",
+    "move_up": "Move up",
+    "move_down": "Move down",
+    "schedule": "Schedule",
+    "box_time": "Box time {{time}} (UTC{{offset}})",
+    "schedule_always": "Always on. Add a time window to apply this profile only at certain hours.",
+    "schedule_hint": "Outside these hours its devices follow the next profile they are in, or the network-wide rules. When several profiles include a device, the first one that is on wins — the arrows set the order.",
+    "schedule_from": "From",
+    "schedule_to": "To",
+    "schedule_every_day": "every day",
+    "schedule_overnight": "ends the next morning",
+    "schedule_all_day": "all day",
+    "schedule_add": "Add time window"
   },
   "quick": {
     "block": "Block",

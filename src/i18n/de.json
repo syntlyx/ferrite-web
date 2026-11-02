@@ -646,7 +646,21 @@
     "no_devices_selected": "Keine Geräte ausgewählt — dieses Profil gilt noch für niemanden.",
     "services": "Gesperrte Dienste",
     "no_lists_short": "Noch keine Blocklisten abonniert.",
-    "name_required": "Jedes Profil braucht einen Namen."
+    "name_required": "Jedes Profil braucht einen Namen.",
+    "on_now": "Jetzt aktiv",
+    "off_now": "Jetzt inaktiv",
+    "move_up": "Nach oben",
+    "move_down": "Nach unten",
+    "schedule": "Zeitplan",
+    "box_time": "Box-Zeit {{time}} (UTC{{offset}})",
+    "schedule_always": "Immer aktiv. Ein Zeitfenster hinzufügen, damit das Profil nur zu bestimmten Zeiten gilt.",
+    "schedule_hint": "Außerhalb dieser Zeiten folgen seine Geräte dem nächsten Profil, in dem sie stehen, oder den netzwerkweiten Regeln. Steht ein Gerät in mehreren Profilen, gilt das erste aktive — die Pfeile legen die Reihenfolge fest.",
+    "schedule_from": "Von",
+    "schedule_to": "Bis",
+    "schedule_every_day": "täglich",
+    "schedule_overnight": "endet am nächsten Morgen",
+    "schedule_all_day": "ganztägig",
+    "schedule_add": "Zeitfenster hinzufügen"
   },
   "quick": {
     "block": "Blockieren",

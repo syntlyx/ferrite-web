@@ -646,7 +646,21 @@
     "no_devices_selected": "Aucun appareil sélectionné — ce profil ne s'applique encore à personne.",
     "services": "Services bloqués",
     "no_lists_short": "Aucune liste de blocage abonnée pour l'instant.",
-    "name_required": "Donnez un nom à chaque profil."
+    "name_required": "Donnez un nom à chaque profil.",
+    "on_now": "Actif maintenant",
+    "off_now": "Inactif maintenant",
+    "move_up": "Monter",
+    "move_down": "Descendre",
+    "schedule": "Horaires",
+    "box_time": "Heure du boîtier {{time}} (UTC{{offset}})",
+    "schedule_always": "Toujours actif. Ajoutez une plage horaire pour n'appliquer ce profil qu'à certaines heures.",
+    "schedule_hint": "En dehors de ces heures, ses appareils suivent le profil suivant qui les contient, ou les règles de tout le réseau. Si un appareil figure dans plusieurs profils, le premier actif l'emporte — les flèches fixent l'ordre.",
+    "schedule_from": "De",
+    "schedule_to": "À",
+    "schedule_every_day": "tous les jours",
+    "schedule_overnight": "se termine le lendemain matin",
+    "schedule_all_day": "toute la journée",
+    "schedule_add": "Ajouter une plage horaire"
   },
   "quick": {
     "block": "Bloquer",
