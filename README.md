@@ -1,50 +1,73 @@
 # Ferrite Web UI
 
-React/Vite control panel for Ferrite, a DNS sinkhole and local-network DNS
-server. The web UI talks to the Ferrite HTTP API through same-origin `/api`
-requests and can be run either through Vite during development or as static
-files served by the Ferrite server.
+The control panel for [Ferrite](https://github.com/syntlyx/ferrite-server) — a
+self-hosted DNS filter and router. React + Vite; it talks to the Ferrite API
+through same-origin `/api` requests and runs either under Vite during
+development or as static files served by the Ferrite server itself.
 
 ## Screenshots
 
 Captures live in [`screenshots/`](screenshots/), rendered from real (anonymized)
-API data using the harness.
+API data with the screenshot harness.
 
 ![Dashboard](screenshots/dashboard.png)
-_Live dashboard — counters, block rate, 24h chart, top domains, system metrics._
+_Dashboard — counters, the 24-hour traffic chart, top domains and devices, live queries, the box's health._
+
+![Profiles](screenshots/profiles.png)
+_Profiles — services to block per device, schedules, SafeSearch and YouTube Restricted Mode, default-deny._
+
+![Device panel](screenshots/device.png)
+_One device in one place — its profile and whether it is on now, a day of activity, the services behind it, what it asked for and what was blocked._
+
+![Domain panel](screenshots/domain.png)
+_One domain in one place — blocked or not and why, where its traffic goes, who asked for it._
 
 ![Tunnels](screenshots/tunnels.png)
-_Selective routing — per-device rules through Direct / SOCKS5 / WireGuard / DPI-evasion egresses._
+_Tunnels — per-device and per-service routing through WireGuard, SOCKS5 or DPI evasion, with live egress health._
 
 ![Query log](screenshots/queries.png)
-_Query log with domain / client / status / time filters._
+_Query log — device names first, filters, a compact mode, one click to the domain or the device._
 
-![Blocklist check](screenshots/blocklist.png)
-_Why-blocked — which list or rule matched, and the whitelist entry that exempts a domain._
+## What it includes
 
-![Tools](screenshots/tools.png)
-_Built-in DNS lookup (nslookup) and WHOIS._
+**Seeing what happens**
 
-## What It Includes
+- Dashboard: counters, block rate, the 24-hour chart, top domains, blocked
+  domains and devices, live queries, CPU / RAM / disk / network of the box.
+- Query log with filters for domain, device, status and time, grouping and a
+  compact mode.
+- Side panels for a **domain** (verdict and the list or rule behind it, routing,
+  recent askers, block / allow) and a **device** (profile and schedule, pause,
+  name, a day of activity, the services it used, top and blocked domains,
+  routes) — reachable from every page and from the ⌘K / Ctrl+K palette.
+- Devices: names (alias, PTR or mDNS), a "new" badge for first sightings,
+  per-device pause and filtering bypass.
 
-- Live dashboard with query counters, block rate, 24h charts, top domains,
-  top blocked domains, clients, recent queries, and system metrics.
-- Query log with filters for domain, client, status, and time ranges.
-- Client list and manual aliases.
-- Blacklist and whitelist management.
-- Subscription list management with per-list refresh and refresh-all actions.
-- Custom DNS records for `A`, `AAAA`, and `CNAME`.
-- Selective routing (Tunnels): manage egresses (Direct, SOCKS5, WireGuard,
-  DPI-evasion) and domain rules, with live egress health and a buffer-size speed
-  calculator.
-- Live server logs viewer (in-memory, delta-polled, per-level exclude filters).
-- Diagnostic tools: DNS lookup (nslookup) and WHOIS, plus a why-blocked domain
-  check that shows which list or rule matched.
-- Runtime settings for auth, DNS TTLs, log ignore patterns, log retention, API
-  bind address, cache sizing, and the served `web_dir`.
-- Server and web update checks/actions.
-- Password/session-token login flow, light/dark theme, and a localized UI
-  (English, Ukrainian, Spanish, German, French).
+**Deciding what is allowed**
+
+- Profiles for chosen devices: catalog services to block (TikTok, Roblox,
+  YouTube… 43 in seven categories), weekly schedules, SafeSearch and YouTube
+  Restricted Mode, list subsets, own block / allow entries, default-deny.
+- Network-wide blocked services and SafeSearch.
+- Blocklist and allowlist subscriptions with a curated catalog, manual entries,
+  and a "why blocked" check.
+- Custom DNS records (`A`, `AAAA`, `CNAME`, exact or wildcard).
+
+**Routing**
+
+- Tunnels: egresses (Direct, SOCKS5, WireGuard, DPI evasion) and rules by
+  domain or by service, scoped to devices, with live health and per-rule hits.
+
+**Running the box**
+
+- Settings: DNS and cache, upstreams, privacy switches for the query log and
+  statistics, retention, panel shortcut, password and API key, signed-in
+  browsers (sign one or all others out), notifications (ntfy, Telegram,
+  Discord, Slack, Gotify or JSON), the MCP endpoint for AI assistants, config
+  backup and restore, server and panel updates.
+- Live server logs and diagnostic tools (DNS lookup, DNSSEC, WHOIS, certificate
+  and reachability probes).
+- Light and dark themes; English, Ukrainian, German, Spanish and French.
 
 ## Stack
 
