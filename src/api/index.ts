@@ -23,6 +23,7 @@ import * as updates from "./updates";
 import * as tools from "./tools";
 import * as pause from "./pause";
 import * as backup from "./backup";
+import * as importer from "./importer";
 import * as services from "./services";
 import * as notifications from "./notifications";
 
@@ -125,6 +126,8 @@ export const api = {
   resumeBlocking: (clients?: string[]) => pause.resume(clients),
 
   exportConfig: backup.exportConfig,
+  previewImport: importer.preview,
+  applyImport: importer.apply,
   importConfig: (toml: string) => backup.importConfig(toml),
 
   getSettings: settings.get,

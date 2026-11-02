@@ -57,6 +57,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useConfirm } from "@/hooks/use-confirm";
 import { BackupCard } from "@/components/BackupCard";
+import { ImportCard } from "@/components/ImportCard";
 import { NotificationsCard } from "@/components/NotificationsCard";
 import { McpCard } from "@/components/McpCard";
 import { SessionsCard } from "@/components/SessionsCard";
@@ -1796,6 +1797,12 @@ export default function Settings() {
               <BackupCard
                 confirm={confirm}
                 onRestored={() => {
+                  setRestarting(true);
+                  pollUntilBack();
+                }}
+              />
+              <ImportCard
+                onRestarting={() => {
                   setRestarting(true);
                   pollUntilBack();
                 }}

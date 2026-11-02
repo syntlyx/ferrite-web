@@ -890,5 +890,29 @@
     "top_blocked": "Am häufigsten blockiert",
     "routing": "Für dieses Gerät geroutet",
     "no_stats": "Kein Verlauf für dieses Gerät — die Statistik ist womöglich aus."
+  },
+  "import": {
+    "title": "Von Pi-hole oder AdGuard Home umziehen",
+    "sub": "Ein Teleporter-Export von Pi-hole v6 (.zip) oder AdGuardHome.yaml. Sie sehen, was übernommen wird — und was nicht —, bevor sich etwas ändert; es kommt zu dem hinzu, was ferrite schon hat.",
+    "pick": "Export wählen…",
+    "run": "Auswahl importieren",
+    "from": "Aus {{source}} — {{file}}",
+    "nothing": "nichts in diesem Export",
+    "notes": "Was nicht übernommen wird ({{count}})",
+    "reading": "Export wird gelesen…",
+    "how": "Pi-hole: Settings → Teleporter → Export. AdGuard Home: AdGuardHome.yaml aus seinem Ordner.",
+    "done": "Aus {{source}} importiert",
+    "sum_lists": "{{block}} Sperrlisten, {{allow}} Erlaubnislisten",
+    "sum_rules": "{{block}} zum Sperren, {{allow}} zum Erlauben",
+    "sum_records": "{{count}} lokale Einträge",
+    "sum_devices": "{{names}} Namen, {{profiles}} Profile, {{bypass}} ungefiltert",
+    "sum_upstreams": "{{count}} Upstreams, {{zones}} weitergeleitete Zonen — ersetzt Ihre und startet ferrite neu",
+    "part_lists": "Listen-Abos",
+    "part_rules": "Eigene Sperr- und Erlaubnisregeln",
+    "part_records": "Lokale DNS-Einträge",
+    "part_devices": "Gerätenamen und Gruppen",
+    "part_services": "Gesperrte Dienste, SafeSearch",
+    "part_dns": "Sperr- und Zugriffseinstellungen",
+    "part_upstreams": "Upstream-Resolver"
   }
 }

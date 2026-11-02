@@ -73,7 +73,7 @@ export function withQuery<T extends object>(path: string, params: QueryParams<T>
 type RequestOpts = {
   /** Override the default 30s timeout, e.g. for long-running batch operations. */
   timeoutMs?: number;
-  /** Send `body` as-is (a string) with this content type instead of as JSON. */
+  /** Send `body` as-is (a string or a Blob) with this content type instead of as JSON. */
   rawContentType?: string;
   /** Hand back the response body as text rather than parsing JSON. */
   textResponse?: boolean;
@@ -97,7 +97,12 @@ async function request<T>(
   const res = await fetch(BASE + path, {
     method,
     headers,
-    body: body == null ? undefined : opts?.rawContentType ? (body as string) : JSON.stringify(body),
+    body:
+      body == null
+        ? undefined
+        : opts?.rawContentType
+          ? (body as BodyInit)
+          : JSON.stringify(body),
     signal: controller.signal,
   }).finally(() => clearTimeout(timeoutId));
 

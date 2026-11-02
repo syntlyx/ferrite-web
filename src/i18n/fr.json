@@ -890,5 +890,29 @@
     "top_blocked": "Les plus bloqués",
     "routing": "Routé pour cet appareil",
     "no_stats": "Aucun historique pour cet appareil — les statistiques sont peut-être désactivées."
+  },
+  "import": {
+    "title": "Venir de Pi-hole ou d'AdGuard Home",
+    "sub": "Un export Teleporter de Pi-hole v6 (.zip) ou AdGuardHome.yaml. Vous voyez ce qui sera repris — et ce qui ne peut pas l'être — avant tout changement ; c'est ajouté à ce que ferrite a déjà.",
+    "pick": "Choisir l'export…",
+    "run": "Importer la sélection",
+    "from": "Depuis {{source}} — {{file}}",
+    "nothing": "rien dans cet export",
+    "notes": "Ce qui n'est pas repris ({{count}})",
+    "reading": "Lecture de l'export…",
+    "how": "Pi-hole : Settings → Teleporter → Export. AdGuard Home : AdGuardHome.yaml dans son dossier.",
+    "done": "Importé depuis {{source}}",
+    "sum_lists": "{{block}} listes de blocage, {{allow}} listes d'autorisation",
+    "sum_rules": "{{block}} à bloquer, {{allow}} à autoriser",
+    "sum_records": "{{count}} enregistrements locaux",
+    "sum_devices": "{{names}} noms, {{profiles}} profils, {{bypass}} non filtrés",
+    "sum_upstreams": "{{count}} résolveurs amont, {{zones}} zones transférées — remplace les vôtres et redémarre ferrite",
+    "part_lists": "Abonnements aux listes",
+    "part_rules": "Règles propres de blocage et d'autorisation",
+    "part_records": "Enregistrements DNS locaux",
+    "part_devices": "Noms d'appareils et groupes",
+    "part_services": "Services bloqués, SafeSearch",
+    "part_dns": "Réglages de blocage et d'accès",
+    "part_upstreams": "Résolveurs amont"
   }
 }

@@ -1057,3 +1057,48 @@ export interface McpSettings {
   /** Offer the tools that change things. */
   allow_changes: boolean;
 }
+
+// ── Import from Pi-hole / AdGuard Home ───────────────────────────────────────
+
+export type ImportPart =
+  | "lists"
+  | "rules"
+  | "records"
+  | "devices"
+  | "services"
+  | "dns"
+  | "upstreams";
+
+/** What an uploaded Pi-hole or AdGuard Home setup says, in ferrite's terms. */
+export interface ImportPlan {
+  source: "pihole" | "adguard";
+  lists: { url: string; name: string; enabled: boolean }[];
+  allowlists: { url: string; name: string; enabled: boolean }[];
+  block: string[];
+  allow: string[];
+  records: CustomRecord[];
+  aliases: { ip?: string | null; mac?: string | null; name: string }[];
+  profiles: BlocklistProfile[];
+  bypass: string[];
+  services: string[];
+  safe_search: boolean;
+  youtube_restricted: YoutubeRestrict;
+  block_response: BlockResponse | null;
+  block_ipv4: string | null;
+  block_ipv6: string | null;
+  rate_limit: number | null;
+  allowed_clients: string[];
+  denied_clients: string[];
+  serve_stale: boolean | null;
+  upstreams: UpstreamConfig[];
+  zones: ZoneConfig[];
+  /** What couldn't be carried over, one line each. */
+  notes: string[];
+}
+
+export interface ImportResult {
+  status: string;
+  source: string;
+  applied: Record<string, unknown>;
+  restart_required: boolean;
+}

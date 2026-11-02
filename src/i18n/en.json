@@ -890,5 +890,29 @@
     "top_blocked": "Most blocked",
     "routing": "Routed for this device",
     "no_stats": "No history for this device — statistics may be off."
+  },
+  "import": {
+    "title": "Move over from Pi-hole or AdGuard Home",
+    "sub": "A Pi-hole v6 Teleporter export (.zip) or AdGuardHome.yaml. You see what comes over — and what can't — before anything changes; it's added beside what ferrite has.",
+    "pick": "Choose export…",
+    "run": "Import selected",
+    "from": "From {{source}} — {{file}}",
+    "nothing": "nothing in this export",
+    "notes": "What doesn't come over ({{count}})",
+    "reading": "Reading the export…",
+    "how": "Pi-hole: Settings → Teleporter → Export. AdGuard Home: AdGuardHome.yaml from its folder.",
+    "done": "Imported from {{source}}",
+    "sum_lists": "{{block}} block lists, {{allow}} allowlists",
+    "sum_rules": "{{block}} to block, {{allow}} to allow",
+    "sum_records": "{{count}} local records",
+    "sum_devices": "{{names}} names, {{profiles}} profiles, {{bypass}} unfiltered",
+    "sum_upstreams": "{{count}} upstreams, {{zones}} forwarded zones — replaces yours and restarts ferrite",
+    "part_lists": "List subscriptions",
+    "part_rules": "Own block and allow rules",
+    "part_records": "Local DNS records",
+    "part_devices": "Device names and groups",
+    "part_services": "Blocked services, SafeSearch",
+    "part_dns": "Blocking and access settings",
+    "part_upstreams": "Upstream resolvers"
   }
 }
