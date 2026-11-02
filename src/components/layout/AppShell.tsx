@@ -300,8 +300,11 @@ export default function AppShell({ children }: { children: ReactNode }) {
 
   const currentLang = langCode(i18n.language);
 
-  // Shared bottom controls for both sidebar and mobile drawer
-  function BottomControls({ inDrawer = false }: { inDrawer?: boolean }) {
+  // Shared bottom controls for both sidebar and mobile drawer. Called as a
+  // function, not mounted as <BottomControls/>: a component declared inside
+  // this one is a new type on every render, so React would remount the whole
+  // subtree each time — every second while a pause counts down.
+  function bottomControls({ inDrawer = false }: { inDrawer?: boolean } = {}) {
     const compact = collapsed && !inDrawer;
     const Icon = blockingEnabled ? ShieldCheck : ShieldOff;
     const btnCls = cn(
@@ -489,7 +492,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
               {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
               {!collapsed && <span>{t("sidebar.collapse")}</span>}
             </button>
-            <BottomControls />
+            {bottomControls()}
           </div>
         </aside>
 
@@ -543,7 +546,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
                 ))}
               </nav>
               <div className="border-bdr/85 border-t p-3">
-                <BottomControls inDrawer />
+                {bottomControls({ inDrawer: true })}
               </div>
             </div>
           </>
