@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRowKeys } from "@/hooks/use-row-keys";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router";
 import {
   Plus,
   Trash2,
@@ -126,7 +127,6 @@ const EMPTY: ProxyConfig = {
   advertise_ipv4: null,
   advertise_ipv6: null,
   max_connections: 128,
-  alert_webhook: null,
   probe_target: null,
   egresses: [],
   rules: [],
@@ -563,17 +563,14 @@ export default function Tunnels() {
                 </SettingRow>
                 <SettingRow
                   label={t("tunnels.alert_webhook", { defaultValue: "Alert webhook" })}
-                  sub={t("tunnels.alert_webhook_sub", {
+                  sub={t("tunnels.alert_webhook_moved", {
                     defaultValue:
-                      "URL POSTed a JSON event when an egress stays down for over a minute (and again on recovery). Works with ntfy or any JSON webhook receiver. Blank = off.",
+                      "Tunnel-down alerts go to the webhook set under Settings → Notifications, alongside the other notifications.",
                   })}
                 >
-                  <Input
-                    value={cfg.alert_webhook ?? ""}
-                    onChange={(e) => setField("alert_webhook", e.target.value || null)}
-                    placeholder="https://ntfy.sh/my-ferrite"
-                    className="w-full font-mono"
-                  />
+                  <Link to="/settings?tab=notifications" className="text-ember text-xs hover:underline">
+                    {t("notifications.title", { defaultValue: "Notifications" })} →
+                  </Link>
                 </SettingRow>
                 <SettingRow
                   label={t("tunnels.probe_target", { defaultValue: "Probe target" })}

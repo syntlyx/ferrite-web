@@ -187,6 +187,9 @@ export interface ClientEntry {
   last_seen: number; // Unix timestamp
   is_alias: boolean; // true if name was set via aliases API
   blocking_bypassed: boolean; // true when this client bypasses blocklist filtering
+  /** Unix seconds the box first saw any of its MACs; absent when unknown or
+   *  learned before first sightings were kept. */
+  first_seen?: number;
 }
 
 export interface ClientsResponse {
@@ -794,8 +797,6 @@ export interface ProxyConfig {
   advertise_ipv4?: string | null;
   advertise_ipv6?: string | null;
   max_connections: number;
-  /** POSTed a JSON event when an egress stays down past the alert grace. */
-  alert_webhook?: string | null;
   /** host:port the active probe connects to through each egress (blank = default). */
   probe_target?: string | null;
   egresses: ProxyEgress[];
@@ -945,4 +946,15 @@ export type YoutubeRestrict = "off" | "moderate" | "strict";
 export interface SafeSearchSettings {
   safe_search: boolean;
   youtube_restricted: YoutubeRestrict;
+}
+
+// ── Notifications ─────────────────────────────────────────────────────────────
+
+/** The webhook and which events go to it. */
+export interface NotificationsSettings {
+  webhook?: string | null;
+  /** A tunnel down for over a minute, and its recovery. */
+  tunnel_alerts: boolean;
+  /** A device the box has never seen joins the network. */
+  new_device: boolean;
 }

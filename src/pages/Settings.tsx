@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import type { ChangeEvent, SubmitEvent, InputHTMLAttributes } from "react";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router";
 import { useRowKeys } from "@/hooks/use-row-keys";
 import {
   Save,
@@ -56,6 +57,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useConfirm } from "@/hooks/use-confirm";
 import { BackupCard } from "@/components/BackupCard";
+import { NotificationsCard } from "@/components/NotificationsCard";
 import type {
   PatchSettingsBody,
   Settings as SettingsType,
@@ -802,6 +804,9 @@ function UpdatesCard() {
 
 export default function Settings() {
   const { t } = useTranslation();
+  // `/settings?tab=notifications` opens that tab — other pages link here.
+  const [searchParams] = useSearchParams();
+  const initialTab = searchParams.get("tab") ?? "general";
   const toast = useToast();
 
   const [settings, setSettings] = useState<SettingsType | null>(null);
@@ -1043,13 +1048,16 @@ export default function Settings() {
         <form onSubmit={handleSave} className="space-y-4">
           <SettingsOverview settings={settings} apiKeySet={apiKeySet} passwordSet={passwordSet} />
 
-          <Tabs defaultValue="general">
+          <Tabs defaultValue={initialTab}>
             <TabsList className="flex-wrap">
               <TabsTrigger value="general">{t("settings.general")}</TabsTrigger>
               <TabsTrigger value="resolvers">{t("settings.upstream_resolvers")}</TabsTrigger>
               <TabsTrigger value="network">{t("settings.network")}</TabsTrigger>
               <TabsTrigger value="panel">{t("settings.panel")}</TabsTrigger>
               <TabsTrigger value="access">{t("settings.access")}</TabsTrigger>
+              <TabsTrigger value="notifications">
+                {t("notifications.title", { defaultValue: "Notifications" })}
+              </TabsTrigger>
               <TabsTrigger value="system">{t("settings.system")}</TabsTrigger>
             </TabsList>
 
@@ -1598,6 +1606,10 @@ export default function Settings() {
                   </div>
                 </SettingRow>
               </SettingsPanel>
+            </TabsContent>
+
+            <TabsContent value="notifications" className="space-y-4 pt-4">
+              <NotificationsCard />
             </TabsContent>
 
             <TabsContent value="system" className="space-y-4 pt-4">

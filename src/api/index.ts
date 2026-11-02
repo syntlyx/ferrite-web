@@ -24,6 +24,7 @@ import * as tools from "./tools";
 import * as pause from "./pause";
 import * as backup from "./backup";
 import * as services from "./services";
+import * as notifications from "./notifications";
 
 import type {
   QueryFilters,
@@ -34,6 +35,7 @@ import type {
   AddAliasBody,
   ProxyConfig,
   BlocklistProfile,
+  NotificationsSettings,
   SafeSearchSettings,
 } from "./types";
 
@@ -83,6 +85,10 @@ export const api = {
   serviceCatalog: services.catalog,
   getBlockedServices: services.getBlocked,
   putBlockedServices: (ids: string[]) => services.putBlocked(ids),
+  getNotifications: notifications.get,
+  putNotifications: (body: NotificationsSettings) => notifications.put(body),
+  testNotification: (webhook?: string) => notifications.test(webhook),
+
   getSafeSearch: services.getSafeSearch,
   putSafeSearch: (body: SafeSearchSettings) => services.putSafeSearch(body),
 
