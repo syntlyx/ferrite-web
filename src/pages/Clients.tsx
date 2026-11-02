@@ -61,6 +61,12 @@ type AliasKeyType = "IP" | "MAC";
  *  click so re-naming the same device re-triggers the prefill effect. */
 type AliasPrefill = { type: AliasKeyType; address: string; nonce: number };
 
+
+/** First seen in the last day — what the "new" badge marks. */
+const NEW_DEVICE_SECS = 24 * 3600;
+const isNewDevice = (firstSeen?: number) =>
+  !!firstSeen && Date.now() / 1000 - firstSeen < NEW_DEVICE_SECS;
+
 function TypeToggle({
   value,
   onChange,
@@ -707,6 +713,17 @@ export default function Clients() {
                             {c.is_alias && (
                               <span className="bg-ember/10 text-ember/70 rounded px-1 py-0.5 text-[10px]">
                                 {t("clients.alias_badge")}
+                              </span>
+                            )}
+                            {isNewDevice(c.first_seen) && (
+                              <span
+                                className="border-cached/35 bg-cached/10 text-cached rounded-xs border px-1 py-0.5 font-mono text-[9px] uppercase tracking-wider"
+                                title={t("clients.new_badge_hint", {
+                                  when: fmtRelTime(c.first_seen!),
+                                  defaultValue: "First seen {{when}}",
+                                })}
+                              >
+                                {t("clients.new_badge", { defaultValue: "new" })}
                               </span>
                             )}
                             {canName && (
