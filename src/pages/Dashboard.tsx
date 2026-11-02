@@ -435,7 +435,8 @@ function FeedRows({ rows }: { rows: QueryEntry[] }) {
   return (
     <div className="space-y-1">
       {rows.slice(0, 18).map((r) => {
-        const showRcode = r.rcode !== 0 && !(r.status === "blocked" && r.rcode === 3);
+        // A blocked row says why already; its RCODE is whatever block_response chose.
+        const showRcode = r.rcode !== 0 && r.status !== "blocked";
         const isCname = r.upstream?.startsWith("cname:") ?? false;
         const resolver =
           !isCname && r.status === "upstream" && r.upstream

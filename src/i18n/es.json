@@ -338,7 +338,7 @@
     "blocking_enabled": "Filtrado por blocklist",
     "blocking_enabled_sub": "Interruptor principal de bloqueo DNS; DNS y logs siguen funcionando",
     "debug_logging": "Registro de depuración",
-    "debug_logging_sub": "Registros detallados para diagnosticar problemas. Activado por defecto; desactívalo si es demasiado. Se aplica de inmediato.",
+    "debug_logging_sub": "Registros detallados para diagnosticar problemas. Desactivados por defecto: en un equipo ocupado consumen CPU. Se aplica al instante.",
     "log_ignore": "Patrones ignorados del log",
     "log_ignore_sub": "Dominios que coincidan se resuelven, pero no se guardan en el log",
     "privacy": "Privacidad",
@@ -435,7 +435,18 @@
     "password_cleared": "Contraseña borrada",
     "system": "Sistema",
     "unsaved_changes": "Cambios sin guardar",
-    "quick_add": "Añadir rápido"
+    "quick_add": "Añadir rápido",
+    "block_response": "Respuesta para nombres bloqueados",
+    "block_nxdomain": "NXDOMAIN — el nombre no existe",
+    "block_nodata": "Respuesta vacía (NODATA)",
+    "block_null_ip": "0.0.0.0 y ::",
+    "block_custom_ip": "Una dirección propia",
+    "block_refused": "REFUSED",
+    "block_nxdomain_sub": "Las apps se rinden al instante. La opción correcta para casi cualquier red.",
+    "block_nodata_sub": "El nombre existe pero no tiene registros. Calma a la app ocasional que reintenta tras un NXDOMAIN.",
+    "block_null_ip_sub": "Los nombres bloqueados no llevan a ninguna parte; otros tipos de registro reciben una respuesta vacía. Lo que hacen los bloqueadores con archivo hosts.",
+    "block_custom_ip_sub": "Los nombres bloqueados apuntan a una dirección tuya, como una página de bloqueo. Un tipo sin dirección recibe una respuesta vacía.",
+    "block_refused_sub": "El servidor se niega a responder. Algunos dispositivos prueban entonces otro resolutor."
   },
   "login": {
     "sign_in": "Iniciar sesión",

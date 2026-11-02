@@ -338,7 +338,7 @@
     "blocking_enabled": "Blocklist filtering",
     "blocking_enabled_sub": "Master switch for DNS blocking; allowed DNS and logging keep running",
     "debug_logging": "Debug logging",
-    "debug_logging_sub": "Verbose logs for diagnosing issues. On by default; turn off if too noisy. Applied immediately.",
+    "debug_logging_sub": "Verbose logs for diagnosing issues. Off by default — they cost CPU on a busy box. Applied immediately.",
     "log_ignore": "Log ignore patterns",
     "log_ignore_sub": "Domains matching these patterns are resolved normally but hidden from the query log",
     "privacy": "Privacy",
@@ -435,7 +435,18 @@
     "password_cleared": "Password cleared",
     "system": "System",
     "unsaved_changes": "Unsaved changes",
-    "quick_add": "Quick add"
+    "quick_add": "Quick add",
+    "block_response": "Answer for blocked names",
+    "block_nxdomain": "NXDOMAIN — no such name",
+    "block_nodata": "Empty answer (NODATA)",
+    "block_null_ip": "0.0.0.0 and ::",
+    "block_custom_ip": "Your own address",
+    "block_refused": "REFUSED",
+    "block_nxdomain_sub": "Apps give up at once. The right choice for almost every network.",
+    "block_nodata_sub": "The name exists but has no records. Calms the odd app that retries NXDOMAIN.",
+    "block_null_ip_sub": "Blocked names point nowhere; other record types get an empty answer. What hosts-file blockers do.",
+    "block_custom_ip_sub": "Blocked names point at an address of yours — a block page, say. A type without an address gets an empty answer.",
+    "block_refused_sub": "The server declines to answer. Some devices then try another resolver."
   },
   "login": {
     "sign_in": "Sign in",

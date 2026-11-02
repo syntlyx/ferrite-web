@@ -5,6 +5,7 @@
  * that take a restart. Pure data and functions; the page holds the state.
  */
 import type {
+  BlockResponse,
   PatchSettingsBody,
   Settings as SettingsType,
   StorageBackend,
@@ -158,6 +159,9 @@ export type HotForm = {
   api_key: string;
   password: string;
   blocklist_enabled: boolean;
+  blocklist_block_response: BlockResponse;
+  blocklist_block_ipv4: string;
+  blocklist_block_ipv6: string;
   debug_logging: boolean;
   log_queries: boolean;
   keep_stats: boolean;
@@ -190,6 +194,9 @@ export function hotFormFromSettings(s: SettingsType): Omit<HotForm, "api_key" | 
     log_max_mb: String(s.storage?.log_max_mb ?? ""),
     web_dir: String(s.web_dir ?? ""),
     blocklist_enabled: s.blocklist?.enabled ?? true,
+    blocklist_block_response: s.blocklist?.block_response ?? "nxdomain",
+    blocklist_block_ipv4: s.blocklist?.block_ipv4 ?? "",
+    blocklist_block_ipv6: s.blocklist?.block_ipv6 ?? "",
     // Matches the server default: debug logging is off unless turned on.
     debug_logging: s.debug_logging ?? false,
     // Recording is on unless the operator switched it off.
@@ -248,6 +255,23 @@ export function buildHotPatch(
   if (form.password !== "") patch.password = form.password;
   if (form.blocklist_enabled !== (settings.blocklist?.enabled ?? true))
     patch.blocklist_enabled = form.blocklist_enabled;
+  // The three travel together: the server checks custom_ip against the
+  // addresses it will end up with, so a change to any one sends all three.
+  const blockNow = {
+    response: settings.blocklist?.block_response ?? "nxdomain",
+    ipv4: settings.blocklist?.block_ipv4 ?? "",
+    ipv6: settings.blocklist?.block_ipv6 ?? "",
+  };
+  const blockNext = {
+    response: form.blocklist_block_response,
+    ipv4: form.blocklist_block_ipv4.trim(),
+    ipv6: form.blocklist_block_ipv6.trim(),
+  };
+  if (stableJson(blockNow) !== stableJson(blockNext)) {
+    patch.blocklist_block_response = blockNext.response;
+    patch.blocklist_block_ipv4 = blockNext.ipv4 || null;
+    patch.blocklist_block_ipv6 = blockNext.ipv6 || null;
+  }
   if (form.debug_logging !== (settings.debug_logging ?? false))
     patch.debug_logging = form.debug_logging;
   if (form.log_queries !== (settings.storage?.log_queries ?? true))

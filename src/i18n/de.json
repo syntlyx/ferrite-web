@@ -338,7 +338,7 @@
     "blocking_enabled": "Blocklisten-Filterung",
     "blocking_enabled_sub": "Hauptschalter für DNS-Blocking; DNS und Logs laufen weiter",
     "debug_logging": "Debug-Logging",
-    "debug_logging_sub": "Ausführliche Logs zur Fehlerdiagnose. Standardmäßig an; bei zu viel ausschalten. Sofort wirksam.",
+    "debug_logging_sub": "Ausführliche Logs zur Fehlersuche. Standardmäßig aus — auf einer ausgelasteten Box kosten sie CPU. Wird sofort angewendet.",
     "log_ignore": "Log-Ignoriermuster",
     "log_ignore_sub": "Passende Domains werden aufgelöst, aber nicht protokolliert",
     "privacy": "Privatsphäre",
@@ -435,7 +435,18 @@
     "password_cleared": "Passwort gelöscht",
     "system": "System",
     "unsaved_changes": "Ungespeicherte Änderungen",
-    "quick_add": "Schnell hinzufügen"
+    "quick_add": "Schnell hinzufügen",
+    "block_response": "Antwort für blockierte Namen",
+    "block_nxdomain": "NXDOMAIN — Name existiert nicht",
+    "block_nodata": "Leere Antwort (NODATA)",
+    "block_null_ip": "0.0.0.0 und ::",
+    "block_custom_ip": "Eigene Adresse",
+    "block_refused": "REFUSED",
+    "block_nxdomain_sub": "Apps geben sofort auf. Für fast jedes Netz die richtige Wahl.",
+    "block_nodata_sub": "Der Name existiert, hat aber keine Einträge. Beruhigt die seltene App, die NXDOMAIN wiederholt.",
+    "block_null_ip_sub": "Blockierte Namen zeigen ins Leere; andere Eintragstypen bekommen eine leere Antwort. So arbeiten Hosts-Datei-Blocker.",
+    "block_custom_ip_sub": "Blockierte Namen zeigen auf eine eigene Adresse — etwa eine Sperrseite. Ein Typ ohne Adresse bekommt eine leere Antwort.",
+    "block_refused_sub": "Der Server verweigert die Antwort. Manche Geräte fragen dann einen anderen Resolver."
   },
   "login": {
     "sign_in": "Anmelden",

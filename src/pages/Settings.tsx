@@ -61,6 +61,7 @@ import { NotificationsCard } from "@/components/NotificationsCard";
 import { McpCard } from "@/components/McpCard";
 import { SessionsCard } from "@/components/SessionsCard";
 import type {
+  BlockResponse,
   PatchSettingsBody,
   Settings as SettingsType,
   StorageBackend,
@@ -825,6 +826,9 @@ export default function Settings() {
     api_key: "",
     password: "",
     blocklist_enabled: true,
+    blocklist_block_response: "nxdomain",
+    blocklist_block_ipv4: "",
+    blocklist_block_ipv6: "",
     debug_logging: false,
     log_queries: true,
     keep_stats: true,
@@ -1012,10 +1016,41 @@ export default function Settings() {
   // in it.
   type TextFormField = Exclude<
     keyof HotForm,
-    "blocklist_enabled" | "debug_logging" | "log_queries" | "keep_stats"
+    | "blocklist_enabled"
+    | "debug_logging"
+    | "log_queries"
+    | "keep_stats"
+    | "blocklist_block_response"
   >;
   const setF = (key: TextFormField) => (e: ChangeEvent<HTMLInputElement>) =>
     setForm((p) => ({ ...p, [key]: e.target.value }));
+  const BLOCK_RESPONSES: BlockResponse[] = ["nxdomain", "nodata", "null_ip", "custom_ip", "refused"];
+  const blockResponseLabel: Record<BlockResponse, string> = {
+    nxdomain: t("settings.block_nxdomain", { defaultValue: "NXDOMAIN — no such name" }),
+    nodata: t("settings.block_nodata", { defaultValue: "Empty answer (NODATA)" }),
+    null_ip: t("settings.block_null_ip", { defaultValue: "0.0.0.0 and ::" }),
+    custom_ip: t("settings.block_custom_ip", { defaultValue: "Your own address" }),
+    refused: t("settings.block_refused", { defaultValue: "REFUSED" }),
+  };
+  const blockResponseHint: Record<BlockResponse, string> = {
+    nxdomain: t("settings.block_nxdomain_sub", {
+      defaultValue: "Apps give up at once. The right choice for almost every network.",
+    }),
+    nodata: t("settings.block_nodata_sub", {
+      defaultValue: "The name exists but has no records. Calms the odd app that retries NXDOMAIN.",
+    }),
+    null_ip: t("settings.block_null_ip_sub", {
+      defaultValue:
+        "Blocked names point nowhere; other record types get an empty answer. What hosts-file blockers do.",
+    }),
+    custom_ip: t("settings.block_custom_ip_sub", {
+      defaultValue:
+        "Blocked names point at an address of yours — a block page, say. A type without an address gets an empty answer.",
+    }),
+    refused: t("settings.block_refused_sub", {
+      defaultValue: "The server declines to answer. Some devices then try another resolver.",
+    }),
+  };
   type RestartTextField = Exclude<
     keyof RestartForm,
     "upstream" | "zones" | "panel_enabled" | "dns_strip_ecs" | "dns_dnssec"
@@ -1226,10 +1261,51 @@ export default function Settings() {
                   />
                 </SettingRow>
                 <SettingRow
+                  label={t("settings.block_response", { defaultValue: "Answer for blocked names" })}
+                  sub={blockResponseHint[form.blocklist_block_response]}
+                >
+                  <div className="flex w-full flex-col gap-2">
+                    <Select
+                      value={form.blocklist_block_response}
+                      onChange={(e) =>
+                        setForm((p) => ({
+                          ...p,
+                          blocklist_block_response: e.target.value as BlockResponse,
+                        }))
+                      }
+                      className="w-full"
+                    >
+                      {BLOCK_RESPONSES.map((r) => (
+                        <option key={r} value={r}>
+                          {blockResponseLabel[r]}
+                        </option>
+                      ))}
+                    </Select>
+                    {form.blocklist_block_response === "custom_ip" && (
+                      <div className="grid grid-cols-2 gap-2">
+                        <Input
+                          value={form.blocklist_block_ipv4}
+                          onChange={setF("blocklist_block_ipv4")}
+                          placeholder="192.168.1.5"
+                          className="font-mono"
+                          aria-label="IPv4"
+                        />
+                        <Input
+                          value={form.blocklist_block_ipv6}
+                          onChange={setF("blocklist_block_ipv6")}
+                          placeholder="fd00::5"
+                          className="font-mono"
+                          aria-label="IPv6"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </SettingRow>
+                <SettingRow
                   label={t("settings.debug_logging", { defaultValue: "Debug logging" })}
                   sub={t("settings.debug_logging_sub", {
                     defaultValue:
-                      "Verbose logs for diagnosing issues. On by default; turn off if too noisy. Applied immediately.",
+                      "Verbose logs for diagnosing issues. Off by default — they cost CPU on a busy box. Applied immediately.",
                   })}
                   badge={
                     <StatusBadge

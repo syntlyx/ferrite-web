@@ -835,7 +835,7 @@ export default function Queries() {
                       <Td className="hidden md:table-cell">
                         {/* A block is answered NXDOMAIN by design; saying so
                             again beside BLOCKED is noise. Other codes stay. */}
-                        {!(r.status === "blocked" && r.rcode === 3) && <RCodeBadge code={r.rcode} />}
+                        {r.status !== "blocked" && <RCodeBadge code={r.rcode} />}
                       </Td>
                     </TableRow>
                   ))

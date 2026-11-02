@@ -654,8 +654,15 @@ export interface ApiConfig {
   password_hash?: string;
 }
 
+/** What a blocked name is answered with. */
+export type BlockResponse = "nxdomain" | "nodata" | "null_ip" | "custom_ip" | "refused";
+
 export interface BlocklistConfig {
   enabled?: boolean;
+  /** Absent means `nxdomain`. */
+  block_response?: BlockResponse;
+  block_ipv4?: string | null;
+  block_ipv6?: string | null;
   decision_cache_size?: number;
   lists?: SubscriptionList[];
   /** Manual block entries: exact domains and `*.wildcard` patterns alike. */
@@ -717,6 +724,9 @@ export interface PatchSettingsBody {
   keep_stats?: boolean;
   blocklist_enabled?: boolean;
   blocklist_client_bypass?: string[];
+  blocklist_block_response?: BlockResponse;
+  blocklist_block_ipv4?: string | null;
+  blocklist_block_ipv6?: string | null;
   debug_logging?: boolean;
   dns_bind_addr?: string;
   dns_cache_size?: number;

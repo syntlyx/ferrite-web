@@ -338,7 +338,7 @@
     "blocking_enabled": "Filtrage blocklist",
     "blocking_enabled_sub": "Interrupteur principal du blocage DNS; DNS et logs continuent",
     "debug_logging": "Journaux de débogage",
-    "debug_logging_sub": "Journaux détaillés pour diagnostiquer les problèmes. Activé par défaut; désactivez si trop verbeux. Appliqué immédiatement.",
+    "debug_logging_sub": "Journaux détaillés pour diagnostiquer. Désactivés par défaut — ils coûtent du CPU sur une machine chargée. Appliqué immédiatement.",
     "log_ignore": "Motifs ignorés du log",
     "log_ignore_sub": "Les domaines correspondants sont résolus mais non journalisés",
     "privacy": "Confidentialité",
@@ -435,7 +435,18 @@
     "password_cleared": "Mot de passe effacé",
     "system": "Système",
     "unsaved_changes": "Modifications non enregistrées",
-    "quick_add": "Ajout rapide"
+    "quick_add": "Ajout rapide",
+    "block_response": "Réponse aux noms bloqués",
+    "block_nxdomain": "NXDOMAIN — nom inexistant",
+    "block_nodata": "Réponse vide (NODATA)",
+    "block_null_ip": "0.0.0.0 et ::",
+    "block_custom_ip": "Votre propre adresse",
+    "block_refused": "REFUSED",
+    "block_nxdomain_sub": "Les applications abandonnent aussitôt. Le bon choix pour presque tous les réseaux.",
+    "block_nodata_sub": "Le nom existe mais n'a aucun enregistrement. Calme l'application qui réessaie après un NXDOMAIN.",
+    "block_null_ip_sub": "Les noms bloqués ne mènent nulle part ; les autres types d'enregistrement reçoivent une réponse vide. Ce que font les bloqueurs à fichier hosts.",
+    "block_custom_ip_sub": "Les noms bloqués pointent vers une adresse à vous — une page de blocage, par exemple. Un type sans adresse reçoit une réponse vide.",
+    "block_refused_sub": "Le serveur refuse de répondre. Certains appareils essaient alors un autre résolveur."
   },
   "login": {
     "sign_in": "Connexion",
