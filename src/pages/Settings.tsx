@@ -55,6 +55,7 @@ import {
 } from "@/components/ui";
 import { useToast } from "@/hooks/use-toast";
 import { useConfirm } from "@/hooks/use-confirm";
+import { BackupCard } from "@/components/BackupCard";
 import type {
   PatchSettingsBody,
   Settings as SettingsType,
@@ -1601,6 +1602,13 @@ export default function Settings() {
 
             <TabsContent value="system" className="space-y-4 pt-4">
               <UpdatesCard />
+              <BackupCard
+                confirm={confirm}
+                onRestored={() => {
+                  setRestarting(true);
+                  pollUntilBack();
+                }}
+              />
               <CollapsibleConfig settings={settings} />
             </TabsContent>
           </Tabs>
