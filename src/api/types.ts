@@ -958,3 +958,12 @@ export interface NotificationsSettings {
   /** A device the box has never seen joins the network. */
   new_device: boolean;
 }
+
+// ── MCP ───────────────────────────────────────────────────────────────────────
+
+/** The MCP endpoint for AI assistants. */
+export interface McpSettings {
+  enabled: boolean;
+  /** Offer the tools that change things. */
+  allow_changes: boolean;
+}

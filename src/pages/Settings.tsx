@@ -58,6 +58,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useConfirm } from "@/hooks/use-confirm";
 import { BackupCard } from "@/components/BackupCard";
 import { NotificationsCard } from "@/components/NotificationsCard";
+import { McpCard } from "@/components/McpCard";
 import type {
   PatchSettingsBody,
   Settings as SettingsType,
@@ -1606,6 +1607,7 @@ export default function Settings() {
                   </div>
                 </SettingRow>
               </SettingsPanel>
+              <McpCard apiKeySet={apiKeySet} />
             </TabsContent>
 
             <TabsContent value="notifications" className="space-y-4 pt-4">

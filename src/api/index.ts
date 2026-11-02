@@ -35,6 +35,7 @@ import type {
   AddAliasBody,
   ProxyConfig,
   BlocklistProfile,
+  McpSettings,
   NotificationsSettings,
   SafeSearchSettings,
 } from "./types";
@@ -88,6 +89,8 @@ export const api = {
   getNotifications: notifications.get,
   putNotifications: (body: NotificationsSettings) => notifications.put(body),
   testNotification: (webhook?: string) => notifications.test(webhook),
+  getMcpSettings: notifications.getMcp,
+  putMcpSettings: (body: McpSettings) => notifications.putMcp(body),
 
   getSafeSearch: services.getSafeSearch,
   putSafeSearch: (body: SafeSearchSettings) => services.putSafeSearch(body),
