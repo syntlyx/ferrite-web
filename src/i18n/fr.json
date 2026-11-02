@@ -96,7 +96,8 @@
     "sensor_unavailable": "capteur indisponible",
     "swap_off": "swap desactive",
     "of_ram": "% de RAM",
-    "stats_disabled": "Les statistiques sont désactivées dans Réglages → Confidentialité. Les totaux depuis le démarrage continuent ; les classements et le graphique restent vides, et les statistiques antérieures ne sont pas renvoyées."
+    "stats_disabled": "Les statistiques sont désactivées dans Réglages → Confidentialité. Les totaux depuis le démarrage continuent ; les classements et le graphique restent vides, et les statistiques antérieures ne sont pas renvoyées.",
+    "dropped_stats_warning": "{{count}} statistiques de requêtes perdues sous charge — les compteurs et le flux en direct peuvent être sous-estimés."
   },
   "queries": {
     "title": "Journal des requetes",
@@ -206,7 +207,9 @@
     "routed_direct": "Non routé (direct)",
     "routing_clients_only": "clients uniquement",
     "routing_disabled": "routage désactivé",
-    "full_check_hint": "Les sources correspondantes et le routage sont sur la page Outils."
+    "full_check_hint": "Les sources correspondantes et le routage sont sur la page Outils.",
+    "from_allowlist": "de la liste d'autorisation {{list}}",
+    "overridden_sources": "Serait bloqué par"
   },
   "lists": {
     "title": "Listes d'abonnement",
@@ -236,7 +239,10 @@
     "allow_add_list": "Ajouter une liste d'autorisation",
     "allow_no_lists": "Aucune liste d'autorisation configurée",
     "allow_remove_confirm": "Supprimer la liste d'autorisation \"{{name}}\" ? Cette action est irréversible.",
-    "allow_skipped_title": "Règles non appliquées"
+    "allow_skipped_title": "Règles non appliquées",
+    "added": "Ajoutée",
+    "recommended": "Listes recommandées",
+    "recommended_badge": "Recommandée"
   },
   "dns": {
     "title": "Enregistrements DNS perso",
@@ -498,7 +504,8 @@
     "tab_network": "Réseau",
     "send_to": "Envoyer vers",
     "send_filtering": "Filtrage",
-    "send_cert": "Cert."
+    "send_cert": "Cert.",
+    "looking_up": "Recherche…"
   },
   "tunnels": {
     "title": "Tunnels",
@@ -595,7 +602,8 @@
     "pause": "Pause",
     "resume": "Reprendre",
     "clear": "Effacer la vue",
-    "empty": "Aucun journal pour l'instant."
+    "empty": "Aucun journal pour l'instant.",
+    "line_count": "{{count}} lignes"
   },
   "profiles": {
     "title": "Profils d'appareil",

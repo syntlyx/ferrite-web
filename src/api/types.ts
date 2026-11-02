@@ -249,6 +249,8 @@ export interface BlockSource {
 export interface WhitelistMatch {
   entry: string; // the configured whitelist entry (exact key or wildcard)
   matched: string; // where it matched (the domain or a parent of it)
+  /** The subscribed allowlist that holds the entry; absent for a manual entry. */
+  list?: string;
 }
 
 /** Selective-routing decision for a domain in the block-check. */

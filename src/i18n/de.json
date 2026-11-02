@@ -96,7 +96,8 @@
     "sensor_unavailable": "Sensor nicht verfugbar",
     "swap_off": "Swap aus",
     "of_ram": "% RAM",
-    "stats_disabled": "Statistiken sind unter Einstellungen → Datenschutz ausgeschaltet. Die Summen seit dem Start laufen weiter; Top-Listen und Graph bleiben leer, und frühere Statistiken werden nicht zurückgeliefert."
+    "stats_disabled": "Statistiken sind unter Einstellungen → Datenschutz ausgeschaltet. Die Summen seit dem Start laufen weiter; Top-Listen und Graph bleiben leer, und frühere Statistiken werden nicht zurückgeliefert.",
+    "dropped_stats_warning": "{{count}} Abfragestatistiken wurden unter Last verworfen — Zähler und Live-Feed können zu niedrig liegen."
   },
   "queries": {
     "title": "Abfrageprotokoll",
@@ -206,7 +207,9 @@
     "routed_direct": "Nicht geroutet (direkt)",
     "routing_clients_only": "nur Clients",
     "routing_disabled": "Routing deaktiviert",
-    "full_check_hint": "Treffer-Quellen und Routing finden sich auf der Werkzeuge-Seite."
+    "full_check_hint": "Treffer-Quellen und Routing finden sich auf der Werkzeuge-Seite.",
+    "from_allowlist": "aus Erlaubnisliste {{list}}",
+    "overridden_sources": "Würde blockiert durch"
   },
   "lists": {
     "title": "Abo-Listen",
@@ -236,7 +239,10 @@
     "allow_add_list": "Erlaubnisliste hinzufügen",
     "allow_no_lists": "Keine Erlaubnislisten konfiguriert",
     "allow_remove_confirm": "Erlaubnisliste \"{{name}}\" entfernen? Dies kann nicht rückgängig gemacht werden.",
-    "allow_skipped_title": "Nicht angewendete Regeln"
+    "allow_skipped_title": "Nicht angewendete Regeln",
+    "added": "Hinzugefügt",
+    "recommended": "Empfohlene Listen",
+    "recommended_badge": "Empfohlen"
   },
   "dns": {
     "title": "Eigene DNS-Eintrage",
@@ -498,7 +504,8 @@
     "tab_network": "Netzwerk",
     "send_to": "Senden an",
     "send_filtering": "Filter",
-    "send_cert": "Zert."
+    "send_cert": "Zert.",
+    "looking_up": "Suche…"
   },
   "tunnels": {
     "title": "Tunnel",
@@ -595,7 +602,8 @@
     "pause": "Pause",
     "resume": "Fortsetzen",
     "clear": "Ansicht leeren",
-    "empty": "Noch keine Protokolleinträge."
+    "empty": "Noch keine Protokolleinträge.",
+    "line_count": "{{count}} Zeilen"
   },
   "profiles": {
     "title": "Geräteprofile",

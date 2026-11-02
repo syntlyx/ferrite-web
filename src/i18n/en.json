@@ -96,7 +96,8 @@
     "sensor_unavailable": "sensor unavailable",
     "swap_off": "swap off",
     "of_ram": "% of RAM",
-    "stats_disabled": "Statistics are switched off in Settings → Privacy. The totals since start still update; the top lists and the graph stay empty, and earlier statistics are not served back."
+    "stats_disabled": "Statistics are switched off in Settings → Privacy. The totals since start still update; the top lists and the graph stay empty, and earlier statistics are not served back.",
+    "dropped_stats_warning": "{{count}} query stats were dropped under load — counters and the live feed may be undercounting."
   },
   "queries": {
     "title": "Query Log",
@@ -206,7 +207,9 @@
     "routed_direct": "Not routed (direct)",
     "routing_clients_only": "clients only",
     "routing_disabled": "routing disabled",
-    "full_check_hint": "Matched sources and routing are on the Tools page."
+    "full_check_hint": "Matched sources and routing are on the Tools page.",
+    "from_allowlist": "from allowlist {{list}}",
+    "overridden_sources": "Would be blocked by"
   },
   "lists": {
     "title": "Subscription Lists",
@@ -236,7 +239,10 @@
     "allow_add_list": "Add allowlist",
     "allow_no_lists": "No allowlists configured",
     "allow_remove_confirm": "Remove allowlist \"{{name}}\"? This cannot be undone.",
-    "allow_skipped_title": "Rules not applied"
+    "allow_skipped_title": "Rules not applied",
+    "added": "Added",
+    "recommended": "Recommended lists",
+    "recommended_badge": "Recommended"
   },
   "dns": {
     "title": "Custom DNS Records",
@@ -498,7 +504,8 @@
     "tab_network": "Network",
     "send_to": "Send to",
     "send_filtering": "Filtering",
-    "send_cert": "Cert"
+    "send_cert": "Cert",
+    "looking_up": "Looking up…"
   },
   "tunnels": {
     "title": "Tunnels",
@@ -595,7 +602,8 @@
     "pause": "Pause",
     "resume": "Resume",
     "clear": "Clear view",
-    "empty": "No log records yet."
+    "empty": "No log records yet.",
+    "line_count": "{{count}} lines"
   },
   "profiles": {
     "title": "Device profiles",

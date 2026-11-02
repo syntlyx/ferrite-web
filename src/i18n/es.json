@@ -96,7 +96,8 @@
     "sensor_unavailable": "sensor no disponible",
     "swap_off": "swap desactivado",
     "of_ram": "% de RAM",
-    "stats_disabled": "Las estadísticas están desactivadas en Ajustes → Privacidad. Los totales desde el arranque siguen actualizándose; los tops y el gráfico quedan vacíos, y las estadísticas anteriores no se devuelven."
+    "stats_disabled": "Las estadísticas están desactivadas en Ajustes → Privacidad. Los totales desde el arranque siguen actualizándose; los tops y el gráfico quedan vacíos, y las estadísticas anteriores no se devuelven.",
+    "dropped_stats_warning": "Se descartaron {{count}} estadísticas de consultas por carga — los contadores y el feed en vivo pueden quedarse cortos."
   },
   "queries": {
     "title": "Registro de consultas",
@@ -206,7 +207,9 @@
     "routed_direct": "No enrutado (directo)",
     "routing_clients_only": "solo clientes",
     "routing_disabled": "enrutamiento desactivado",
-    "full_check_hint": "Las fuentes coincidentes y el enrutamiento están en la página Herramientas."
+    "full_check_hint": "Las fuentes coincidentes y el enrutamiento están en la página Herramientas.",
+    "from_allowlist": "de la lista de permitidos {{list}}",
+    "overridden_sources": "Lo bloquearían"
   },
   "lists": {
     "title": "Listas de suscripcion",
@@ -236,7 +239,10 @@
     "allow_add_list": "Añadir lista de permitidos",
     "allow_no_lists": "No hay listas de permitidos configuradas",
     "allow_remove_confirm": "¿Eliminar la lista de permitidos \"{{name}}\"? Esta acción no se puede deshacer.",
-    "allow_skipped_title": "Reglas no aplicadas"
+    "allow_skipped_title": "Reglas no aplicadas",
+    "added": "Añadida",
+    "recommended": "Listas recomendadas",
+    "recommended_badge": "Recomendada"
   },
   "dns": {
     "title": "Registros DNS personalizados",
@@ -498,7 +504,8 @@
     "tab_network": "Red",
     "send_to": "Enviar a",
     "send_filtering": "Filtrado",
-    "send_cert": "Cert."
+    "send_cert": "Cert.",
+    "looking_up": "Buscando…"
   },
   "tunnels": {
     "title": "Túneles",
@@ -595,7 +602,8 @@
     "pause": "Pausar",
     "resume": "Reanudar",
     "clear": "Limpiar vista",
-    "empty": "Aún no hay registros."
+    "empty": "Aún no hay registros.",
+    "line_count": "{{count}} líneas"
   },
   "profiles": {
     "title": "Perfiles de dispositivo",

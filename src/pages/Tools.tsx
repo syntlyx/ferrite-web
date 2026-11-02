@@ -548,12 +548,23 @@ function DomainCheck() {
                   <span className="font-mono">{result.whitelist_match.matched}</span>)
                 </span>
               )}
+              {result.whitelist_match.list && (
+                <span className="text-muted/70">
+                  {" · "}
+                  {t("blocklist.from_allowlist", {
+                    list: result.whitelist_match.list,
+                    defaultValue: "from allowlist {{list}}",
+                  })}
+                </span>
+              )}
             </p>
           )}
           {(result.sources?.length ?? 0) > 0 && (
             <div className="space-y-1.5">
               <p className="text-muted font-mono text-[10px] font-medium uppercase tracking-[0.14em]">
-                {t("blocklist.matched_sources", { defaultValue: "Matched by" })}
+                {result.whitelisted
+                  ? t("blocklist.overridden_sources", { defaultValue: "Would be blocked by" })
+                  : t("blocklist.matched_sources", { defaultValue: "Matched by" })}
               </p>
               <div className="flex flex-wrap gap-1.5">
                 {result.sources!.map((s, i) => (
