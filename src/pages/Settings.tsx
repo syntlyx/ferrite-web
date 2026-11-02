@@ -820,6 +820,8 @@ export default function Settings() {
     dns_min_ttl: "",
     dns_max_ttl: "",
     dns_client_ttl: "",
+    dns_serve_stale: false,
+    dns_stale_max_age_h: "",
     log_retention_days: "",
     log_max_mb: "",
     web_dir: "",
@@ -1021,6 +1023,7 @@ export default function Settings() {
     | "log_queries"
     | "keep_stats"
     | "blocklist_block_response"
+    | "dns_serve_stale"
   >;
   const setF = (key: TextFormField) => (e: ChangeEvent<HTMLInputElement>) =>
     setForm((p) => ({ ...p, [key]: e.target.value }));
@@ -1134,6 +1137,44 @@ export default function Settings() {
                     onChange={setF("dns_client_ttl")}
                   />
                 </SettingRow>
+                <SettingRow
+                  label={t("settings.serve_stale", { defaultValue: "Optimistic cache" })}
+                  sub={t("settings.serve_stale_sub", {
+                    defaultValue:
+                      "Answer from an expired entry at once — for 30 seconds — and refresh it in the background. Names keep resolving while the upstream is down.",
+                  })}
+                  badge={
+                    <StatusBadge
+                      set={form.dns_serve_stale}
+                      labelSet={t("common.enabled")}
+                      labelUnset={t("common.disabled")}
+                    />
+                  }
+                >
+                  <Switch
+                    checked={form.dns_serve_stale}
+                    onCheckedChange={(checked) =>
+                      setForm((p) => ({ ...p, dns_serve_stale: checked }))
+                    }
+                  />
+                </SettingRow>
+                {form.dns_serve_stale && (
+                  <SettingRow
+                    label={t("settings.stale_max_age", { defaultValue: "Serve expired for up to" })}
+                    sub={t("settings.stale_max_age_sub", {
+                      defaultValue: "How old an answer may get while the upstream can't be reached.",
+                    })}
+                  >
+                    <UnitInput
+                      type="number"
+                      min={1}
+                      max={168}
+                      unit="h"
+                      value={form.dns_stale_max_age_h}
+                      onChange={setF("dns_stale_max_age_h")}
+                    />
+                  </SettingRow>
+                )}
                 <SettingRow
                   label={t("settings.log_retention")}
                   sub={t("settings.log_retention_sub")}

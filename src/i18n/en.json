@@ -144,7 +144,9 @@
     "safe_tag": "safe",
     "safe_hint": "Safe search: answered with {{host}}",
     "compact": "Compact",
-    "compact_hint": "Tighter rows, more of the log on screen"
+    "compact_hint": "Tighter rows, more of the log on screen",
+    "stale_tag": "stale",
+    "stale_hint": "Answered from an expired cache entry while a fresh one was fetched"
   },
   "clients": {
     "title": "Clients",
@@ -446,7 +448,11 @@
     "block_nodata_sub": "The name exists but has no records. Calms the odd app that retries NXDOMAIN.",
     "block_null_ip_sub": "Blocked names point nowhere; other record types get an empty answer. What hosts-file blockers do.",
     "block_custom_ip_sub": "Blocked names point at an address of yours — a block page, say. A type without an address gets an empty answer.",
-    "block_refused_sub": "The server declines to answer. Some devices then try another resolver."
+    "block_refused_sub": "The server declines to answer. Some devices then try another resolver.",
+    "serve_stale": "Optimistic cache",
+    "serve_stale_sub": "Answer from an expired entry at once — for 30 seconds — and refresh it in the background. Names keep resolving while the upstream is down.",
+    "stale_max_age": "Serve expired for up to",
+    "stale_max_age_sub": "How old an answer may get while the upstream can't be reached."
   },
   "login": {
     "sign_in": "Sign in",

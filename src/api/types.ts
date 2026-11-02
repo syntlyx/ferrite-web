@@ -575,6 +575,10 @@ export interface DnsConfig {
   max_ttl: number;
   /** Ceiling on the TTL advertised to client devices; `0` = don't cache. */
   client_ttl?: number;
+  /** Optimistic cache: answer expired entries briefly while refreshing them. */
+  serve_stale?: boolean;
+  /** Seconds past expiry an entry may still be served. */
+  stale_max_age?: number;
   log_ignore?: string[];
   strip_ecs?: boolean;
   dnssec?: boolean;
@@ -710,6 +714,8 @@ export interface PatchSettingsBody {
   dns_min_ttl?: number;
   dns_max_ttl?: number;
   dns_client_ttl?: number;
+  dns_serve_stale?: boolean;
+  dns_stale_max_age?: number;
   dns_log_ignore?: string[];
   web_dir?: string | null;
   log_retention_days?: number;

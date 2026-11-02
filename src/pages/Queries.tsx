@@ -827,14 +827,29 @@ export default function Queries() {
                               </span>
                             </Tooltip>
                           )}
+                          {/* Answered from an expired cache entry while a fresh
+                              one was fetched (optimistic cache). */}
+                          {r.upstream === "stale" && (
+                            <Tooltip
+                              content={t("queries.stale_hint", {
+                                defaultValue:
+                                  "Answered from an expired cache entry while a fresh one was fetched",
+                              })}
+                            >
+                              <span className="text-muted border-bdr/70 rounded-xs border px-1 font-mono text-[9px] uppercase tracking-wider">
+                                {t("queries.stale_tag", { defaultValue: "stale" })}
+                              </span>
+                            </Tooltip>
+                          )}
                         </span>
                       </Td>
                       <Td className="text-muted hidden tabular-nums md:table-cell">
                         {r.latency_ms != null ? `${r.latency_ms}ms` : "—"}
                       </Td>
                       <Td className="hidden md:table-cell">
-                        {/* A block is answered NXDOMAIN by design; saying so
-                            again beside BLOCKED is noise. Other codes stay. */}
+                        {/* A block's code is whatever the block answer setting
+                            chose; saying so beside BLOCKED is noise. Other
+                            codes stay. */}
                         {r.status !== "blocked" && <RCodeBadge code={r.rcode} />}
                       </Td>
                     </TableRow>

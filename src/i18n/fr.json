@@ -144,7 +144,9 @@
     "safe_tag": "sécurisé",
     "safe_hint": "Recherche sécurisée : répondu avec {{host}}",
     "compact": "Compact",
-    "compact_hint": "Lignes resserrées, plus de journal à l'écran"
+    "compact_hint": "Lignes resserrées, plus de journal à l'écran",
+    "stale_tag": "stale",
+    "stale_hint": "Répondu depuis une entrée de cache expirée pendant la récupération d'une nouvelle"
   },
   "clients": {
     "title": "Clients",
@@ -446,7 +448,11 @@
     "block_nodata_sub": "Le nom existe mais n'a aucun enregistrement. Calme l'application qui réessaie après un NXDOMAIN.",
     "block_null_ip_sub": "Les noms bloqués ne mènent nulle part ; les autres types d'enregistrement reçoivent une réponse vide. Ce que font les bloqueurs à fichier hosts.",
     "block_custom_ip_sub": "Les noms bloqués pointent vers une adresse à vous — une page de blocage, par exemple. Un type sans adresse reçoit une réponse vide.",
-    "block_refused_sub": "Le serveur refuse de répondre. Certains appareils essaient alors un autre résolveur."
+    "block_refused_sub": "Le serveur refuse de répondre. Certains appareils essaient alors un autre résolveur.",
+    "serve_stale": "Cache optimiste",
+    "serve_stale_sub": "Répondre aussitôt avec une entrée expirée — pour 30 secondes — et la rafraîchir en arrière-plan. Les noms continuent de se résoudre quand l'amont est hors service.",
+    "stale_max_age": "Servir l'expiré jusqu'à",
+    "stale_max_age_sub": "L'âge maximal d'une réponse tant que l'amont est injoignable."
   },
   "login": {
     "sign_in": "Connexion",

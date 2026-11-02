@@ -144,7 +144,9 @@
     "safe_tag": "safe",
     "safe_hint": "SafeSearch: beantwortet mit {{host}}",
     "compact": "Kompakt",
-    "compact_hint": "Engere Zeilen, mehr vom Protokoll auf dem Bildschirm"
+    "compact_hint": "Engere Zeilen, mehr vom Protokoll auf dem Bildschirm",
+    "stale_tag": "stale",
+    "stale_hint": "Aus einem abgelaufenen Cache-Eintrag beantwortet, während ein frischer geholt wurde"
   },
   "clients": {
     "title": "Clients",
@@ -446,7 +448,11 @@
     "block_nodata_sub": "Der Name existiert, hat aber keine Einträge. Beruhigt die seltene App, die NXDOMAIN wiederholt.",
     "block_null_ip_sub": "Blockierte Namen zeigen ins Leere; andere Eintragstypen bekommen eine leere Antwort. So arbeiten Hosts-Datei-Blocker.",
     "block_custom_ip_sub": "Blockierte Namen zeigen auf eine eigene Adresse — etwa eine Sperrseite. Ein Typ ohne Adresse bekommt eine leere Antwort.",
-    "block_refused_sub": "Der Server verweigert die Antwort. Manche Geräte fragen dann einen anderen Resolver."
+    "block_refused_sub": "Der Server verweigert die Antwort. Manche Geräte fragen dann einen anderen Resolver.",
+    "serve_stale": "Optimistischer Cache",
+    "serve_stale_sub": "Sofort aus einem abgelaufenen Eintrag antworten — für 30 Sekunden — und ihn im Hintergrund erneuern. Namen lösen weiter auf, solange der Upstream ausfällt.",
+    "stale_max_age": "Abgelaufenes ausliefern bis zu",
+    "stale_max_age_sub": "Wie alt eine Antwort werden darf, solange der Upstream nicht erreichbar ist."
   },
   "login": {
     "sign_in": "Anmelden",

@@ -153,6 +153,9 @@ export type HotForm = {
   dns_min_ttl: string;
   dns_max_ttl: string;
   dns_client_ttl: string;
+  dns_serve_stale: boolean;
+  /** Hours, as typed. */
+  dns_stale_max_age_h: string;
   log_retention_days: string;
   log_max_mb: string;
   web_dir: string;
@@ -190,6 +193,8 @@ export function hotFormFromSettings(s: SettingsType): Omit<HotForm, "api_key" | 
     dns_min_ttl: String(s.dns?.min_ttl ?? ""),
     dns_max_ttl: String(s.dns?.max_ttl ?? ""),
     dns_client_ttl: String(s.dns?.client_ttl ?? ""),
+    dns_serve_stale: s.dns?.serve_stale ?? false,
+    dns_stale_max_age_h: String(Math.round((s.dns?.stale_max_age ?? 43200) / 3600)),
     log_retention_days: String(s.storage?.log_retention_days ?? ""),
     log_max_mb: String(s.storage?.log_max_mb ?? ""),
     web_dir: String(s.web_dir ?? ""),
@@ -241,6 +246,13 @@ export function buildHotPatch(
   // 0 is a real value here ("clients must not cache"), so only "" means unset.
   if (form.dns_client_ttl !== "" && Number(form.dns_client_ttl) !== settings.dns?.client_ttl)
     patch.dns_client_ttl = Number(form.dns_client_ttl);
+  if (form.dns_serve_stale !== (settings.dns?.serve_stale ?? false))
+    patch.dns_serve_stale = form.dns_serve_stale;
+  if (
+    form.dns_stale_max_age_h !== "" &&
+    Number(form.dns_stale_max_age_h) * 3600 !== (settings.dns?.stale_max_age ?? 43200)
+  )
+    patch.dns_stale_max_age = Number(form.dns_stale_max_age_h) * 3600;
   if (
     form.log_retention_days !== "" &&
     Number(form.log_retention_days) !== settings.storage?.log_retention_days

@@ -144,7 +144,9 @@
     "safe_tag": "segura",
     "safe_hint": "Búsqueda segura: respondido con {{host}}",
     "compact": "Compacto",
-    "compact_hint": "Filas más juntas, más registro en pantalla"
+    "compact_hint": "Filas más juntas, más registro en pantalla",
+    "stale_tag": "stale",
+    "stale_hint": "Respondido con una entrada de caché caducada mientras se obtenía una nueva"
   },
   "clients": {
     "title": "Clientes",
@@ -446,7 +448,11 @@
     "block_nodata_sub": "El nombre existe pero no tiene registros. Calma a la app ocasional que reintenta tras un NXDOMAIN.",
     "block_null_ip_sub": "Los nombres bloqueados no llevan a ninguna parte; otros tipos de registro reciben una respuesta vacía. Lo que hacen los bloqueadores con archivo hosts.",
     "block_custom_ip_sub": "Los nombres bloqueados apuntan a una dirección tuya, como una página de bloqueo. Un tipo sin dirección recibe una respuesta vacía.",
-    "block_refused_sub": "El servidor se niega a responder. Algunos dispositivos prueban entonces otro resolutor."
+    "block_refused_sub": "El servidor se niega a responder. Algunos dispositivos prueban entonces otro resolutor.",
+    "serve_stale": "Caché optimista",
+    "serve_stale_sub": "Responder al instante con una entrada caducada —durante 30 segundos— y renovarla en segundo plano. Los nombres siguen resolviéndose mientras el servidor superior está caído.",
+    "stale_max_age": "Servir caducado hasta",
+    "stale_max_age_sub": "Cuánto puede envejecer una respuesta mientras no se alcanza el servidor superior."
   },
   "login": {
     "sign_in": "Iniciar sesión",
