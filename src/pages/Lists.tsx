@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { SubmitEvent } from "react";
 import { useTranslation } from "react-i18next";
-import { Plus, Trash2, RefreshCw, ExternalLink, Check, Star } from "lucide-react";
+import { Plus, Trash2, RefreshCw, ExternalLink, Check, Star, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { fmt } from "@/lib/format";
 import { api } from "@/api";
@@ -373,6 +373,10 @@ export default function Lists() {
 
   // URL of the catalog entry currently being added (for per-item spinner).
   const [addingCatalog, setAddingCatalog] = useState("");
+  // The catalog is the way in on an empty install; once lists exist it is a
+  // screenful between the page header and them, so it starts folded. `null`
+  // follows that default until the operator opens or closes it.
+  const [catalogOpen, setCatalogOpen] = useState<boolean | null>(null);
 
   // Bumped by every mutating action so the long (up to 5-min) refresh-all
   // doesn't clobber a toggle/remove that ran while it was in flight.
@@ -385,6 +389,8 @@ export default function Lists() {
 
   // Catalog entries already subscribed (matched by URL) are shown as added.
   const addedUrls = new Set(block.lists.map((l) => l.url));
+  const catalogAdded = LIST_CATALOG.filter((item) => addedUrls.has(item.url)).length;
+  const showCatalog = catalogOpen ?? (!loading && block.lists.length === 0);
 
   useEffect(() => {
     Promise.all([api.getLists(), api.getAllowlists()])
@@ -469,61 +475,82 @@ export default function Lists() {
 
       {/* Recommended catalog — add popular lists in one click */}
       <Card className="mb-4">
-        <SectionLabel>{t("lists.recommended", { defaultValue: "Recommended lists" })}</SectionLabel>
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
-          {LIST_CATALOG.map((item) => {
-            const added = addedUrls.has(item.url);
-            const busy = addingCatalog === item.url;
-            return (
-              <button
-                key={item.url}
-                type="button"
-                onClick={() => addFromCatalog(item)}
-                disabled={added || !!addingCatalog}
-                className={cn(
-                  "rounded-xs flex items-start gap-2.5 border px-3 py-2 text-left transition-colors",
-                  added
-                    ? "border-bdr bg-sidebar/40 cursor-default"
-                    : "border-bdr bg-sidebar hover:border-ember/40 disabled:opacity-50",
-                )}
-              >
-                <span className="mt-0.5 shrink-0">
-                  {added ? (
-                    <Check size={13} className="text-ember" />
-                  ) : busy ? (
-                    <RefreshCw size={13} className="text-muted animate-spin" />
-                  ) : (
-                    <Plus size={13} className="text-muted" />
+        <button
+          type="button"
+          onClick={() => setCatalogOpen(!showCatalog)}
+          aria-expanded={showCatalog}
+          className="group flex w-full items-center gap-2 text-left"
+        >
+          <SectionLabel className="mb-0">
+            {t("lists.recommended", { defaultValue: "Recommended lists" })}
+          </SectionLabel>
+          <span className="text-muted/70 font-mono text-[10px] tabular-nums">
+            {catalogAdded}/{LIST_CATALOG.length}
+          </span>
+          <ChevronDown
+            size={14}
+            className={cn(
+              "text-muted group-hover:text-ember ml-auto transition-transform duration-200",
+              showCatalog && "rotate-180",
+            )}
+          />
+        </button>
+        {showCatalog && (
+          <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
+            {LIST_CATALOG.map((item) => {
+              const added = addedUrls.has(item.url);
+              const busy = addingCatalog === item.url;
+              return (
+                <button
+                  key={item.url}
+                  type="button"
+                  onClick={() => addFromCatalog(item)}
+                  disabled={added || !!addingCatalog}
+                  className={cn(
+                    "rounded-xs flex items-start gap-2.5 border px-3 py-2 text-left transition-colors",
+                    added
+                      ? "border-bdr bg-sidebar/40 cursor-default"
+                      : "border-bdr bg-sidebar hover:border-ember/40 disabled:opacity-50",
                   )}
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="flex items-center gap-1.5">
-                    <span className="text-heading truncate text-xs font-medium">{item.name}</span>
-                    {item.recommended && (
-                      <span
-                        title={t("lists.recommended_badge", { defaultValue: "Recommended" })}
-                        className="shrink-0"
-                      >
-                        <Star size={10} className="fill-ember text-ember" />
-                      </span>
+                >
+                  <span className="mt-0.5 shrink-0">
+                    {added ? (
+                      <Check size={13} className="text-ember" />
+                    ) : busy ? (
+                      <RefreshCw size={13} className="text-muted animate-spin" />
+                    ) : (
+                      <Plus size={13} className="text-muted" />
                     )}
-                    <span
-                      className={cn(
-                        "rounded-xs shrink-0 px-1 py-0.5 text-[9px] uppercase tracking-wide",
-                        CATEGORY_BADGE[item.category],
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="flex items-center gap-1.5">
+                      <span className="text-heading truncate text-xs font-medium">{item.name}</span>
+                      {item.recommended && (
+                        <span
+                          title={t("lists.recommended_badge", { defaultValue: "Recommended" })}
+                          className="shrink-0"
+                        >
+                          <Star size={10} className="fill-ember text-ember" />
+                        </span>
                       )}
-                    >
-                      {item.category}
+                      <span
+                        className={cn(
+                          "rounded-xs shrink-0 px-1 py-0.5 text-[9px] uppercase tracking-wide",
+                          CATEGORY_BADGE[item.category],
+                        )}
+                      >
+                        {item.category}
+                      </span>
+                    </span>
+                    <span className="text-muted mt-0.5 block truncate text-[11px]">
+                      {added ? t("lists.added", { defaultValue: "Added" }) : item.desc}
                     </span>
                   </span>
-                  <span className="text-muted mt-0.5 block truncate text-[11px]">
-                    {added ? t("lists.added", { defaultValue: "Added" }) : item.desc}
-                  </span>
-                </span>
-              </button>
-            );
-          })}
-        </div>
+                </button>
+              );
+            })}
+          </div>
+        )}
       </Card>
 
       {/* Blocklist table */}
