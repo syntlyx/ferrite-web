@@ -21,6 +21,8 @@ import * as proxy from "./proxy";
 import * as logs from "./logs";
 import * as updates from "./updates";
 import * as tools from "./tools";
+import * as pause from "./pause";
+import * as backup from "./backup";
 
 import type {
   QueryFilters,
@@ -96,6 +98,13 @@ export const api = {
   removeCustomRecord: (domain: string) => dns.remove(domain),
 
   // ── Settings ────────────────────────────────────────────────────────────────
+  getPause: pause.get,
+  pauseBlocking: (minutes: number, clients?: string[]) => pause.pause(minutes, clients),
+  resumeBlocking: (clients?: string[]) => pause.resume(clients),
+
+  exportConfig: backup.exportConfig,
+  importConfig: (toml: string) => backup.importConfig(toml),
+
   getSettings: settings.get,
   patchSettings: (body: PatchSettingsBody) => settings.patch(body),
   storageLocations: settings.locations,

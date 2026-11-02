@@ -857,3 +857,22 @@ export interface LogEntry {
 export interface LogsResponse {
   logs: LogEntry[];
 }
+
+// ── Pausing filtering ────────────────────────────────────────────────────────
+
+export interface PauseState {
+  /** Server clock, unix seconds — count down against this, not the browser's. */
+  now: number;
+  /** When the box-wide pause ends; null when the box is not paused. */
+  global_until: number | null;
+  /** Paused devices, by normalised IP or MAC. */
+  clients: { key: string; until: number }[];
+}
+
+// ── Backup & restore ─────────────────────────────────────────────────────────
+
+export interface ConfigImportResponse {
+  saved_to: string;
+  backup: string | null;
+  restart: boolean;
+}

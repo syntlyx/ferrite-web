@@ -73,6 +73,10 @@ export function withQuery<T extends object>(path: string, params: QueryParams<T>
 type RequestOpts = {
   /** Override the default 30s timeout, e.g. for long-running batch operations. */
   timeoutMs?: number;
+  /** Send `body` as-is (a string) with this content type instead of as JSON. */
+  rawContentType?: string;
+  /** Hand back the response body as text rather than parsing JSON. */
+  textResponse?: boolean;
 };
 
 async function request<T>(
@@ -83,7 +87,7 @@ async function request<T>(
 ): Promise<T> {
   const token = getToken();
   const headers: Record<string, string> = {
-    "Content-Type": "application/json",
+    "Content-Type": opts?.rawContentType ?? "application/json",
   };
   if (token) headers["Authorization"] = `Bearer ${token}`;
 
@@ -93,7 +97,7 @@ async function request<T>(
   const res = await fetch(BASE + path, {
     method,
     headers,
-    body: body != null ? JSON.stringify(body) : undefined,
+    body: body == null ? undefined : opts?.rawContentType ? (body as string) : JSON.stringify(body),
     signal: controller.signal,
   }).finally(() => clearTimeout(timeoutId));
 
@@ -131,6 +135,7 @@ async function request<T>(
     });
   }
 
+  if (opts?.textResponse) return (await res.text()) as T;
   const ct = res.headers.get("content-type") ?? "";
   return ct.includes("application/json") ? (res.json() as Promise<T>) : (null as T);
 }
@@ -138,7 +143,7 @@ async function request<T>(
 // ── Convenience shorthands ────────────────────────────────────────────────────
 
 export const http = {
-  get: <T>(path: string) => request<T>("GET", path),
+  get: <T>(path: string, opts?: RequestOpts) => request<T>("GET", path, undefined, opts),
   post: <T>(path: string, body?: unknown, opts?: RequestOpts) =>
     request<T>("POST", path, body, opts),
   del: <T>(path: string) => request<T>("DELETE", path),
