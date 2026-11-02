@@ -2,7 +2,7 @@ import { useCallback, useState } from "react";
 import type { ReactNode } from "react";
 import { CheckCircle, XCircle, X } from "lucide-react";
 import { ToastContext } from "@/hooks/use-toast";
-import type { ToastType } from "@/hooks/use-toast";
+import type { ToastAction, ToastType } from "@/hooks/use-toast";
 
 const ICONS: Record<ToastType, ReactNode> = {
   success: <CheckCircle size={14} className="text-ember shrink-0" />,
@@ -15,6 +15,7 @@ interface Toast {
   id: number;
   message: string;
   type: ToastType;
+  action?: ToastAction;
 }
 
 export function ToastProvider({ children }: { children: ReactNode }) {
@@ -23,9 +24,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const dismiss = useCallback((id: number) => setToasts((p) => p.filter((t) => t.id !== id)), []);
 
   const toast = useCallback(
-    (message: string, type: ToastType = "success", duration = 3500) => {
+    (message: string, type: ToastType = "success", duration = 3500, action?: ToastAction) => {
       const id = ++_id;
-      setToasts((p) => [...p, { id, message, type }]);
+      setToasts((p) => [...p, { id, message, type, action }]);
       setTimeout(() => dismiss(id), duration);
     },
     [dismiss],
@@ -43,6 +44,17 @@ export function ToastProvider({ children }: { children: ReactNode }) {
           >
             {ICONS[t.type]}
             <span className="flex-1">{t.message}</span>
+            {t.action && (
+              <button
+                onClick={() => {
+                  t.action!.onClick();
+                  dismiss(t.id);
+                }}
+                className="text-ember hover:text-heading shrink-0 font-mono text-[11px] font-semibold uppercase tracking-wider transition-colors"
+              >
+                {t.action.label}
+              </button>
+            )}
             <button
               onClick={() => dismiss(t.id)}
               className="text-muted hover:text-heading ml-1 shrink-0 transition-colors"

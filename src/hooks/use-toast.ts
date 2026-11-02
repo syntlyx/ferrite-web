@@ -1,7 +1,17 @@
 import { createContext, use } from "react";
 
 export type ToastType = "success" | "error";
-export type ToastFn = (message: string, type?: ToastType, duration?: number) => void;
+/** A button on the toast — "Undo" after a one-click change. */
+export interface ToastAction {
+  label: string;
+  onClick: () => void;
+}
+export type ToastFn = (
+  message: string,
+  type?: ToastType,
+  duration?: number,
+  action?: ToastAction,
+) => void;
 
 /** Shared context — value is set by ToastProvider */
 export const ToastContext = createContext<ToastFn | null>(null);

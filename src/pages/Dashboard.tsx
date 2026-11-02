@@ -30,6 +30,8 @@ import { useSettings } from "@/stores/settings";
 import { QTYPE, RCODE_LABEL } from "@/lib/dns";
 import { fmt, pct, formatBytes, formatUptime } from "@/lib/format";
 import { DEVICE_ICON, deviceKind } from "@/lib/device-kind";
+import { QuickRuleBtn } from "@/components/QuickRuleBtn";
+import type { QuickRuleKind } from "@/hooks/use-quick-rule";
 import type {
   SystemStats,
   QueryStatus,
@@ -216,11 +218,14 @@ function DomainRows({
   barColor,
   textColor,
   onRowClick,
+  quickRule,
 }: {
   rows: [string, number][];
   barColor: string;
   textColor: string;
   onRowClick: (label: string) => void;
+  /** The one-click rule each row offers: block a queried domain, allow a blocked one. */
+  quickRule: QuickRuleKind;
 }) {
   const { t } = useTranslation();
   const max = rows[0]?.[1] ?? 1;
@@ -228,9 +233,18 @@ function DomainRows({
   return (
     <div className="space-y-1">
       {rows.slice(0, 10).map(([label, count], i) => (
-        <button
+        // A div, not a button: the row holds the quick-rule button of its own.
+        <div
           key={label}
+          role="button"
+          tabIndex={0}
           onClick={() => onRowClick(label)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              onRowClick(label);
+            }
+          }}
           className="hover:bg-white/4 rounded-xs group w-full cursor-pointer px-2 py-1.5 text-left transition-colors"
         >
           <div className="mb-1 flex items-center justify-between text-xs">
@@ -243,11 +257,12 @@ function DomainRows({
               >
                 {label}
               </span>
+              <QuickRuleBtn domain={label} kind={quickRule} />
             </div>
             <span className="mono text-muted ml-3 shrink-0 tabular-nums">{fmt(count)}</span>
           </div>
           <Bar value={(count / max) * 100} color={barColor} className="h-1" />
-        </button>
+        </div>
       ))}
     </div>
   );
@@ -323,6 +338,7 @@ function TopDomains({
             barColor="bg-ember"
             textColor="text-body"
             onRowClick={(d) => navigate(`/queries?domain=${encodeURIComponent(d)}`)}
+            quickRule="block"
           />
         </TabsContent>
         <TabsContent value="blocked">
@@ -331,6 +347,7 @@ function TopDomains({
             barColor="bg-blocked"
             textColor="text-blocked"
             onRowClick={(d) => navigate(`/queries?domain=${encodeURIComponent(d)}&status=blocked`)}
+            quickRule="allow"
           />
         </TabsContent>
       </Tabs>

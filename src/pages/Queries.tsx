@@ -42,6 +42,7 @@ import { useSettings } from "@/stores/settings";
 import { RCODE_LABEL, RCODE_COLOR, qtypeName } from "@/lib/dns";
 import { fmt } from "@/lib/format";
 import { deviceTokens } from "@/api/clients";
+import { QuickRuleBtn } from "@/components/QuickRuleBtn";
 import type { QueryEntry, QueryFilters, QueryStatus, ClientEntry } from "@/api/types";
 
 // ── DNS helpers ───────────────────────────────────────────────────────────────
@@ -743,6 +744,10 @@ export default function Queries() {
                             </span>
                           )}
                           <CopyBtn text={r.domain} />
+                          <QuickRuleBtn
+                            domain={r.domain}
+                            kind={r.status === "blocked" ? "allow" : "block"}
+                          />
                         </span>
                         {/* The columns a phone hides, folded under the domain. */}
                         <span className="text-muted block truncate text-[10px] sm:hidden">
