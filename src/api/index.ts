@@ -23,6 +23,7 @@ import * as updates from "./updates";
 import * as tools from "./tools";
 import * as pause from "./pause";
 import * as backup from "./backup";
+import * as services from "./services";
 
 import type {
   QueryFilters,
@@ -76,6 +77,11 @@ export const api = {
 
   getProfiles: blocklist.getProfiles,
   putProfiles: (profiles: BlocklistProfile[]) => blocklist.putProfiles(profiles),
+
+  // ── Service catalog ─────────────────────────────────────────────────────────
+  serviceCatalog: services.catalog,
+  getBlockedServices: services.getBlocked,
+  putBlockedServices: (ids: string[]) => services.putBlocked(ids),
 
   // ── Subscription lists ──────────────────────────────────────────────────────
   getLists: lists.getAll,

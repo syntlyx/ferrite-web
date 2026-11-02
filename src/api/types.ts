@@ -240,7 +240,7 @@ export interface DomainWhitelistResult {
 
 /** A source that matches a domain in the block-check attribution. */
 export interface BlockSource {
-  kind: "blacklist" | "wildcard" | "list" | string;
+  kind: "blacklist" | "wildcard" | "service" | "list" | string;
   name: string; // list name, "manual blacklist", or the wildcard pattern
   matched: string; // the key/pattern that matched (domain or a parent of it)
 }
@@ -294,6 +294,8 @@ export interface BlocklistProfile {
   block: string[];
   /** Domains allowed only for this profile (overrides the global block + lists). */
   allow: string[];
+  /** Catalog service ids blocked only for this profile (same tier as `block`). */
+  services: string[];
   /** Allowlist subscription names this profile includes. Empty = inherit
    *  every enabled allowlist. */
   allowlists: string[];
@@ -752,7 +754,11 @@ export interface ProxyEgress {
 }
 
 export interface ProxyRule {
+  /** Domain or `*.wildcard`; empty for a service rule. The server omits it
+   *  when empty — `api.getProxy` fills it back in. */
   pattern: string;
+  /** Catalog service id this rule routes instead of a single pattern. */
+  service?: string | null;
   egress: string;
   fail_closed: boolean;
   /** Restrict the rule to these device tokens (MAC or IP). Empty/absent = all
@@ -832,6 +838,7 @@ export interface EgressProbe {
 }
 
 export interface ProxyRuleHits {
+  /** The rule's key: its pattern, or `service:<id>` for a service rule. */
   pattern: string;
   egress: string;
   hits: number;
@@ -875,4 +882,36 @@ export interface ConfigImportResponse {
   saved_to: string;
   backup: string | null;
   restart: boolean;
+}
+
+// ── Service catalog ───────────────────────────────────────────────────────────
+
+/** One built-in catalog service: a named set of domains. */
+export interface ServiceInfo {
+  id: string;
+  name: string;
+  /** One of `ServiceCatalog.categories`. */
+  category: string;
+  /** Can a tunnel rule route it? False for services that also speak their own
+   *  protocol (messengers, game launchers, Spotify). */
+  routable: boolean;
+  /** Each domain also covers its subdomains. */
+  domains: string[];
+}
+
+export interface ServiceCatalog {
+  /** Category ids in display order. */
+  categories: string[];
+  services: ServiceInfo[];
+}
+
+export interface BlockedServicesResponse {
+  services: string[];
+}
+
+export interface PutBlockedServicesResponse {
+  status: string;
+  services: string[];
+  persisted: boolean;
+  saved_to?: string | null;
 }
