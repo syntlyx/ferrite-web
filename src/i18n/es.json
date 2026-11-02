@@ -229,7 +229,8 @@
     "routing_disabled": "enrutamiento desactivado",
     "full_check_hint": "Las fuentes coincidentes y el enrutamiento están en la página Herramientas.",
     "from_allowlist": "de la lista de permitidos {{list}}",
-    "overridden_sources": "Lo bloquearían"
+    "overridden_sources": "Lo bloquearían",
+    "entry_formats": "Un nombre abarca sus subdominios. *.example.com — solo los subdominios. /regex/ — una expresión regular, sin distinguir mayúsculas, que coincide en cualquier parte del nombre."
   },
   "lists": {
     "title": "Listas de suscripción",

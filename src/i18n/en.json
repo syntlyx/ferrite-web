@@ -229,7 +229,8 @@
     "routing_disabled": "routing disabled",
     "full_check_hint": "Matched sources and routing are on the Tools page.",
     "from_allowlist": "from allowlist {{list}}",
-    "overridden_sources": "Would be blocked by"
+    "overridden_sources": "Would be blocked by",
+    "entry_formats": "A name covers its subdomains. *.example.com — only the subdomains. /regex/ — a regular expression, case-insensitive, matched anywhere in the name."
   },
   "lists": {
     "title": "Subscription Lists",

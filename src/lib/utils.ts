@@ -23,3 +23,12 @@ export function copyToClipboard(text: string): Promise<void> {
     else reject(new Error("Copy failed"));
   });
 }
+
+/**
+ * A manual block/allow entry as the server stores it: names lower-cased, a
+ * `/regex/` kept as typed — lower-casing it would turn `\D` into `\d`.
+ */
+export function normalizeEntry(value: string): string {
+  const v = value.trim();
+  return /^\/.+\/$/.test(v) ? v : v.toLowerCase();
+}

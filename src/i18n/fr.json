@@ -229,7 +229,8 @@
     "routing_disabled": "routage désactivé",
     "full_check_hint": "Les sources correspondantes et le routage sont sur la page Outils.",
     "from_allowlist": "de la liste d'autorisation {{list}}",
-    "overridden_sources": "Serait bloqué par"
+    "overridden_sources": "Serait bloqué par",
+    "entry_formats": "Un nom couvre ses sous-domaines. *.example.com — seulement les sous-domaines. /regex/ — une expression régulière, insensible à la casse, qui correspond n'importe où dans le nom."
   },
   "lists": {
     "title": "Listes d'abonnement",

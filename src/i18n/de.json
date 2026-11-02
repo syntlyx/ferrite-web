@@ -229,7 +229,8 @@
     "routing_disabled": "Routing deaktiviert",
     "full_check_hint": "Treffer-Quellen und Routing finden sich auf der Werkzeuge-Seite.",
     "from_allowlist": "aus Erlaubnisliste {{list}}",
-    "overridden_sources": "Würde blockiert durch"
+    "overridden_sources": "Würde blockiert durch",
+    "entry_formats": "Ein Name umfasst seine Subdomains. *.example.com — nur die Subdomains. /regex/ — ein regulärer Ausdruck, ohne Groß-/Kleinschreibung, Treffer irgendwo im Namen."
   },
   "lists": {
     "title": "Abo-Listen",

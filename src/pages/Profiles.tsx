@@ -16,7 +16,7 @@ import {
   Users,
   LayoutGrid,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, normalizeEntry } from "@/lib/utils";
 import { api } from "@/api";
 import { deviceTokens } from "@/api/clients";
 import { DevicePicker } from "@/components/DevicePicker";
@@ -470,7 +470,7 @@ export default function Profiles() {
   };
 
   const addManual = (i: number, kind: "block" | "allow", domain: string) => {
-    const d = domain.trim().toLowerCase();
+    const d = normalizeEntry(domain);
     if (!d) return;
     update(i, (pr) => (pr[kind].includes(d) ? pr : { ...pr, [kind]: [...pr[kind], d] }));
   };

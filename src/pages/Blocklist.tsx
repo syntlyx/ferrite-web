@@ -12,7 +12,7 @@ import {
   ShieldMinus,
 } from "lucide-react";
 import { Link } from "react-router";
-import { cn } from "@/lib/utils";
+import { cn, normalizeEntry } from "@/lib/utils";
 import { api } from "@/api";
 import { ServicePicker } from "@/components/ServicePicker";
 import { SafeSearchControls } from "@/components/SafeSearchControls";
@@ -54,7 +54,7 @@ function AddDomainForm({
   const [value, setValue] = useState("");
 
   const [err, submit, pending] = useActionState<string, FormData>(async () => {
-    const domain = value.trim().toLowerCase();
+    const domain = normalizeEntry(value);
     if (!domain) return "";
     try {
       await onAdd(domain);
@@ -115,6 +115,12 @@ function RuleList({
     <div className="flex min-w-0 flex-col">
       <div className="mb-3 space-y-2">
         <AddDomainForm onAdd={onAdd} placeholder={placeholder} />
+        <p className="text-muted text-[11px] leading-relaxed">
+          {t("blocklist.entry_formats", {
+            defaultValue:
+              "A name covers its subdomains. *.example.com — only the subdomains. /regex/ — a regular expression, case-insensitive, matched anywhere in the name.",
+          })}
+        </p>
         {items.length > 5 && (
           <div className="flex items-center gap-2">
             <SearchInput
