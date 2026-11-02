@@ -740,5 +740,16 @@
     "tunnel_alerts_sub": "Ein Tunnel ist länger als eine Minute ausgefallen, und wenn er wieder läuft.",
     "new_device": "Neue Geräte",
     "new_device_sub": "Ein Gerät, das die Box noch nie gesehen hat, tritt dem Netzwerk bei. Was beim Start von ferrite schon da ist, zählt nicht. Handys, die ihre WLAN-Adresse wechseln, gelten jedes Mal als neu."
+  },
+  "mcp": {
+    "title": "KI-Assistenten (MCP)",
+    "sub": "Lässt einen Assistenten wie Claude ferrite fragen, warum eine Website gesperrt ist, was ein Gerät abgefragt hat oder wie es den Tunneln geht — über das Model Context Protocol.",
+    "enabled": "Assistenten verbinden lassen",
+    "enabled_sub": "Sie melden sich mit dem API-Schlüssel an und können Abfrageprotokoll, Geräte und Einstellungen lesen.",
+    "allow_changes": "Änderungen erlauben",
+    "allow_changes_sub": "Erlaubt auch, Domains zu sperren oder freizugeben, Dienste zu sperren, die Filterung zu pausieren und Listen zu aktualisieren. Aus: schauen ja, ändern nein.",
+    "no_key": "Zuerst oben einen API-Schlüssel festlegen — Assistenten melden sich damit an. Ohne ihn kann jeder im Netzwerk, der den Endpunkt findet, ihn nutzen.",
+    "connect": "Claude Code verbinden",
+    "connect_other": "Andere Assistenten: Streamable HTTP unter {{url}}, Header Authorization: Bearer <API-Schlüssel>."
   }
 }

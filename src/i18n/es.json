@@ -740,5 +740,16 @@
     "tunnel_alerts_sub": "Un túnel lleva más de un minuto caído, y cuando se recupera.",
     "new_device": "Dispositivos nuevos",
     "new_device_sub": "Se une a la red un dispositivo que el equipo nunca había visto. Lo que hay en la red cuando arranca ferrite no cuenta. Los móviles que cambian su dirección Wi-Fi cuentan como nuevos cada vez."
+  },
+  "mcp": {
+    "title": "Asistentes de IA (MCP)",
+    "sub": "Permite que un asistente como Claude pregunte a ferrite por qué un sitio está bloqueado, qué consultó un dispositivo o cómo van los túneles, mediante el Model Context Protocol.",
+    "enabled": "Permitir que se conecten asistentes",
+    "enabled_sub": "Inician sesión con la clave de API y pueden leer el registro de consultas, los dispositivos y la configuración.",
+    "allow_changes": "Permitir cambios",
+    "allow_changes_sub": "También les deja bloquear o permitir dominios, bloquear servicios, pausar el filtrado y actualizar listas. Desactivado: pueden mirar pero no tocar.",
+    "no_key": "Primero define una clave de API arriba: los asistentes inician sesión con ella. Sin clave, cualquiera en la red que encuentre el endpoint puede usarlo.",
+    "connect": "Conectar Claude Code",
+    "connect_other": "Otros asistentes: Streamable HTTP en {{url}}, cabecera Authorization: Bearer <clave de API>."
   }
 }

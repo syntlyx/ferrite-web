@@ -740,5 +740,16 @@
     "tunnel_alerts_sub": "Un tunnel est en panne depuis plus d'une minute, et quand il revient.",
     "new_device": "Nouveaux appareils",
     "new_device_sub": "Un appareil que le boîtier n'a jamais vu rejoint le réseau. Ce qui est présent au démarrage de ferrite ne compte pas. Les téléphones qui changent d'adresse Wi-Fi comptent comme nouveaux à chaque fois."
+  },
+  "mcp": {
+    "title": "Assistants IA (MCP)",
+    "sub": "Permet à un assistant comme Claude de demander à ferrite pourquoi un site est bloqué, ce qu'un appareil a consulté ou comment vont les tunnels, via le Model Context Protocol.",
+    "enabled": "Autoriser les assistants à se connecter",
+    "enabled_sub": "Ils se connectent avec la clé d'API et peuvent lire le journal des requêtes, les appareils et les réglages.",
+    "allow_changes": "Autoriser les modifications",
+    "allow_changes_sub": "Leur permet aussi de bloquer ou d'autoriser des domaines, de bloquer des services, de suspendre le filtrage et d'actualiser les listes. Désactivé : ils peuvent regarder, pas toucher.",
+    "no_key": "Définissez d'abord une clé d'API ci-dessus : les assistants s'en servent pour se connecter. Sans clé, n'importe qui sur le réseau qui trouve le point d'accès peut l'utiliser.",
+    "connect": "Connecter Claude Code",
+    "connect_other": "Autres assistants : Streamable HTTP à {{url}}, en-tête Authorization: Bearer <clé d'API>."
   }
 }

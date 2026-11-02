@@ -740,5 +740,16 @@
     "tunnel_alerts_sub": "A tunnel stays down for over a minute, and when it recovers.",
     "new_device": "New devices",
     "new_device_sub": "A device the box has never seen joins the network. What is there when ferrite starts doesn't count. Phones that rotate their Wi-Fi address count as new each time."
+  },
+  "mcp": {
+    "title": "AI assistants (MCP)",
+    "sub": "Lets an assistant such as Claude ask ferrite why a site is blocked, what a device looked up, or how the tunnels are doing — over the Model Context Protocol.",
+    "enabled": "Allow assistants to connect",
+    "enabled_sub": "They sign in with the API key and can read the query log, devices and settings.",
+    "allow_changes": "Allow changes",
+    "allow_changes_sub": "Also let them block or allow domains, block services, pause filtering and refresh lists. Off: they can look but not touch.",
+    "no_key": "Set an API key above first — assistants sign in with it. Without one, anyone on the network who finds the endpoint can use it.",
+    "connect": "Connect Claude Code",
+    "connect_other": "Other assistants: Streamable HTTP at {{url}}, header Authorization: Bearer <API key>."
   }
 }
