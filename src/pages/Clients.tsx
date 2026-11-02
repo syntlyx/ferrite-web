@@ -12,6 +12,7 @@ import {
   BarChart3,
   ShieldOff,
   Shield,
+  Pause,
   ChevronUp,
   ChevronDown,
   ChevronsUpDown,
@@ -47,6 +48,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useConfirm } from "@/hooks/use-confirm";
 import { fmt, fmtRelTime } from "@/lib/format";
 import { DEVICE_ICON, deviceKind } from "@/lib/device-kind";
+import { usePause, fmtCountdown, PAUSE_OPTIONS } from "@/stores/pause";
 import { deviceTokens } from "@/api/clients";
 import type { AddAliasBody, ClientAlias, ClientEntry } from "@/api/types";
 
@@ -387,6 +389,16 @@ export default function Clients() {
   // statistics switch — say so rather than let it read as "no devices".
   const statsDisabled = settings?.storage?.keep_stats === false;
   const [togglingBlocking, setTogglingBlocking] = useState("");
+  const pause = usePause();
+  // The row whose pause-length chips are showing, if any.
+  const [pausePicker, setPausePicker] = useState("");
+  const pauseDevice = (keys: string[], minutes: number) => {
+    setPausePicker("");
+    pause.pauseClients(keys, minutes).catch((e: Error) => toast(e.message, "error"));
+  };
+  const resumeDevice = (keys: string[]) => {
+    pause.resumeClients(keys).catch((e: Error) => toast(e.message, "error"));
+  };
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<SortState>({ key: "total", dir: "desc" });
   const [prefill, setPrefill] = useState<AliasPrefill | null>(null);
@@ -666,6 +678,9 @@ export default function Clients() {
                     const blockedPct = c.total > 0 ? (c.blocked / c.total) * 100 : 0;
                     const filteringOn = blockingEnabled && !c.blocking_bypassed;
                     const canName = Boolean(c.macs[0] || c.ips[0]);
+                    const tokens = deviceTokens(c).map((x) => x.toLowerCase());
+                    const pausedLeft =
+                      tokens.map((k) => pause.clientLeft.get(k)).find((v) => v != null) ?? null;
                     const kind = deviceKind(c.name);
                     const DeviceIcon = DEVICE_ICON[kind];
                     return (
@@ -732,23 +747,71 @@ export default function Clients() {
                         </Td>
                         <Td className="px-3 text-right sm:px-4">
                           <div className="inline-flex items-center gap-2">
-                            <span
-                              className={cn(
-                                "hidden rounded-full px-2 py-0.5 text-[10px] font-medium sm:inline",
-                                filteringOn ? "bg-ember/10 text-ember" : "bg-warn/10 text-warn",
-                              )}
-                            >
-                              {!blockingEnabled
-                                ? t("clients.filtering_global_off")
-                                : c.blocking_bypassed
-                                  ? t("clients.filtering_bypassed")
-                                  : t("clients.filtering_on")}
-                            </span>
+                            {pausedLeft != null ? (
+                              // Paused for a while: the countdown, which also resumes.
+                              <button
+                                type="button"
+                                onClick={() => resumeDevice(tokens)}
+                                title={t("pause.resume", { defaultValue: "Resume" })}
+                                className="bg-warn/10 text-warn hover:bg-warn/20 inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-mono text-[10px] tabular-nums transition-colors"
+                              >
+                                <Pause size={9} />
+                                {fmtCountdown(pausedLeft)}
+                              </button>
+                            ) : pausePicker === c.name ? (
+                              <span className="hidden items-center gap-1 sm:inline-flex">
+                                {PAUSE_OPTIONS.map((m) => (
+                                  <button
+                                    key={m}
+                                    type="button"
+                                    onClick={() => pauseDevice(tokens, m)}
+                                    className="border-bdr/70 text-muted hover:border-warn/50 hover:text-warn rounded-xs border px-1.5 py-0.5 font-mono text-[10px] tabular-nums transition-colors"
+                                  >
+                                    {m >= 60
+                                      ? t("pause.hours_short", {
+                                          count: m / 60,
+                                          defaultValue: "{{count}}h",
+                                        })
+                                      : t("pause.minutes_short", {
+                                          count: m,
+                                          defaultValue: "{{count}}m",
+                                        })}
+                                  </button>
+                                ))}
+                              </span>
+                            ) : (
+                              <span
+                                className={cn(
+                                  "hidden rounded-full px-2 py-0.5 text-[10px] font-medium sm:inline",
+                                  filteringOn ? "bg-ember/10 text-ember" : "bg-warn/10 text-warn",
+                                )}
+                              >
+                                {!blockingEnabled
+                                  ? t("clients.filtering_global_off")
+                                  : c.blocking_bypassed
+                                    ? t("clients.filtering_bypassed")
+                                    : t("clients.filtering_on")}
+                              </span>
+                            )}
                             <Switch
-                              checked={filteringOn}
+                              checked={filteringOn && pausedLeft == null}
                               onCheckedChange={() => toggleClientBlocking(c)}
                               disabled={!blockingEnabled || togglingBlocking === c.name}
                             />
+                            {filteringOn && pausedLeft == null && (
+                              <IconBtn
+                                onClick={() => setPausePicker(pausePicker === c.name ? "" : c.name)}
+                                title={t("pause.pause_device", {
+                                  defaultValue: "Pause filtering for this device",
+                                })}
+                                className={cn(
+                                  "hidden sm:inline-flex",
+                                  pausePicker === c.name && "text-warn",
+                                )}
+                              >
+                                <Pause size={11} />
+                              </IconBtn>
+                            )}
                           </div>
                         </Td>
                         <Td className="text-muted hidden whitespace-nowrap text-right sm:table-cell">

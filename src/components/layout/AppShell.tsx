@@ -26,12 +26,15 @@ import {
   Languages,
   ShieldCheck,
   ShieldOff,
+  Pause,
+  Play,
 } from "lucide-react";
 import { api } from "@/api";
 import { useTheme } from "@/providers/ThemeProvider";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { usePageVisible } from "@/hooks/use-page-visible";
 import { useSettings } from "@/stores/settings";
+import { usePause, fmtCountdown, PAUSE_OPTIONS } from "@/stores/pause";
 import { Select } from "@/components/ui";
 
 /** How often to re-check (cached) for available updates while the tab is visible. */
@@ -169,7 +172,20 @@ export default function AppShell({ children }: { children: ReactNode }) {
   const [tunnelDown, setTunnelDown] = useState(false);
   // Until the first response lands, assume filtering is on: the neutral badge
   // beats flashing "filtering off" at someone whose filtering is fine.
-  const blockingEnabled = useSettings()?.blocklist?.enabled ?? true;
+  const configuredOn = useSettings()?.blocklist?.enabled ?? true;
+  const pause = usePause();
+  const paused = configuredOn && pause.globalLeft != null;
+  // Filtering as the resolver applies it right now: on in the config and not paused.
+  const blockingEnabled = configuredOn && !paused;
+  const runPause = (fn: () => Promise<void>) => {
+    fn().catch(() => {
+      /* the next poll shows the true state */
+    });
+  };
+  const fmtMinutes = (m: number) =>
+    m >= 60
+      ? t("pause.hours_short", { count: m / 60, defaultValue: "{{count}}h" })
+      : t("pause.minutes_short", { count: m, defaultValue: "{{count}}m" });
   const { theme, toggle: toggleTheme } = useTheme();
   const pageVisible = usePageVisible();
 
@@ -310,11 +326,54 @@ export default function AppShell({ children }: { children: ReactNode }) {
                 />
               </span>
               <Icon size={12} className={blockingEnabled ? "text-ember" : "text-warn"} />
-              {blockingEnabled ? t("sidebar.status_online") : t("sidebar.status_filtering_off")}
+              {paused
+                ? t("pause.paused", { defaultValue: "Filtering paused" })
+                : blockingEnabled
+                  ? t("sidebar.status_online")
+                  : t("sidebar.status_filtering_off")}
             </div>
             <p className="text-muted text-[10px]">
-              {blockingEnabled ? t("sidebar.control_plane") : t("sidebar.filtering_off_hint")}
+              {paused
+                ? t("pause.time_left", {
+                    time: fmtCountdown(pause.globalLeft ?? 0),
+                    defaultValue: "{{time}} left",
+                  })
+                : blockingEnabled
+                  ? t("sidebar.control_plane")
+                  : t("sidebar.filtering_off_hint")}
             </p>
+            {/* Pause filtering for a while — or bring it back early. */}
+            {configuredOn && (
+              <div className="mt-2.5 flex items-center gap-1">
+                {paused ? (
+                  <button
+                    type="button"
+                    onClick={() => runPause(pause.resumeGlobal)}
+                    className="border-ember/40 text-ember hover:bg-ember/10 rounded-xs flex flex-1 items-center justify-center gap-1.5 border px-2 py-1 font-mono text-[10px] uppercase tracking-wider transition-colors"
+                  >
+                    <Play size={10} /> {t("pause.resume", { defaultValue: "Resume" })}
+                  </button>
+                ) : (
+                  <>
+                    <Pause size={11} className="text-muted mr-0.5 shrink-0" />
+                    {PAUSE_OPTIONS.map((m) => (
+                      <button
+                        key={m}
+                        type="button"
+                        onClick={() => runPause(() => pause.pauseGlobal(m))}
+                        title={t("pause.pause_for", {
+                          time: fmtMinutes(m),
+                          defaultValue: "Pause filtering for {{time}}",
+                        })}
+                        className="border-bdr/70 text-muted hover:border-warn/50 hover:text-warn rounded-xs flex-1 border px-1.5 py-1 font-mono text-[10px] tabular-nums transition-colors"
+                      >
+                        {fmtMinutes(m)}
+                      </button>
+                    ))}
+                  </>
+                )}
+              </div>
+            )}
           </div>
         )}
 
@@ -495,6 +554,26 @@ export default function AppShell({ children }: { children: ReactNode }) {
           key={pathname + reloadKey}
           className="animate-fade-up min-w-0 flex-1 overflow-y-auto pt-14 md:pt-0"
         >
+          {/* A paused resolver lets everything through — say so on every page,
+              including on a phone where the sidebar card is out of sight. */}
+          {paused && (
+            <div className="border-warn/30 bg-warn/10 text-warn sticky top-0 z-10 flex items-center gap-2 border-b px-4 py-2 text-xs backdrop-blur">
+              <Pause size={12} className="shrink-0" />
+              <span className="min-w-0 flex-1">
+                {t("pause.banner", {
+                  time: fmtCountdown(pause.globalLeft ?? 0),
+                  defaultValue: "Filtering is paused — everything resolves for {{time}} more.",
+                })}
+              </span>
+              <button
+                type="button"
+                onClick={() => runPause(pause.resumeGlobal)}
+                className="hover:text-heading shrink-0 font-mono text-[11px] font-semibold uppercase tracking-wider transition-colors"
+              >
+                {t("pause.resume", { defaultValue: "Resume" })}
+              </button>
+            </div>
+          )}
           {children}
         </main>
       </div>
