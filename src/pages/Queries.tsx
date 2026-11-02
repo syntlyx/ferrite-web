@@ -14,7 +14,7 @@ import {
   Layers,
   Users,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, copyToClipboard } from "@/lib/utils";
 import { api } from "@/api";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { PageContainer } from "@/components/layout/PageContainer";
@@ -51,22 +51,6 @@ function RCodeBadge({ code }: { code: number }) {
   const label = RCODE_LABEL[code];
   if (!label) return null;
   return <span className={`font-mono text-xs ${RCODE_COLOR[code] ?? "text-muted"}`}>{label}</span>;
-}
-
-function copyToClipboard(text: string): Promise<void> {
-  if (navigator.clipboard) return navigator.clipboard.writeText(text);
-  return new Promise((resolve, reject) => {
-    const el = Object.assign(document.createElement("textarea"), {
-      value: text,
-      style: "position:fixed;opacity:0;pointer-events:none",
-    });
-    document.body.appendChild(el);
-    el.select();
-    const ok = document.execCommand("copy");
-    document.body.removeChild(el);
-    if (ok) resolve();
-    else reject(new Error("Copy failed"));
-  });
 }
 
 function CopyBtn({ text }: { text: string }) {
