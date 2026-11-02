@@ -181,7 +181,9 @@
     "tile_bypassing": "Bypassing filter",
     "tile_bypassing_sub": "clients",
     "name_device": "Name this device",
-    "stats_disabled": "Statistics are switched off in Settings → Privacy. This page is built from per-device counters, so it stays empty. Names and aliases still work."
+    "stats_disabled": "Statistics are switched off in Settings → Privacy. This page is built from per-device counters, so it stays empty. Names and aliases still work.",
+    "new_badge": "new",
+    "new_badge_hint": "First seen {{when}}"
   },
   "blocklist": {
     "title": "Blocklist",
@@ -593,7 +595,6 @@
     "col_hits": "Hits",
     "col_hits_hint": "Connections routed by this rule since ferrite started.",
     "alert_webhook": "Alert webhook",
-    "alert_webhook_sub": "URL POSTed a JSON event when an egress stays down for over a minute (and again on recovery). Works with ntfy or any JSON webhook receiver. Blank = off.",
     "down_for": "down",
     "probe_target": "Probe target",
     "probe_target_sub": "host:port the health probe connects to through each egress to measure latency. Must be reachable through every tunnel (it gates fail-closed). Blank = 1.1.1.1:443.",
@@ -609,7 +610,8 @@
     "rule_mode_service": "Service",
     "rule_pick_service": "Choose a service…",
     "rule_service_help": "Routes all domains of the service ({{count}}). Messengers, game launchers and Spotify also use their own protocols, which a tunnel can't carry, so they aren't listed.",
-    "rule_service_help_empty": "Messengers, game launchers and Spotify also use their own protocols, which a tunnel can't carry, so they aren't listed."
+    "rule_service_help_empty": "Messengers, game launchers and Spotify also use their own protocols, which a tunnel can't carry, so they aren't listed.",
+    "alert_webhook_moved": "Tunnel-down alerts go to the webhook set under Settings → Notifications, alongside the other notifications."
   },
   "logs": {
     "title": "Logs",
@@ -724,5 +726,19 @@
     "level_moderate": "Moderate",
     "level_strict": "Strict",
     "saved": "Safe search updated"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "sub": "One webhook, sent a JSON event for each kind switched on. Works with ntfy, Home Assistant or anything that accepts a POST.",
+    "saved": "Notifications saved",
+    "test": "Send test",
+    "test_sent": "Test notification delivered",
+    "save": "Save",
+    "webhook": "Webhook URL",
+    "webhook_sub": "Blank turns notifications off.",
+    "tunnel_alerts": "Tunnel alerts",
+    "tunnel_alerts_sub": "A tunnel stays down for over a minute, and when it recovers.",
+    "new_device": "New devices",
+    "new_device_sub": "A device the box has never seen joins the network. What is there when ferrite starts doesn't count. Phones that rotate their Wi-Fi address count as new each time."
   }
 }

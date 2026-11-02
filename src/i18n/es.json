@@ -181,7 +181,9 @@
     "tile_bypassing": "Omiten el filtro",
     "tile_bypassing_sub": "clientes",
     "name_device": "Nombrar este dispositivo",
-    "stats_disabled": "Las estadísticas están desactivadas en Ajustes → Privacidad. Esta página se construye con los contadores por dispositivo, así que queda vacía. Los nombres y alias siguen funcionando."
+    "stats_disabled": "Las estadísticas están desactivadas en Ajustes → Privacidad. Esta página se construye con los contadores por dispositivo, así que queda vacía. Los nombres y alias siguen funcionando.",
+    "new_badge": "nuevo",
+    "new_badge_hint": "Visto por primera vez {{when}}"
   },
   "blocklist": {
     "title": "Lista de bloqueo",
@@ -593,7 +595,6 @@
     "col_hits": "Usos",
     "col_hits_hint": "Conexiones enrutadas por esta regla desde que arrancó ferrite.",
     "alert_webhook": "Webhook de alertas",
-    "alert_webhook_sub": "URL que recibe un POST JSON cuando un egress lleva caído más de un minuto (y otro al recuperarse). Funciona con ntfy o cualquier receptor JSON. Vacío = desactivado.",
     "down_for": "caído",
     "probe_target": "Destino de sonda",
     "probe_target_sub": "host:port al que la sonda se conecta a través de cada egress para medir la latencia. Debe ser alcanzable por todos los túneles (controla el fail-closed). Vacío = 1.1.1.1:443.",
@@ -609,7 +610,8 @@
     "rule_mode_service": "Servicio",
     "rule_pick_service": "Elige un servicio…",
     "rule_service_help": "Enruta todos los dominios del servicio ({{count}}). Los mensajeros, los lanzadores de juegos y Spotify también usan protocolos propios que un túnel no puede transportar, por eso no aparecen.",
-    "rule_service_help_empty": "Los mensajeros, los lanzadores de juegos y Spotify también usan protocolos propios que un túnel no puede transportar, por eso no aparecen."
+    "rule_service_help_empty": "Los mensajeros, los lanzadores de juegos y Spotify también usan protocolos propios que un túnel no puede transportar, por eso no aparecen.",
+    "alert_webhook_moved": "Las alertas de túnel caído van al webhook de Ajustes → Notificaciones, junto con las demás notificaciones."
   },
   "logs": {
     "title": "Registros",
@@ -724,5 +726,19 @@
     "level_moderate": "Moderado",
     "level_strict": "Estricto",
     "saved": "Búsqueda segura actualizada"
+  },
+  "notifications": {
+    "title": "Notificaciones",
+    "sub": "Un webhook al que llega un evento JSON por cada tipo activado. Funciona con ntfy, Home Assistant o cualquier cosa que acepte un POST.",
+    "saved": "Notificaciones guardadas",
+    "test": "Enviar prueba",
+    "test_sent": "Notificación de prueba entregada",
+    "save": "Guardar",
+    "webhook": "URL del webhook",
+    "webhook_sub": "Vacío desactiva las notificaciones.",
+    "tunnel_alerts": "Alertas de túneles",
+    "tunnel_alerts_sub": "Un túnel lleva más de un minuto caído, y cuando se recupera.",
+    "new_device": "Dispositivos nuevos",
+    "new_device_sub": "Se une a la red un dispositivo que el equipo nunca había visto. Lo que hay en la red cuando arranca ferrite no cuenta. Los móviles que cambian su dirección Wi-Fi cuentan como nuevos cada vez."
   }
 }

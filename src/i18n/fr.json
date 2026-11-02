@@ -181,7 +181,9 @@
     "tile_bypassing": "Contournent le filtre",
     "tile_bypassing_sub": "clients",
     "name_device": "Nommer cet appareil",
-    "stats_disabled": "Les statistiques sont désactivées dans Réglages → Confidentialité. Cette page est construite à partir des compteurs par appareil, elle reste donc vide. Les noms et alias fonctionnent toujours."
+    "stats_disabled": "Les statistiques sont désactivées dans Réglages → Confidentialité. Cette page est construite à partir des compteurs par appareil, elle reste donc vide. Les noms et alias fonctionnent toujours.",
+    "new_badge": "nouveau",
+    "new_badge_hint": "Vu pour la première fois {{when}}"
   },
   "blocklist": {
     "title": "Liste de blocage",
@@ -593,7 +595,6 @@
     "col_hits": "Hits",
     "col_hits_hint": "Connexions acheminées par cette règle depuis le démarrage de ferrite.",
     "alert_webhook": "Webhook d'alerte",
-    "alert_webhook_sub": "URL recevant un POST JSON quand un egress reste hors service plus d'une minute (et à nouveau au rétablissement). Fonctionne avec ntfy ou tout récepteur JSON. Vide = désactivé.",
     "down_for": "hors service",
     "probe_target": "Cible de sonde",
     "probe_target_sub": "host:port auquel la sonde se connecte via chaque egress pour mesurer la latence. Doit être joignable par chaque tunnel (conditionne le fail-closed). Vide = 1.1.1.1:443.",
@@ -609,7 +610,8 @@
     "rule_mode_service": "Service",
     "rule_pick_service": "Choisir un service…",
     "rule_service_help": "Achemine tous les domaines du service ({{count}}). Les messageries, les lanceurs de jeux et Spotify utilisent aussi leurs propres protocoles, qu'un tunnel ne peut pas transporter : ils ne sont donc pas proposés.",
-    "rule_service_help_empty": "Les messageries, les lanceurs de jeux et Spotify utilisent aussi leurs propres protocoles, qu'un tunnel ne peut pas transporter : ils ne sont donc pas proposés."
+    "rule_service_help_empty": "Les messageries, les lanceurs de jeux et Spotify utilisent aussi leurs propres protocoles, qu'un tunnel ne peut pas transporter : ils ne sont donc pas proposés.",
+    "alert_webhook_moved": "Les alertes de tunnel en panne vont au webhook défini dans Paramètres → Notifications, avec les autres notifications."
   },
   "logs": {
     "title": "Journaux",
@@ -724,5 +726,19 @@
     "level_moderate": "Modéré",
     "level_strict": "Strict",
     "saved": "Recherche sécurisée mise à jour"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "sub": "Un webhook qui reçoit un événement JSON pour chaque type activé. Fonctionne avec ntfy, Home Assistant ou tout ce qui accepte un POST.",
+    "saved": "Notifications enregistrées",
+    "test": "Envoyer un test",
+    "test_sent": "Notification de test livrée",
+    "save": "Enregistrer",
+    "webhook": "URL du webhook",
+    "webhook_sub": "Vide désactive les notifications.",
+    "tunnel_alerts": "Alertes de tunnel",
+    "tunnel_alerts_sub": "Un tunnel est en panne depuis plus d'une minute, et quand il revient.",
+    "new_device": "Nouveaux appareils",
+    "new_device_sub": "Un appareil que le boîtier n'a jamais vu rejoint le réseau. Ce qui est présent au démarrage de ferrite ne compte pas. Les téléphones qui changent d'adresse Wi-Fi comptent comme nouveaux à chaque fois."
   }
 }

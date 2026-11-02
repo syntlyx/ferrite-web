@@ -181,7 +181,9 @@
     "tile_bypassing": "Filter umgehen",
     "tile_bypassing_sub": "Clients",
     "name_device": "Gerät benennen",
-    "stats_disabled": "Statistiken sind unter Einstellungen → Datenschutz ausgeschaltet. Diese Seite wird aus den Gerätezählern gebaut und bleibt daher leer. Namen und Aliasse funktionieren weiterhin."
+    "stats_disabled": "Statistiken sind unter Einstellungen → Datenschutz ausgeschaltet. Diese Seite wird aus den Gerätezählern gebaut und bleibt daher leer. Namen und Aliasse funktionieren weiterhin.",
+    "new_badge": "neu",
+    "new_badge_hint": "Zuerst gesehen {{when}}"
   },
   "blocklist": {
     "title": "Blockliste",
@@ -593,7 +595,6 @@
     "col_hits": "Treffer",
     "col_hits_hint": "Über diese Regel geleitete Verbindungen seit dem Start von ferrite.",
     "alert_webhook": "Alarm-Webhook",
-    "alert_webhook_sub": "URL, an die ein JSON-Event per POST gesendet wird, wenn ein Egress länger als eine Minute ausfällt (und erneut bei Wiederherstellung). Funktioniert mit ntfy oder jedem JSON-Empfänger. Leer = aus.",
     "down_for": "down seit",
     "probe_target": "Prüf-Ziel",
     "probe_target_sub": "host:port, zu dem die Prüfung durch jeden Egress verbindet, um die Latenz zu messen. Muss über jeden Tunnel erreichbar sein (steuert Fail-closed). Leer = 1.1.1.1:443.",
@@ -609,7 +610,8 @@
     "rule_mode_service": "Dienst",
     "rule_pick_service": "Dienst wählen…",
     "rule_service_help": "Leitet alle Domains des Dienstes um ({{count}}). Messenger, Spiele-Launcher und Spotify nutzen auch eigene Protokolle, die ein Tunnel nicht übertragen kann, und fehlen deshalb in der Liste.",
-    "rule_service_help_empty": "Messenger, Spiele-Launcher und Spotify nutzen auch eigene Protokolle, die ein Tunnel nicht übertragen kann, und fehlen deshalb in der Liste."
+    "rule_service_help_empty": "Messenger, Spiele-Launcher und Spotify nutzen auch eigene Protokolle, die ein Tunnel nicht übertragen kann, und fehlen deshalb in der Liste.",
+    "alert_webhook_moved": "Tunnel-Warnungen gehen an den Webhook unter Einstellungen → Benachrichtigungen, zusammen mit den anderen Benachrichtigungen."
   },
   "logs": {
     "title": "Protokolle",
@@ -724,5 +726,19 @@
     "level_moderate": "Moderat",
     "level_strict": "Streng",
     "saved": "SafeSearch aktualisiert"
+  },
+  "notifications": {
+    "title": "Benachrichtigungen",
+    "sub": "Ein Webhook, der für jede aktivierte Art ein JSON-Ereignis erhält. Funktioniert mit ntfy, Home Assistant oder allem, was einen POST annimmt.",
+    "saved": "Benachrichtigungen gespeichert",
+    "test": "Test senden",
+    "test_sent": "Testbenachrichtigung zugestellt",
+    "save": "Speichern",
+    "webhook": "Webhook-URL",
+    "webhook_sub": "Leer schaltet Benachrichtigungen aus.",
+    "tunnel_alerts": "Tunnel-Warnungen",
+    "tunnel_alerts_sub": "Ein Tunnel ist länger als eine Minute ausgefallen, und wenn er wieder läuft.",
+    "new_device": "Neue Geräte",
+    "new_device_sub": "Ein Gerät, das die Box noch nie gesehen hat, tritt dem Netzwerk bei. Was beim Start von ferrite schon da ist, zählt nicht. Handys, die ihre WLAN-Adresse wechseln, gelten jedes Mal als neu."
   }
 }
