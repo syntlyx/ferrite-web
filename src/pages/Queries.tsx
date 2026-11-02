@@ -11,6 +11,7 @@ import {
   Trash2,
   ChevronDown,
   ChevronsLeft,
+  Layers,
   Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -36,6 +37,7 @@ import {
 import { useDebounce } from "@/hooks/use-debounce";
 import { useConfirm } from "@/hooks/use-confirm";
 import { usePageVisible } from "@/hooks/use-page-visible";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useSettings } from "@/stores/settings";
 import { RCODE_LABEL, RCODE_COLOR, qtypeName } from "@/lib/dns";
 import { fmt } from "@/lib/format";
@@ -252,11 +254,56 @@ function cursorFromRow(row: QueryEntry | undefined) {
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
+/** A row's status as a colour on its leading edge, so a page of mostly-cached
+ *  traffic shows its blocks at a glance. */
+const STATUS_EDGE: Record<QueryStatus, string> = {
+  blocked: "border-l-blocked",
+  routed: "border-l-routed",
+  upstream: "border-l-upstream/60",
+  cached: "border-l-cached/40",
+  allowed: "border-l-ember/40",
+};
+
+/** A run of identical queries — same name, type, device and outcome — shown as
+ *  one row. Apps retry and re-ask in bursts; eight rows of the same name say
+ *  less than one row that says "×8". */
+interface QueryRun {
+  row: QueryEntry;
+  count: number;
+  /** Timestamp of the oldest query in the run (rows arrive newest first). */
+  since: string;
+}
+
+function groupRuns(rows: QueryEntry[]): QueryRun[] {
+  const runs: QueryRun[] = [];
+  for (const r of rows) {
+    const last = runs[runs.length - 1];
+    if (
+      last &&
+      last.row.domain === r.domain &&
+      last.row.query_type === r.query_type &&
+      last.row.device === r.device &&
+      last.row.status === r.status
+    ) {
+      last.count += 1;
+      last.since = r.timestamp;
+    } else {
+      runs.push({ row: r, count: 1, since: r.timestamp });
+    }
+  }
+  return runs;
+}
+
 export default function Queries() {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
 
   const [rows, setRows] = useState<QueryEntry[]>([]);
+  const [groupPref, setGroupPref] = useLocalStorage("ferrite.queries.group", "1");
+  const grouped = groupPref === "1";
+  const runs = grouped
+    ? groupRuns(rows)
+    : rows.map((r) => ({ row: r, count: 1, since: r.timestamp }));
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
   const { confirm, ConfirmDialog } = useConfirm();
@@ -531,6 +578,17 @@ export default function Queries() {
                 {t("queries.live")}
               </span>
             )}
+            <Btn
+              variant="ghost"
+              onClick={() => setGroupPref(grouped ? "0" : "1")}
+              aria-pressed={grouped}
+              title={t("queries.group_repeats_hint", {
+                defaultValue: "Fold identical queries in a row into one line",
+              })}
+              className={cn(grouped && "border-ember/40 text-ember")}
+            >
+              <Layers size={12} /> {t("queries.group_repeats", { defaultValue: "Group" })}
+            </Btn>
             {rows.length > 0 && (
               <Btn variant="ghost" onClick={() => exportCSV(rows)}>
                 <Download size={12} /> {t("queries.csv")}
@@ -650,10 +708,18 @@ export default function Queries() {
                     }
                   />
                 ) : (
-                  rows.map((r) => (
-                    <TableRow key={r.id}>
+                  runs.map(({ row: r, count, since }) => (
+                    <TableRow key={r.id} className={cn("border-l-2", STATUS_EDGE[r.status])}>
                       <Td className="text-muted whitespace-nowrap">
-                        {new Date(r.timestamp).toLocaleTimeString()}
+                        <span
+                          title={
+                            count > 1
+                              ? `${new Date(since).toLocaleTimeString()} – ${new Date(r.timestamp).toLocaleTimeString()}`
+                              : undefined
+                          }
+                        >
+                          {new Date(r.timestamp).toLocaleTimeString()}
+                        </span>
                       </Td>
 
                       <Td className="text-heading max-w-44 font-mono sm:max-w-xs">
@@ -665,6 +731,17 @@ export default function Queries() {
                           >
                             {r.domain}
                           </button>
+                          {count > 1 && (
+                            <span
+                              className="border-bdr/70 text-muted rounded-xs ml-1.5 shrink-0 border px-1 text-[10px] tabular-nums"
+                              title={t("queries.repeat_count_hint", {
+                                count,
+                                defaultValue: "{{count}} identical queries in a row",
+                              })}
+                            >
+                              ×{count}
+                            </span>
+                          )}
                           <CopyBtn text={r.domain} />
                         </span>
                         {/* The columns a phone hides, folded under the domain. */}

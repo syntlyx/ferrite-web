@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 
 type BadgeStatus = "allowed" | "blocked" | "cached" | "upstream" | "routed";
@@ -7,6 +8,7 @@ interface BadgeProps {
 }
 
 export function Badge({ status }: BadgeProps) {
+  const { t } = useTranslation();
   const map: Record<BadgeStatus, string> = {
     allowed: "bg-ember/10 text-ember",
     blocked: "bg-blocked/10 text-blocked",
@@ -21,7 +23,7 @@ export function Badge({ status }: BadgeProps) {
         map[status] ?? "text-body bg-white/5",
       )}
     >
-      {status}
+      {t(`queries.status_${status}`, { defaultValue: status })}
     </span>
   );
 }
