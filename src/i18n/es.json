@@ -4,6 +4,7 @@
     "query_log": "Consultas",
     "clients": "Clientes",
     "blocklist": "Bloqueo",
+    "profiles": "Perfiles",
     "subscriptions": "Suscripciones",
     "custom_dns": "DNS personalizado",
     "settings": "Ajustes",
@@ -578,7 +579,7 @@
     "tile_routing": "Enrutamiento",
     "tile_routing_sub": "enrutamiento selectivo",
     "tile_egresses_sub": "habilitadas · sanas",
-    "tile_rules_sub": "patrones de dominio",
+    "tile_rules_sub": "dominios y servicios",
     "tile_traffic": "Tráfico",
     "stats_active": "activas",
     "stats_conns": "conex.",
@@ -598,7 +599,15 @@
     "probe_slow": "lento",
     "rule_no_pattern": "aún sin dominio",
     "edit_rule": "Editar regla",
-    "rule_devices_hint": "Ninguno seleccionado: la regla se aplica a todos los dispositivos."
+    "rule_devices_hint": "Ninguno seleccionado: la regla se aplica a todos los dispositivos.",
+    "col_target": "Dominio o servicio",
+    "rule_service_tag": "servicio",
+    "rule_no_service": "sin servicio aún",
+    "rule_mode_domain": "Dominio",
+    "rule_mode_service": "Servicio",
+    "rule_pick_service": "Elige un servicio…",
+    "rule_service_help": "Enruta todos los dominios del servicio ({{count}}). Los mensajeros, los lanzadores de juegos y Spotify también usan protocolos propios que un túnel no puede transportar, por eso no aparecen.",
+    "rule_service_help_empty": "Los mensajeros, los lanzadores de juegos y Spotify también usan protocolos propios que un túnel no puede transportar, por eso no aparecen."
   },
   "logs": {
     "title": "Registros",
@@ -613,11 +622,7 @@
     "line_count": "{{count}} líneas"
   },
   "profiles": {
-    "title": "Perfiles de dispositivo",
     "add": "Añadir perfil",
-    "help": "Aplica un subconjunto de las listas de suscripción a dispositivos concretos. Los dispositivos sin perfil usan todas las listas activas. Las entradas manuales de bloqueo/permiso y los comodines se aplican a todos.",
-    "no_lists": "Añade primero listas de suscripción: los perfiles se construyen a partir de ellas.",
-    "empty": "Aún no hay perfiles. Cada dispositivo usa todas las listas activas.",
     "name_placeholder": "Dispositivos infantiles",
     "lists": "Listas aplicadas",
     "devices": "Dispositivos",
@@ -631,7 +636,17 @@
     "allowlists_inherit": "Ninguna seleccionada — se aplican todas las listas de permitidos habilitadas.",
     "default_deny": "Bloquear todo excepto lo permitido",
     "default_deny_hint": "Para estos dispositivos solo se resuelven dominios permitidos: permisos manuales más las listas de permitidos de arriba. Los nombres de red local (PTR, .lan, .local, tus zonas) siguen funcionando.",
-    "default_deny_warn": "Aún no hay nada permitido — estos dispositivos se quedarán prácticamente sin DNS. Añade primero permisos o una lista de permitidos."
+    "default_deny_warn": "Aún no hay nada permitido — estos dispositivos se quedarán prácticamente sin DNS. Añade primero permisos o una lista de permitidos.",
+    "page_title": "Perfiles",
+    "page_subtitle": "Reglas para dispositivos elegidos: qué servicios bloquear, qué listas aplicar y qué permitir. Los dispositivos sin perfil siguen las reglas de toda la red.",
+    "empty_title": "Aún no hay perfiles",
+    "empty_help": "Todos los dispositivos siguen las reglas de toda la red. Un perfil da reglas propias a algunos: bloquear TikTok y los juegos en la tableta de un niño o permitir solo una lista corta en una smart TV.",
+    "remove": "Eliminar perfil",
+    "n_devices": "Seleccionados: {{count}}",
+    "no_devices_selected": "Ningún dispositivo seleccionado: este perfil aún no se aplica a nadie.",
+    "services": "Servicios bloqueados",
+    "no_lists_short": "Aún no hay listas de bloqueo suscritas.",
+    "name_required": "Ponle un nombre a cada perfil."
   },
   "quick": {
     "block": "Bloquear",
@@ -661,5 +676,26 @@
     "restore_confirm": "¿Restaurar \"{{name}}\"? Sustituye toda la configuración y reinicia ferrite. El archivo actual se guarda como config.toml.bak.",
     "restored": "Configuración restaurada: reiniciando…",
     "secrets_hint": "El archivo contiene secretos: la clave API, el hash de la contraseña y las claves privadas de WireGuard. Guárdalo en un lugar seguro. Un archivo restaurado trae su propia contraseña: vuelve a entrar con esa."
+  },
+  "services": {
+    "title": "Servicios bloqueados",
+    "help": "Bloquea un servicio entero para todos los dispositivos: sus sitios, apps y servidores de contenido. Una entrada de la lista blanca sigue eximiendo un dominio concreto.",
+    "blocked_count": "Bloqueados: {{count}}",
+    "blocked_toast": "{{name}} bloqueado para todos los dispositivos",
+    "unblocked_toast": "{{name}} desbloqueado",
+    "profiles_hint": "Para bloquear un servicio solo en algunos dispositivos, usa un perfil.",
+    "category": {
+      "video": "Vídeo",
+      "music": "Música",
+      "social": "Redes sociales",
+      "messaging": "Mensajería",
+      "gaming": "Juegos",
+      "ai": "IA",
+      "shopping": "Compras"
+    },
+    "note": {
+      "telegram": "Las apps de Telegram llegan a sus servidores por dirección IP, así que el bloqueo detiene el sitio web y los enlaces t.me, no la app en sí.",
+      "facebook": "También desactiva «Iniciar sesión con Facebook» y los widgets de Facebook en otros sitios."
+    }
   }
 }

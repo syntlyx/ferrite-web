@@ -4,6 +4,7 @@
     "query_log": "Abfragen",
     "clients": "Clients",
     "blocklist": "Blockliste",
+    "profiles": "Profile",
     "subscriptions": "Abos",
     "custom_dns": "Eigenes DNS",
     "settings": "Einstellungen",
@@ -578,7 +579,7 @@
     "tile_routing": "Routing",
     "tile_routing_sub": "selektives Routing",
     "tile_egresses_sub": "aktiviert · gesund",
-    "tile_rules_sub": "Domain-Muster",
+    "tile_rules_sub": "Domains und Dienste",
     "tile_traffic": "Datenverkehr",
     "stats_active": "aktiv",
     "stats_conns": "Verb.",
@@ -598,7 +599,15 @@
     "probe_slow": "langsam",
     "rule_no_pattern": "noch keine Domain",
     "edit_rule": "Regel bearbeiten",
-    "rule_devices_hint": "Nichts ausgewählt — die Regel gilt für alle Geräte."
+    "rule_devices_hint": "Nichts ausgewählt — die Regel gilt für alle Geräte.",
+    "col_target": "Domain oder Dienst",
+    "rule_service_tag": "Dienst",
+    "rule_no_service": "noch kein Dienst",
+    "rule_mode_domain": "Domain",
+    "rule_mode_service": "Dienst",
+    "rule_pick_service": "Dienst wählen…",
+    "rule_service_help": "Leitet alle Domains des Dienstes um ({{count}}). Messenger, Spiele-Launcher und Spotify nutzen auch eigene Protokolle, die ein Tunnel nicht übertragen kann, und fehlen deshalb in der Liste.",
+    "rule_service_help_empty": "Messenger, Spiele-Launcher und Spotify nutzen auch eigene Protokolle, die ein Tunnel nicht übertragen kann, und fehlen deshalb in der Liste."
   },
   "logs": {
     "title": "Protokolle",
@@ -613,11 +622,7 @@
     "line_count": "{{count}} Zeilen"
   },
   "profiles": {
-    "title": "Geräteprofile",
     "add": "Profil hinzufügen",
-    "help": "Wende eine Teilmenge der Abo-Listen auf bestimmte Geräte an. Geräte ohne Profil nutzen alle aktivierten Listen. Manuelle Sperr-/Erlauben-Einträge und Platzhalter gelten für alle.",
-    "no_lists": "Füge zuerst Abo-Listen hinzu — Profile bauen darauf auf.",
-    "empty": "Noch keine Profile. Jedes Gerät nutzt alle aktivierten Listen.",
     "name_placeholder": "Kindergeräte",
     "lists": "Angewendete Listen",
     "devices": "Geräte",
@@ -631,7 +636,17 @@
     "allowlists_inherit": "Keine ausgewählt — alle aktivierten Erlaubnislisten gelten.",
     "default_deny": "Alles blockieren außer Erlaubtem",
     "default_deny_hint": "Für diese Geräte werden nur erlaubte Domains aufgelöst: manuelle Freigaben plus die Erlaubnislisten oben. Lokale Netzwerknamen (PTR, .lan, .local, eigene Zonen) funktionieren weiterhin.",
-    "default_deny_warn": "Noch ist nichts erlaubt — diese Geräte verlieren praktisch DNS. Zuerst Freigaben oder eine Erlaubnisliste hinzufügen."
+    "default_deny_warn": "Noch ist nichts erlaubt — diese Geräte verlieren praktisch DNS. Zuerst Freigaben oder eine Erlaubnisliste hinzufügen.",
+    "page_title": "Profile",
+    "page_subtitle": "Regeln für ausgewählte Geräte: welche Dienste gesperrt, welche Listen angewendet und was erlaubt wird. Geräte ohne Profil folgen den netzwerkweiten Regeln.",
+    "empty_title": "Noch keine Profile",
+    "empty_help": "Alle Geräte folgen den netzwerkweiten Regeln. Ein Profil gibt einzelnen Geräten eigene Regeln: TikTok und Spiele auf dem Tablet eines Kindes sperren oder einem Smart-TV nur eine kurze Liste erlauben.",
+    "remove": "Profil entfernen",
+    "n_devices": "Ausgewählt: {{count}}",
+    "no_devices_selected": "Keine Geräte ausgewählt — dieses Profil gilt noch für niemanden.",
+    "services": "Gesperrte Dienste",
+    "no_lists_short": "Noch keine Blocklisten abonniert.",
+    "name_required": "Jedes Profil braucht einen Namen."
   },
   "quick": {
     "block": "Blockieren",
@@ -661,5 +676,26 @@
     "restore_confirm": "\"{{name}}\" wiederherstellen? Das ersetzt die ganze Konfiguration und startet ferrite neu. Die aktuelle Datei bleibt als config.toml.bak erhalten.",
     "restored": "Konfiguration wiederhergestellt — Neustart…",
     "secrets_hint": "Die Datei enthält Geheimnisse — den API-Schlüssel, den Passwort-Hash, private WireGuard-Schlüssel. Bewahre sie sicher auf. Eine wiederhergestellte Datei bringt ihr eigenes Passwort mit: melde dich danach damit an."
+  },
+  "services": {
+    "title": "Gesperrte Dienste",
+    "help": "Sperrt einen ganzen Dienst für alle Geräte: seine Websites, Apps und Medienserver. Ein Whitelist-Eintrag nimmt eine einzelne Domain weiterhin aus.",
+    "blocked_count": "Gesperrt: {{count}}",
+    "blocked_toast": "{{name}} für alle Geräte gesperrt",
+    "unblocked_toast": "{{name}} freigegeben",
+    "profiles_hint": "Um einen Dienst nur auf einigen Geräten zu sperren, ein Profil verwenden.",
+    "category": {
+      "video": "Video",
+      "music": "Musik",
+      "social": "Soziale Netzwerke",
+      "messaging": "Messenger",
+      "gaming": "Spiele",
+      "ai": "KI",
+      "shopping": "Shopping"
+    },
+    "note": {
+      "telegram": "Die Telegram-Apps erreichen ihre Server per IP-Adresse. Die Sperre stoppt daher die Website und t.me-Links, nicht aber die App selbst.",
+      "facebook": "Stoppt auch „Mit Facebook anmelden“ und Facebook-Widgets auf anderen Websites."
+    }
   }
 }

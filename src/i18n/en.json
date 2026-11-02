@@ -4,6 +4,7 @@
     "query_log": "Query Log",
     "clients": "Clients",
     "blocklist": "Blocklist",
+    "profiles": "Profiles",
     "subscriptions": "Subscriptions",
     "custom_dns": "Custom DNS",
     "tunnels": "Tunnels",
@@ -578,7 +579,7 @@
     "tile_routing": "Routing",
     "tile_routing_sub": "selective routing",
     "tile_egresses_sub": "enabled · healthy",
-    "tile_rules_sub": "domain patterns",
+    "tile_rules_sub": "domains and services",
     "tile_traffic": "Traffic",
     "stats_active": "active",
     "stats_conns": "conns",
@@ -598,7 +599,15 @@
     "probe_slow": "slow",
     "rule_no_pattern": "no domain yet",
     "edit_rule": "Edit rule",
-    "rule_devices_hint": "None selected — the rule applies to every device."
+    "rule_devices_hint": "None selected — the rule applies to every device.",
+    "col_target": "Domain or service",
+    "rule_service_tag": "service",
+    "rule_no_service": "no service yet",
+    "rule_mode_domain": "Domain",
+    "rule_mode_service": "Service",
+    "rule_pick_service": "Choose a service…",
+    "rule_service_help": "Routes all domains of the service ({{count}}). Messengers, game launchers and Spotify also use their own protocols, which a tunnel can't carry, so they aren't listed.",
+    "rule_service_help_empty": "Messengers, game launchers and Spotify also use their own protocols, which a tunnel can't carry, so they aren't listed."
   },
   "logs": {
     "title": "Logs",
@@ -613,11 +622,7 @@
     "line_count": "{{count}} lines"
   },
   "profiles": {
-    "title": "Device profiles",
     "add": "Add profile",
-    "help": "Apply a subset of the subscription lists to specific devices. Devices in no profile use all enabled lists. Manual block/allow entries and wildcards apply to everyone.",
-    "no_lists": "Add subscription lists first — profiles are built from them.",
-    "empty": "No profiles yet. Every device uses all enabled lists.",
     "name_placeholder": "Kids' devices",
     "lists": "Lists applied",
     "devices": "Devices",
@@ -631,7 +636,17 @@
     "allowlists_inherit": "None selected — all enabled allowlists apply.",
     "default_deny": "Block everything except allowed",
     "default_deny_hint": "Only allowed domains resolve for these devices: manual allows plus the allowlists above. Local network names (PTR, .lan, .local, your zones) keep working.",
-    "default_deny_warn": "Nothing is allowed yet — these devices will effectively lose DNS. Add allow entries or an allowlist first."
+    "default_deny_warn": "Nothing is allowed yet — these devices will effectively lose DNS. Add allow entries or an allowlist first.",
+    "page_title": "Profiles",
+    "page_subtitle": "Rules for chosen devices: services to block, lists to apply, what to allow. Devices in no profile follow the network-wide rules.",
+    "empty_title": "No profiles yet",
+    "empty_help": "Every device follows the network-wide rules. Add a profile to give some devices their own: block TikTok and games on a child's tablet, or allow only a short list on a smart TV.",
+    "remove": "Remove profile",
+    "n_devices": "Selected: {{count}}",
+    "no_devices_selected": "No devices selected — this profile applies to nobody yet.",
+    "services": "Blocked services",
+    "no_lists_short": "No blocklists subscribed yet.",
+    "name_required": "Give every profile a name."
   },
   "quick": {
     "block": "Block",
@@ -661,5 +676,26 @@
     "restore_confirm": "Restore \"{{name}}\"? It replaces the whole configuration and restarts ferrite. The current file is kept as config.toml.bak.",
     "restored": "Configuration restored — restarting…",
     "secrets_hint": "The file holds secrets — the API key, the password hash, WireGuard private keys. Keep it somewhere safe. A restored file brings its own password: log back in with that one."
+  },
+  "services": {
+    "title": "Blocked services",
+    "help": "Block a whole service for every device: its sites, apps and media servers. A whitelist entry still exempts a single domain.",
+    "blocked_count": "Blocked: {{count}}",
+    "blocked_toast": "{{name}} blocked for every device",
+    "unblocked_toast": "{{name}} unblocked",
+    "profiles_hint": "To block a service only on some devices, use a profile.",
+    "category": {
+      "video": "Video",
+      "music": "Music",
+      "social": "Social",
+      "messaging": "Messaging",
+      "gaming": "Gaming",
+      "ai": "AI",
+      "shopping": "Shopping"
+    },
+    "note": {
+      "telegram": "Telegram's apps reach their servers by IP address, so blocking stops the website and t.me links, not the app itself.",
+      "facebook": "Also stops “Sign in with Facebook” and Facebook widgets on other sites."
+    }
   }
 }
