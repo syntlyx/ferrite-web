@@ -914,5 +914,31 @@
     "part_services": "Services bloqués, SafeSearch",
     "part_dns": "Réglages de blocage et d'accès",
     "part_upstreams": "Résolveurs amont"
+  },
+  "sync": {
+    "title": "Suivre un autre ferrite",
+    "sub": "Deux résolveurs qui répondent pareil : cette machine reprend toutes les quelques minutes les parties choisies de la configuration d'une principale, et redémarre une seconde quand quelque chose a changé. Modifiez sur la principale.",
+    "now": "Synchroniser maintenant",
+    "saved": "Suit {{primary}}",
+    "stopped": "Cette machine ne suit plus personne",
+    "applied": "Changements repris de la principale — redémarrage…",
+    "same": "Déjà identique à la principale",
+    "s_filtering": "Filtrage",
+    "s_records": "Enregistrements locaux",
+    "s_devices": "Noms d'appareils",
+    "s_dns": "Réglages DNS",
+    "s_tunnels": "Tunnels",
+    "primary": "Principale",
+    "primary_sub": "L'adresse du panneau de la principale. Vide — cette machine ne suit personne.",
+    "key": "Clé d'API de la principale",
+    "key_sub": "À définir sur la principale, dans Contrôle d'accès.",
+    "every": "Toutes les",
+    "minutes": "min",
+    "take": "Reprendre",
+    "take_sub": "Les tunnels seulement si cette machine doit aussi router — une clé WireGuard sur deux machines fait vaciller les deux tunnels.",
+    "failed": "Dernière tentative échouée : {{error}}",
+    "checked": "Vérifié {{when}}",
+    "changed": "dernier changement {{when}} ({{what}})",
+    "pending": "Pas encore synchronisé — la première synchronisation arrive."
   }
 }

@@ -914,5 +914,31 @@
     "part_services": "Blocked services, SafeSearch",
     "part_dns": "Blocking and access settings",
     "part_upstreams": "Upstream resolvers"
+  },
+  "sync": {
+    "title": "Follow another ferrite",
+    "sub": "Run two resolvers that answer alike: this box takes the chosen parts of a primary's configuration every few minutes, and restarts for a second when something changed. Edit on the primary.",
+    "now": "Sync now",
+    "saved": "Following {{primary}}",
+    "stopped": "This box follows nobody now",
+    "applied": "Changes taken from the primary — restarting…",
+    "same": "Already the same as the primary",
+    "s_filtering": "Filtering",
+    "s_records": "Local records",
+    "s_devices": "Device names",
+    "s_dns": "DNS settings",
+    "s_tunnels": "Tunnels",
+    "primary": "Primary",
+    "primary_sub": "The primary's panel address. Empty — this box follows nobody.",
+    "key": "Primary's API key",
+    "key_sub": "Set one on the primary under Access control.",
+    "every": "Every",
+    "minutes": "min",
+    "take": "Take",
+    "take_sub": "Tunnels only if this box should route too — one WireGuard key on two boxes makes both tunnels flap.",
+    "failed": "Last try failed: {{error}}",
+    "checked": "Checked {{when}}",
+    "changed": "last change {{when}} ({{what}})",
+    "pending": "Not synced yet — the first sync runs shortly."
   }
 }

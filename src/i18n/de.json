@@ -914,5 +914,31 @@
     "part_services": "Gesperrte Dienste, SafeSearch",
     "part_dns": "Sperr- und Zugriffseinstellungen",
     "part_upstreams": "Upstream-Resolver"
+  },
+  "sync": {
+    "title": "Einer anderen ferrite folgen",
+    "sub": "Zwei Resolver, die gleich antworten: Diese Box übernimmt alle paar Minuten die gewählten Teile der Konfiguration einer primären und startet kurz neu, wenn sich etwas geändert hat. Bearbeitet wird auf der primären.",
+    "now": "Jetzt synchronisieren",
+    "saved": "Folge {{primary}}",
+    "stopped": "Diese Box folgt jetzt niemandem",
+    "applied": "Änderungen von der primären übernommen — Neustart…",
+    "same": "Schon gleich wie die primäre",
+    "s_filtering": "Filterung",
+    "s_records": "Lokale Einträge",
+    "s_devices": "Gerätenamen",
+    "s_dns": "DNS-Einstellungen",
+    "s_tunnels": "Tunnel",
+    "primary": "Primäre",
+    "primary_sub": "Panel-Adresse der primären. Leer — diese Box folgt niemandem.",
+    "key": "API-Schlüssel der primären",
+    "key_sub": "Auf der primären unter Zugriffskontrolle setzen.",
+    "every": "Alle",
+    "minutes": "Min.",
+    "take": "Übernehmen",
+    "take_sub": "Tunnel nur, wenn diese Box auch routen soll — ein WireGuard-Schlüssel auf zwei Boxen lässt beide Tunnel flattern.",
+    "failed": "Letzter Versuch fehlgeschlagen: {{error}}",
+    "checked": "Geprüft {{when}}",
+    "changed": "letzte Änderung {{when}} ({{what}})",
+    "pending": "Noch nicht synchronisiert — die erste läuft gleich."
   }
 }

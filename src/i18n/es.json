@@ -914,5 +914,31 @@
     "part_services": "Servicios bloqueados, SafeSearch",
     "part_dns": "Ajustes de bloqueo y acceso",
     "part_upstreams": "Resolutores superiores"
+  },
+  "sync": {
+    "title": "Seguir a otro ferrite",
+    "sub": "Dos resolutores que responden igual: este equipo toma cada pocos minutos las partes elegidas de la configuración de uno principal y se reinicia un segundo si algo cambió. Edita en el principal.",
+    "now": "Sincronizar ahora",
+    "saved": "Siguiendo a {{primary}}",
+    "stopped": "Este equipo ya no sigue a nadie",
+    "applied": "Cambios tomados del principal — reiniciando…",
+    "same": "Ya es igual que el principal",
+    "s_filtering": "Filtrado",
+    "s_records": "Registros locales",
+    "s_devices": "Nombres de dispositivos",
+    "s_dns": "Ajustes de DNS",
+    "s_tunnels": "Túneles",
+    "primary": "Principal",
+    "primary_sub": "La dirección del panel del principal. Vacío: este equipo no sigue a nadie.",
+    "key": "Clave de API del principal",
+    "key_sub": "Ponla en el principal, en Control de acceso.",
+    "every": "Cada",
+    "minutes": "min",
+    "take": "Tomar",
+    "take_sub": "Túneles solo si este equipo también debe enrutar: una clave de WireGuard en dos equipos hace que ambos túneles fallen a ratos.",
+    "failed": "El último intento falló: {{error}}",
+    "checked": "Comprobado {{when}}",
+    "changed": "último cambio {{when}} ({{what}})",
+    "pending": "Aún sin sincronizar: la primera se hará en breve."
   }
 }

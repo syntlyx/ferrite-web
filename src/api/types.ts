@@ -1102,3 +1102,31 @@ export interface ImportResult {
   applied: Record<string, unknown>;
   restart_required: boolean;
 }
+
+// ── Following a primary ferrite ──────────────────────────────────────────────
+
+export type SyncSection = "filtering" | "records" | "devices" | "dns" | "tunnels";
+
+export interface SyncView {
+  /** The primary's panel URL; empty when this box follows nobody. */
+  primary: string;
+  api_key_set: boolean;
+  /** Seconds between syncs. */
+  interval: number;
+  sections: SyncSection[];
+  status: {
+    last_attempt: number | null;
+    last_ok: number | null;
+    last_change: number | null;
+    changed: string[];
+    error: string | null;
+  };
+}
+
+export interface SyncPatch {
+  primary: string;
+  /** Absent = keep, null = clear. */
+  api_key?: string | null;
+  interval?: number;
+  sections?: SyncSection[];
+}

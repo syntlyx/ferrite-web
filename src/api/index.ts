@@ -24,6 +24,7 @@ import * as tools from "./tools";
 import * as pause from "./pause";
 import * as backup from "./backup";
 import * as importer from "./importer";
+import * as sync from "./sync";
 import * as services from "./services";
 import * as notifications from "./notifications";
 
@@ -127,6 +128,9 @@ export const api = {
 
   exportConfig: backup.exportConfig,
   previewImport: importer.preview,
+  getSync: sync.get,
+  putSync: sync.put,
+  syncNow: sync.now,
   applyImport: importer.apply,
   importConfig: (toml: string) => backup.importConfig(toml),
 
