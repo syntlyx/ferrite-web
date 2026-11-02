@@ -29,6 +29,7 @@ import {
   ShieldOff,
   Pause,
   Play,
+  Search,
 } from "lucide-react";
 import { api } from "@/api";
 import { useTheme } from "@/providers/ThemeProvider";
@@ -37,6 +38,8 @@ import { usePageVisible } from "@/hooks/use-page-visible";
 import { useSettings } from "@/stores/settings";
 import { usePause, fmtCountdown, PAUSE_OPTIONS } from "@/stores/pause";
 import { Select } from "@/components/ui";
+import { DomainPanel } from "@/components/DomainPanel";
+import { CommandPalette } from "@/components/CommandPalette";
 
 /** How often to re-check (cached) for available updates while the tab is visible. */
 const UPDATE_POLL_INTERVAL_MS = 30 * 60 * 1000; // 30 minutes
@@ -65,19 +68,58 @@ function langCode(value: string | undefined): LangCode {
   return isLangCode(base) ? base : "en";
 }
 
-const NAV = [
-  { to: "/", icon: LayoutDashboard, key: "nav.dashboard" },
-  { to: "/queries", icon: List, key: "nav.query_log" },
-  { to: "/clients", icon: Users, key: "nav.clients" },
-  { to: "/blocklist", icon: Shield, key: "nav.blocklist" },
-  { to: "/profiles", icon: UserCog, key: "nav.profiles" },
-  { to: "/lists", icon: Globe, key: "nav.subscriptions" },
-  { to: "/dns", icon: Server, key: "nav.custom_dns" },
-  { to: "/tunnels", icon: Waypoints, key: "nav.tunnels" },
-  { to: "/logs", icon: ScrollText, key: "nav.logs" },
-  { to: "/tools", icon: Wrench, key: "nav.tools" },
-  { to: "/settings", icon: Settings, key: "nav.settings" },
+/** The sidebar, in the order people reach for it: watching the network,
+ *  deciding what gets through, shaping where it goes, looking after the box. */
+const NAV_GROUPS = [
+  {
+    key: "nav.group_overview",
+    items: [
+      { to: "/", icon: LayoutDashboard, key: "nav.dashboard" },
+      { to: "/queries", icon: List, key: "nav.query_log" },
+      { to: "/clients", icon: Users, key: "nav.clients" },
+    ],
+  },
+  {
+    key: "nav.group_filtering",
+    items: [
+      { to: "/blocklist", icon: Shield, key: "nav.blocklist" },
+      { to: "/profiles", icon: UserCog, key: "nav.profiles" },
+      { to: "/lists", icon: Globe, key: "nav.subscriptions" },
+    ],
+  },
+  {
+    key: "nav.group_network",
+    items: [
+      { to: "/dns", icon: Server, key: "nav.custom_dns" },
+      { to: "/tunnels", icon: Waypoints, key: "nav.tunnels" },
+    ],
+  },
+  {
+    key: "nav.group_system",
+    items: [
+      { to: "/logs", icon: ScrollText, key: "nav.logs" },
+      { to: "/tools", icon: Wrench, key: "nav.tools" },
+      { to: "/settings", icon: Settings, key: "nav.settings" },
+    ],
+  },
 ];
+
+/** A group's heading, or — on the collapsed rail — a hairline between groups. */
+function NavGroupLabel({ label, collapsed, first }: { label: string; collapsed: boolean; first: boolean }) {
+  if (collapsed) {
+    return first ? null : <div className="border-bdr/70 mx-2 my-2 border-t" aria-hidden />;
+  }
+  return (
+    <p
+      className={cn(
+        "text-muted/70 px-3 pb-1 font-mono text-[9px] uppercase tracking-[0.16em]",
+        first ? "pt-0" : "pt-3",
+      )}
+    >
+      {label}
+    </p>
+  );
+}
 
 function isRouteActive(to: string, pathname: string) {
   return to === "/" ? pathname === "/" : pathname === to || pathname.startsWith(to + "/");
@@ -122,7 +164,7 @@ function NavItem({
       aria-label={collapsed ? label : undefined}
       className={({ isActive }) =>
         cn(
-          "min-h-10 rounded-xs group relative flex items-center gap-3 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.09em] transition-colors",
+          "min-h-9 rounded-xs group relative flex items-center gap-3 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.09em] transition-colors",
           collapsed && "justify-center px-0",
           isActive
             ? "bg-ember-dim text-heading [&_svg]:text-ember shadow-[inset_2px_0_0_var(--color-ember)]"
@@ -168,6 +210,18 @@ export default function AppShell({ children }: { children: ReactNode }) {
   const { t, i18n } = useTranslation();
   const [reloadKey, setReloadKey] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  // ⌘K / Ctrl+K opens the command palette from anywhere.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setPaletteOpen((v) => !v);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
   const [collapsedRaw, setCollapsedRaw] = useLocalStorage("sidebar-collapsed", "false");
   const collapsed = collapsedRaw === "true";
   const [updateAvailable, setUpdateAvailable] = useState(false);
@@ -468,17 +522,49 @@ export default function AppShell({ children }: { children: ReactNode }) {
             <FerriteBrand collapsed={collapsed} markClassName="h-9 w-9" />
           </Link>
 
-          <nav className={cn("flex-1 space-y-1 py-4", collapsed ? "px-2" : "px-3")}>
-            {NAV.map((item) => (
-              <NavItem
-                key={item.to}
-                to={item.to}
-                icon={item.icon}
-                label={t(item.key)}
-                collapsed={collapsed}
-                onActiveClick={handleActiveNavClick}
-                {...badgeFor(item.to)}
-              />
+          <nav
+            className={cn(
+              "min-h-0 flex-1 space-y-0.5 overflow-y-auto py-4",
+              collapsed ? "px-2" : "px-3",
+            )}
+          >
+            <button
+              type="button"
+              onClick={() => setPaletteOpen(true)}
+              aria-label={t("palette.open", { defaultValue: "Search" })}
+              className={cn(
+                "border-bdr/70 text-muted hover:text-heading hover:border-ember/40 rounded-xs group relative mb-3 flex w-full items-center gap-2.5 border px-3 py-1.5 text-[11px] transition-colors",
+                collapsed && "justify-center px-0",
+              )}
+            >
+              <Search size={13} className="shrink-0" />
+              {!collapsed && (
+                <>
+                  <span className="flex-1 text-left">
+                    {t("palette.open", { defaultValue: "Search" })}
+                  </span>
+                  <kbd className="border-bdr/70 rounded-xs border px-1 font-mono text-[9px]">⌘K</kbd>
+                </>
+              )}
+              {collapsed && (
+                <span className="sidebar-tooltip">{t("palette.open", { defaultValue: "Search" })}</span>
+              )}
+            </button>
+            {NAV_GROUPS.map((group, gi) => (
+              <div key={group.key} role="group" aria-label={t(group.key)} className="space-y-0.5">
+                <NavGroupLabel label={t(group.key)} collapsed={collapsed} first={gi === 0} />
+                {group.items.map((item) => (
+                  <NavItem
+                    key={item.to}
+                    to={item.to}
+                    icon={item.icon}
+                    label={t(item.key)}
+                    collapsed={collapsed}
+                    onActiveClick={handleActiveNavClick}
+                    {...badgeFor(item.to)}
+                  />
+                ))}
+              </div>
             ))}
           </nav>
 
@@ -509,6 +595,14 @@ export default function AppShell({ children }: { children: ReactNode }) {
             <FerriteBrand markClassName="h-8 w-8" />
           </Link>
           <button
+            type="button"
+            onClick={() => setPaletteOpen(true)}
+            className="border-bdr/75 bg-panel/70 text-muted hover:text-heading rounded-xs ml-auto mr-2 border p-2 transition-colors"
+            aria-label={t("palette.open", { defaultValue: "Search" })}
+          >
+            <Search size={18} />
+          </button>
+          <button
             onClick={() => setMobileOpen((v) => !v)}
             className="border-bdr/75 bg-panel/70 text-muted hover:text-heading rounded-xs border p-2 transition-colors"
             aria-label="Toggle menu"
@@ -533,18 +627,23 @@ export default function AppShell({ children }: { children: ReactNode }) {
               >
                 <FerriteBrand />
               </Link>
-              <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
-                {NAV.map((item) => (
-                  <NavItem
-                    key={item.to}
-                    to={item.to}
-                    icon={item.icon}
-                    label={t(item.key)}
-                    collapsed={false}
-                    onClose={() => setMobileOpen(false)}
-                    onActiveClick={handleActiveNavClick}
-                    {...badgeFor(item.to)}
-                  />
+              <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 py-4">
+                {NAV_GROUPS.map((group, gi) => (
+                  <div key={group.key} role="group" aria-label={t(group.key)} className="space-y-0.5">
+                    <NavGroupLabel label={t(group.key)} collapsed={false} first={gi === 0} />
+                    {group.items.map((item) => (
+                      <NavItem
+                        key={item.to}
+                        to={item.to}
+                        icon={item.icon}
+                        label={t(item.key)}
+                        collapsed={false}
+                        onClose={() => setMobileOpen(false)}
+                        onActiveClick={handleActiveNavClick}
+                        {...badgeFor(item.to)}
+                      />
+                    ))}
+                  </div>
                 ))}
               </nav>
               <div className="border-bdr/85 border-t p-3">
@@ -553,6 +652,16 @@ export default function AppShell({ children }: { children: ReactNode }) {
             </div>
           </>
         )}
+
+        {/* The domain side panel and the command palette, from any page. */}
+        <DomainPanel />
+        <CommandPalette
+          open={paletteOpen}
+          onClose={() => setPaletteOpen(false)}
+          pages={NAV_GROUPS.flatMap((g) =>
+            g.items.map((item) => ({ to: item.to, label: t(item.key), icon: item.icon })),
+          )}
+        />
 
         {/* ── Main content ────────────────────────────────────────────────── */}
         <main

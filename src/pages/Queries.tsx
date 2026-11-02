@@ -12,6 +12,7 @@ import {
   ChevronDown,
   ChevronsLeft,
   Layers,
+  Rows3,
   Users,
 } from "lucide-react";
 import { cn, copyToClipboard } from "@/lib/utils";
@@ -43,6 +44,7 @@ import { RCODE_LABEL, RCODE_COLOR, qtypeName } from "@/lib/dns";
 import { fmt } from "@/lib/format";
 import { deviceTokens } from "@/api/clients";
 import { QuickRuleBtn } from "@/components/QuickRuleBtn";
+import { DomainInfoBtn } from "@/components/DomainInfoBtn";
 import type { QueryEntry, QueryFilters, QueryStatus, ClientEntry } from "@/api/types";
 
 // ── DNS helpers ───────────────────────────────────────────────────────────────
@@ -286,6 +288,9 @@ export default function Queries() {
   const [rows, setRows] = useState<QueryEntry[]>([]);
   const [groupPref, setGroupPref] = useLocalStorage("ferrite.queries.group", "1");
   const grouped = groupPref === "1";
+  // Compact rows fit about twice the log on a screen; off by default.
+  const [densityPref, setDensityPref] = useLocalStorage("ferrite.queries.compact", "0");
+  const compact = densityPref === "1";
   const runs = grouped
     ? groupRuns(rows)
     : rows.map((r) => ({ row: r, count: 1, since: r.timestamp }));
@@ -525,6 +530,13 @@ export default function Queries() {
     setDomainInput(domain);
   }
 
+  // Follow `?domain=` while on the page — the domain panel and the command
+  // palette link here with it, and the page is already mounted.
+  const domainParam = searchParams.get("domain");
+  useEffect(() => {
+    if (domainParam !== null) setDomainInput(domainParam);
+  }, [domainParam]);
+
   function filterByClient(row: QueryEntry) {
     const client = clientList.find(
       (c) =>
@@ -573,6 +585,15 @@ export default function Queries() {
               className={cn(grouped && "border-ember/40 text-ember")}
             >
               <Layers size={12} /> {t("queries.group_repeats", { defaultValue: "Group" })}
+            </Btn>
+            <Btn
+              variant="ghost"
+              onClick={() => setDensityPref(compact ? "0" : "1")}
+              aria-pressed={compact}
+              title={t("queries.compact_hint", { defaultValue: "Tighter rows, more of the log on screen" })}
+              className={cn(compact && "border-ember/40 text-ember")}
+            >
+              <Rows3 size={12} /> {t("queries.compact", { defaultValue: "Compact" })}
             </Btn>
             {rows.length > 0 && (
               <Btn variant="ghost" onClick={() => exportCSV(rows)}>
@@ -670,7 +691,7 @@ export default function Queries() {
         )}
         {!loading && !err && (
           <div className="overflow-x-auto">
-            <table className="w-full text-xs">
+            <table className={cn("w-full text-xs", compact && "[&_td]:py-1")}>
               <thead>
                 <tr className="border-bdr border-b">
                   <Th>{t("queries.col_time")}</Th>
@@ -732,6 +753,7 @@ export default function Queries() {
                             domain={r.domain}
                             kind={r.status === "blocked" ? "allow" : "block"}
                           />
+                          <DomainInfoBtn domain={r.domain} client={r.client_ip} />
                         </span>
                         {/* The columns a phone hides, folded under the domain. */}
                         <span className="text-muted block truncate text-[10px] sm:hidden">
@@ -744,18 +766,35 @@ export default function Queries() {
                       </Td>
 
                       <Td className="hidden sm:table-cell">
-                        <span className="group flex items-center gap-0.5">
-                          <button
-                            className="text-body hover:text-ember cursor-pointer font-mono transition-colors"
-                            onClick={() => filterByClient(r)}
-                            title={`Filter by ${r.client_ip}`}
-                          >
-                            {r.client_ip}
-                          </button>
-                          <CopyBtn text={r.client_ip} />
-                        </span>
-                        {r.client_name && r.client_name !== r.client_ip && (
-                          <span className="text-muted block text-[10px]">{r.client_name}</span>
+                        {/* The device's name leads — that is how people know their
+                            devices; the address is detail, unless it is all there is. */}
+                        {r.client_name && r.client_name !== r.client_ip ? (
+                          <>
+                            <span className="group flex items-center gap-0.5">
+                              <button
+                                className="text-heading hover:text-ember cursor-pointer truncate text-left transition-colors"
+                                onClick={() => filterByClient(r)}
+                                title={`Filter by ${r.client_name}`}
+                              >
+                                {r.client_name}
+                              </button>
+                            </span>
+                            <span className="group text-muted flex items-center gap-0.5 font-mono text-[10px]">
+                              <span className="truncate">{r.client_ip}</span>
+                              <CopyBtn text={r.client_ip} />
+                            </span>
+                          </>
+                        ) : (
+                          <span className="group flex items-center gap-0.5">
+                            <button
+                              className="text-body hover:text-ember cursor-pointer font-mono transition-colors"
+                              onClick={() => filterByClient(r)}
+                              title={`Filter by ${r.client_ip}`}
+                            >
+                              {r.client_ip}
+                            </button>
+                            <CopyBtn text={r.client_ip} />
+                          </span>
                         )}
                       </Td>
 
@@ -788,7 +827,9 @@ export default function Queries() {
                         {r.latency_ms != null ? `${r.latency_ms}ms` : "—"}
                       </Td>
                       <Td className="hidden md:table-cell">
-                        <RCodeBadge code={r.rcode} />
+                        {/* A block is answered NXDOMAIN by design; saying so
+                            again beside BLOCKED is noise. Other codes stay. */}
+                        {!(r.status === "blocked" && r.rcode === 3) && <RCodeBadge code={r.rcode} />}
                       </Td>
                     </TableRow>
                   ))

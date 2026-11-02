@@ -17,6 +17,7 @@ import {
   MemoryStick,
   HardDrive,
   Network,
+  ChevronDown,
 } from "lucide-react";
 import { api } from "@/api";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -26,11 +27,13 @@ import { Err } from "@/components/feedback/Err";
 import { Notice } from "@/components/feedback/Notice";
 import { Bar, Skeleton, Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui";
 import { usePageVisible } from "@/hooks/use-page-visible";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useSettings } from "@/stores/settings";
 import { QTYPE, RCODE_LABEL } from "@/lib/dns";
 import { fmt, pct, formatBytes, formatUptime } from "@/lib/format";
 import { DEVICE_ICON, deviceKind } from "@/lib/device-kind";
 import { QuickRuleBtn } from "@/components/QuickRuleBtn";
+import { openDomainPanel } from "@/stores/domain-panel";
 import type { QuickRuleKind } from "@/hooks/use-quick-rule";
 import type {
   SystemStats,
@@ -309,14 +312,12 @@ function RangeButtons({
 function TopDomains({
   topQueried,
   topBlocked,
-  navigate,
   topHours,
   topLoading,
   onRangeChange,
 }: {
   topQueried: [string, number][];
   topBlocked: [string, number][];
-  navigate: (to: string) => void;
   topHours: TopHours;
   topLoading: boolean;
   onRangeChange: (h: TopHours) => void;
@@ -337,7 +338,7 @@ function TopDomains({
             rows={topQueried}
             barColor="bg-ember"
             textColor="text-body"
-            onRowClick={(d) => navigate(`/queries?domain=${encodeURIComponent(d)}`)}
+            onRowClick={(d) => openDomainPanel(d)}
             quickRule="block"
           />
         </TabsContent>
@@ -346,7 +347,7 @@ function TopDomains({
             rows={topBlocked}
             barColor="bg-blocked"
             textColor="text-blocked"
-            onRowClick={(d) => navigate(`/queries?domain=${encodeURIComponent(d)}&status=blocked`)}
+            onRowClick={(d) => openDomainPanel(d)}
             quickRule="allow"
           />
         </TabsContent>
@@ -444,7 +445,7 @@ const STATUS_LABEL: Record<QueryStatus, string> = {
   routed: "text-routed/70",
 };
 
-function FeedRows({ rows, navigate }: { rows: QueryEntry[]; navigate: (to: string) => void }) {
+function FeedRows({ rows }: { rows: QueryEntry[] }) {
   const { t } = useTranslation();
   if (rows.length === 0)
     return <p className="text-muted py-2 text-xs">{t("dashboard.no_queries")}</p>;
@@ -462,7 +463,7 @@ function FeedRows({ rows, navigate }: { rows: QueryEntry[]; navigate: (to: strin
         return (
           <button
             key={r.id}
-            onClick={() => navigate(`/queries?domain=${encodeURIComponent(r.domain)}`)}
+            onClick={() => openDomainPanel(r.domain, r.client_ip)}
             className="hover:bg-white/4 rounded-xs group flex w-full items-center gap-2.5 px-2 py-1.5 text-left transition-colors"
           >
             <span
@@ -532,10 +533,10 @@ function LiveFeed({
           </span>
         </div>
         <TabsContent value="all">
-          <FeedRows rows={rows} navigate={navigate} />
+          <FeedRows rows={rows} />
         </TabsContent>
         <TabsContent value="blocked">
-          <FeedRows rows={recentBlocked} navigate={navigate} />
+          <FeedRows rows={recentBlocked} />
         </TabsContent>
       </Tabs>
 
@@ -619,8 +620,43 @@ function SystemMetric({
   );
 }
 
+/** One figure in the collapsed system strip: label, value, a thin gauge. */
+function StripMetric({
+  label,
+  value,
+  percent,
+  color,
+}: {
+  label: string;
+  value: ReactNode;
+  percent?: number | null;
+  color?: string;
+}) {
+  const width = boundedPercent(percent);
+  return (
+    <span className="flex min-w-0 items-center gap-2">
+      <span className="text-muted text-[10px] font-semibold uppercase tracking-wider">{label}</span>
+      <span className="text-heading text-xs font-medium tabular-nums">{value}</span>
+      {width != null && color && (
+        <span className="bg-bdr/70 relative hidden h-1 w-12 overflow-hidden rounded-full sm:block">
+          <span
+            className={`absolute inset-y-0 left-0 rounded-full transition-all duration-700 ${color}`}
+            style={{ width: `${width}%` }}
+          />
+        </span>
+      )}
+    </span>
+  );
+}
+
+/**
+ * The box's health. A DNS box is almost always idle, so by default it is one
+ * strip of figures; "Details" opens the full gauges, and the choice is kept.
+ */
 function SystemBar({ sys }: { sys: SystemStats }) {
   const { t } = useTranslation();
+  const [expandedPref, setExpandedPref] = useLocalStorage("ferrite.dashboard.system", "0");
+  const expanded = expandedPref === "1";
   const cpuColor =
     sys.cpu_usage_percent > 85
       ? "bg-blocked/70"
@@ -668,40 +704,61 @@ function SystemBar({ sys }: { sys: SystemStats }) {
 
   return (
     <Card className="mb-4 overflow-hidden p-0">
-      <div className="border-bdr/60 flex flex-col gap-3 border-b p-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
-          <span className="border-ember/20 bg-ember/12 text-ember rounded-full border p-2.5">
-            <ServerCog size={18} />
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 px-4 py-3">
+        <span className="flex items-center gap-2">
+          <ServerCog size={14} className="text-ember shrink-0" />
+          <span className="text-muted text-[10px] font-semibold uppercase tracking-wider">
+            {t("dashboard.system")}
           </span>
-          <div>
-            <p className="text-muted text-[10px] font-semibold uppercase tracking-wider">
-              {t("dashboard.system")}
-            </p>
-            <p className="text-muted mt-0.5 text-xs">
-              {t("dashboard.uptime")} {formatUptime(sys.uptime_seconds)}
-            </p>
-          </div>
-        </div>
-        <div className="text-muted flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px]">
-          <span>
-            {t("dashboard.load")}{" "}
-            <span className="text-heading font-medium tabular-nums">
-              {sys.load_avg.one.toFixed(2)}
-            </span>
-            <span className="text-muted/50">
-              {" · "}
-              {sys.load_avg.five.toFixed(2)}
-              {" · "}
-              {sys.load_avg.fifteen.toFixed(2)}
-            </span>
+          <span className="text-muted text-xs">
+            {t("dashboard.uptime")} {formatUptime(sys.uptime_seconds)}
           </span>
-          <span className="text-ember flex items-center gap-1.5">
-            <span className="bg-ember h-1.5 w-1.5 rounded-full" />
-            {t("dashboard.live")}
+        </span>
+        <StripMetric
+          label={t("dashboard.cpu")}
+          value={`${sys.cpu_usage_percent.toFixed(1)}%`}
+          percent={sys.cpu_usage_percent}
+          color={cpuColor}
+        />
+        <StripMetric
+          label="RAM"
+          value={formatBytes(sys.memory.used_bytes)}
+          percent={sys.memory.used_percent}
+          color={memColor}
+        />
+        {sys.disk && (
+          <StripMetric
+            label="Disk"
+            value={`${sys.disk.used_percent.toFixed(0)}%`}
+            percent={sys.disk.used_percent}
+            color={diskColor}
+          />
+        )}
+        <StripMetric
+          label="Net"
+          value={`↓ ${formatBytes(sys.network.rx_bytes_per_sec)}/s ↑ ${formatBytes(sys.network.tx_bytes_per_sec)}/s`}
+        />
+        <span className="text-muted hidden text-[11px] lg:inline">
+          {t("dashboard.load")}{" "}
+          <span className="text-heading font-medium tabular-nums">
+            {sys.load_avg.one.toFixed(2)}
           </span>
-        </div>
+        </span>
+        <button
+          type="button"
+          onClick={() => setExpandedPref(expanded ? "0" : "1")}
+          aria-expanded={expanded}
+          className="text-muted hover:text-ember ml-auto flex items-center gap-1 text-[11px] transition-colors"
+        >
+          {expanded
+            ? t("dashboard.system_less", { defaultValue: "Less" })
+            : t("dashboard.system_more", { defaultValue: "Details" })}
+          <ChevronDown size={12} className={cn("transition-transform", expanded && "rotate-180")} />
+        </button>
       </div>
 
+      {expanded && (
+        <div className="border-bdr/60 border-t">
       <div className="grid grid-cols-1 gap-3 p-4 sm:grid-cols-2 2xl:grid-cols-4">
         <SystemMetric
           label={t("dashboard.cpu").toUpperCase()}
@@ -832,6 +889,8 @@ function SystemBar({ sys }: { sys: SystemStats }) {
           )}
         </span>
       </div>
+        </div>
+      )}
     </Card>
   );
 }
@@ -1198,7 +1257,6 @@ export default function Dashboard() {
               <TopDomains
                 topQueried={effectiveDomains}
                 topBlocked={effectiveBlocked}
-                navigate={navigate}
                 topHours={topHours}
                 topLoading={topLoading}
                 onRangeChange={setTopHours}
