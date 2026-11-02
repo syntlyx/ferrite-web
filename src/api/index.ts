@@ -77,7 +77,7 @@ export const api = {
   addWhitelist: (domain: string) => blocklist.addWhitelist(domain),
   removeWhitelist: (domain: string) => blocklist.removeWhitelist(domain),
 
-  checkDomain: (domain: string) => blocklist.checkDomain(domain),
+  checkDomain: (domain: string, client?: string) => blocklist.checkDomain(domain, client),
 
   getProfiles: blocklist.getProfiles,
   putProfiles: (profiles: BlocklistProfile[]) => blocklist.putProfiles(profiles),

@@ -40,9 +40,12 @@ export function removeWhitelist(domain: string): Promise<DomainWhitelistResult> 
 
 // ── Check ─────────────────────────────────────────────────────────────────────
 
-/** Check whether a domain would be blocked (considers whitelist override) */
-export function checkDomain(domain: string): Promise<DomainCheckResult> {
-  return http.get(`/blocklist/check/${encodeURIComponent(domain)}`);
+/** Check whether a domain would be blocked (considers whitelist override).
+ *  With `client` (IP or MAC) the answer also carries that device's own
+ *  decision under `for_client`. */
+export function checkDomain(domain: string, client?: string): Promise<DomainCheckResult> {
+  const q = client ? `?client=${encodeURIComponent(client)}` : "";
+  return http.get(`/blocklist/check/${encodeURIComponent(domain)}${q}`);
 }
 
 // ── Per-device profiles ───────────────────────────────────────────────────────

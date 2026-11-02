@@ -280,6 +280,21 @@ export interface DomainCheckResult {
   sources?: BlockSource[];
   /** Selective-routing decision: whether/where this domain's traffic is tunneled. */
   routing?: DomainRouting;
+  /** Present when asked with `client`: that device's own decision. */
+  for_client?: ClientDecision;
+}
+
+/** One device's decision for a domain. */
+export interface ClientDecision {
+  client: string;
+  mac?: string | null;
+  /** The profile on for the device right now, if any. */
+  profile?: string | null;
+  /** Paused or bypassing filtering. */
+  filtering_off: boolean;
+  blocked: boolean;
+  /** The safe host this name resolves to for the device instead, if any. */
+  safe_search_answer?: string | null;
 }
 
 // ── Per-device blocking profiles ──────────────────────────────────────────────
