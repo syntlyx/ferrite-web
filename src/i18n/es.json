@@ -747,7 +747,6 @@
   },
   "notifications": {
     "title": "Notificaciones",
-    "sub": "Un webhook al que llega un evento JSON por cada tipo activado. Funciona con ntfy, Home Assistant o cualquier cosa que acepte un POST.",
     "saved": "Notificaciones guardadas",
     "test": "Enviar prueba",
     "test_sent": "Notificación de prueba entregada",
@@ -757,7 +756,17 @@
     "tunnel_alerts": "Alertas de túneles",
     "tunnel_alerts_sub": "Un túnel lleva más de un minuto caído, y cuando se recupera.",
     "new_device": "Dispositivos nuevos",
-    "new_device_sub": "Se une a la red un dispositivo que el equipo nunca había visto. Lo que hay en la red cuando arranca ferrite no cuenta. Los móviles que cambian su dirección Wi-Fi cuentan como nuevos cada vez."
+    "new_device_sub": "Se une a la red un dispositivo que el equipo nunca había visto. Lo que hay en la red cuando arranca ferrite no cuenta. Los móviles que cambian su dirección Wi-Fi cuentan como nuevos cada vez.",
+    "sub_formats": "Caídas de túneles y dispositivos nuevos, enviados donde los verás: una notificación en el móvil, un chat o tu propia automatización.",
+    "send_to": "Enviar a",
+    "hint_json": "Cada evento como campos JSON: para Home Assistant, n8n o un script propio.",
+    "hint_ntfy": "La URL del tema. En tu propio servidor con control de acceso, añade ?auth=<token>.",
+    "hint_discord": "Ajustes del canal → Integraciones → Webhooks → Copiar URL del webhook.",
+    "hint_slack": "Una URL de webhook entrante. Mattermost y Rocket.Chat aceptan la misma.",
+    "hint_telegram": "Crea un bot con @BotFather y envíale primero un mensaje. El chat id es tu id de usuario o el id de un grupo (negativo).",
+    "hint_gotify": "La URL /message de tu servidor con un token de aplicación.",
+    "bot_token": "Token del bot",
+    "chat_id": "Chat id"
   },
   "mcp": {
     "title": "Asistentes de IA (MCP)",

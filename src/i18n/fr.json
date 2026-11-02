@@ -747,7 +747,6 @@
   },
   "notifications": {
     "title": "Notifications",
-    "sub": "Un webhook qui reçoit un événement JSON pour chaque type activé. Fonctionne avec ntfy, Home Assistant ou tout ce qui accepte un POST.",
     "saved": "Notifications enregistrées",
     "test": "Envoyer un test",
     "test_sent": "Notification de test livrée",
@@ -757,7 +756,17 @@
     "tunnel_alerts": "Alertes de tunnel",
     "tunnel_alerts_sub": "Un tunnel est en panne depuis plus d'une minute, et quand il revient.",
     "new_device": "Nouveaux appareils",
-    "new_device_sub": "Un appareil que le boîtier n'a jamais vu rejoint le réseau. Ce qui est présent au démarrage de ferrite ne compte pas. Les téléphones qui changent d'adresse Wi-Fi comptent comme nouveaux à chaque fois."
+    "new_device_sub": "Un appareil que le boîtier n'a jamais vu rejoint le réseau. Ce qui est présent au démarrage de ferrite ne compte pas. Les téléphones qui changent d'adresse Wi-Fi comptent comme nouveaux à chaque fois.",
+    "sub_formats": "Pannes de tunnel et nouveaux appareils, envoyés là où vous les verrez : une notification sur le téléphone, une discussion ou votre propre automatisation.",
+    "send_to": "Envoyer à",
+    "hint_json": "Chaque événement en champs JSON — pour Home Assistant, n8n ou votre propre script.",
+    "hint_ntfy": "L'URL du sujet. Sur votre propre serveur avec contrôle d'accès, ajoutez ?auth=<jeton>.",
+    "hint_discord": "Paramètres du salon → Intégrations → Webhooks → Copier l'URL du webhook.",
+    "hint_slack": "Une URL de webhook entrant. Mattermost et Rocket.Chat acceptent la même.",
+    "hint_telegram": "Créez un bot avec @BotFather et envoyez-lui d'abord un message. Le chat id est votre identifiant d'utilisateur, ou celui d'un groupe (négatif).",
+    "hint_gotify": "L'URL /message de votre serveur avec un jeton d'application.",
+    "bot_token": "Jeton du bot",
+    "chat_id": "Chat id"
   },
   "mcp": {
     "title": "Assistants IA (MCP)",

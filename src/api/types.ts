@@ -965,9 +965,16 @@ export interface SafeSearchSettings {
 
 // ── Notifications ─────────────────────────────────────────────────────────────
 
+/** What the receiver at the webhook expects — decides the shape of the body. */
+export type WebhookFormat = "json" | "ntfy" | "discord" | "slack" | "telegram" | "gotify";
+
 /** The webhook and which events go to it. */
 export interface NotificationsSettings {
   webhook?: string | null;
+  /** Absent means `json`. */
+  format?: WebhookFormat;
+  /** The chat a Telegram bot posts to. */
+  chat_id?: string | null;
   /** A tunnel down for over a minute, and its recovery. */
   tunnel_alerts: boolean;
   /** A device the box has never seen joins the network. */

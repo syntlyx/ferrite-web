@@ -747,7 +747,6 @@
   },
   "notifications": {
     "title": "Notifications",
-    "sub": "One webhook, sent a JSON event for each kind switched on. Works with ntfy, Home Assistant or anything that accepts a POST.",
     "saved": "Notifications saved",
     "test": "Send test",
     "test_sent": "Test notification delivered",
@@ -757,7 +756,17 @@
     "tunnel_alerts": "Tunnel alerts",
     "tunnel_alerts_sub": "A tunnel stays down for over a minute, and when it recovers.",
     "new_device": "New devices",
-    "new_device_sub": "A device the box has never seen joins the network. What is there when ferrite starts doesn't count. Phones that rotate their Wi-Fi address count as new each time."
+    "new_device_sub": "A device the box has never seen joins the network. What is there when ferrite starts doesn't count. Phones that rotate their Wi-Fi address count as new each time.",
+    "sub_formats": "Tunnel outages and new devices, sent where you'll see them — a phone push, a chat, or your own automation.",
+    "send_to": "Send to",
+    "hint_json": "Each event as JSON fields — for Home Assistant, n8n or a script of your own.",
+    "hint_ntfy": "The topic URL. On your own server with access control, add ?auth=<token>.",
+    "hint_discord": "Channel settings → Integrations → Webhooks → Copy Webhook URL.",
+    "hint_slack": "An incoming-webhook URL. Mattermost and Rocket.Chat take the same.",
+    "hint_telegram": "Create a bot with @BotFather and send it a message first. The chat id is your user id, or a group's id (negative).",
+    "hint_gotify": "Your server's /message URL with an application token.",
+    "bot_token": "Bot token",
+    "chat_id": "Chat id"
   },
   "mcp": {
     "title": "AI assistants (MCP)",

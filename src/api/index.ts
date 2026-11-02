@@ -88,7 +88,7 @@ export const api = {
   putBlockedServices: (ids: string[]) => services.putBlocked(ids),
   getNotifications: notifications.get,
   putNotifications: (body: NotificationsSettings) => notifications.put(body),
-  testNotification: (webhook?: string) => notifications.test(webhook),
+  testNotification: (target?: NotificationsSettings) => notifications.test(target),
   getMcpSettings: notifications.getMcp,
   putMcpSettings: (body: McpSettings) => notifications.putMcp(body),
 
