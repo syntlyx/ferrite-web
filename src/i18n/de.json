@@ -60,7 +60,8 @@
     "disabled": "Aus",
     "all": "Alle",
     "search": "Suchen",
-    "reset": "Zurücksetzen"
+    "reset": "Zurücksetzen",
+    "undo": "Rückgängig"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -631,5 +632,34 @@
     "default_deny": "Alles blockieren außer Erlaubtem",
     "default_deny_hint": "Für diese Geräte werden nur erlaubte Domains aufgelöst: manuelle Freigaben plus die Erlaubnislisten oben. Lokale Netzwerknamen (PTR, .lan, .local, eigene Zonen) funktionieren weiterhin.",
     "default_deny_warn": "Noch ist nichts erlaubt — diese Geräte verlieren praktisch DNS. Zuerst Freigaben oder eine Erlaubnisliste hinzufügen."
+  },
+  "quick": {
+    "block": "Blockieren",
+    "allow": "Erlauben",
+    "blocked": "{{domain}} blockiert",
+    "allowed": "{{domain}} erlaubt",
+    "already_blocked": "{{domain}} steht schon auf der Blacklist",
+    "already_allowed": "{{domain}} steht schon auf der Whitelist",
+    "undone": "Rückgängig gemacht: {{domain}}"
+  },
+  "pause": {
+    "paused": "Filterung pausiert",
+    "time_left": "Noch {{time}}",
+    "resume": "Fortsetzen",
+    "pause_for": "Filterung für {{time}} pausieren",
+    "pause_device": "Filterung für dieses Gerät pausieren",
+    "banner": "Filterung pausiert — noch {{time}} wird alles aufgelöst.",
+    "minutes_short": "{{count}} Min",
+    "hours_short": "{{count}} Std"
+  },
+  "backup": {
+    "title": "Sicherung & Wiederherstellung",
+    "sub": "Die ganze Konfiguration als eine config.toml — zum Aufbewahren oder für den Umzug auf ein anderes Gerät.",
+    "download": "Konfiguration herunterladen",
+    "restore": "Aus Datei wiederherstellen…",
+    "restoring": "Wird wiederhergestellt…",
+    "restore_confirm": "\"{{name}}\" wiederherstellen? Das ersetzt die ganze Konfiguration und startet ferrite neu. Die aktuelle Datei bleibt als config.toml.bak erhalten.",
+    "restored": "Konfiguration wiederhergestellt — Neustart…",
+    "secrets_hint": "Die Datei enthält Geheimnisse — den API-Schlüssel, den Passwort-Hash, private WireGuard-Schlüssel. Bewahre sie sicher auf. Eine wiederhergestellte Datei bringt ihr eigenes Passwort mit: melde dich danach damit an."
   }
 }

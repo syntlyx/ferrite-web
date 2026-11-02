@@ -60,7 +60,8 @@
     "disabled": "Disabled",
     "all": "All",
     "search": "Search",
-    "reset": "Reset"
+    "reset": "Reset",
+    "undo": "Undo"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -631,5 +632,34 @@
     "default_deny": "Block everything except allowed",
     "default_deny_hint": "Only allowed domains resolve for these devices: manual allows plus the allowlists above. Local network names (PTR, .lan, .local, your zones) keep working.",
     "default_deny_warn": "Nothing is allowed yet — these devices will effectively lose DNS. Add allow entries or an allowlist first."
+  },
+  "quick": {
+    "block": "Block",
+    "allow": "Allow",
+    "blocked": "{{domain}} blocked",
+    "allowed": "{{domain}} allowed",
+    "already_blocked": "{{domain}} is already on the blacklist",
+    "already_allowed": "{{domain}} is already on the whitelist",
+    "undone": "Undone: {{domain}}"
+  },
+  "pause": {
+    "paused": "Filtering paused",
+    "time_left": "{{time}} left",
+    "resume": "Resume",
+    "pause_for": "Pause filtering for {{time}}",
+    "pause_device": "Pause filtering for this device",
+    "banner": "Filtering is paused — everything resolves for {{time}} more.",
+    "minutes_short": "{{count}}m",
+    "hours_short": "{{count}}h"
+  },
+  "backup": {
+    "title": "Backup & restore",
+    "sub": "The whole configuration as one config.toml — to keep, or to move to another box.",
+    "download": "Download config",
+    "restore": "Restore from file…",
+    "restoring": "Restoring…",
+    "restore_confirm": "Restore \"{{name}}\"? It replaces the whole configuration and restarts ferrite. The current file is kept as config.toml.bak.",
+    "restored": "Configuration restored — restarting…",
+    "secrets_hint": "The file holds secrets — the API key, the password hash, WireGuard private keys. Keep it somewhere safe. A restored file brings its own password: log back in with that one."
   }
 }

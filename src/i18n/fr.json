@@ -60,7 +60,8 @@
     "disabled": "Désactivé",
     "all": "Tout",
     "search": "Rechercher",
-    "reset": "Réinitialiser"
+    "reset": "Réinitialiser",
+    "undo": "Annuler"
   },
   "dashboard": {
     "title": "Tableau de bord",
@@ -631,5 +632,34 @@
     "default_deny": "Tout bloquer sauf ce qui est autorisé",
     "default_deny_hint": "Pour ces appareils, seuls les domaines autorisés sont résolus : autorisations manuelles plus les listes d'autorisation ci-dessus. Les noms du réseau local (PTR, .lan, .local, vos zones) continuent de fonctionner.",
     "default_deny_warn": "Rien n'est encore autorisé — ces appareils perdront pratiquement le DNS. Ajoutez d'abord des autorisations ou une liste d'autorisation."
+  },
+  "quick": {
+    "block": "Bloquer",
+    "allow": "Autoriser",
+    "blocked": "{{domain}} bloqué",
+    "allowed": "{{domain}} autorisé",
+    "already_blocked": "{{domain}} est déjà dans la blacklist",
+    "already_allowed": "{{domain}} est déjà dans la whitelist",
+    "undone": "Annulé : {{domain}}"
+  },
+  "pause": {
+    "paused": "Filtrage en pause",
+    "time_left": "Encore {{time}}",
+    "resume": "Reprendre",
+    "pause_for": "Mettre le filtrage en pause pendant {{time}}",
+    "pause_device": "Mettre le filtrage en pause pour cet appareil",
+    "banner": "Le filtrage est en pause — tout se résout encore pendant {{time}}.",
+    "minutes_short": "{{count}} min",
+    "hours_short": "{{count}} h"
+  },
+  "backup": {
+    "title": "Sauvegarde et restauration",
+    "sub": "Toute la configuration dans un config.toml — à conserver ou à transférer sur un autre appareil.",
+    "download": "Télécharger la configuration",
+    "restore": "Restaurer depuis un fichier…",
+    "restoring": "Restauration…",
+    "restore_confirm": "Restaurer « {{name}} » ? Cela remplace toute la configuration et redémarre ferrite. Le fichier actuel est conservé sous config.toml.bak.",
+    "restored": "Configuration restaurée — redémarrage…",
+    "secrets_hint": "Le fichier contient des secrets — la clé API, l'empreinte du mot de passe, les clés privées WireGuard. Gardez-le en lieu sûr. Un fichier restauré apporte son propre mot de passe : reconnectez-vous avec celui-là."
   }
 }

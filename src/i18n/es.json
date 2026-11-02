@@ -60,7 +60,8 @@
     "disabled": "Desactivado",
     "all": "Todo",
     "search": "Buscar",
-    "reset": "Restablecer"
+    "reset": "Restablecer",
+    "undo": "Deshacer"
   },
   "dashboard": {
     "title": "Panel",
@@ -631,5 +632,34 @@
     "default_deny": "Bloquear todo excepto lo permitido",
     "default_deny_hint": "Para estos dispositivos solo se resuelven dominios permitidos: permisos manuales más las listas de permitidos de arriba. Los nombres de red local (PTR, .lan, .local, tus zonas) siguen funcionando.",
     "default_deny_warn": "Aún no hay nada permitido — estos dispositivos se quedarán prácticamente sin DNS. Añade primero permisos o una lista de permitidos."
+  },
+  "quick": {
+    "block": "Bloquear",
+    "allow": "Permitir",
+    "blocked": "{{domain}} bloqueado",
+    "allowed": "{{domain}} permitido",
+    "already_blocked": "{{domain}} ya está en la lista negra",
+    "already_allowed": "{{domain}} ya está en la lista blanca",
+    "undone": "Deshecho: {{domain}}"
+  },
+  "pause": {
+    "paused": "Filtrado en pausa",
+    "time_left": "Quedan {{time}}",
+    "resume": "Reanudar",
+    "pause_for": "Pausar el filtrado durante {{time}}",
+    "pause_device": "Pausar el filtrado para este dispositivo",
+    "banner": "El filtrado está en pausa: todo se resuelve durante {{time}} más.",
+    "minutes_short": "{{count}} min",
+    "hours_short": "{{count}} h"
+  },
+  "backup": {
+    "title": "Copia de seguridad",
+    "sub": "Toda la configuración en un config.toml: para guardarla o llevarla a otro equipo.",
+    "download": "Descargar configuración",
+    "restore": "Restaurar desde archivo…",
+    "restoring": "Restaurando…",
+    "restore_confirm": "¿Restaurar \"{{name}}\"? Sustituye toda la configuración y reinicia ferrite. El archivo actual se guarda como config.toml.bak.",
+    "restored": "Configuración restaurada: reiniciando…",
+    "secrets_hint": "El archivo contiene secretos: la clave API, el hash de la contraseña y las claves privadas de WireGuard. Guárdalo en un lugar seguro. Un archivo restaurado trae su propia contraseña: vuelve a entrar con esa."
   }
 }
