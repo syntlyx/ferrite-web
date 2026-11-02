@@ -824,5 +824,20 @@
     "more": "+{{count}} de plus",
     "fewer": "Afficher moins",
     "none_match": "Aucun appareil ne correspond."
+  },
+  "sessions": {
+    "title": "Navigateurs connectés",
+    "sub": "Là où le panneau est connecté. Une session dure 7 jours après sa dernière utilisation et survit aux redémarrages et aux mises à jour.",
+    "sign_out_others": "Déconnecter tous les autres",
+    "others_signed_out": "{{count}} autre(s) session(s) déconnectée(s)",
+    "signed_out": "Session fermée",
+    "none": "Aucun navigateur n'est connecté avec le mot de passe — seule la clé d'API est utilisée.",
+    "browser_on": "{{browser}} sous {{os}}",
+    "unknown": "Navigateur inconnu",
+    "this": "Ce navigateur",
+    "signed_in": "connecté {{when}}",
+    "active": "actif {{when}}",
+    "sign_out": "Déconnecter",
+    "sign_out_here": "Se déconnecter ici"
   }
 }

@@ -824,5 +824,20 @@
     "more": "+{{count}} more",
     "fewer": "Show fewer",
     "none_match": "No device matches."
+  },
+  "sessions": {
+    "title": "Signed-in browsers",
+    "sub": "Where the panel is signed in. A session lasts 7 days since it was last used and survives restarts and updates.",
+    "sign_out_others": "Sign out all others",
+    "others_signed_out": "Signed out {{count}} other session(s)",
+    "signed_out": "Signed out",
+    "none": "No browser is signed in with the password — only the API key is used.",
+    "browser_on": "{{browser}} on {{os}}",
+    "unknown": "Unknown browser",
+    "this": "This browser",
+    "signed_in": "signed in {{when}}",
+    "active": "active {{when}}",
+    "sign_out": "Sign out",
+    "sign_out_here": "Sign out here"
   }
 }

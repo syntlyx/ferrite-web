@@ -824,5 +824,20 @@
     "more": "+{{count}} más",
     "fewer": "Mostrar menos",
     "none_match": "Ningún dispositivo coincide."
+  },
+  "sessions": {
+    "title": "Navegadores con sesión iniciada",
+    "sub": "Dónde está iniciada la sesión del panel. Una sesión dura 7 días desde su último uso y sobrevive a reinicios y actualizaciones.",
+    "sign_out_others": "Cerrar todas las demás",
+    "others_signed_out": "Se cerraron {{count}} sesión(es) más",
+    "signed_out": "Sesión cerrada",
+    "none": "Ningún navegador ha iniciado sesión con la contraseña: solo se usa la clave de API.",
+    "browser_on": "{{browser}} en {{os}}",
+    "unknown": "Navegador desconocido",
+    "this": "Este navegador",
+    "signed_in": "inició sesión {{when}}",
+    "active": "activo {{when}}",
+    "sign_out": "Cerrar sesión",
+    "sign_out_here": "Cerrar sesión aquí"
   }
 }

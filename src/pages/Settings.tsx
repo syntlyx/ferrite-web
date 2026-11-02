@@ -59,6 +59,7 @@ import { useConfirm } from "@/hooks/use-confirm";
 import { BackupCard } from "@/components/BackupCard";
 import { NotificationsCard } from "@/components/NotificationsCard";
 import { McpCard } from "@/components/McpCard";
+import { SessionsCard } from "@/components/SessionsCard";
 import type {
   PatchSettingsBody,
   Settings as SettingsType,
@@ -1607,6 +1608,7 @@ export default function Settings() {
                   </div>
                 </SettingRow>
               </SettingsPanel>
+              {passwordSet && <SessionsCard />}
               <McpCard apiKeySet={apiKeySet} />
             </TabsContent>
 

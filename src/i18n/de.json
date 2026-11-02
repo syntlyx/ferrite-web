@@ -824,5 +824,20 @@
     "more": "+{{count}} weitere",
     "fewer": "Weniger zeigen",
     "none_match": "Kein Gerät passt."
+  },
+  "sessions": {
+    "title": "Angemeldete Browser",
+    "sub": "Wo das Panel angemeldet ist. Eine Sitzung gilt 7 Tage ab der letzten Nutzung und übersteht Neustarts und Updates.",
+    "sign_out_others": "Alle anderen abmelden",
+    "others_signed_out": "{{count}} andere Sitzung(en) abgemeldet",
+    "signed_out": "Abgemeldet",
+    "none": "Kein Browser ist mit dem Passwort angemeldet — nur der API-Schlüssel wird genutzt.",
+    "browser_on": "{{browser}} unter {{os}}",
+    "unknown": "Unbekannter Browser",
+    "this": "Dieser Browser",
+    "signed_in": "angemeldet {{when}}",
+    "active": "aktiv {{when}}",
+    "sign_out": "Abmelden",
+    "sign_out_here": "Hier abmelden"
   }
 }

@@ -963,6 +963,24 @@ export interface SafeSearchSettings {
   youtube_restricted: YoutubeRestrict;
 }
 
+// ── Sessions ──────────────────────────────────────────────────────────────────
+
+/** A browser signed in to the panel. Times are unix seconds; 0 = not known
+ *  (sessions from before ferrite kept the details). */
+export interface PanelSession {
+  id: string;
+  created: number;
+  last_seen: number;
+  expires: number;
+  /** The User-Agent it signed in with. */
+  agent: string;
+  ip: string;
+  /** The device at `ip`, as the client list names it. */
+  device: string | null;
+  /** The session making this request. */
+  current: boolean;
+}
+
 // ── Notifications ─────────────────────────────────────────────────────────────
 
 /** What the receiver at the webhook expects — decides the shape of the body. */

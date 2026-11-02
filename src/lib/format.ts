@@ -15,6 +15,50 @@ export function fmtRelTime(ts: number): string {
   return d.toLocaleDateString();
 }
 
+/** "3 minutes ago" / "3 хвилини тому" in `lang`; "now" under a minute. */
+export function relTime(ts: number, lang: string): string {
+  const diff = Math.round(ts - Date.now() / 1000);
+  const rtf = new Intl.RelativeTimeFormat(lang, { numeric: "auto" });
+  const abs = Math.abs(diff);
+  if (abs < 60) return rtf.format(0, "second");
+  if (abs < 3600) return rtf.format(Math.round(diff / 60), "minute");
+  if (abs < 86400) return rtf.format(Math.round(diff / 3600), "hour");
+  return rtf.format(Math.round(diff / 86400), "day");
+}
+
+/** A User-Agent as people say it: "Chrome on macOS". */
+export function describeAgent(ua: string): { browser: string; os: string; mobile: boolean } {
+  const browser = /Edg\//.test(ua)
+    ? "Edge"
+    : /OPR\/|Opera/.test(ua)
+      ? "Opera"
+      : /Firefox\/|FxiOS/.test(ua)
+        ? "Firefox"
+        : /Chrome\/|CriOS/.test(ua)
+          ? "Chrome"
+          : /Safari\//.test(ua)
+            ? "Safari"
+            : /^curl\//.test(ua)
+              ? "curl"
+              : "";
+  const os = /iPhone/.test(ua)
+    ? "iOS"
+    : /iPad/.test(ua)
+      ? "iPadOS"
+      : /Android/.test(ua)
+        ? "Android"
+        : /CrOS/.test(ua)
+          ? "ChromeOS"
+          : /Mac OS X|Macintosh/.test(ua)
+            ? "macOS"
+            : /Windows/.test(ua)
+              ? "Windows"
+              : /Linux/.test(ua)
+                ? "Linux"
+                : "";
+  return { browser, os, mobile: /Mobile|iPhone|Android/.test(ua) };
+}
+
 export function pct(a: number, b: number): string {
   if (!b) return "0%";
   return `${((a / b) * 100).toFixed(1)}%`;

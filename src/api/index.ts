@@ -49,6 +49,9 @@ export const api = {
       return d;
     }),
   logout: () => auth.logout().finally(() => setToken(null)),
+  sessions: auth.sessions,
+  revokeSession: auth.revokeSession,
+  revokeOtherSessions: auth.revokeOtherSessions,
 
   // ── Stats ───────────────────────────────────────────────────────────────────
   statsSummary: stats.summary,
