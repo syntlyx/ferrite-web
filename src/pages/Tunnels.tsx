@@ -47,6 +47,7 @@ import { useToast } from "@/hooks/use-toast";
 import { usePageVisible } from "@/hooks/use-page-visible";
 import { deviceTokens } from "@/api/clients";
 import { DevicePicker } from "@/components/DevicePicker";
+import { ServiceIcon } from "@/components/ServicePicker";
 import type {
   ClientEntry,
   EgressKind,
@@ -56,9 +57,14 @@ import type {
   ProxyEgress,
   ProxyRule,
   ProxyStatsResponse,
+  ServiceCatalog,
 } from "@/api/types";
 
 const KINDS: EgressKind[] = ["direct", "socks5", "wireguard", "evasion"];
+
+/** A rule's identity in the server's hit counters: its pattern, or
+ *  `service:<id>` for a service rule. */
+const ruleKey = (r: ProxyRule) => (r.service != null ? `service:${r.service}` : r.pattern);
 
 /** Shared grid template so the rules header and every rule row line up (from
  *  `sm` up — a phone stacks each rule as a small card instead). */
@@ -144,6 +150,7 @@ export default function Tunnels() {
   } | null>(null);
   const [maxBuf, setMaxBuf] = useState<number | null>(null);
   const [knownClients, setKnownClients] = useState<ClientEntry[]>([]);
+  const [catalog, setCatalog] = useState<ServiceCatalog | null>(null);
   // Both lists are edited and deleted by index, so their rows carry identity of
   // their own — see `useRowKeys`. The expanded rule is tracked by that key too.
   const egressKeys = useRowKeys(cfg.egresses.length);
@@ -182,7 +189,16 @@ export default function Tunnels() {
       .clients(200)
       .then((r) => setKnownClients(r.clients))
       .catch(() => {});
+    api
+      .serviceCatalog()
+      .then(setCatalog)
+      .catch(() => {});
   }, []);
+
+  const serviceById = useMemo(
+    () => new Map((catalog?.services ?? []).map((s) => [s.id, s])),
+    [catalog],
+  );
 
   // Refresh egress health + traffic stats on a timer WITHOUT clobbering the
   // user's unsaved edits: update only `health`/`stats`, never `cfg`. A WireGuard
@@ -402,9 +418,11 @@ export default function Tunnels() {
         ({ r }) =>
           !q ||
           r.pattern.toLowerCase().includes(q) ||
+          (r.service != null &&
+            (serviceById.get(r.service)?.name ?? r.service).toLowerCase().includes(q)) ||
           egressName(r.egress).toLowerCase().includes(q),
       );
-  }, [cfg.rules, filter, egressFilter, egressName]);
+  }, [cfg.rules, filter, egressFilter, egressName, serviceById]);
 
   return (
     <PageContainer>
@@ -451,7 +469,7 @@ export default function Tunnels() {
               icon={ListFilter}
               label={t("tunnels.rules", { defaultValue: "Rules" })}
               value={cfg.rules.length}
-              sub={t("tunnels.tile_rules_sub", { defaultValue: "domain patterns" })}
+              sub={t("tunnels.tile_rules_sub", { defaultValue: "domains and services" })}
             />
             <StatusTile
               icon={ArrowDownUp}
@@ -915,7 +933,7 @@ export default function Tunnels() {
                           RULE_COLS,
                         )}
                       >
-                        <span>{t("tunnels.col_domain", { defaultValue: "Domain" })}</span>
+                        <span>{t("tunnels.col_target", { defaultValue: "Domain or service" })}</span>
                         <span>{t("tunnels.rule_egress", { defaultValue: "Egress" })}</span>
                         <span>{t("tunnels.col_devices", { defaultValue: "Devices" })}</span>
                         <span>{t("tunnels.fail_closed", { defaultValue: "Fail-closed" })}</span>
@@ -934,18 +952,38 @@ export default function Tunnels() {
                           const selectedCount = knownClients.filter((c) =>
                             deviceTokens(c).some((tok) => scoped.includes(tok.toLowerCase())),
                           ).length;
-                          const hits = ruleHits.get(`${r.pattern}\u0001${r.egress}`) ?? 0;
+                          const hits = ruleHits.get(`${ruleKey(r)}\u0001${r.egress}`) ?? 0;
+                          const isService = r.service != null;
+                          const svc = isService ? serviceById.get(r.service ?? "") : undefined;
 
                           const pattern = (
                             <button
                               type="button"
                               onClick={toggleOpen}
-                              className="hover:text-ember min-w-0 flex-1 truncate text-left font-mono text-xs transition-colors"
+                              className="hover:text-ember flex min-w-0 flex-1 items-center gap-1.5 truncate text-left text-xs transition-colors"
                             >
-                              {r.pattern.trim() ? (
-                                <span className="text-heading">{r.pattern}</span>
+                              {isService ? (
+                                r.service ? (
+                                  <>
+                                    <ServiceIcon
+                                      service={svc ?? { id: r.service, name: r.service }}
+                                      size={12}
+                                      className="text-body"
+                                    />
+                                    <span className="text-heading truncate">{svc?.name ?? r.service}</span>
+                                    <span className="text-muted border-bdr/70 rounded-xs shrink-0 border px-1 font-mono text-[9px] uppercase tracking-wider">
+                                      {t("tunnels.rule_service_tag", { defaultValue: "service" })}
+                                    </span>
+                                  </>
+                                ) : (
+                                  <span className="text-warn italic">
+                                    {t("tunnels.rule_no_service", { defaultValue: "no service yet" })}
+                                  </span>
+                                )
+                              ) : r.pattern.trim() ? (
+                                <span className="text-heading truncate font-mono">{r.pattern}</span>
                               ) : (
-                                <span className="text-warn italic">
+                                <span className="text-warn font-mono italic">
                                   {t("tunnels.rule_no_pattern", { defaultValue: "no domain yet" })}
                                 </span>
                               )}
@@ -1051,19 +1089,85 @@ export default function Tunnels() {
                               {/* Editor: the rule's fields and its device scope. */}
                               {isOpen && (
                                 <div className="border-bdr/50 mt-2.5 space-y-3 border-t pt-3">
+                                  {/* What the rule routes: one domain pattern, or a whole catalog service. */}
+                                  <div className="border-bdr/70 rounded-xs inline-flex border p-0.5">
+                                    {(["domain", "service"] as const).map((mode) => {
+                                      const active = (mode === "service") === isService;
+                                      return (
+                                        <button
+                                          key={mode}
+                                          type="button"
+                                          aria-pressed={active}
+                                          onClick={() =>
+                                            active
+                                              ? undefined
+                                              : updateRule(
+                                                  i,
+                                                  mode === "service"
+                                                    ? { service: "", pattern: "" }
+                                                    : { service: undefined, pattern: "" },
+                                                )
+                                          }
+                                          className={cn(
+                                            "rounded-xs px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest transition-colors",
+                                            active ? "bg-ember/12 text-ember" : "text-muted hover:text-ember",
+                                          )}
+                                        >
+                                          {mode === "service"
+                                            ? t("tunnels.rule_mode_service", { defaultValue: "Service" })
+                                            : t("tunnels.rule_mode_domain", { defaultValue: "Domain" })}
+                                        </button>
+                                      );
+                                    })}
+                                  </div>
                                   <div className="grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1fr)_14rem]">
-                                    <label className="space-y-1">
-                                      <span className="text-muted font-mono text-[10px] uppercase tracking-widest">
-                                        {t("tunnels.col_domain", { defaultValue: "Domain" })}
-                                      </span>
-                                      <Input
-                                        value={r.pattern}
-                                        onChange={(ev) => updateRule(i, { pattern: ev.target.value })}
-                                        placeholder="example.com"
-                                        className="w-full font-mono"
-                                        autoFocus={!r.pattern}
-                                      />
-                                    </label>
+                                    {isService ? (
+                                      <label className="space-y-1">
+                                        <span className="text-muted font-mono text-[10px] uppercase tracking-widest">
+                                          {t("tunnels.rule_mode_service", { defaultValue: "Service" })}
+                                        </span>
+                                        <Select
+                                          value={r.service ?? ""}
+                                          onChange={(ev) => updateRule(i, { service: ev.target.value })}
+                                          className="w-full"
+                                        >
+                                          <option value="" disabled>
+                                            {t("tunnels.rule_pick_service", { defaultValue: "Choose a service…" })}
+                                          </option>
+                                          {(catalog?.categories ?? []).map((cat) => {
+                                            const items = (catalog?.services ?? []).filter(
+                                              (s) => s.category === cat && s.routable,
+                                            );
+                                            if (items.length === 0) return null;
+                                            return (
+                                              <optgroup
+                                                key={cat}
+                                                label={t(`services.category.${cat}`, { defaultValue: cat })}
+                                              >
+                                                {items.map((s) => (
+                                                  <option key={s.id} value={s.id}>
+                                                    {s.name}
+                                                  </option>
+                                                ))}
+                                              </optgroup>
+                                            );
+                                          })}
+                                        </Select>
+                                      </label>
+                                    ) : (
+                                      <label className="space-y-1">
+                                        <span className="text-muted font-mono text-[10px] uppercase tracking-widest">
+                                          {t("tunnels.col_domain", { defaultValue: "Domain" })}
+                                        </span>
+                                        <Input
+                                          value={r.pattern}
+                                          onChange={(ev) => updateRule(i, { pattern: ev.target.value })}
+                                          placeholder="example.com"
+                                          className="w-full font-mono"
+                                          autoFocus={!r.pattern}
+                                        />
+                                      </label>
+                                    )}
                                     <label className="space-y-1">
                                       <span className="text-muted font-mono text-[10px] uppercase tracking-widest">
                                         {t("tunnels.rule_egress", { defaultValue: "Egress" })}
@@ -1081,6 +1185,20 @@ export default function Tunnels() {
                                       </Select>
                                     </label>
                                   </div>
+                                  {isService && (
+                                    <p className="text-muted/80 text-[11px] leading-relaxed">
+                                      {svc
+                                        ? t("tunnels.rule_service_help", {
+                                            count: svc.domains.length,
+                                            defaultValue:
+                                              "Routes all {{count}} domains of the service. Messengers, game launchers and Spotify also use their own protocols, which a tunnel can't carry, so they aren't listed.",
+                                          })
+                                        : t("tunnels.rule_service_help_empty", {
+                                            defaultValue:
+                                              "Messengers, game launchers and Spotify also use their own protocols, which a tunnel can't carry, so they aren't listed.",
+                                          })}
+                                    </p>
+                                  )}
 
                                   <div className="space-y-1.5">
                                     <span className="text-muted font-mono text-[10px] uppercase tracking-widest">

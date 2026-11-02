@@ -1,9 +1,14 @@
 import { http } from "./client";
 import type { ProxyConfig, ProxyStateResponse, ProxyStatsResponse, PutProxyResponse } from "./types";
 
-/** Full proxy config + per-egress health (socks5 passwords are redacted). */
+/** Full proxy config + per-egress health (socks5 passwords are redacted).
+ *  A service rule arrives without `pattern`; it is filled in as "" so every
+ *  rule has the same shape. */
 export function get(): Promise<ProxyStateResponse> {
-  return http.get("/proxy");
+  return http.get<ProxyStateResponse>("/proxy").then((r) => ({
+    ...r,
+    proxy: { ...r.proxy, rules: r.proxy.rules.map((x) => ({ ...x, pattern: x.pattern ?? "" })) },
+  }));
 }
 
 /** Replace the whole proxy config; hot-reloads rules/egresses and persists. */
