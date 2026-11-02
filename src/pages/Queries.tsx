@@ -776,13 +776,29 @@ export default function Queries() {
                       </Td>
 
                       <Td>
-                        {r.upstream ? (
-                          <Tooltip content={r.upstream}>
+                        <span className="flex items-center gap-1.5">
+                          {r.upstream ? (
+                            <Tooltip content={r.upstream}>
+                              <Badge status={r.status} />
+                            </Tooltip>
+                          ) : (
                             <Badge status={r.status} />
-                          </Tooltip>
-                        ) : (
-                          <Badge status={r.status} />
-                        )}
+                          )}
+                          {/* Answered with the engine's safe host (SafeSearch /
+                              YouTube Restricted Mode) rather than the name asked. */}
+                          {r.upstream?.startsWith("safesearch:") && (
+                            <Tooltip
+                              content={t("queries.safe_hint", {
+                                host: r.upstream.slice("safesearch:".length),
+                                defaultValue: "Safe search: answered with {{host}}",
+                              })}
+                            >
+                              <span className="text-cached border-cached/30 rounded-xs border px-1 font-mono text-[9px] uppercase tracking-wider">
+                                {t("queries.safe_tag", { defaultValue: "safe" })}
+                              </span>
+                            </Tooltip>
+                          )}
+                        </span>
                       </Td>
                       <Td className="text-muted hidden tabular-nums md:table-cell">
                         {r.latency_ms != null ? `${r.latency_ms}ms` : "—"}
