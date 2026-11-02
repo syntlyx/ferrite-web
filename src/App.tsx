@@ -134,10 +134,13 @@ function RequireAuth({ children }: { children: ReactNode }) {
   return status === "unauth" ? (
     <Navigate to="/login" replace />
   ) : (
-    <>
+    // The shell fills whatever height the banner leaves. Sized to the screen
+    // on its own, it ran the banner's height past the bottom edge, hiding the
+    // sticky save bars and the foot of the sidebar.
+    <div className="flex h-dvh flex-col">
       {noPassword && <PasswordBanner />}
-      {children}
-    </>
+      <div className="min-h-0 flex-1">{children}</div>
+    </div>
   );
 }
 
