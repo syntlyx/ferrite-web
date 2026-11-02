@@ -67,6 +67,7 @@ export const api = {
 
   // ── Clients ─────────────────────────────────────────────────────────────────
   clients: (limit?: number) => clients.list(limit),
+  deviceStats: (device: string, hours?: number) => clients.stats(device, hours),
   getAliases: clients.getAliases,
   addAlias: (body: AddAliasBody) => clients.addAlias(body),
   removeAlias: (key: string) => clients.removeAlias(key),

@@ -89,7 +89,6 @@
     "top_blocked": "Top blockiert",
     "top_clients": "Top Clients",
     "all": "Alle",
-    "click_to_filter": "klicken zum Filtern",
     "no_data": "Noch keine Daten",
     "no_queries": "Noch keine Abfragen",
     "view_all_queries": "Alle Abfragen ansehen",
@@ -106,7 +105,8 @@
     "stats_disabled": "Statistiken sind unter Einstellungen → Datenschutz ausgeschaltet. Die Summen seit dem Start laufen weiter; Top-Listen und Graph bleiben leer, und frühere Statistiken werden nicht zurückgeliefert.",
     "dropped_stats_warning": "{{count}} Abfragestatistiken wurden unter Last verworfen — Zähler und Live-Feed können zu niedrig liegen.",
     "system_more": "Details",
-    "system_less": "Weniger"
+    "system_less": "Weniger",
+    "click_for_details": "Klick für Details"
   },
   "queries": {
     "title": "Abfrageprotokoll",
@@ -839,5 +839,30 @@
     "active": "aktiv {{when}}",
     "sign_out": "Abmelden",
     "sign_out_here": "Hier abmelden"
+  },
+  "device": {
+    "title": "Gerät",
+    "open": "Gerätedetails",
+    "bypassed": "Filterung für dieses Gerät aus",
+    "pause": "Pausieren",
+    "paused_for": "Pausiert · {{time}}",
+    "profile": "Profil",
+    "no_profile": "Netzwerkstandard",
+    "profile_on": "Gilt gerade.",
+    "profile_off": "Gerade außerhalb seines Zeitplans — bis er beginnt, gilt der Netzwerkstandard.",
+    "profile_set": "Jetzt gilt das Profil {{profile}}",
+    "profile_cleared": "Jetzt gilt der Netzwerkstandard",
+    "named": "Benannt: {{name}}",
+    "last_24h": "Letzte 24 Stunden",
+    "day_counts": "{{total}} Anfragen · {{blocked}} blockiert",
+    "no_activity": "Keine Anfragen von diesem Gerät am letzten Tag.",
+    "last_seen": "letzte Anfrage {{when}}",
+    "first_seen": "zuerst gesehen {{when}}",
+    "services": "Genutzte Dienste",
+    "service_counts": "{{queries}} Anfragen, {{blocked}} blockiert",
+    "top_domains": "Am häufigsten angefragt",
+    "top_blocked": "Am häufigsten blockiert",
+    "routing": "Für dieses Gerät geroutet",
+    "no_stats": "Kein Verlauf für dieses Gerät — die Statistik ist womöglich aus."
   }
 }

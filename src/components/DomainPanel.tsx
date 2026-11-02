@@ -9,6 +9,7 @@ import { Badge } from "@/components/feedback/Badge";
 import { Btn, IconBtn, Skeleton } from "@/components/ui";
 import { useToast } from "@/hooks/use-toast";
 import { closeDomainPanel, useDomainPanel } from "@/stores/domain-panel";
+import { openDevicePanel } from "@/stores/device-panel";
 
 /** Section heading inside the panel. */
 function Heading({ children }: { children: React.ReactNode }) {
@@ -267,9 +268,18 @@ export function DomainPanel() {
                         minute: "2-digit",
                       })}
                     </span>
-                    <span className="min-w-0 flex-1 truncate text-body">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        openDevicePanel({
+                          ips: [r.client_ip],
+                          name: r.client_name || undefined,
+                        })
+                      }
+                      className="min-w-0 flex-1 truncate text-left text-body transition-colors hover:text-ember"
+                    >
                       {r.client_name || r.client_ip}
-                    </span>
+                    </button>
                     <Badge status={r.status} />
                   </li>
                 ))}

@@ -192,6 +192,31 @@ export interface ClientEntry {
   first_seen?: number;
 }
 
+/** One device in detail — `GET /clients/{device}/stats`. Everything from
+ *  `top_domains` down covers the last `hours`. */
+export interface DeviceStats {
+  device: string;
+  name: string | null;
+  ips: string[];
+  mac: string | null;
+  total: number;
+  blocked: number;
+  last_seen: number;
+  first_seen: number | null;
+  hours: number;
+  top_domains: DeviceDomain[];
+  top_blocked: DeviceDomain[];
+  services: { id: string; name: string; queries: number; blocked: number }[];
+  /** 10-minute buckets with any queries, oldest first. */
+  activity: { bucket: number; total: number; blocked: number }[];
+}
+
+export interface DeviceDomain {
+  domain: string;
+  total: number;
+  blocked: number;
+}
+
 export interface ClientsResponse {
   clients: ClientEntry[];
 }

@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { SubmitEvent } from "react";
-import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import {
   RefreshCw,
@@ -49,6 +48,7 @@ import { useConfirm } from "@/hooks/use-confirm";
 import { fmt, fmtRelTime } from "@/lib/format";
 import { DEVICE_ICON, deviceKind } from "@/lib/device-kind";
 import { usePause, fmtCountdown, PAUSE_OPTIONS } from "@/stores/pause";
+import { openDevicePanel } from "@/stores/device-panel";
 import { deviceTokens } from "@/api/clients";
 import type { AddAliasBody, ClientAlias, ClientEntry } from "@/api/types";
 
@@ -704,12 +704,15 @@ export default function Clients() {
                             >
                               <DeviceIcon size={13} />
                             </span>
-                            <Link
-                              to={`/queries?device=${encodeURIComponent(deviceTokens(c).join(","))}`}
-                              className="text-heading hover:text-ember font-medium transition-colors"
+                            <button
+                              type="button"
+                              onClick={() =>
+                                openDevicePanel({ macs: c.macs, ips: c.ips, name: c.name })
+                              }
+                              className="text-heading hover:text-ember cursor-pointer text-left font-medium transition-colors"
                             >
                               {c.name}
-                            </Link>
+                            </button>
                             {c.is_alias && (
                               <span className="bg-ember/10 text-ember/70 rounded px-1 py-0.5 text-[10px]">
                                 {t("clients.alias_badge")}

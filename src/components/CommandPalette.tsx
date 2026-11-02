@@ -4,8 +4,8 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { CornerDownLeft, Globe2, Pause, Play, RefreshCw, Search } from "lucide-react";
 import { api } from "@/api";
-import { deviceTokens } from "@/api/clients";
 import type { ClientEntry } from "@/api/types";
+import { openDevicePanel } from "@/stores/device-panel";
 import { cn } from "@/lib/utils";
 import { DEVICE_ICON, deviceKind } from "@/lib/device-kind";
 import { PAUSE_OPTIONS, usePause } from "@/stores/pause";
@@ -92,7 +92,7 @@ export function CommandPalette({
           label: c.name,
           hint: c.ips[0],
           icon: DEVICE_ICON[deviceKind(c.name)],
-          run: () => navigate(`/queries?device=${encodeURIComponent(deviceTokens(c).join(","))}`),
+          run: () => openDevicePanel({ macs: c.macs, ips: c.ips, name: c.name }),
         });
       }
     }

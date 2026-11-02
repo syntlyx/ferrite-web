@@ -39,6 +39,7 @@ import { useSettings } from "@/stores/settings";
 import { usePause, fmtCountdown, PAUSE_OPTIONS } from "@/stores/pause";
 import { Select } from "@/components/ui";
 import { DomainPanel } from "@/components/DomainPanel";
+import { DevicePanel } from "@/components/DevicePanel";
 import { CommandPalette } from "@/components/CommandPalette";
 
 /** How often to re-check (cached) for available updates while the tab is visible. */
@@ -655,6 +656,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
 
         {/* The domain side panel and the command palette, from any page. */}
         <DomainPanel />
+        <DevicePanel />
         <CommandPalette
           open={paletteOpen}
           onClose={() => setPaletteOpen(false)}

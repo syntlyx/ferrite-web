@@ -89,7 +89,6 @@
     "top_blocked": "Top Blocked",
     "top_clients": "Top Clients",
     "all": "All",
-    "click_to_filter": "click to filter",
     "no_data": "No data yet",
     "no_queries": "No queries yet",
     "view_all_queries": "View all queries",
@@ -106,7 +105,8 @@
     "stats_disabled": "Statistics are switched off in Settings → Privacy. The totals since start still update; the top lists and the graph stay empty, and earlier statistics are not served back.",
     "dropped_stats_warning": "{{count}} query stats were dropped under load — counters and the live feed may be undercounting.",
     "system_more": "Details",
-    "system_less": "Less"
+    "system_less": "Less",
+    "click_for_details": "click for details"
   },
   "queries": {
     "title": "Query Log",
@@ -839,5 +839,30 @@
     "active": "active {{when}}",
     "sign_out": "Sign out",
     "sign_out_here": "Sign out here"
+  },
+  "device": {
+    "title": "Device",
+    "open": "Device details",
+    "bypassed": "Filtering off for this device",
+    "pause": "Pause",
+    "paused_for": "Paused · {{time}}",
+    "profile": "Profile",
+    "no_profile": "Network defaults",
+    "profile_on": "In effect now.",
+    "profile_off": "Outside its schedule right now — network defaults apply until it starts.",
+    "profile_set": "Profile {{profile}} now applies",
+    "profile_cleared": "Network defaults now apply",
+    "named": "Named {{name}}",
+    "last_24h": "Last 24 hours",
+    "day_counts": "{{total}} queries · {{blocked}} blocked",
+    "no_activity": "No queries from this device in the last day.",
+    "last_seen": "last query {{when}}",
+    "first_seen": "first seen {{when}}",
+    "services": "Services it used",
+    "service_counts": "{{queries}} queries, {{blocked}} blocked",
+    "top_domains": "Most asked",
+    "top_blocked": "Most blocked",
+    "routing": "Routed for this device",
+    "no_stats": "No history for this device — statistics may be off."
   }
 }

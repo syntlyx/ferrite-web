@@ -89,7 +89,6 @@
     "top_blocked": "Plus bloqués",
     "top_clients": "Top clients",
     "all": "Tout",
-    "click_to_filter": "clic pour filtrer",
     "no_data": "Pas encore de données",
     "no_queries": "Pas encore de requêtes",
     "view_all_queries": "Voir toutes les requêtes",
@@ -106,7 +105,8 @@
     "stats_disabled": "Les statistiques sont désactivées dans Réglages → Confidentialité. Les totaux depuis le démarrage continuent ; les classements et le graphique restent vides, et les statistiques antérieures ne sont pas renvoyées.",
     "dropped_stats_warning": "{{count}} statistiques de requêtes perdues sous charge — les compteurs et le flux en direct peuvent être sous-estimés.",
     "system_more": "Détails",
-    "system_less": "Moins"
+    "system_less": "Moins",
+    "click_for_details": "clic pour les détails"
   },
   "queries": {
     "title": "Journal des requêtes",
@@ -839,5 +839,30 @@
     "active": "actif {{when}}",
     "sign_out": "Déconnecter",
     "sign_out_here": "Se déconnecter ici"
+  },
+  "device": {
+    "title": "Appareil",
+    "open": "Détails de l'appareil",
+    "bypassed": "Filtrage désactivé pour cet appareil",
+    "pause": "Pause",
+    "paused_for": "En pause · {{time}}",
+    "profile": "Profil",
+    "no_profile": "Réglages du réseau",
+    "profile_on": "En vigueur maintenant.",
+    "profile_off": "Hors de son horaire pour l'instant — les réglages du réseau s'appliquent jusqu'à son début.",
+    "profile_set": "Le profil {{profile}} s'applique désormais",
+    "profile_cleared": "Les réglages du réseau s'appliquent désormais",
+    "named": "Nommé {{name}}",
+    "last_24h": "Dernières 24 heures",
+    "day_counts": "{{total}} requêtes · {{blocked}} bloquées",
+    "no_activity": "Aucune requête de cet appareil depuis un jour.",
+    "last_seen": "dernière requête {{when}}",
+    "first_seen": "vu pour la première fois {{when}}",
+    "services": "Services utilisés",
+    "service_counts": "{{queries}} requêtes, {{blocked}} bloquées",
+    "top_domains": "Les plus demandés",
+    "top_blocked": "Les plus bloqués",
+    "routing": "Routé pour cet appareil",
+    "no_stats": "Aucun historique pour cet appareil — les statistiques sont peut-être désactivées."
   }
 }

@@ -34,6 +34,7 @@ import { fmt, pct, formatBytes, formatUptime } from "@/lib/format";
 import { DEVICE_ICON, deviceKind } from "@/lib/device-kind";
 import { QuickRuleBtn } from "@/components/QuickRuleBtn";
 import { openDomainPanel } from "@/stores/domain-panel";
+import { openDevicePanel } from "@/stores/device-panel";
 import type { QuickRuleKind } from "@/hooks/use-quick-rule";
 import type {
   SystemStats,
@@ -55,8 +56,6 @@ function fmtTime(ts: number) {
     d.getHours().toString().padStart(2, "0") + ":" + d.getMinutes().toString().padStart(2, "0")
   );
 }
-
-const isIpv4 = (s: string) => /^\d+\.\d+\.\d+\.\d+$/.test(s);
 
 const BUCKET_SIZE = 600;
 const NUM_BUCKETS = 144;
@@ -360,11 +359,9 @@ function TopDomains({
 
 function TopClients({
   rows,
-  navigate,
   topLoading,
 }: {
   rows: { name: string; total: number; ips: string[]; macs: string[] }[];
-  navigate: (to: string) => void;
   topLoading: boolean;
 }) {
   const { t } = useTranslation();
@@ -375,7 +372,9 @@ function TopClients({
         <p className="text-muted text-[10px] font-semibold uppercase tracking-wider">
           {t("dashboard.top_clients")}
         </p>
-        <p className="text-muted/60 text-[10px] italic">{t("dashboard.click_to_filter")}</p>
+        <p className="text-muted/60 text-[10px] italic">
+          {t("dashboard.click_for_details", { defaultValue: "click for details" })}
+        </p>
       </div>
       {rows.length === 0 ? (
         <p className="text-muted py-2 text-xs">{t("dashboard.no_data")}</p>
@@ -386,23 +385,7 @@ function TopClients({
             return (
               <button
                 key={c.name}
-                onClick={() => {
-                  // Prefer the device's MAC (covers all its IPs); else its IPs; else
-                  // the name only when it is itself an IP (a hostname can't be filtered).
-                  const tokens =
-                    c.macs.length > 0
-                      ? c.macs
-                      : c.ips.length > 0
-                        ? c.ips
-                        : isIpv4(c.name)
-                          ? [c.name]
-                          : [];
-                  if (tokens.length > 0) {
-                    navigate(`/queries?device=${encodeURIComponent(tokens.join(","))}`);
-                  } else {
-                    navigate("/clients");
-                  }
-                }}
+                onClick={() => openDevicePanel({ macs: c.macs, ips: c.ips, name: c.name })}
                 className="hover:bg-white/4 rounded-xs group w-full cursor-pointer px-2 py-1.5 text-left transition-colors"
               >
                 <div className="mb-1 flex items-center justify-between text-xs">
@@ -1261,7 +1244,7 @@ export default function Dashboard() {
                 topLoading={topLoading}
                 onRangeChange={setTopHours}
               />
-              <TopClients rows={effectiveClients} navigate={navigate} topLoading={topLoading} />
+              <TopClients rows={effectiveClients} topLoading={topLoading} />
             </div>
             <LiveFeed
               rows={stats.recent_domains}

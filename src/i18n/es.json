@@ -89,7 +89,6 @@
     "top_blocked": "Más bloqueados",
     "top_clients": "Clientes principales",
     "all": "Todo",
-    "click_to_filter": "clic para filtrar",
     "no_data": "Sin datos todavía",
     "no_queries": "Sin consultas",
     "view_all_queries": "Ver todas las consultas",
@@ -106,7 +105,8 @@
     "stats_disabled": "Las estadísticas están desactivadas en Ajustes → Privacidad. Los totales desde el arranque siguen actualizándose; los tops y el gráfico quedan vacíos, y las estadísticas anteriores no se devuelven.",
     "dropped_stats_warning": "Se descartaron {{count}} estadísticas de consultas por carga — los contadores y el feed en vivo pueden quedarse cortos.",
     "system_more": "Detalles",
-    "system_less": "Menos"
+    "system_less": "Menos",
+    "click_for_details": "clic para detalles"
   },
   "queries": {
     "title": "Registro de consultas",
@@ -839,5 +839,30 @@
     "active": "activo {{when}}",
     "sign_out": "Cerrar sesión",
     "sign_out_here": "Cerrar sesión aquí"
+  },
+  "device": {
+    "title": "Dispositivo",
+    "open": "Detalles del dispositivo",
+    "bypassed": "Filtrado desactivado para este dispositivo",
+    "pause": "Pausar",
+    "paused_for": "En pausa · {{time}}",
+    "profile": "Perfil",
+    "no_profile": "Valores de la red",
+    "profile_on": "En vigor ahora.",
+    "profile_off": "Ahora fuera de su horario: hasta que empiece se aplican los valores de la red.",
+    "profile_set": "Ahora se aplica el perfil {{profile}}",
+    "profile_cleared": "Ahora se aplican los valores de la red",
+    "named": "Nombre: {{name}}",
+    "last_24h": "Últimas 24 horas",
+    "day_counts": "{{total}} consultas · {{blocked}} bloqueadas",
+    "no_activity": "Sin consultas de este dispositivo en el último día.",
+    "last_seen": "última consulta {{when}}",
+    "first_seen": "visto por primera vez {{when}}",
+    "services": "Servicios que usó",
+    "service_counts": "{{queries}} consultas, {{blocked}} bloqueadas",
+    "top_domains": "Más consultados",
+    "top_blocked": "Más bloqueados",
+    "routing": "Enrutado para este dispositivo",
+    "no_stats": "No hay historial de este dispositivo; puede que las estadísticas estén desactivadas."
   }
 }

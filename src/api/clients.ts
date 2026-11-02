@@ -1,6 +1,7 @@
 import { http } from "./client";
 import type {
   ClientEntry,
+  DeviceStats,
   ClientsResponse,
   AliasesResponse,
   AddAliasBody,
@@ -11,6 +12,12 @@ import type {
 /** Top clients by query count across retained history. IPv4+IPv6 sharing a PTR name are merged. */
 export function list(limit = 50): Promise<ClientsResponse> {
   return http.get(`/clients?limit=${limit}`);
+}
+
+/** One device in detail: what it asked for in the last `hours`, the services
+ *  behind it, its activity. `device` is its MAC, or its IP without one. */
+export function stats(device: string, hours = 24): Promise<DeviceStats> {
+  return http.get(`/clients/${encodeURIComponent(device)}/stats?hours=${hours}`);
 }
 
 /**

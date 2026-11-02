@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from "react";
+import { closeDevicePanel } from "@/stores/device-panel";
 
 /**
  * Which domain the side panel shows, if any — one panel for the whole app, so
@@ -18,11 +19,13 @@ function emit() {
 }
 
 export function openDomainPanel(domain: string, client?: string) {
+  closeDevicePanel();
   target = { domain: domain.trim().toLowerCase().replace(/\.$/, ""), client };
   emit();
 }
 
 export function closeDomainPanel() {
+  if (!target) return;
   target = null;
   emit();
 }

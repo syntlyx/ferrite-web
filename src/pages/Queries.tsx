@@ -45,6 +45,7 @@ import { fmt } from "@/lib/format";
 import { deviceTokens } from "@/api/clients";
 import { QuickRuleBtn } from "@/components/QuickRuleBtn";
 import { DomainInfoBtn } from "@/components/DomainInfoBtn";
+import { DeviceInfoBtn } from "@/components/DeviceInfoBtn";
 import type { QueryEntry, QueryFilters, QueryStatus, ClientEntry } from "@/api/types";
 
 // ── DNS helpers ───────────────────────────────────────────────────────────────
@@ -778,6 +779,10 @@ export default function Queries() {
                               >
                                 {r.client_name}
                               </button>
+                              <DeviceInfoBtn
+                                device={{ ips: [r.client_ip], name: r.client_name }}
+                                label={r.client_name}
+                              />
                             </span>
                             <span className="group text-muted flex items-center gap-0.5 font-mono text-[10px]">
                               <span className="truncate">{r.client_ip}</span>
@@ -794,6 +799,7 @@ export default function Queries() {
                               {r.client_ip}
                             </button>
                             <CopyBtn text={r.client_ip} />
+                            <DeviceInfoBtn device={{ ips: [r.client_ip] }} label={r.client_ip} />
                           </span>
                         )}
                       </Td>
