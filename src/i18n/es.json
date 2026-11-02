@@ -133,7 +133,9 @@
     "no_queries_log_off": "No se está registrando nada",
     "group_repeats": "Agrupar",
     "group_repeats_hint": "Juntar en una línea las consultas idénticas seguidas",
-    "repeat_count_hint": "{{count}} consultas idénticas seguidas"
+    "repeat_count_hint": "{{count}} consultas idénticas seguidas",
+    "safe_tag": "segura",
+    "safe_hint": "Búsqueda segura: respondido con {{host}}"
   },
   "clients": {
     "title": "Clientes",
@@ -711,5 +713,16 @@
       "telegram": "Las apps de Telegram llegan a sus servidores por dirección IP, así que el bloqueo detiene el sitio web y los enlaces t.me, no la app en sí.",
       "facebook": "También desactiva «Iniciar sesión con Facebook» y los widgets de Facebook en otros sitios."
     }
+  },
+  "safesearch": {
+    "title": "Búsqueda segura",
+    "help": "Resultados filtrados en Google, Bing y DuckDuckGo, y el modo restringido de YouTube, para todos los dispositivos, sea cual sea la configuración del navegador o la app. Un perfil puede hacerlo más estricto para sus dispositivos.",
+    "search_label": "SafeSearch en Google, Bing y DuckDuckGo",
+    "youtube_label": "Modo restringido de YouTube",
+    "network_on": "Activo para toda la red",
+    "level_off": "No",
+    "level_moderate": "Moderado",
+    "level_strict": "Estricto",
+    "saved": "Búsqueda segura actualizada"
   }
 }

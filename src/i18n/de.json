@@ -133,7 +133,9 @@
     "no_queries_log_off": "Es wird nichts aufgezeichnet",
     "group_repeats": "Gruppieren",
     "group_repeats_hint": "Gleiche Anfragen in Folge zu einer Zeile zusammenfassen",
-    "repeat_count_hint": "{{count}} gleiche Anfragen in Folge"
+    "repeat_count_hint": "{{count}} gleiche Anfragen in Folge",
+    "safe_tag": "safe",
+    "safe_hint": "SafeSearch: beantwortet mit {{host}}"
   },
   "clients": {
     "title": "Clients",
@@ -711,5 +713,16 @@
       "telegram": "Die Telegram-Apps erreichen ihre Server per IP-Adresse. Die Sperre stoppt daher die Website und t.me-Links, nicht aber die App selbst.",
       "facebook": "Stoppt auch „Mit Facebook anmelden“ und Facebook-Widgets auf anderen Websites."
     }
+  },
+  "safesearch": {
+    "title": "SafeSearch",
+    "help": "Gefilterte Ergebnisse bei Google, Bing und DuckDuckGo und der eingeschränkte Modus bei YouTube für alle Geräte — egal, was im Browser oder in der App eingestellt ist. Ein Profil kann es für seine Geräte strenger machen.",
+    "search_label": "SafeSearch bei Google, Bing und DuckDuckGo",
+    "youtube_label": "Eingeschränkter Modus bei YouTube",
+    "network_on": "Für das ganze Netzwerk aktiv",
+    "level_off": "Aus",
+    "level_moderate": "Moderat",
+    "level_strict": "Streng",
+    "saved": "SafeSearch aktualisiert"
   }
 }

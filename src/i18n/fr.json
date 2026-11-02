@@ -133,7 +133,9 @@
     "no_queries_log_off": "Rien n'est enregistré",
     "group_repeats": "Regrouper",
     "group_repeats_hint": "Regrouper en une ligne les requêtes identiques successives",
-    "repeat_count_hint": "{{count}} requêtes identiques successives"
+    "repeat_count_hint": "{{count}} requêtes identiques successives",
+    "safe_tag": "sécurisé",
+    "safe_hint": "Recherche sécurisée : répondu avec {{host}}"
   },
   "clients": {
     "title": "Clients",
@@ -711,5 +713,16 @@
       "telegram": "Les applis Telegram joignent leurs serveurs par adresse IP : le blocage arrête le site et les liens t.me, pas l'appli elle-même.",
       "facebook": "Désactive aussi « Se connecter avec Facebook » et les widgets Facebook sur les autres sites."
     }
+  },
+  "safesearch": {
+    "title": "Recherche sécurisée",
+    "help": "Résultats filtrés sur Google, Bing et DuckDuckGo, et mode restreint sur YouTube, pour tous les appareils, quel que soit le réglage du navigateur ou de l'appli. Un profil peut le rendre plus strict pour ses appareils.",
+    "search_label": "SafeSearch sur Google, Bing et DuckDuckGo",
+    "youtube_label": "Mode restreint de YouTube",
+    "network_on": "Actif pour tout le réseau",
+    "level_off": "Non",
+    "level_moderate": "Modéré",
+    "level_strict": "Strict",
+    "saved": "Recherche sécurisée mise à jour"
   }
 }

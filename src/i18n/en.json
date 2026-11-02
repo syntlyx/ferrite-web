@@ -133,7 +133,9 @@
     "no_queries_log_off": "Nothing is being recorded",
     "group_repeats": "Group",
     "group_repeats_hint": "Fold identical queries in a row into one line",
-    "repeat_count_hint": "{{count}} identical queries in a row"
+    "repeat_count_hint": "{{count}} identical queries in a row",
+    "safe_tag": "safe",
+    "safe_hint": "Safe search: answered with {{host}}"
   },
   "clients": {
     "title": "Clients",
@@ -711,5 +713,16 @@
       "telegram": "Telegram's apps reach their servers by IP address, so blocking stops the website and t.me links, not the app itself.",
       "facebook": "Also stops “Sign in with Facebook” and Facebook widgets on other sites."
     }
+  },
+  "safesearch": {
+    "title": "Safe search",
+    "help": "Filtered results on Google, Bing and DuckDuckGo, and Restricted Mode on YouTube, for every device — whatever the browser or app is set to. A profile can make it stricter for its devices.",
+    "search_label": "SafeSearch on Google, Bing and DuckDuckGo",
+    "youtube_label": "YouTube Restricted Mode",
+    "network_on": "On for the whole network",
+    "level_off": "Off",
+    "level_moderate": "Moderate",
+    "level_strict": "Strict",
+    "saved": "Safe search updated"
   }
 }
