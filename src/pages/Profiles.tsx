@@ -7,6 +7,7 @@ import {
   ChevronDown,
   ChevronUp,
   ListFilter,
+  Pencil,
   Plus,
   Save,
   SearchCheck,
@@ -19,10 +20,11 @@ import { cn } from "@/lib/utils";
 import { api } from "@/api";
 import { deviceTokens } from "@/api/clients";
 import { DevicePicker } from "@/components/DevicePicker";
-import { ServicePicker } from "@/components/ServicePicker";
+import { ServiceIcon, ServicePicker } from "@/components/ServicePicker";
 import { SafeSearchControls } from "@/components/SafeSearchControls";
 import {
   ScheduleEditor,
+  describeWindow,
   formatWeekMinute,
   scheduleActive,
   useWeekdayNames,
@@ -223,6 +225,128 @@ function ListChips({
 const flip = (list: string[], item: string) =>
   list.includes(item) ? list.filter((x) => x !== item) : [...list, item];
 
+/** One collapsed profile: who it applies to, when, and what it does — enough
+ *  to tell profiles apart without opening the editor. */
+function ProfileSummary({
+  pr,
+  knownClients,
+  catalog,
+  on,
+  dayNames,
+}: {
+  pr: BlocklistProfile;
+  knownClients: ClientEntry[];
+  catalog: ServiceCatalog | null;
+  /** Whether the schedule has it on now; null without a schedule. */
+  on: boolean | null;
+  dayNames: string[];
+}) {
+  const { t } = useTranslation();
+  const scoped = pr.clients.map((x) => x.toLowerCase());
+  const matched = knownClients.filter((c) =>
+    deviceTokens(c).some((tok) => scoped.includes(tok.toLowerCase())),
+  );
+  const covered = new Set(matched.flatMap((c) => deviceTokens(c).map((x) => x.toLowerCase())));
+  // Devices the profile names that haven't been seen lately still count.
+  const unseen = scoped.filter((tok) => !covered.has(tok)).length;
+  const names = matched.map((c) => c.name);
+  const extra = Math.max(0, names.length - 3) + unseen;
+  const services = (catalog?.services ?? []).filter((s) => pr.services.includes(s.id));
+  const everyDay = t("profiles.schedule_every_day", { defaultValue: "every day" });
+
+  const meta = "flex items-center gap-1.5";
+  return (
+    <div className="min-w-0 flex-1">
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-sm font-medium text-heading transition-colors group-hover:text-ember">
+          {pr.name || t("profiles.unnamed", { defaultValue: "Unnamed profile" })}
+        </span>
+        {on !== null && (
+          <span
+            className={cn(
+              "rounded-xs border px-1.5 py-0.5 font-mono text-[9px] tracking-wider uppercase",
+              on ? "border-cached/40 bg-cached/10 text-cached" : "border-bdr/70 text-muted",
+            )}
+          >
+            {on
+              ? t("profiles.on_now", { defaultValue: "On now" })
+              : t("profiles.off_now", { defaultValue: "Off now" })}
+          </span>
+        )}
+        {pr.default_deny && (
+          <span className="rounded-xs border border-warn/40 bg-warn/10 px-1.5 py-0.5 font-mono text-[9px] tracking-wider text-warn uppercase">
+            {t("profiles.default_deny_short", { defaultValue: "Allowed only" })}
+          </span>
+        )}
+      </div>
+      <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] text-muted">
+        <span className={meta}>
+          <Users size={11} className="shrink-0" />
+          {names.length + unseen === 0 ? (
+            <span className="text-warn">
+              {t("profiles.summary_nobody", { defaultValue: "no devices" })}
+            </span>
+          ) : names.length === 0 ? (
+            // Named by address only, none seen lately: a count says more than "+1".
+            <span className="text-body">
+              {t("profiles.devices_n", { count: unseen, defaultValue: "devices: {{count}}" })}
+            </span>
+          ) : (
+            <span className="text-body">
+              {names.slice(0, 3).join(", ")}
+              {extra > 0 && ` +${extra}`}
+            </span>
+          )}
+        </span>
+        <span className={meta}>
+          <CalendarClock size={11} className="shrink-0" />
+          {pr.schedule.length === 0
+            ? t("profiles.schedule_always_short", { defaultValue: "always" })
+            : pr.schedule.map((w) => describeWindow(w, dayNames, everyDay)).join("; ")}
+        </span>
+        {services.length > 0 && (
+          <span className={meta} title={services.map((s) => s.name).join(", ")}>
+            <LayoutGrid size={11} className="shrink-0" />
+            <span className="flex items-center gap-1 text-blocked">
+              {services.slice(0, 6).map((s) => (
+                <ServiceIcon key={s.id} service={s} size={11} />
+              ))}
+            </span>
+            {services.length > 6 && `+${services.length - 6}`}
+          </span>
+        )}
+        {pr.lists.length > 0 && (
+          <span className={meta}>
+            <ListFilter size={11} className="shrink-0" />
+            {t("profiles.lists_n", { count: pr.lists.length, defaultValue: "lists: {{count}}" })}
+          </span>
+        )}
+        {(pr.block.length > 0 || pr.allow.length > 0) && (
+          <span className={meta}>
+            <Ban size={11} className="shrink-0" />
+            {t("profiles.own_rules_n", {
+              count: pr.block.length + pr.allow.length,
+              defaultValue: "own rules: {{count}}",
+            })}
+          </span>
+        )}
+        {(pr.safe_search || pr.youtube_restricted !== "off") && (
+          <span className={meta}>
+            <SearchCheck size={11} className="shrink-0" />
+            {[
+              pr.safe_search && "SafeSearch",
+              pr.youtube_restricted !== "off" &&
+                `YouTube ${t(`safesearch.level_${pr.youtube_restricted}`).toLowerCase()}`,
+            ]
+              .filter(Boolean)
+              .join(" · ")}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
 /**
  * Per-device profiles: which services to block, which subscription lists to
  * apply, and what to block or allow on top, for chosen devices. Devices in no
@@ -248,6 +372,8 @@ export default function Profiles() {
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState("");
   const keys = useRowKeys(profiles.length);
+  // One profile's editor open at a time; the rest stay as one-line summaries.
+  const [openKey, setOpenKey] = useState<number | null>(null);
 
   const load = useCallback(() => {
     return api
@@ -259,6 +385,7 @@ export default function Profiles() {
         setAvailableAllowlists(d.available_allowlists ?? []);
         setSavedJson(JSON.stringify(list));
         keys.reset(list.length);
+        setOpenKey(null);
         if (d.clock)
           setClock({ minute: d.clock.minute_of_week, at: Date.now(), offset: d.clock.utc_offset });
         setErr("");
@@ -290,6 +417,7 @@ export default function Profiles() {
 
   const addProfile = () => {
     keys.add();
+    setOpenKey(keys.keyAt(profiles.length));
     setProfiles((p) => [
       ...p,
       {
@@ -353,6 +481,7 @@ export default function Profiles() {
     const restored = (JSON.parse(savedJson) as BlocklistProfile[]).map(withDefaults);
     setProfiles(restored);
     keys.reset(restored.length);
+    setOpenKey(null);
   }
 
   async function save() {
@@ -419,8 +548,69 @@ export default function Profiles() {
             const deviceCount = knownClients.filter((c) =>
               deviceTokens(c).some((tok) => scoped.includes(tok.toLowerCase())),
             ).length;
+            const rowKey = keys.keyAt(i);
+            const isOpen = openKey === rowKey;
+            const onNow =
+              pr.schedule.length > 0 && boxMinute !== null
+                ? scheduleActive(pr.schedule, boxMinute)
+                : null;
+            const order = profiles.length > 1 && (
+              <>
+                <IconBtn
+                  onClick={() => moveProfile(i, i - 1)}
+                  disabled={i === 0}
+                  title={t("profiles.move_up", { defaultValue: "Move up" })}
+                >
+                  <ChevronUp size={13} />
+                </IconBtn>
+                <IconBtn
+                  onClick={() => moveProfile(i, i + 1)}
+                  disabled={i === profiles.length - 1}
+                  title={t("profiles.move_down", { defaultValue: "Move down" })}
+                >
+                  <ChevronDown size={13} />
+                </IconBtn>
+              </>
+            );
+            const remove = (
+              <IconBtn
+                danger
+                onClick={() => void removeProfile(i)}
+                title={t("profiles.remove", { defaultValue: "Remove profile" })}
+              >
+                <Trash2 size={13} />
+              </IconBtn>
+            );
+            if (!isOpen) {
+              return (
+                <Card key={rowKey} className="py-4">
+                  <div className="flex items-start gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setOpenKey(rowKey)}
+                      className="group min-w-0 flex-1 text-left"
+                    >
+                      <ProfileSummary
+                        pr={pr}
+                        knownClients={knownClients}
+                        catalog={catalog}
+                        on={onNow}
+                        dayNames={dayNames}
+                      />
+                    </button>
+                    <div className="flex shrink-0 items-center gap-1">
+                      <Btn variant="ghost" size="sm" onClick={() => setOpenKey(rowKey)}>
+                        <Pencil size={11} /> {t("profiles.edit", { defaultValue: "Edit" })}
+                      </Btn>
+                      {order}
+                      {remove}
+                    </div>
+                  </div>
+                </Card>
+              );
+            }
             return (
-              <Card key={keys.keyAt(i)} className="space-y-5">
+              <Card key={rowKey} className="space-y-5 border-ember/30">
                 {/* Name */}
                 <div className="flex items-center gap-2">
                   <Input
@@ -437,45 +627,25 @@ export default function Profiles() {
                       {pr.id}
                     </span>
                   )}
-                  {pr.schedule.length > 0 && boxMinute !== null && (
+                  {onNow !== null && (
                     <span
                       className={cn(
                         "shrink-0 rounded-xs border px-2 py-0.5 font-mono text-[10px] tracking-wider uppercase",
-                        scheduleActive(pr.schedule, boxMinute)
+                        onNow
                           ? "border-cached/40 bg-cached/10 text-cached"
                           : "border-bdr/70 text-muted",
                       )}
                     >
-                      {scheduleActive(pr.schedule, boxMinute)
+                      {onNow
                         ? t("profiles.on_now", { defaultValue: "On now" })
                         : t("profiles.off_now", { defaultValue: "Off now" })}
                     </span>
                   )}
-                  {profiles.length > 1 && (
-                    <>
-                      <IconBtn
-                        onClick={() => moveProfile(i, i - 1)}
-                        disabled={i === 0}
-                        title={t("profiles.move_up", { defaultValue: "Move up" })}
-                      >
-                        <ChevronUp size={13} />
-                      </IconBtn>
-                      <IconBtn
-                        onClick={() => moveProfile(i, i + 1)}
-                        disabled={i === profiles.length - 1}
-                        title={t("profiles.move_down", { defaultValue: "Move down" })}
-                      >
-                        <ChevronDown size={13} />
-                      </IconBtn>
-                    </>
-                  )}
-                  <IconBtn
-                    danger
-                    onClick={() => void removeProfile(i)}
-                    title={t("profiles.remove", { defaultValue: "Remove profile" })}
-                  >
-                    <Trash2 size={13} />
-                  </IconBtn>
+                  <Btn variant="ghost" size="sm" onClick={() => setOpenKey(null)}>
+                    <ChevronUp size={11} /> {t("profiles.collapse", { defaultValue: "Done" })}
+                  </Btn>
+                  {order}
+                  {remove}
                 </div>
 
                 {/* Devices */}

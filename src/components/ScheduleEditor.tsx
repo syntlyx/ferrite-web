@@ -50,6 +50,39 @@ export function useWeekdayNames(): string[] {
   }, [i18n.language]);
 }
 
+/** Days as a short phrase: `Mon–Fri`, `Sat, Sun`, or `everyDay` for all seven. */
+export function describeDays(days: string[], names: string[], everyDay: string): string {
+  const idx = (days.length ? days : [...DAYS])
+    .map((d) => DAYS.indexOf(d as (typeof DAYS)[number]))
+    .filter((i) => i >= 0)
+    .sort((a, b) => a - b);
+  if (idx.length === 0 || idx.length === 7) return everyDay;
+  const parts: string[] = [];
+  let start = idx[0];
+  let prev = idx[0];
+  for (const i of [...idx.slice(1), -1]) {
+    if (i === prev + 1) {
+      prev = i;
+      continue;
+    }
+    parts.push(
+      start === prev
+        ? names[start]
+        : prev === start + 1
+          ? `${names[start]}, ${names[prev]}`
+          : `${names[start]}–${names[prev]}`,
+    );
+    start = i;
+    prev = i;
+  }
+  return parts.join(", ");
+}
+
+/** A window as one line: `Mon–Fri 21:00–07:00`. */
+export function describeWindow(w: ScheduleWindow, names: string[], everyDay: string): string {
+  return `${describeDays(w.days, names, everyDay)} ${w.from}–${w.to}`;
+}
+
 /** `Mon 21:05` for a minute of the week. */
 export function formatWeekMinute(minute: number, names: string[]): string {
   const day = Math.floor(minute / DAY_MIN) % 7;
