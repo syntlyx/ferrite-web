@@ -673,7 +673,16 @@
     "schedule_every_day": "every day",
     "schedule_overnight": "ends the next morning",
     "schedule_all_day": "all day",
-    "schedule_add": "Add time window"
+    "schedule_add": "Add time window",
+    "edit": "Edit",
+    "collapse": "Done",
+    "unnamed": "Unnamed profile",
+    "default_deny_short": "Allowed only",
+    "summary_nobody": "no devices",
+    "schedule_always_short": "always",
+    "lists_n": "lists: {{count}}",
+    "own_rules_n": "own rules: {{count}}",
+    "devices_n": "devices: {{count}}"
   },
   "quick": {
     "block": "Block",
@@ -800,5 +809,11 @@
     "show_in_log": "Query Log",
     "blocked_toast": "{{domain}} blocked for every device",
     "allowed_toast": "{{domain}} allowed for every device"
+  },
+  "devices": {
+    "find": "Find a device…",
+    "more": "+{{count}} more",
+    "fewer": "Show fewer",
+    "none_match": "No device matches."
   }
 }

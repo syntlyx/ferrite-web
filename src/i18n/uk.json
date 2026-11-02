@@ -673,7 +673,16 @@
     "schedule_every_day": "щодня",
     "schedule_overnight": "закінчується наступного ранку",
     "schedule_all_day": "увесь день",
-    "schedule_add": "Додати часове вікно"
+    "schedule_add": "Додати часове вікно",
+    "edit": "Змінити",
+    "collapse": "Готово",
+    "unnamed": "Профіль без назви",
+    "default_deny_short": "Лише дозволене",
+    "summary_nobody": "немає пристроїв",
+    "schedule_always_short": "завжди",
+    "lists_n": "списків: {{count}}",
+    "own_rules_n": "власних правил: {{count}}",
+    "devices_n": "пристроїв: {{count}}"
   },
   "quick": {
     "block": "Заблокувати",
@@ -800,5 +809,11 @@
     "show_in_log": "Журнал запитів",
     "blocked_toast": "{{domain}} заблоковано для всіх пристроїв",
     "allowed_toast": "{{domain}} дозволено для всіх пристроїв"
+  },
+  "devices": {
+    "find": "Знайти пристрій…",
+    "more": "ще {{count}}",
+    "fewer": "Згорнути",
+    "none_match": "Жоден пристрій не підходить."
   }
 }

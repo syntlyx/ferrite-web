@@ -673,7 +673,16 @@
     "schedule_every_day": "täglich",
     "schedule_overnight": "endet am nächsten Morgen",
     "schedule_all_day": "ganztägig",
-    "schedule_add": "Zeitfenster hinzufügen"
+    "schedule_add": "Zeitfenster hinzufügen",
+    "edit": "Bearbeiten",
+    "collapse": "Fertig",
+    "unnamed": "Profil ohne Namen",
+    "default_deny_short": "Nur Erlaubtes",
+    "summary_nobody": "keine Geräte",
+    "schedule_always_short": "immer",
+    "lists_n": "Listen: {{count}}",
+    "own_rules_n": "eigene Regeln: {{count}}",
+    "devices_n": "Geräte: {{count}}"
   },
   "quick": {
     "block": "Blockieren",
@@ -800,5 +809,11 @@
     "show_in_log": "Abfrageprotokoll",
     "blocked_toast": "{{domain}} für alle Geräte gesperrt",
     "allowed_toast": "{{domain}} für alle Geräte erlaubt"
+  },
+  "devices": {
+    "find": "Gerät suchen…",
+    "more": "+{{count}} weitere",
+    "fewer": "Weniger zeigen",
+    "none_match": "Kein Gerät passt."
   }
 }

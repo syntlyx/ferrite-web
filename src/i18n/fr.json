@@ -673,7 +673,16 @@
     "schedule_every_day": "tous les jours",
     "schedule_overnight": "se termine le lendemain matin",
     "schedule_all_day": "toute la journée",
-    "schedule_add": "Ajouter une plage horaire"
+    "schedule_add": "Ajouter une plage horaire",
+    "edit": "Modifier",
+    "collapse": "Terminé",
+    "unnamed": "Profil sans nom",
+    "default_deny_short": "Autorisé seulement",
+    "summary_nobody": "aucun appareil",
+    "schedule_always_short": "toujours",
+    "lists_n": "listes : {{count}}",
+    "own_rules_n": "règles propres : {{count}}",
+    "devices_n": "appareils : {{count}}"
   },
   "quick": {
     "block": "Bloquer",
@@ -800,5 +809,11 @@
     "show_in_log": "Journal des requêtes",
     "blocked_toast": "{{domain}} bloqué pour tous les appareils",
     "allowed_toast": "{{domain}} autorisé pour tous les appareils"
+  },
+  "devices": {
+    "find": "Chercher un appareil…",
+    "more": "+{{count}} de plus",
+    "fewer": "Afficher moins",
+    "none_match": "Aucun appareil ne correspond."
   }
 }
