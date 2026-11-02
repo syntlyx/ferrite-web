@@ -296,6 +296,8 @@ export interface BlocklistProfile {
   allow: string[];
   /** Catalog service ids blocked only for this profile (same tier as `block`). */
   services: string[];
+  /** Weekly windows when the profile applies (box-local time). Empty = always. */
+  schedule: ScheduleWindow[];
   /** Allowlist subscription names this profile includes. Empty = inherit
    *  every enabled allowlist. */
   allowlists: string[];
@@ -309,6 +311,20 @@ export interface ProfilesResponse {
   available_lists: string[];
   /** Allowlist subscription names available for per-profile selection. */
   available_allowlists: string[];
+  /** Saved profile id → is its schedule on right now. */
+  active?: Record<string, boolean>;
+  /** The box-local clock schedules are judged by. */
+  clock?: { minute_of_week: number; utc_offset: string };
+}
+
+/** One weekly window of a profile schedule. */
+export interface ScheduleWindow {
+  /** `mon`…`sun`, the days the window starts on. Empty = every day. */
+  days: string[];
+  /** `HH:MM`, box-local. */
+  from: string;
+  /** `HH:MM`; earlier than `from` runs past midnight, equal covers the day. */
+  to: string;
 }
 
 export interface PutProfilesResponse {

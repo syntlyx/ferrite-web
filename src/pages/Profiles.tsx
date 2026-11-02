@@ -2,7 +2,10 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Ban,
+  CalendarClock,
   CheckCircle2,
+  ChevronDown,
+  ChevronUp,
   ListFilter,
   Plus,
   Save,
@@ -16,6 +19,12 @@ import { api } from "@/api";
 import { deviceTokens } from "@/api/clients";
 import { DevicePicker } from "@/components/DevicePicker";
 import { ServicePicker } from "@/components/ServicePicker";
+import {
+  ScheduleEditor,
+  formatWeekMinute,
+  scheduleActive,
+  useWeekdayNames,
+} from "@/components/ScheduleEditor";
 import type { BlocklistProfile, ClientEntry, ServiceCatalog } from "@/api/types";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { PageContainer } from "@/components/layout/PageContainer";
@@ -42,7 +51,20 @@ const withDefaults = (p: BlocklistProfile): BlocklistProfile => ({
   allow: p.allow ?? [],
   allowlists: p.allowlists ?? [],
   services: p.services ?? [],
+  schedule: p.schedule ?? [],
 });
+
+/** The box's minute of the week, kept ticking from the snapshot the server
+ *  sent, so schedule status stays right while the page is open. */
+function useBoxMinute(clock: { minute: number; at: number } | null): number | null {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 15_000);
+    return () => clearInterval(id);
+  }, []);
+  if (!clock) return null;
+  return (clock.minute + Math.floor(Math.max(0, now - clock.at) / 60_000)) % (7 * 24 * 60);
+}
 
 /** Section heading inside a profile card. */
 function Field({
@@ -208,6 +230,9 @@ export default function Profiles() {
   const [availableAllowlists, setAvailableAllowlists] = useState<string[]>([]);
   const [knownClients, setKnownClients] = useState<ClientEntry[]>([]);
   const [catalog, setCatalog] = useState<ServiceCatalog | null>(null);
+  const [clock, setClock] = useState<{ minute: number; at: number; offset: string } | null>(null);
+  const boxMinute = useBoxMinute(clock);
+  const dayNames = useWeekdayNames();
   const [savedJson, setSavedJson] = useState("[]");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -224,6 +249,8 @@ export default function Profiles() {
         setAvailableAllowlists(d.available_allowlists ?? []);
         setSavedJson(JSON.stringify(list));
         keys.reset(list.length);
+        if (d.clock)
+          setClock({ minute: d.clock.minute_of_week, at: Date.now(), offset: d.clock.utc_offset });
         setErr("");
       })
       .catch((e: Error) => setErr(e.message))
@@ -261,8 +288,19 @@ export default function Profiles() {
         allowlists: [],
         services: [],
         default_deny: false,
+        schedule: [],
       },
     ]);
+  };
+
+  const moveProfile = (i: number, to: number) => {
+    keys.move(i, to);
+    setProfiles((ps) => {
+      const next = [...ps];
+      const [p] = next.splice(i, 1);
+      next.splice(to, 0, p);
+      return next;
+    });
   };
 
   const removeProfile = async (i: number) => {
@@ -383,6 +421,38 @@ export default function Profiles() {
                       {pr.id}
                     </span>
                   )}
+                  {pr.schedule.length > 0 && boxMinute !== null && (
+                    <span
+                      className={cn(
+                        "shrink-0 rounded-xs border px-2 py-0.5 font-mono text-[10px] tracking-wider uppercase",
+                        scheduleActive(pr.schedule, boxMinute)
+                          ? "border-cached/40 bg-cached/10 text-cached"
+                          : "border-bdr/70 text-muted",
+                      )}
+                    >
+                      {scheduleActive(pr.schedule, boxMinute)
+                        ? t("profiles.on_now", { defaultValue: "On now" })
+                        : t("profiles.off_now", { defaultValue: "Off now" })}
+                    </span>
+                  )}
+                  {profiles.length > 1 && (
+                    <>
+                      <IconBtn
+                        onClick={() => moveProfile(i, i - 1)}
+                        disabled={i === 0}
+                        title={t("profiles.move_up", { defaultValue: "Move up" })}
+                      >
+                        <ChevronUp size={13} />
+                      </IconBtn>
+                      <IconBtn
+                        onClick={() => moveProfile(i, i + 1)}
+                        disabled={i === profiles.length - 1}
+                        title={t("profiles.move_down", { defaultValue: "Move down" })}
+                      >
+                        <ChevronDown size={13} />
+                      </IconBtn>
+                    </>
+                  )}
                   <IconBtn
                     danger
                     onClick={() => void removeProfile(i)}
@@ -423,6 +493,43 @@ export default function Profiles() {
                     <p className="mt-1.5 text-[11px] text-warn">
                       {t("profiles.no_devices_selected", {
                         defaultValue: "No devices selected — this profile applies to nobody yet.",
+                      })}
+                    </p>
+                  )}
+                </div>
+
+                {/* Schedule */}
+                <div>
+                  <Field
+                    icon={CalendarClock}
+                    label={t("profiles.schedule", { defaultValue: "Schedule" })}
+                    aside={
+                      boxMinute !== null && clock
+                        ? t("profiles.box_time", {
+                            time: formatWeekMinute(boxMinute, dayNames),
+                            offset: clock.offset,
+                            defaultValue: "Box time {{time}} (UTC{{offset}})",
+                          })
+                        : undefined
+                    }
+                  />
+                  {pr.schedule.length === 0 && (
+                    <p className="mb-2 text-[11px] text-muted">
+                      {t("profiles.schedule_always", {
+                        defaultValue:
+                          "Always on. Add a time window to apply this profile only at certain hours.",
+                      })}
+                    </p>
+                  )}
+                  <ScheduleEditor
+                    windows={pr.schedule}
+                    onChange={(next) => update(i, (p) => ({ ...p, schedule: next }))}
+                  />
+                  {pr.schedule.length > 0 && (
+                    <p className="mt-2 text-[11px] leading-relaxed text-muted/80">
+                      {t("profiles.schedule_hint", {
+                        defaultValue:
+                          "Outside these hours its devices follow the next profile they are in, or the network-wide rules. When several profiles include a device, the first one that is on wins — the arrows set the order.",
                       })}
                     </p>
                   )}

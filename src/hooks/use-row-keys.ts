@@ -38,6 +38,14 @@ export function useRowKeys(length: number) {
     keys.current = keys.current.filter((_, i) => i !== index);
   }, []);
 
+  /** Call alongside the state update that moves row `from` to index `to`. */
+  const move = useCallback((from: number, to: number) => {
+    const next = [...keys.current];
+    const [k] = next.splice(from, 1);
+    next.splice(to, 0, k);
+    keys.current = next;
+  }, []);
+
   /** Call when the whole list is replaced and every row is a new row. */
   const reset = useCallback((count: number) => {
     keys.current = Array.from({ length: count }, () => next.current++);
@@ -45,5 +53,8 @@ export function useRowKeys(length: number) {
 
   // One stable object, so callers can list it in a dependency array without
   // rebuilding every callback that touches a row.
-  return useMemo(() => ({ keyAt, add, remove, reset }), [keyAt, add, remove, reset]);
+  return useMemo(
+    () => ({ keyAt, add, remove, move, reset }),
+    [keyAt, add, remove, move, reset],
+  );
 }
