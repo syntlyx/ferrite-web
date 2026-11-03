@@ -394,6 +394,30 @@ export default function AppShell({ children }: { children: ReactNode }) {
           </div>
         ) : (
           <div className="mb-2 rounded-xl border border-bdr bg-card px-3 py-2.5">
+            {/* The lengths open above the status line: the card sits at the
+                bottom of the sidebar and grows upward, so the pause button
+                stays where it was clicked rather than a length taking its place. */}
+            {configuredOn && !paused && pauseOpen && (
+              <div className="mb-2.5 flex items-center gap-1">
+                {PAUSE_OPTIONS.map((m) => (
+                  <button
+                    key={m}
+                    type="button"
+                    onClick={() => {
+                      setPauseOpen(false);
+                      runPause(() => pause.pauseGlobal(m));
+                    }}
+                    title={t("pause.pause_for", {
+                      time: fmtMinutes(m),
+                      defaultValue: "Pause filtering for {{time}}",
+                    })}
+                    className="h-7 flex-1 rounded-lg border border-bdr text-xs text-body tabular-nums transition-colors hover:border-warn/50 hover:text-warn"
+                  >
+                    {fmtMinutes(m)}
+                  </button>
+                ))}
+              </div>
+            )}
             <div className="flex items-center gap-2.5">
               <span
                 className={cn(
@@ -447,27 +471,6 @@ export default function AppShell({ children }: { children: ReactNode }) {
                   </button>
                 ))}
             </div>
-            {configuredOn && !paused && pauseOpen && (
-              <div className="mt-2.5 flex items-center gap-1">
-                {PAUSE_OPTIONS.map((m) => (
-                  <button
-                    key={m}
-                    type="button"
-                    onClick={() => {
-                      setPauseOpen(false);
-                      runPause(() => pause.pauseGlobal(m));
-                    }}
-                    title={t("pause.pause_for", {
-                      time: fmtMinutes(m),
-                      defaultValue: "Pause filtering for {{time}}",
-                    })}
-                    className="h-7 flex-1 rounded-lg border border-bdr text-xs text-body tabular-nums transition-colors hover:border-warn/50 hover:text-warn"
-                  >
-                    {fmtMinutes(m)}
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
         )}
 
