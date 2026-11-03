@@ -114,7 +114,9 @@
     "blocklist_size": "{{n}} доменів у блоклисті",
     "share_blocked": "частка заблокованого",
     "tab_queries": "Запити",
-    "open_blocklist": "Блокліст"
+    "open_blocklist": "Блокліст",
+    "local_routed": "Локальні / через тунель",
+    "local_routed_hint": "Відповідь із ваших DNS-записів або спрямовано через тунель"
   },
   "queries": {
     "title": "Журнал запитів",

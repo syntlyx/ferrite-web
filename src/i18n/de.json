@@ -114,7 +114,9 @@
     "blocklist_size": "{{n}} Domains auf der Sperrliste",
     "share_blocked": "Anteil blockiert",
     "tab_queries": "Abfragen",
-    "open_blocklist": "Sperrliste"
+    "open_blocklist": "Sperrliste",
+    "local_routed": "Lokal / geroutet",
+    "local_routed_hint": "Aus Ihren eigenen DNS-Einträgen beantwortet oder durch einen Tunnel geleitet"
   },
   "queries": {
     "title": "Abfrageprotokoll",

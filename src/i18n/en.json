@@ -114,7 +114,9 @@
     "blocklist_size": "{{n}} domains on the blocklist",
     "share_blocked": "share blocked",
     "tab_queries": "Queries",
-    "open_blocklist": "Blocklist"
+    "open_blocklist": "Blocklist",
+    "local_routed": "Local / routed",
+    "local_routed_hint": "Answered from your own DNS records, or routed through a tunnel"
   },
   "queries": {
     "title": "Query log",

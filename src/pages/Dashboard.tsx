@@ -136,7 +136,17 @@ function TotalsCard({ stats }: { stats: StatsSummary }) {
       label: t("dashboard.upstream"),
     },
   ];
+  // Whatever none of the three took: answered from your own DNS records, or
+  // routed through a tunnel. The stored history keeps the two as one figure.
   const rest = Math.max(0, total - parts.reduce((n, p) => n + p.value, 0));
+  if (rest > 0) {
+    parts.push({
+      key: "other",
+      value: rest,
+      cls: "bg-routed/75",
+      label: t("dashboard.local_routed", { defaultValue: "Local / routed" }),
+    });
+  }
   return (
     <Card className="mb-4 p-6">
       <div className="grid grid-cols-2 gap-x-6 gap-y-5 xl:grid-cols-4">
@@ -173,13 +183,23 @@ function TotalsCard({ stats }: { stats: StatsSummary }) {
             (p) =>
               p.value > 0 && <div key={p.key} className={p.cls} style={{ flexGrow: p.value }} />,
           )}
-        {total > 0 && rest > 0 && <div className="bg-raised" style={{ flexGrow: rest }} />}
       </div>
       <div className="text-muted mt-3 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-xs">
         {parts.map((p) => (
-          <span key={p.key} className="flex items-center gap-1.5">
+          <span
+            key={p.key}
+            className="flex items-center gap-1.5"
+            title={
+              p.key === "other"
+                ? t("dashboard.local_routed_hint", {
+                    defaultValue:
+                      "Answered from your own DNS records, or routed through a tunnel",
+                  })
+                : undefined
+            }
+          >
             <span className={cn("h-2 w-2 rounded-sm", p.cls)} />
-            {p.label}
+            {p.label} <span className="tabular-nums">{pct(p.value, total)}</span>
           </span>
         ))}
         <span className="sm:ml-auto">

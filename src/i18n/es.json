@@ -114,7 +114,9 @@
     "blocklist_size": "{{n}} dominios en la lista de bloqueo",
     "share_blocked": "proporción bloqueada",
     "tab_queries": "Consultas",
-    "open_blocklist": "Lista de bloqueo"
+    "open_blocklist": "Lista de bloqueo",
+    "local_routed": "Local / enrutado",
+    "local_routed_hint": "Respondido con tus propios registros DNS o enrutado por un túnel"
   },
   "queries": {
     "title": "Registro de consultas",

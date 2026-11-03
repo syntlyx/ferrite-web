@@ -114,7 +114,9 @@
     "blocklist_size": "{{n}} domaines sur la liste de blocage",
     "share_blocked": "part bloquée",
     "tab_queries": "Requêtes",
-    "open_blocklist": "Liste de blocage"
+    "open_blocklist": "Liste de blocage",
+    "local_routed": "Local / routé",
+    "local_routed_hint": "Répondu par vos propres enregistrements DNS ou routé via un tunnel"
   },
   "queries": {
     "title": "Journal des requêtes",
