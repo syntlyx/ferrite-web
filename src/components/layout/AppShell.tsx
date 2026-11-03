@@ -17,6 +17,7 @@ import {
   LogOut,
   Menu,
   Monitor,
+  Network,
   Moon,
   Pause,
   Play,
@@ -93,6 +94,7 @@ const NAV_GROUPS = [
     items: [
       { to: "/dns", icon: Server, key: "nav.custom_dns" },
       { to: "/tunnels", icon: Waypoints, key: "nav.tunnels" },
+      { to: "/dhcp", icon: Network, key: "nav.dhcp" },
     ],
   },
   {

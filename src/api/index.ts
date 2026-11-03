@@ -25,6 +25,7 @@ import * as pause from "./pause";
 import * as backup from "./backup";
 import * as importer from "./importer";
 import * as sync from "./sync";
+import * as dhcp from "./dhcp";
 import * as services from "./services";
 import * as notifications from "./notifications";
 
@@ -128,6 +129,9 @@ export const api = {
 
   exportConfig: backup.exportConfig,
   previewImport: importer.preview,
+  getDhcp: dhcp.get,
+  putDhcp: dhcp.put,
+  dhcpLeases: dhcp.leases,
   getSync: sync.get,
   putSync: sync.put,
   syncNow: sync.now,

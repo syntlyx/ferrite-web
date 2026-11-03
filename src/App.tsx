@@ -47,6 +47,7 @@ const Profiles = lazy(() => import("@/pages/Profiles"));
 const Lists = lazy(() => import("@/pages/Lists"));
 const CustomDNS = lazy(() => import("@/pages/CustomDNS"));
 const Tunnels = lazy(() => import("@/pages/Tunnels"));
+const Dhcp = lazy(() => import("@/pages/Dhcp"));
 const Logs = lazy(() => import("@/pages/Logs"));
 const Tools = lazy(() => import("@/pages/Tools"));
 const Settings = lazy(() => import("@/pages/Settings"));
@@ -186,6 +187,7 @@ export default function App() {
                             <Route path="/lists" element={<Lists />} />
                             <Route path="/dns" element={<CustomDNS />} />
                             <Route path="/tunnels" element={<Tunnels />} />
+                            <Route path="/dhcp" element={<Dhcp />} />
                             <Route path="/logs" element={<Logs />} />
                             <Route path="/tools" element={<Tools />} />
                             <Route path="/settings" element={<Settings />} />

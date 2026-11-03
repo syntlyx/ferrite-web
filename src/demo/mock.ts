@@ -475,6 +475,8 @@ function get(path: string, qs: URLSearchParams): Json {
       check_pending: false,
       last_error: null,
     };
+  if (p === "/dhcp") return dhcpView();
+  if (p === "/dhcp/leases") return dhcpLeases();
   if (p === "/sync")
     return {
       primary: "",
@@ -486,8 +488,79 @@ function get(path: string, qs: URLSearchParams): Json {
   return {};
 }
 
+// ── DHCP ── a running server on the demo network.
+let dhcpCfg: Json = {
+  dhcp: {
+    enabled: true,
+    subnet_mask: "255.255.255.0",
+    pool_start: "192.168.1.100",
+    pool_end: "192.168.1.199",
+    domain: "lan",
+    lease_secs: 86400,
+    reservations: [
+      { mac: "02:4e:1a:7c:00:02", ip: "192.168.1.2", name: "hue-bridge" },
+      { mac: "02:4e:1a:7c:00:32", ip: "192.168.1.50", name: "ipad-mini" },
+      { mac: "02:4e:1a:7c:00:4d", ip: "192.168.1.77", name: "macbook-air-m2" },
+    ],
+  },
+  ra: { enabled: false, rdnss_lifetime: 1800, interval_secs: 200 },
+};
+const DHCP_LEASES: [string, string, string | null, number, boolean][] = [
+  ["192.168.1.2", "02:4e:1a:7c:00:02", "Philips-hue", 20, true],
+  ["192.168.1.50", "02:4e:1a:7c:00:32", "iPad", 7, true],
+  ["192.168.1.77", "02:4e:1a:7c:00:4d", "MacBook-Air", 15, true],
+  ["192.168.1.106", "02:4e:1a:7c:00:6a", "LG-webOS-TV", 11, false],
+  ["192.168.1.112", "02:4e:1a:7c:00:70", "kindle-a1b2", 3, false],
+  ["192.168.1.114", "02:4e:1a:7c:00:72", "Pixel-8-Pro", 22, false],
+  ["192.168.1.147", "02:4e:1a:7c:00:93", "SHIELD", 18, false],
+  ["192.168.1.155", "02:4e:1a:7c:00:9b", null, 9, false],
+];
+function dhcpView(): Json {
+  const d = dhcpCfg.dhcp;
+  return {
+    ...dhcpCfg,
+    status: {
+      running: d.enabled,
+      error: null,
+      server_ip: d.enabled ? d.server_ip || "192.168.1.10" : null,
+      gateway: d.enabled ? d.gateway || "192.168.1.1" : null,
+      dns: d.enabled ? (d.dns && d.dns.length ? d.dns : ["192.168.1.10"]) : [],
+      domain: d.domain || "lan",
+      ra_running: dhcpCfg.ra.enabled,
+      ra_error: null,
+      ra_interface: dhcpCfg.ra.enabled ? dhcpCfg.ra.interface || "eth0" : null,
+      ra_rdnss: dhcpCfg.ra.enabled ? ["fd00::10"] : [],
+    },
+    detected: {
+      server_ip: "192.168.1.10",
+      subnet_mask: "255.255.255.0",
+      gateway: "192.168.1.1",
+      interface: "eth0",
+      ipv6: ["fd00::10", "2a02:8000:1::10"],
+    },
+  };
+}
+function dhcpLeases(): Json {
+  if (!dhcpCfg.dhcp.enabled) return { leases: [], now: Math.floor(Date.now() / 1000) };
+  const now = Math.floor(Date.now() / 1000);
+  return {
+    now,
+    leases: DHCP_LEASES.map(([ip, mac, hostname, hours, reserved]) => ({
+      ip,
+      mac,
+      hostname,
+      expires_at: now + hours * 3600,
+      reserved,
+    })),
+  };
+}
+
 function write(method: string, path: string, body: Json): Json {
   if (path === "/auth" || path === "/auth/login") return { token: "demo", expires_in: 86400 };
+  if (path === "/dhcp" && method === "PUT") {
+    dhcpCfg = { dhcp: body?.dhcp ?? dhcpCfg.dhcp, ra: body?.ra ?? dhcpCfg.ra };
+    return dhcpView();
+  }
   if (path === "/blocking/pause") {
     const until = nowSecs() + Number(body?.minutes ?? 5) * 60;
     const clients: string[] = body?.clients ?? [];

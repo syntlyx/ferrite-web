@@ -1145,3 +1145,72 @@ export interface SyncPatch {
   interval?: number;
   sections?: SyncSection[];
 }
+
+// ── DHCP ──────────────────────────────────────────────────────────────────────
+
+export interface DhcpReservation {
+  mac: string;
+  ip: string;
+  name?: string | null;
+}
+
+/** `[dhcp]` as the server keeps it; unset fields are left out. */
+export interface DhcpSettings {
+  enabled: boolean;
+  server_ip?: string | null;
+  subnet_mask: string;
+  pool_start?: string | null;
+  pool_end?: string | null;
+  gateway?: string | null;
+  dns?: string[];
+  domain?: string | null;
+  lease_secs: number;
+  reservations?: DhcpReservation[];
+}
+
+/** `[ra]`: IPv6 router advertisements naming ferrite the DNS server. */
+export interface RaSettings {
+  enabled: boolean;
+  interface?: string | null;
+  rdnss?: string[];
+  rdnss_lifetime: number;
+  interval_secs: number;
+}
+
+export interface DhcpStatus {
+  running: boolean;
+  error: string | null;
+  server_ip: string | null;
+  gateway: string | null;
+  dns: string[];
+  domain: string;
+  ra_running: boolean;
+  ra_error: string | null;
+  ra_interface: string | null;
+  ra_rdnss: string[];
+}
+
+/** What the box sees of its network: the defaults the page offers. */
+export interface DhcpDetected {
+  server_ip: string | null;
+  subnet_mask: string | null;
+  gateway: string | null;
+  interface: string | null;
+  ipv6: string[];
+}
+
+export interface DhcpView {
+  dhcp: DhcpSettings;
+  ra: RaSettings;
+  status: DhcpStatus;
+  detected: DhcpDetected;
+}
+
+export interface DhcpLease {
+  ip: string;
+  mac: string;
+  hostname: string | null;
+  /** Unix seconds. */
+  expires_at: number;
+  reserved: boolean;
+}
