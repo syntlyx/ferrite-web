@@ -9,7 +9,7 @@ import { defineConfig, globalIgnores } from "eslint/config";
 
 export default defineConfig([
   // Ignore build output
-  globalIgnores(["dist", "node_modules"]),
+  globalIgnores(["dist", "dist-demo", "node_modules"]),
 
   // ── JS / JSX ──────────────────────────────────────────────────────────────
   {
