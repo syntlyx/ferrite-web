@@ -330,7 +330,7 @@ function TypeSegments({ value, onChange }: { value: string; onChange: (type: str
           type="button"
           onClick={() => onChange(type)}
           className={cn(
-            "border-bdr/60 px-2.5 py-1.5 font-mono text-[10px] font-medium tracking-[0.08em] uppercase transition-colors not-last:border-r",
+            "border-bdr/60 px-2.5 py-1.5 text-xs font-medium transition-colors not-last:border-r",
             type === value
               ? "bg-ember-dim text-ember"
               : "text-muted hover:bg-white/4 hover:text-heading",
@@ -510,7 +510,7 @@ function UpstreamEditor({
         >
           <Plus size={12} /> {t("settings.add_upstream")}
         </Btn>
-        <span className="font-mono text-[10px] tracking-[0.12em] text-muted/70 uppercase">
+        <span className="text-xs text-muted/70">
           {t("settings.quick_add")}:
         </span>
         {UPSTREAM_PRESETS.map((preset) => (
@@ -1819,7 +1819,7 @@ export default function Settings() {
           </Tabs>
 
           {dirty && (
-            <div className="control-surface plate-ticks sticky bottom-4 z-10 flex animate-fade-up flex-col gap-3 rounded-xs border border-bdr/85 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="control-surface sticky bottom-4 z-10 flex animate-fade-up flex-col gap-3 rounded-xs border border-bdr/85 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-2.5 text-xs">
                 <span className="h-1.5 w-1.5 animate-pulse bg-warn" />
                 <span className="font-medium text-heading">{t("settings.unsaved_changes")}</span>

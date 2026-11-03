@@ -822,7 +822,7 @@ export default function Queries() {
                                 defaultValue: "Safe search: answered with {{host}}",
                               })}
                             >
-                              <span className="text-cached border-cached/30 rounded-xs border px-1 font-mono text-[9px] uppercase tracking-wider">
+                              <span className="text-cached border-cached/30 rounded-xs border px-1 font-mono text-[10px]">
                                 {t("queries.safe_tag", { defaultValue: "safe" })}
                               </span>
                             </Tooltip>
@@ -836,7 +836,7 @@ export default function Queries() {
                                   "Answered from an expired cache entry while a fresh one was fetched",
                               })}
                             >
-                              <span className="text-muted border-bdr/70 rounded-xs border px-1 font-mono text-[9px] uppercase tracking-wider">
+                              <span className="text-muted border-bdr/70 rounded-xs border px-1 font-mono text-[10px]">
                                 {t("queries.stale_tag", { defaultValue: "stale" })}
                               </span>
                             </Tooltip>

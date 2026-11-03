@@ -24,7 +24,7 @@ import { fmtCountdown, PAUSE_OPTIONS, usePause } from "@/stores/pause";
 
 function Heading({ children }: { children: React.ReactNode }) {
   return (
-    <p className="mb-2 font-mono text-[10px] tracking-[0.14em] text-muted uppercase">{children}</p>
+    <p className="mb-2 text-xs text-muted">{children}</p>
   );
 }
 
@@ -291,7 +291,7 @@ export function DevicePanel() {
             <Icon size={17} />
           </span>
           <div className="min-w-0 flex-1">
-            <p className="font-mono text-[10px] tracking-[0.14em] text-muted uppercase">
+            <p className="text-xs text-muted">
               {t("device.title", { defaultValue: "Device" })}
             </p>
             {naming != null ? (
@@ -399,7 +399,7 @@ export function DevicePanel() {
                     )
                   )}
                   {stats?.first_seen && Date.now() / 1000 - stats.first_seen < 86400 && (
-                    <span className="rounded-xs border border-cached/35 bg-cached/10 px-1.5 py-0.5 font-mono text-[9px] tracking-wider text-cached uppercase">
+                    <span className="rounded-xs border border-cached/35 bg-cached/10 px-1.5 py-0.5 font-mono text-[10px] text-cached">
                       {t("clients.new_badge", { defaultValue: "new" })}
                     </span>
                   )}
@@ -582,7 +582,7 @@ export function DevicePanel() {
                 navigate(`/queries?device=${encodeURIComponent(deviceTokens(client).join(","))}`);
               }}
             >
-              <ListFilter size={12} /> {t("domain.show_in_log", { defaultValue: "Query Log" })}
+              <ListFilter size={12} /> {t("domain.show_in_log", { defaultValue: "Query log" })}
             </Btn>
           )}
         </div>

@@ -93,7 +93,7 @@ function Field({
     <div className="mb-2 flex items-center justify-between gap-2">
       <span
         className={cn(
-          "flex items-center gap-1.5 text-[11px] tracking-[0.08em] uppercase",
+          "flex items-center gap-1.5 text-[13px]",
           tone ?? "text-muted",
         )}
       >
@@ -264,7 +264,7 @@ function ProfileSummary({
         {on !== null && (
           <span
             className={cn(
-              "rounded-xs border px-1.5 py-0.5 font-mono text-[9px] tracking-wider uppercase",
+              "rounded-xs border px-1.5 py-0.5 font-mono text-[10px]",
               on ? "border-cached/40 bg-cached/10 text-cached" : "border-bdr/70 text-muted",
             )}
           >
@@ -274,7 +274,7 @@ function ProfileSummary({
           </span>
         )}
         {pr.default_deny && (
-          <span className="rounded-xs border border-warn/40 bg-warn/10 px-1.5 py-0.5 font-mono text-[9px] tracking-wider text-warn uppercase">
+          <span className="rounded-xs border border-warn/40 bg-warn/10 px-1.5 py-0.5 font-mono text-[10px] text-warn">
             {t("profiles.default_deny_short", { defaultValue: "Allowed only" })}
           </span>
         )}
@@ -527,7 +527,7 @@ export default function Profiles() {
           </div>
         </Card>
       ) : profiles.length === 0 ? (
-        <Card className="plate-ticks">
+        <Card>
           <p className="text-sm text-heading">
             {t("profiles.empty_title", { defaultValue: "No profiles yet" })}
           </p>
@@ -630,7 +630,7 @@ export default function Profiles() {
                   {onNow !== null && (
                     <span
                       className={cn(
-                        "shrink-0 rounded-xs border px-2 py-0.5 font-mono text-[10px] tracking-wider uppercase",
+                        "shrink-0 rounded-xs border px-2 py-0.5 font-mono text-[10px]",
                         onNow
                           ? "border-cached/40 bg-cached/10 text-cached"
                           : "border-bdr/70 text-muted",
@@ -832,7 +832,7 @@ export default function Profiles() {
                   <div className="min-w-0">
                     <span
                       className={cn(
-                        "flex items-center gap-1.5 text-[11px] tracking-[0.08em] uppercase",
+                        "flex items-center gap-1.5 text-[13px]",
                         pr.default_deny ? "text-warn" : "text-muted",
                       )}
                     >
@@ -872,7 +872,7 @@ export default function Profiles() {
       )}
 
       {dirty && (
-        <div className="control-surface plate-ticks sticky bottom-4 z-10 mt-4 flex animate-fade-up flex-col gap-3 rounded-xs border border-bdr/85 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="control-surface sticky bottom-4 z-10 mt-4 flex animate-fade-up flex-col gap-3 rounded-xs border border-bdr/85 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2.5 text-xs">
             <span className="h-1.5 w-1.5 animate-pulse bg-warn" />
             <span className="font-medium text-heading">

@@ -78,7 +78,7 @@ export function ServicePicker({
             key={cat}
             className="grid grid-cols-1 gap-1.5 sm:grid-cols-[6.5rem_minmax(0,1fr)] sm:gap-3"
           >
-            <span className="pt-1.5 font-mono text-[10px] tracking-widest text-muted uppercase">
+            <span className="pt-1.5 text-xs text-muted">
               {t(`services.category.${cat}`, { defaultValue: cat })}
             </span>
             <div className="flex flex-wrap gap-1.5">

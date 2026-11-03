@@ -249,7 +249,7 @@ function ToolActions({ self, host, port }: { self: ToolId; host: string; port?: 
 
   return (
     <div className="border-bdr/40 mt-1 flex flex-wrap items-center gap-1.5 border-t pt-3">
-      <span className="text-muted/70 font-mono text-[10px] uppercase tracking-[0.12em]">
+      <span className="text-muted/70 text-xs">
         {t("tools.send_to", { defaultValue: "Send to" })}
       </span>
       {SENDABLE.filter((tool) => tool !== self).map((tool) => (
@@ -259,7 +259,7 @@ function ToolActions({ self, host, port }: { self: ToolId; host: string; port?: 
           onClick={() =>
             dispatch(tool, { host: h, port: needsPort[tool] ? (port ?? 443) : undefined })
           }
-          className="border-bdr/70 text-muted hover:border-ember/40 hover:text-ember rounded-xs border px-2 py-1 font-mono text-[10px] uppercase tracking-[0.06em] transition-colors"
+          className="border-bdr/70 text-muted hover:border-ember/40 hover:text-ember rounded-xs border px-2 py-1 font-mono text-[10px] transition-colors"
         >
           {label[tool]}
         </button>
@@ -346,16 +346,16 @@ function AnswersTable({ answers }: { answers: ResolveResult["answers"] }) {
       <table className="w-full text-left text-xs">
         <thead>
           <tr className="border-bdr/60 border-b">
-            <th className="text-muted px-3 py-2 font-mono text-[10px] font-medium uppercase tracking-[0.12em]">
+            <th className="text-muted px-3 py-2 text-xs font-medium">
               {t("tools.col_name", { defaultValue: "Name" })}
             </th>
-            <th className="text-muted px-3 py-2 font-mono text-[10px] font-medium uppercase tracking-[0.12em]">
+            <th className="text-muted px-3 py-2 text-xs font-medium">
               {t("tools.col_type", { defaultValue: "Type" })}
             </th>
-            <th className="text-muted px-3 py-2 font-mono text-[10px] font-medium uppercase tracking-[0.12em]">
+            <th className="text-muted px-3 py-2 text-xs font-medium">
               TTL
             </th>
-            <th className="text-muted px-3 py-2 font-mono text-[10px] font-medium uppercase tracking-[0.12em]">
+            <th className="text-muted px-3 py-2 text-xs font-medium">
               {t("tools.col_data", { defaultValue: "Data" })}
             </th>
           </tr>
@@ -429,7 +429,7 @@ function DnssecCheck() {
           <div className="flex flex-wrap items-center gap-2.5">
             <span
               className={cn(
-                "rounded-xs flex items-center gap-1.5 border px-2.5 py-1 font-mono text-[11px] font-semibold uppercase tracking-[0.08em]",
+                "rounded-xs flex items-center gap-1.5 border px-2.5 py-1 text-[13px] font-semibold",
                 result.authenticated
                   ? "border-cached/25 bg-cached/10 text-cached"
                   : "border-blocked/25 bg-blocked/10 text-blocked",
@@ -517,7 +517,7 @@ function DomainCheck() {
           <div className="flex min-w-0 flex-wrap items-center gap-2.5">
             <span
               className={cn(
-                "rounded-xs flex items-center gap-1.5 border px-2.5 py-1 font-mono text-[11px] font-semibold uppercase tracking-[0.08em]",
+                "rounded-xs flex items-center gap-1.5 border px-2.5 py-1 text-[13px] font-semibold",
                 result.blocked
                   ? "border-blocked/25 bg-blocked/10 text-blocked"
                   : "border-cached/25 bg-cached/10 text-cached",
@@ -561,7 +561,7 @@ function DomainCheck() {
           )}
           {(result.sources?.length ?? 0) > 0 && (
             <div className="space-y-1.5">
-              <p className="text-muted font-mono text-[10px] font-medium uppercase tracking-[0.14em]">
+              <p className="text-muted text-xs font-medium">
                 {result.whitelisted
                   ? t("blocklist.overridden_sources", { defaultValue: "Would be blocked by" })
                   : t("blocklist.matched_sources", { defaultValue: "Matched by" })}
@@ -573,7 +573,7 @@ function DomainCheck() {
                     className="border-bdr/70 bg-panel/40 rounded-xs flex max-w-full items-center gap-1.5 border px-2 py-1 font-mono text-[11px]"
                     title={`${t("blocklist.matched_on", { defaultValue: "matched on" })} ${s.matched}`}
                   >
-                    <span className="text-muted/70 shrink-0 text-[10px] uppercase">{s.kind}</span>
+                    <span className="text-muted/70 shrink-0 text-xs">{s.kind}</span>
                     <span className="text-body truncate">{s.name}</span>
                   </span>
                 ))}
@@ -706,7 +706,7 @@ function EgressCheck({ egresses }: { egresses: { id: string; name: string }[] })
           <div className="flex flex-wrap items-center gap-2.5">
             <span
               className={cn(
-                "rounded-xs flex items-center gap-1.5 border px-2.5 py-1 font-mono text-[11px] font-semibold uppercase tracking-[0.08em]",
+                "rounded-xs flex items-center gap-1.5 border px-2.5 py-1 text-[13px] font-semibold",
                 result.healthy === null
                   ? "border-bdr/70 bg-panel/40 text-muted"
                   : result.healthy
@@ -727,7 +727,7 @@ function EgressCheck({ egresses }: { egresses: { id: string; name: string }[] })
             </span>
           </div>
           <div className="border-bdr/60 bg-sidebar/60 rounded-xs border p-3">
-            <p className="text-muted font-mono text-[10px] font-medium uppercase tracking-[0.14em]">
+            <p className="text-muted text-xs font-medium">
               {t("tools.exit_ip", { defaultValue: "Exit IP" })}
             </p>
             <p className="text-heading mt-1 break-all font-mono text-lg tabular-nums">
@@ -749,7 +749,7 @@ function EgressCheck({ egresses }: { egresses: { id: string; name: string }[] })
 function Field({ label, value }: { label: string; value: string | number | null | undefined }) {
   return (
     <div className="min-w-0">
-      <dt className="text-muted font-mono text-[10px] font-medium uppercase tracking-[0.12em]">
+      <dt className="text-muted text-xs font-medium">
         {label}
       </dt>
       <dd className="text-body break-all font-mono">{value ?? "—"}</dd>
@@ -859,7 +859,7 @@ function CertCard({ entry, index }: { entry: CertEntry; index: number }) {
           #{index + 1}
         </span>
         {entry.is_leaf && (
-          <span className="border-ember/25 bg-ember/10 text-ember rounded-xs border px-2 py-0.5 font-mono text-[10px] font-medium uppercase tracking-[0.08em]">
+          <span className="border-ember/25 bg-ember/10 text-ember rounded-xs border px-2 py-0.5 font-mono text-[10px] font-medium">
             {t("tools.cert_leaf", { defaultValue: "Leaf" })}
           </span>
         )}
@@ -890,7 +890,7 @@ function CertCard({ entry, index }: { entry: CertEntry; index: number }) {
           />
           <Field label={t("tools.cert_issuer", { defaultValue: "Issuer" })} value={entry.issuer} />
           <div className="min-w-0 sm:col-span-2">
-            <dt className="text-muted font-mono text-[10px] font-medium uppercase tracking-[0.12em]">
+            <dt className="text-muted text-xs font-medium">
               {t("tools.cert_sans", { defaultValue: "SANs" })}
             </dt>
             <dd className="text-body break-all font-mono">
@@ -898,7 +898,7 @@ function CertCard({ entry, index }: { entry: CertEntry; index: number }) {
             </dd>
           </div>
           <div className="min-w-0 sm:col-span-2">
-            <dt className="text-muted font-mono text-[10px] font-medium uppercase tracking-[0.12em]">
+            <dt className="text-muted text-xs font-medium">
               {t("tools.cert_validity", { defaultValue: "Validity" })}
             </dt>
             <dd className="text-body break-all font-mono">
@@ -911,7 +911,7 @@ function CertCard({ entry, index }: { entry: CertEntry; index: number }) {
             value={entry.sig_alg}
           />
           <div className="min-w-0 sm:col-span-2">
-            <dt className="text-muted font-mono text-[10px] font-medium uppercase tracking-[0.12em]">
+            <dt className="text-muted text-xs font-medium">
               SHA-256
             </dt>
             <dd className="text-body break-all font-mono">{entry.sha256}</dd>
@@ -989,7 +989,7 @@ function TcpProbe({ egresses }: { egresses: { id: string; name: string }[] }) {
           <div className="flex flex-wrap items-center gap-2.5">
             <span
               className={cn(
-                "rounded-xs flex items-center gap-1.5 border px-2.5 py-1 font-mono text-[11px] font-semibold uppercase tracking-[0.08em]",
+                "rounded-xs flex items-center gap-1.5 border px-2.5 py-1 text-[13px] font-semibold",
                 result.reachable
                   ? "border-cached/25 bg-cached/10 text-cached"
                   : "border-blocked/25 bg-blocked/10 text-blocked",

@@ -69,7 +69,7 @@ export function SafeSearchControls({
                     : undefined
                 }
                 className={cn(
-                  "rounded-xs px-2.5 py-1 font-mono text-[10px] tracking-widest uppercase transition-colors disabled:cursor-not-allowed",
+                  "rounded-xs px-2.5 py-1 text-xs transition-colors disabled:cursor-not-allowed",
                   active
                     ? "bg-ember/12 text-ember"
                     : locked

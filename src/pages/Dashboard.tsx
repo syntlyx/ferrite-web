@@ -6,13 +6,7 @@ import { cn } from "@/lib/utils";
 import { AreaTrend } from "@/components/charts/AreaTrend";
 import type { TrendSeries } from "@/components/charts/AreaTrend";
 import {
-  Activity,
-  Zap,
-  Globe,
-  Database,
   ArrowRight,
-  Shield,
-  ServerCog,
   Cpu,
   MemoryStick,
   HardDrive,
@@ -33,6 +27,7 @@ import { QTYPE, RCODE_LABEL } from "@/lib/dns";
 import { fmt, pct, formatBytes, formatUptime } from "@/lib/format";
 import { DEVICE_ICON, deviceKind } from "@/lib/device-kind";
 import { QuickRuleBtn } from "@/components/QuickRuleBtn";
+import { RightNow } from "@/components/RightNow";
 import { openDomainPanel } from "@/stores/domain-panel";
 import { openDevicePanel } from "@/stores/device-panel";
 import type { QuickRuleKind } from "@/hooks/use-quick-rule";
@@ -88,102 +83,112 @@ interface HistoricalTop {
   clients: TopClientEntry[];
 }
 
-function sparkPath(values: number[], width: number, height: number) {
-  if (values.length < 2) return "";
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  const range = max - min || 1;
-  return values
-    .map((value, index) => {
-      const x = (index / (values.length - 1)) * width;
-      const y = height - ((value - min) / range) * (height - 4) - 2;
-      return `${index === 0 ? "M" : "L"} ${x.toFixed(1)} ${y.toFixed(1)}`;
-    })
-    .join(" ");
-}
+// ── Totals ────────────────────────────────────────────────────────────────────
 
-function MiniSparkline({ values, color, id }: { values?: number[]; color: string; id: string }) {
-  if (!values || values.length < 2) return null;
-  const width = 320;
-  const height = 30;
-  const path = sparkPath(values.slice(-48), width, height);
-  if (!path) return null;
-
-  return (
-    <svg
-      className="h-8 w-full overflow-visible"
-      preserveAspectRatio="none"
-      viewBox={`0 0 ${width} ${height}`}
-      aria-hidden="true"
-    >
-      <defs>
-        <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity="0.26" />
-          <stop offset="100%" stopColor={color} stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      <path d={`${path} L ${width} ${height + 2} L 0 ${height + 2} Z`} fill={`url(#${id})`} />
-      <path d={path} fill="none" stroke={color} strokeLinecap="round" strokeWidth="1.6" />
-    </svg>
-  );
-}
-
-// ── Stat card ─────────────────────────────────────────────────────────────────
-
-function StatCard({
+function Figure({
   label,
   value,
   sub,
-  textColor,
-  lineColor,
-  bgColor,
-  sparkColor,
-  sparkValues,
-  sparkId,
-  icon: Icon,
-  right,
-  delay,
+  className,
 }: {
   label: string;
   value: ReactNode;
-  sub?: ReactNode;
-  textColor: string;
-  lineColor: string;
-  bgColor: string;
-  sparkColor: string;
-  sparkValues?: number[];
-  sparkId: string;
-  icon?: ComponentType<{ size?: number; className?: string }>;
-  delay?: number;
-  right?: ReactNode;
+  sub: ReactNode;
+  className?: string;
 }) {
   return (
-    <div
-      className="control-surface min-h-32 animate-fade-up border-bdr/85 rounded-xs group relative overflow-hidden border p-4 transition-transform duration-200 hover:-translate-y-0.5"
-      style={delay ? { animationDelay: `${delay}ms` } : undefined}
-    >
-      <div
-        className={`bg-linear-to-r absolute inset-x-0 top-0 h-px from-transparent ${lineColor} to-transparent`}
-      />
-      <div className="relative flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="text-muted mb-1.5 text-[10px] font-semibold uppercase tracking-wider">
-            {label}
-          </p>
-          <p className={cn("text-2xl font-semibold tabular-nums", textColor)}>{value}</p>
-          {sub && <p className="text-muted mt-1 text-[11px]">{sub}</p>}
-        </div>
-        {right ??
-          (Icon && (
-            <div className={cn("border-current/10 shrink-0 rounded-full border p-2.5", bgColor)}>
-              <Icon size={16} className={textColor} />
-            </div>
-          ))}
-      </div>
-      <div className="relative -mx-4 mt-2">
-        <MiniSparkline values={sparkValues} color={sparkColor} id={sparkId} />
-      </div>
+    <div className="min-w-0">
+      <p className="text-muted text-[13px]">{label}</p>
+      <p
+        className={cn(
+          "mt-1 text-[30px] font-semibold leading-tight tracking-[-0.02em] tabular-nums sm:text-[34px]",
+          className ?? "text-heading",
+        )}
+      >
+        {value}
+      </p>
+      <p className="text-muted mt-1 text-xs">{sub}</p>
     </div>
+  );
+}
+
+/**
+ * Where every query went, in one card: the four totals, then a single bar
+ * splitting them — blocked, answered from cache, asked upstream — so the
+ * proportions read at a glance instead of from five separate charts.
+ */
+function TotalsCard({ stats }: { stats: StatsSummary }) {
+  const { t } = useTranslation();
+  const total = stats.total_queries;
+  const parts = [
+    {
+      key: "blocked",
+      value: stats.blocked_queries,
+      cls: "bg-blocked",
+      label: t("dashboard.blocked"),
+    },
+    { key: "cached", value: stats.cached_queries, cls: "bg-cached", label: t("dashboard.cached") },
+    {
+      key: "upstream",
+      value: stats.upstream_queries,
+      cls: "bg-muted/50",
+      label: t("dashboard.upstream"),
+    },
+  ];
+  const rest = Math.max(0, total - parts.reduce((n, p) => n + p.value, 0));
+  return (
+    <Card className="mb-4 p-6">
+      <div className="grid grid-cols-2 gap-x-6 gap-y-5 xl:grid-cols-4">
+        <Figure
+          label={t("dashboard.total_queries")}
+          value={fmt(total)}
+          sub={t("dashboard.since_last_start")}
+        />
+        <Figure
+          label={t("dashboard.blocked")}
+          value={fmt(stats.blocked_queries)}
+          sub={`${pct(stats.blocked_queries, total)} ${t("dashboard.of_traffic")}`}
+          className="text-blocked"
+        />
+        <Figure
+          label={t("dashboard.cached")}
+          value={fmt(stats.cached_queries)}
+          sub={`${pct(stats.cached_queries, total)} ${t("dashboard.cache_rate")}`}
+          className="text-cached"
+        />
+        <Figure
+          label={t("dashboard.upstream")}
+          value={fmt(stats.upstream_queries)}
+          sub={`${pct(stats.upstream_queries, total)} ${t("dashboard.forwarded")}`}
+        />
+      </div>
+      <div
+        className="bg-bdr/50 mt-6 flex h-2 gap-0.5 overflow-hidden rounded-full"
+        role="img"
+        aria-label={parts.map((p) => `${p.label} ${pct(p.value, total)}`).join(", ")}
+      >
+        {total > 0 &&
+          parts.map(
+            (p) =>
+              p.value > 0 && <div key={p.key} className={p.cls} style={{ flexGrow: p.value }} />,
+          )}
+        {total > 0 && rest > 0 && <div className="bg-raised" style={{ flexGrow: rest }} />}
+      </div>
+      <div className="text-muted mt-3 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-xs">
+        {parts.map((p) => (
+          <span key={p.key} className="flex items-center gap-1.5">
+            <span className={cn("h-2 w-2 rounded-sm", p.cls)} />
+            {p.label}
+          </span>
+        ))}
+        <span className="sm:ml-auto">
+          {t("dashboard.blocklist_size", {
+            n: fmt(stats.total_domains_blocked),
+            defaultValue: "{{n}} domains on the blocklist",
+          })}
+        </span>
+      </div>
+    </Card>
   );
 }
 
@@ -247,15 +252,18 @@ function DomainRows({
               onRowClick(label);
             }
           }}
-          className="hover:bg-white/4 rounded-xs group w-full cursor-pointer px-2 py-1.5 text-left transition-colors"
+          className="hover:bg-white/4 group w-full cursor-pointer rounded-lg px-2 py-1.5 text-left transition-colors"
         >
-          <div className="mb-1 flex items-center justify-between text-xs">
+          <div className="mb-1.5 flex items-center justify-between text-xs">
             <div className="flex min-w-0 items-center gap-2">
               <span className="mono text-muted w-4 shrink-0 text-right text-[10px] tabular-nums">
                 {i + 1}
               </span>
               <span
-                className={cn("mono group-hover:text-ember truncate transition-colors", textColor)}
+                className={cn(
+                  "mono group-hover:text-ember truncate text-[13px] transition-colors",
+                  textColor,
+                )}
               >
                 {label}
               </span>
@@ -295,8 +303,8 @@ function RangeButtons({
           onClick={() => onChange(r.value)}
           disabled={loading && r.value !== value}
           className={cn(
-            "rounded px-2 py-0.5 text-[10px] transition-colors disabled:opacity-40",
-            value === r.value ? "bg-ember/15 text-ember" : "text-muted hover:text-heading",
+            "rounded-md px-2 py-1 text-xs transition-colors disabled:opacity-40",
+            value === r.value ? "bg-raised text-heading" : "text-muted hover:text-heading",
           )}
         >
           {r.label}
@@ -325,17 +333,20 @@ function TopDomains({
   return (
     <Card className={cn("h-full", topLoading && "pointer-events-none opacity-60")}>
       <Tabs defaultValue="queried" className="w-full">
-        <div className="mb-3 flex items-center justify-between gap-2">
-          <TabsList>
-            <TabsTrigger value="queried">{t("dashboard.top_queried")}</TabsTrigger>
-            <TabsTrigger value="blocked">{t("dashboard.top_blocked")}</TabsTrigger>
-          </TabsList>
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+          <h2 className="text-heading text-[15px] font-semibold">
+            {t("dashboard.top_domains", { defaultValue: "Top domains" })}
+          </h2>
           <RangeButtons value={topHours} loading={topLoading} onChange={onRangeChange} />
         </div>
+        <TabsList className="mb-3">
+          <TabsTrigger value="queried">{t("dashboard.top_queried")}</TabsTrigger>
+          <TabsTrigger value="blocked">{t("dashboard.top_blocked")}</TabsTrigger>
+        </TabsList>
         <TabsContent value="queried">
           <DomainRows
             rows={topQueried}
-            barColor="bg-ember"
+            barColor="bg-muted/55"
             textColor="text-body"
             onRowClick={(d) => openDomainPanel(d)}
             quickRule="block"
@@ -345,7 +356,7 @@ function TopDomains({
           <DomainRows
             rows={topBlocked}
             barColor="bg-blocked"
-            textColor="text-blocked"
+            textColor="text-body"
             onRowClick={(d) => openDomainPanel(d)}
             quickRule="allow"
           />
@@ -360,21 +371,25 @@ function TopDomains({
 function TopClients({
   rows,
   topLoading,
+  navigate,
 }: {
-  rows: { name: string; total: number; ips: string[]; macs: string[] }[];
+  rows: TopClientEntry[];
   topLoading: boolean;
+  navigate: (to: string) => void;
 }) {
   const { t } = useTranslation();
   const max = rows[0]?.total ?? 1;
   return (
     <Card className={cn("h-full", topLoading && "pointer-events-none opacity-60")}>
       <div className="mb-3 flex items-center justify-between gap-2">
-        <p className="text-muted text-[10px] font-semibold uppercase tracking-wider">
-          {t("dashboard.top_clients")}
-        </p>
-        <p className="text-muted/60 text-[10px] italic">
-          {t("dashboard.click_for_details", { defaultValue: "click for details" })}
-        </p>
+        <h2 className="text-heading text-[15px] font-semibold">{t("dashboard.top_clients")}</h2>
+        <button
+          type="button"
+          onClick={() => navigate("/clients")}
+          className="text-muted hover:text-ember flex items-center gap-1 text-xs transition-colors"
+        >
+          {t("dashboard.all_clients", { defaultValue: "All clients" })} <ArrowRight size={11} />
+        </button>
       </div>
       {rows.length === 0 ? (
         <p className="text-muted py-2 text-xs">{t("dashboard.no_data")}</p>
@@ -382,25 +397,49 @@ function TopClients({
         <div className="space-y-1">
           {rows.slice(0, 10).map((c, i) => {
             const DeviceIcon = DEVICE_ICON[deviceKind(c.name)];
+            const blocked = c.blocked ?? null;
             return (
               <button
                 key={c.name}
                 onClick={() => openDevicePanel({ macs: c.macs, ips: c.ips, name: c.name })}
-                className="hover:bg-white/4 rounded-xs group w-full cursor-pointer px-2 py-1.5 text-left transition-colors"
+                className="hover:bg-white/4 group w-full cursor-pointer rounded-lg px-2 py-1.5 text-left transition-colors"
               >
-                <div className="mb-1 flex items-center justify-between text-xs">
+                <div className="mb-1.5 flex items-center justify-between gap-3 text-xs">
                   <div className="flex min-w-0 items-center gap-2">
                     <span className="mono text-muted w-4 shrink-0 text-right text-[10px] tabular-nums">
                       {i + 1}
                     </span>
-                    <DeviceIcon size={12} className="text-muted/70 shrink-0" />
-                    <span className="mono text-body group-hover:text-ember truncate transition-colors">
+                    <DeviceIcon size={13} className="text-muted shrink-0" />
+                    <span className="text-body group-hover:text-ember truncate text-[13px] transition-colors">
                       {c.name}
                     </span>
                   </div>
-                  <span className="mono text-muted ml-3 shrink-0 tabular-nums">{fmt(c.total)}</span>
+                  <span className="flex shrink-0 items-baseline gap-3">
+                    {blocked != null && c.total > 0 && (
+                      <span
+                        className="text-blocked/90 mono text-[11px] tabular-nums"
+                        title={t("dashboard.share_blocked", { defaultValue: "share blocked" })}
+                      >
+                        {pct(blocked, c.total)}
+                      </span>
+                    )}
+                    <span className="mono text-muted w-12 text-right tabular-nums">
+                      {fmt(c.total)}
+                    </span>
+                  </span>
                 </div>
-                <Bar value={(c.total / max) * 100} color="bg-upstream" className="h-1" />
+                <div className="bg-bdr/70 relative h-1 overflow-hidden rounded-full">
+                  <div
+                    className="bg-muted/45 absolute inset-y-0 left-0 rounded-full"
+                    style={{ width: `${(c.total / max) * 100}%` }}
+                  />
+                  {blocked != null && (
+                    <div
+                      className="bg-blocked absolute inset-y-0 left-0 rounded-full"
+                      style={{ width: `${(blocked / max) * 100}%` }}
+                    />
+                  )}
+                </div>
               </button>
             );
           })}
@@ -434,7 +473,7 @@ function FeedRows({ rows }: { rows: QueryEntry[] }) {
     return <p className="text-muted py-2 text-xs">{t("dashboard.no_queries")}</p>;
   return (
     <div className="space-y-1">
-      {rows.slice(0, 18).map((r) => {
+      {rows.slice(0, 11).map((r) => {
         // A blocked row says why already; its RCODE is whatever block_response chose.
         const showRcode = r.rcode !== 0 && r.status !== "blocked";
         const isCname = r.upstream?.startsWith("cname:") ?? false;
@@ -448,14 +487,14 @@ function FeedRows({ rows }: { rows: QueryEntry[] }) {
           <button
             key={r.id}
             onClick={() => openDomainPanel(r.domain, r.client_ip)}
-            className="hover:bg-white/4 rounded-xs group flex w-full items-center gap-2.5 px-2 py-1.5 text-left transition-colors"
+            className="hover:bg-white/4 group flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-left transition-colors"
           >
             <span
               className={cn("h-1.5 w-1.5 shrink-0 self-center rounded-full", STATUS_DOT[r.status])}
             />
             <span className="min-w-0 flex-1">
               <span className="flex items-baseline gap-1.5">
-                <span className="mono text-body group-hover:text-ember block truncate text-xs transition-colors">
+                <span className="mono text-body group-hover:text-ember block truncate text-[13px] transition-colors">
                   {r.domain}
                 </span>
                 {QTYPE[r.query_type] && (
@@ -504,18 +543,21 @@ function LiveFeed({
 }) {
   const { t } = useTranslation();
   return (
-    <Card className="min-h-107.5 flex flex-col">
+    <Card className="flex h-full flex-col">
       <Tabs defaultValue="all" className="flex flex-1 flex-col">
         <div className="mb-3 flex items-center justify-between gap-2">
-          <TabsList>
-            <TabsTrigger value="all">{t("dashboard.all")}</TabsTrigger>
-            <TabsTrigger value="blocked">{t("dashboard.blocked")}</TabsTrigger>
-          </TabsList>
-          <span className="text-ember flex items-center gap-1.5 text-[10px]">
+          <h2 className="text-heading text-[15px] font-semibold">
+            {t("dashboard.just_now", { defaultValue: "Just now" })}
+          </h2>
+          <span className="text-ember flex items-center gap-1.5 text-xs">
             <span className="bg-ember h-1.5 w-1.5 animate-pulse rounded-full" />
             {t("dashboard.live")}
           </span>
         </div>
+        <TabsList className="mb-3">
+          <TabsTrigger value="all">{t("dashboard.all")}</TabsTrigger>
+          <TabsTrigger value="blocked">{t("dashboard.blocked")}</TabsTrigger>
+        </TabsList>
         <TabsContent value="all">
           <FeedRows rows={rows} />
         </TabsContent>
@@ -526,7 +568,7 @@ function LiveFeed({
 
       <button
         onClick={() => navigate("/queries")}
-        className="border-bdr/70 text-muted hover:text-ember mt-4 flex items-center gap-1 border-t pt-4 text-xs transition-colors"
+        className="border-bdr/70 text-muted hover:text-ember mt-auto flex items-center gap-1 border-t pt-4 text-xs transition-colors"
       >
         {t("dashboard.view_all_queries")} <ArrowRight size={11} />
       </button>
@@ -581,7 +623,7 @@ function SystemMetric({
     <div className="border-bdr/55 bg-void/18 min-h-30 rounded-xs flex flex-col justify-between border p-3.5">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-muted flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider">
+          <p className="text-muted flex items-center gap-1.5 text-xs font-semibold">
             <Icon size={12} className="text-ember/80 shrink-0" />
             <span className="truncate">{label}</span>
           </p>
@@ -618,9 +660,9 @@ function StripMetric({
 }) {
   const width = boundedPercent(percent);
   return (
-    <span className="flex min-w-0 items-center gap-2">
-      <span className="text-muted text-[10px] font-semibold uppercase tracking-wider">{label}</span>
-      <span className="text-heading text-xs font-medium tabular-nums">{value}</span>
+    <span className="flex min-w-0 items-center gap-1.5">
+      <span className="text-muted text-[13px]">{label}</span>
+      <span className="text-heading mono text-[13px] tabular-nums">{value}</span>
       {width != null && color && (
         <span className="bg-bdr/70 relative hidden h-1 w-12 overflow-hidden rounded-full sm:block">
           <span
@@ -687,19 +729,14 @@ function SystemBar({ sys }: { sys: SystemStats }) {
     ) : null;
 
   return (
-    <Card className="mb-4 overflow-hidden p-0">
-      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 px-4 py-3">
-        <span className="flex items-center gap-2">
-          <ServerCog size={14} className="text-ember shrink-0" />
-          <span className="text-muted text-[10px] font-semibold uppercase tracking-wider">
-            {t("dashboard.system")}
-          </span>
-          <span className="text-muted text-xs">
-            {t("dashboard.uptime")} {formatUptime(sys.uptime_seconds)}
-          </span>
+    <div className="mb-4">
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-2 px-1 py-1">
+        <span className="text-muted text-[13px]">
+          {t("dashboard.uptime")}{" "}
+          <span className="text-heading mono">{formatUptime(sys.uptime_seconds)}</span>
         </span>
         <StripMetric
-          label={t("dashboard.cpu")}
+          label="CPU"
           value={`${sys.cpu_usage_percent.toFixed(1)}%`}
           percent={sys.cpu_usage_percent}
           color={cpuColor}
@@ -722,9 +759,9 @@ function SystemBar({ sys }: { sys: SystemStats }) {
           label="Net"
           value={`↓ ${formatBytes(sys.network.rx_bytes_per_sec)}/s ↑ ${formatBytes(sys.network.tx_bytes_per_sec)}/s`}
         />
-        <span className="text-muted hidden text-[11px] lg:inline">
+        <span className="text-muted hidden text-[13px] lg:inline">
           {t("dashboard.load")}{" "}
-          <span className="text-heading font-medium tabular-nums">
+          <span className="text-heading mono tabular-nums">
             {sys.load_avg.one.toFixed(2)}
           </span>
         </span>
@@ -732,7 +769,7 @@ function SystemBar({ sys }: { sys: SystemStats }) {
           type="button"
           onClick={() => setExpandedPref(expanded ? "0" : "1")}
           aria-expanded={expanded}
-          className="text-muted hover:text-ember ml-auto flex items-center gap-1 text-[11px] transition-colors"
+          className="text-muted hover:text-ember ml-auto flex items-center gap-1 text-xs transition-colors"
         >
           {expanded
             ? t("dashboard.system_less", { defaultValue: "Less" })
@@ -742,7 +779,7 @@ function SystemBar({ sys }: { sys: SystemStats }) {
       </div>
 
       {expanded && (
-        <div className="border-bdr/60 border-t">
+        <Card className="mt-3 overflow-hidden p-0">
       <div className="grid grid-cols-1 gap-3 p-4 sm:grid-cols-2 2xl:grid-cols-4">
         <SystemMetric
           label={t("dashboard.cpu").toUpperCase()}
@@ -800,7 +837,7 @@ function SystemBar({ sys }: { sys: SystemStats }) {
         <div className="border-bdr/55 bg-void/18 min-h-30 rounded-xs flex flex-col justify-between border p-3.5">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-muted flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider">
+              <p className="text-muted flex items-center gap-1.5 text-xs font-semibold">
                 <Network size={12} className="text-ember/80 shrink-0" />
                 NET
               </p>
@@ -839,7 +876,7 @@ function SystemBar({ sys }: { sys: SystemStats }) {
       <div className="border-bdr/50 flex flex-wrap items-center gap-x-5 gap-y-1 border-t px-4 py-3">
         {sys.process && (
           <>
-            <span className="text-muted flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider">
+            <span className="text-muted flex items-center gap-1.5 text-xs font-semibold">
               <span className="bg-ember/70 h-1.5 w-1.5 rounded-full" />
               ferrite
             </span>
@@ -873,9 +910,9 @@ function SystemBar({ sys }: { sys: SystemStats }) {
           )}
         </span>
       </div>
-        </div>
+        </Card>
       )}
-    </Card>
+    </div>
   );
 }
 
@@ -935,10 +972,8 @@ function DashboardSkeleton() {
 
 /** The four lines the traffic chart draws, in the order they stack visually. */
 const TRAFFIC_SERIES: TrendSeries<ChartPoint>[] = [
-  { key: "Queries", label: "Total Queries", color: "#d4c8bb", strokeWidth: 2, fillOpacity: 0.2 },
-  { key: "Blocked", label: "Blocked", color: "#ff5c5c", strokeWidth: 1.8, fillOpacity: 0.25 },
-  { key: "Cached", label: "Cached", color: "#46d08e", strokeWidth: 1.6, fillOpacity: 0.2 },
-  { key: "Upstream", label: "Upstream", color: "#5ea7ff", strokeWidth: 1.6, fillOpacity: 0.18 },
+  { key: "Queries", label: "All queries", color: "#a89a8b", strokeWidth: 1.8, fillOpacity: 0.12 },
+  { key: "Blocked", label: "Blocked", color: "#ff5c5c", strokeWidth: 1.8, fillOpacity: 0.2 },
 ];
 
 /**
@@ -953,27 +988,22 @@ const TRAFFIC_SERIES: TrendSeries<ChartPoint>[] = [
 const TrafficChart = memo(function TrafficChart({ data }: { data: ChartPoint[] }) {
   const { t } = useTranslation();
   return (
-    <Card className="mb-4 overflow-hidden p-5">
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <p className="text-muted text-[10px] font-semibold uppercase tracking-wider">
-          {t("dashboard.traffic_chart")}
-        </p>
-        <div className="text-muted flex items-center gap-3 text-[10px]">
+    <Card className="h-full overflow-hidden p-5">
+      <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
+        <div className="flex flex-wrap items-baseline gap-x-2.5">
+          <h2 className="text-heading text-[15px] font-semibold">{t("dashboard.traffic_chart")}</h2>
+          <span className="text-muted text-xs">
+            {t("dashboard.traffic_sub", { defaultValue: "last 24 hours, per 10 minutes" })}
+          </span>
+        </div>
+        <div className="text-muted flex items-center gap-4 text-xs">
           <span className="flex items-center gap-1.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-slate-300" />
-            {t("dashboard.total_queries")}
+            <span className="h-0.5 w-3.5 rounded-full bg-[#a89a8b]" />
+            {t("dashboard.all_queries", { defaultValue: "All queries" })}
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="bg-blocked h-1.5 w-1.5 rounded-full" />
+            <span className="bg-blocked h-0.5 w-3.5 rounded-full" />
             {t("dashboard.blocked")}
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span className="bg-cached h-1.5 w-1.5 rounded-full" />
-            {t("dashboard.cached")}
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span className="bg-upstream h-1.5 w-1.5 rounded-full" />
-            {t("dashboard.upstream")}
           </span>
         </div>
       </div>
@@ -1105,11 +1135,6 @@ export default function Dashboard() {
   }, [topHours]);
 
   const chartData = useMemo(() => (stats ? buildChartData(stats.timeseries) : []), [stats]);
-  const querySpark = useMemo(() => chartData.map((p) => p.Queries), [chartData]);
-  const blockedSpark = useMemo(() => chartData.map((p) => p.Blocked), [chartData]);
-  const cachedSpark = useMemo(() => chartData.map((p) => p.Cached), [chartData]);
-  const upstreamSpark = useMemo(() => chartData.map((p) => p.Upstream), [chartData]);
-  const total = stats?.total_queries ?? 0;
 
   const effectiveDomains = useMemo(
     () => (topHours === 0 ? (stats?.top_domains ?? []) : (historicalTop?.domains ?? [])),
@@ -1157,96 +1182,29 @@ export default function Dashboard() {
 
       {stats && (
         <>
-          {/* ── Stat cards ─────────────────────────────────────────────────── */}
-          <div
-            className="mb-4 grid grid-cols-2 gap-3 xl:grid-cols-5 [&>*:last-child:nth-child(odd)]:col-span-2 xl:[&>*:last-child:nth-child(odd)]:col-span-1"
-          >
-            <StatCard
-              label={t("dashboard.total_queries")}
-              value={fmt(total)}
-              sub={t("dashboard.since_last_start")}
-              textColor="text-heading"
-              lineColor="via-slate-300/35"
-              bgColor="bg-white/6"
-              sparkColor="#d4c8bb"
-              sparkValues={querySpark}
-              sparkId="spark-total"
-              icon={Activity}
-              delay={0}
-            />
-            <StatCard
-              label={t("dashboard.blocked")}
-              value={fmt(stats.blocked_queries)}
-              sub={`${pct(stats.blocked_queries, total)} ${t("dashboard.of_traffic")}`}
-              textColor="text-blocked"
-              lineColor="via-blocked/50"
-              bgColor="bg-blocked/10"
-              sparkColor="#ff5c5c"
-              sparkValues={blockedSpark}
-              sparkId="spark-blocked"
-              // right={<BlockRing pct={bp} />}
-              icon={Shield}
-              delay={60}
-            />
-            <StatCard
-              label={t("dashboard.cached")}
-              value={fmt(stats.cached_queries)}
-              sub={`${pct(stats.cached_queries, total)} ${t("dashboard.cache_rate")}`}
-              textColor="text-cached"
-              lineColor="via-cached/40"
-              bgColor="bg-cached/10"
-              sparkColor="#46d08e"
-              sparkValues={cachedSpark}
-              sparkId="spark-cached"
-              icon={Zap}
-              delay={120}
-            />
-            <StatCard
-              label={t("dashboard.upstream")}
-              value={fmt(stats.upstream_queries)}
-              sub={`${pct(stats.upstream_queries, total)} ${t("dashboard.forwarded")}`}
-              textColor="text-upstream"
-              lineColor="via-upstream/40"
-              bgColor="bg-upstream/10"
-              sparkColor="#5ea7ff"
-              sparkValues={upstreamSpark}
-              sparkId="spark-upstream"
-              icon={Globe}
-              delay={180}
-            />
-            <StatCard
-              label={t("dashboard.blocklist")}
-              value={fmt(stats.total_domains_blocked)}
-              sub={t("dashboard.domains_protected")}
-              textColor="text-ember"
-              lineColor="via-ember/40"
-              bgColor="bg-ember/10"
-              sparkColor="#ff6a38"
-              sparkValues={blockedSpark}
-              sparkId="spark-blocklist"
-              icon={Database}
-              delay={240}
-            />
-          </div>
+          <TotalsCard stats={stats} />
 
           {/* ── System stats ───────────────────────────────────────────────── */}
           {sysStats && <SystemBar sys={sysStats} />}
 
-          {/* ── Full-width chart ───────────────────────────────────────────── */}
-          <TrafficChart data={chartData} />
-
-          {/* ── Bottom row ─────────────────────────────────────────────────── */}
-          <div className="grid grid-cols-1 gap-3 xl:grid-cols-[minmax(0,0.95fr)_minmax(460px,1.05fr)]">
-            <div className="flex flex-col gap-3">
-              <TopDomains
-                topQueried={effectiveDomains}
-                topBlocked={effectiveBlocked}
-                topHours={topHours}
-                topLoading={topLoading}
-                onRangeChange={setTopHours}
-              />
-              <TopClients rows={effectiveClients} topLoading={topLoading} />
+          {/* ── Traffic, and what needs a look ─────────────────────────────── */}
+          <div className="mb-4 grid grid-cols-1 gap-4 xl:grid-cols-3">
+            <div className="min-w-0 xl:col-span-2">
+              <TrafficChart data={chartData} />
             </div>
+            <RightNow />
+          </div>
+
+          {/* ── Top lists and the live feed ────────────────────────────────── */}
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
+            <TopDomains
+              topQueried={effectiveDomains}
+              topBlocked={effectiveBlocked}
+              topHours={topHours}
+              topLoading={topLoading}
+              onRangeChange={setTopHours}
+            />
+            <TopClients rows={effectiveClients} topLoading={topLoading} navigate={navigate} />
             <LiveFeed
               rows={stats.recent_domains}
               recentBlocked={stats.recent_blocked}

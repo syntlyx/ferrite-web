@@ -116,7 +116,7 @@ export function McpCard({ apiKeySet }: { apiKeySet: boolean }) {
               })}
             </p>
           )}
-          <p className="text-[11px] tracking-[0.08em] text-muted uppercase">
+          <p className="text-[13px] text-muted">
             {t("mcp.connect", { defaultValue: "Connect Claude Code" })}
           </p>
           <CopyLine text={command} />

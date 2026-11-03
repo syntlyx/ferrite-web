@@ -15,9 +15,9 @@ interface SectionLabelProps {
 // Horizontal progress-bar (value 0–100)
 export function Bar({ value, color = "bg-ember", className }: BarProps) {
   return (
-    <div className={cn("bg-bdr/80 h-1 overflow-hidden rounded-[1px]", className)}>
+    <div className={cn("h-1 overflow-hidden rounded-full bg-bdr/70", className)}>
       <div
-        className={cn("h-full rounded-[1px] transition-all", color)}
+        className={cn("h-full rounded-full transition-all", color)}
         style={{ width: `${Math.min(100, value ?? 0)}%` }}
       />
     </div>
@@ -31,18 +31,9 @@ export function StatusDot({ status }: { status: string }) {
     cached: "bg-cached",
     upstream: "bg-upstream",
   };
-  return <span className={cn("inline-block h-1.5 w-1.5", c[status] ?? "bg-muted")} />;
+  return <span className={cn("inline-block h-1.5 w-1.5 rounded-full", c[status] ?? "bg-muted")} />;
 }
 
 export function SectionLabel({ children, className }: SectionLabelProps) {
-  return (
-    <p
-      className={cn(
-        "text-muted mb-3 font-mono text-[10px] font-medium uppercase tracking-[0.14em]",
-        className,
-      )}
-    >
-      {children}
-    </p>
-  );
+  return <p className={cn("mb-3 text-[15px] font-semibold text-heading", className)}>{children}</p>;
 }

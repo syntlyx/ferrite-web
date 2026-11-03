@@ -25,16 +25,16 @@ export default function Login() {
         <div className="mb-8 flex flex-col items-center text-center">
           <FerriteMark className="mb-5 h-16 w-16" />
           <h1 className="display-title text-heading text-3xl">ferrite</h1>
-          <p className="text-muted mt-2 font-mono text-[10px] font-medium uppercase tracking-[0.3em]">
+          <p className="text-muted mt-2 text-xs font-medium">
             DNS · Control · Plane
           </p>
         </div>
 
         <form
           action={submit}
-          className="control-surface plate-ticks ember-seam border-bdr/85 rounded-xs space-y-4 border p-6"
+          className="control-surface border-bdr/85 rounded-xs space-y-4 border p-6"
         >
-          <h2 className="text-heading text-center font-mono text-xs font-medium uppercase tracking-[0.14em]">
+          <h2 className="text-heading text-center text-xs font-medium">
             {t("login.sign_in")}
           </h2>
           <div className="space-y-1.5">

@@ -19,7 +19,7 @@ export function Badge({ status }: BadgeProps) {
   return (
     <span
       className={cn(
-        "rounded-xs border-current/15 border px-1.5 py-0.5 font-mono text-[10px] font-medium uppercase tracking-[0.08em]",
+        "rounded-xs border-current/15 border px-1.5 py-0.5 font-mono text-[10px] font-medium",
         map[status] ?? "text-body bg-white/5",
       )}
     >

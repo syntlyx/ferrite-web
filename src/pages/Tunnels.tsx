@@ -926,7 +926,7 @@ export default function Tunnels() {
                       {/* Column headers — the phone layout labels its own fields. */}
                       <div
                         className={cn(
-                          "text-muted hidden items-center gap-2 px-3 pb-1.5 font-mono text-[10px] uppercase tracking-widest sm:grid",
+                          "text-muted hidden items-center gap-2 px-3 pb-1.5 text-xs sm:grid",
                           RULE_COLS,
                         )}
                       >
@@ -968,7 +968,7 @@ export default function Tunnels() {
                                       className="text-body"
                                     />
                                     <span className="text-heading truncate">{svc?.name ?? r.service}</span>
-                                    <span className="text-muted border-bdr/70 rounded-xs shrink-0 border px-1 font-mono text-[9px] uppercase tracking-wider">
+                                    <span className="text-muted border-bdr/70 rounded-xs shrink-0 border px-1 font-mono text-[10px]">
                                       {t("tunnels.rule_service_tag", { defaultValue: "service" })}
                                     </span>
                                   </>
@@ -1106,7 +1106,7 @@ export default function Tunnels() {
                                                 )
                                           }
                                           className={cn(
-                                            "rounded-xs px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest transition-colors",
+                                            "rounded-xs px-2.5 py-1 text-xs transition-colors",
                                             active ? "bg-ember/12 text-ember" : "text-muted hover:text-ember",
                                           )}
                                         >
@@ -1120,7 +1120,7 @@ export default function Tunnels() {
                                   <div className="grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1fr)_14rem]">
                                     {isService ? (
                                       <label className="space-y-1">
-                                        <span className="text-muted font-mono text-[10px] uppercase tracking-widest">
+                                        <span className="text-muted text-xs">
                                           {t("tunnels.rule_mode_service", { defaultValue: "Service" })}
                                         </span>
                                         <Select
@@ -1153,7 +1153,7 @@ export default function Tunnels() {
                                       </label>
                                     ) : (
                                       <label className="space-y-1">
-                                        <span className="text-muted font-mono text-[10px] uppercase tracking-widest">
+                                        <span className="text-muted text-xs">
                                           {t("tunnels.col_domain", { defaultValue: "Domain" })}
                                         </span>
                                         <Input
@@ -1166,7 +1166,7 @@ export default function Tunnels() {
                                       </label>
                                     )}
                                     <label className="space-y-1">
-                                      <span className="text-muted font-mono text-[10px] uppercase tracking-widest">
+                                      <span className="text-muted text-xs">
                                         {t("tunnels.rule_egress", { defaultValue: "Egress" })}
                                       </span>
                                       <Select
@@ -1198,7 +1198,7 @@ export default function Tunnels() {
                                   )}
 
                                   <div className="space-y-1.5">
-                                    <span className="text-muted font-mono text-[10px] uppercase tracking-widest">
+                                    <span className="text-muted text-xs">
                                       {t("tunnels.col_devices", { defaultValue: "Devices" })}
                                     </span>
                                     {knownClients.length === 0 ? (
@@ -1258,7 +1258,7 @@ export default function Tunnels() {
           </Tabs>
 
           {dirty && (
-            <div className="control-surface plate-ticks border-bdr/85 rounded-xs animate-fade-up sticky bottom-4 z-10 flex flex-col gap-3 border px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="control-surface border-bdr/85 rounded-xs animate-fade-up sticky bottom-4 z-10 flex flex-col gap-3 border px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-2.5 text-xs">
                 <span className="bg-warn h-1.5 w-1.5 animate-pulse" />
                 <span className="text-heading font-medium">

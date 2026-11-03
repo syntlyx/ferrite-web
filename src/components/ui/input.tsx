@@ -12,7 +12,7 @@ export function Input({ className, ...props }: InputProps) {
   return (
     <input
       className={cn(
-        "border-bdr/90 bg-sidebar/90 text-heading placeholder:text-muted hover:border-ember/35 focus:border-ember focus:ring-ember/15 rounded-xs h-9 border px-3 text-xs shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] transition-colors focus:outline-none focus:ring-2",
+        "h-9 rounded-lg border border-bdr bg-void/50 px-3 text-[13px] text-heading transition-colors placeholder:text-muted hover:border-ember/35 focus:border-ember focus:ring-2 focus:ring-ember/15 focus:outline-none",
         className,
       )}
       {...props}
@@ -26,7 +26,7 @@ export function SearchInput({ icon: Icon, className, inputClass, ...props }: Sea
       {Icon && (
         <Icon
           size={13}
-          className="text-muted pointer-events-none absolute left-3 top-1/2 -translate-y-1/2"
+          className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted"
         />
       )}
       <Input className={cn("w-full", Icon ? "pl-8" : "", inputClass)} {...props} />

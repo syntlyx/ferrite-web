@@ -108,7 +108,7 @@ export default function Logs() {
                 onClick={() => toggle(lv)}
                 aria-pressed={!off}
                 className={cn(
-                  "rounded-xs border px-2 py-0.5 font-mono text-[10px] font-semibold uppercase transition-colors",
+                  "rounded-xs border px-2 py-0.5 font-mono text-[10px] font-semibold transition-colors",
                   off
                     ? "border-bdr/40 text-muted/40 line-through"
                     : cn("border-bdr/70", LEVEL_COLOR[lv]),
@@ -157,7 +157,7 @@ export default function Logs() {
                 </span>
                 <span
                   className={cn(
-                    "shrink-0 font-semibold uppercase",
+                    "shrink-0 font-semibold",
                     LEVEL_COLOR[e.level] ?? "text-body",
                   )}
                 >

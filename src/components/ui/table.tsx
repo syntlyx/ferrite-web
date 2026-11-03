@@ -24,12 +24,7 @@ interface EmptyRowProps {
 
 export function Th({ children, className }: ThProps) {
   return (
-    <th
-      className={cn(
-        "text-muted px-4 py-3 text-left font-mono text-[10px] font-medium uppercase tracking-[0.12em]",
-        className,
-      )}
-    >
+    <th className={cn("px-4 py-3 text-left text-xs font-medium text-muted", className)}>
       {children}
     </th>
   );
@@ -42,7 +37,7 @@ export function Td({ children, className }: TdProps) {
 export function TableRow({ children, className, onClick }: TableRowProps) {
   return (
     <tr
-      className={cn("border-bdr/40 hover:bg-white/3 border-b transition-colors", className)}
+      className={cn("border-b border-bdr/60 transition-colors hover:bg-white/3", className)}
       onClick={onClick}
     >
       {children}
@@ -53,7 +48,7 @@ export function TableRow({ children, className, onClick }: TableRowProps) {
 export function EmptyRow({ cols, message = "No data" }: EmptyRowProps) {
   return (
     <tr>
-      <td colSpan={cols} className="text-muted px-4 py-10 text-center text-xs">
+      <td colSpan={cols} className="px-4 py-10 text-center text-xs text-muted">
         {message}
       </td>
     </tr>

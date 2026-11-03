@@ -300,7 +300,7 @@ function SubscriptionTable({
                           className="min-w-44"
                           content={
                             <span className="block space-y-0.5">
-                              <span className="text-muted mb-1 block text-[10px] uppercase tracking-wide">
+                              <span className="text-muted mb-1 block text-xs">
                                 {skippedTitle}
                               </span>
                               {rows.map(([label, val]) => (
@@ -535,7 +535,7 @@ export default function Lists() {
                       )}
                       <span
                         className={cn(
-                          "rounded-xs shrink-0 px-1 py-0.5 text-[9px] uppercase tracking-wide",
+                          "rounded-xs shrink-0 px-1 py-0.5 text-xs",
                           CATEGORY_BADGE[item.category],
                         )}
                       >

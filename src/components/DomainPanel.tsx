@@ -14,7 +14,7 @@ import { openDevicePanel } from "@/stores/device-panel";
 /** Section heading inside the panel. */
 function Heading({ children }: { children: React.ReactNode }) {
   return (
-    <p className="mb-2 font-mono text-[10px] tracking-[0.14em] text-muted uppercase">{children}</p>
+    <p className="mb-2 text-xs text-muted">{children}</p>
   );
 }
 
@@ -106,7 +106,7 @@ export function DomainPanel() {
       <aside className="control-surface absolute inset-y-0 right-0 flex w-full max-w-md animate-fade-up flex-col border-l border-bdr/85 shadow-[-18px_0_44px_rgba(0,0,0,0.3)]">
         <div className="flex items-start gap-3 border-b border-bdr/60 px-5 py-4">
           <div className="min-w-0 flex-1">
-            <p className="font-mono text-[10px] tracking-[0.14em] text-muted uppercase">
+            <p className="text-xs text-muted">
               {t("domain.title", { defaultValue: "Domain" })}
             </p>
             <p className="mt-1 font-mono text-sm break-all text-heading">{domain}</p>
@@ -125,7 +125,7 @@ export function DomainPanel() {
               <div className="flex flex-wrap items-center gap-2">
                 <span
                   className={cn(
-                    "flex items-center gap-1.5 rounded-xs border px-2.5 py-1 font-mono text-[11px] font-semibold tracking-[0.08em] uppercase",
+                    "flex items-center gap-1.5 rounded-xs border px-2.5 py-1 text-[13px] font-semibold",
                     blocked
                       ? "border-blocked/25 bg-blocked/10 text-blocked"
                       : "border-cached/25 bg-cached/10 text-cached",
@@ -197,7 +197,7 @@ export function DomainPanel() {
                       key={`${s.kind}-${s.name}-${i}`}
                       className="flex items-baseline gap-2 text-xs"
                     >
-                      <span className="w-16 shrink-0 font-mono text-[10px] text-muted/70 uppercase">
+                      <span className="w-16 shrink-0 text-xs text-muted/70">
                         {s.kind}
                       </span>
                       <span className="min-w-0 break-words text-body">{s.name}</span>
@@ -308,7 +308,7 @@ export function DomainPanel() {
               navigate(`/queries?domain=${encodeURIComponent(domain)}`);
             }}
           >
-            <ListFilter size={12} /> {t("domain.show_in_log", { defaultValue: "Query Log" })}
+            <ListFilter size={12} /> {t("domain.show_in_log", { defaultValue: "Query log" })}
           </Btn>
         </div>
       </aside>

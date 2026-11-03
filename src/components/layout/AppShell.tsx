@@ -24,9 +24,6 @@ import {
   ChevronRight,
   Sun,
   Moon,
-  Languages,
-  ShieldCheck,
-  ShieldOff,
   Pause,
   Play,
   Search,
@@ -106,19 +103,20 @@ const NAV_GROUPS = [
 ];
 
 /** A group's heading, or — on the collapsed rail — a hairline between groups. */
-function NavGroupLabel({ label, collapsed, first }: { label: string; collapsed: boolean; first: boolean }) {
+function NavGroupLabel({
+  label,
+  collapsed,
+  first,
+}: {
+  label: string;
+  collapsed: boolean;
+  first: boolean;
+}) {
   if (collapsed) {
-    return first ? null : <div className="border-bdr/70 mx-2 my-2 border-t" aria-hidden />;
+    return first ? null : <div className="mx-2 my-2 border-t border-bdr/70" aria-hidden />;
   }
   return (
-    <p
-      className={cn(
-        "text-muted/70 px-3 pb-1 font-mono text-[9px] uppercase tracking-[0.16em]",
-        first ? "pt-0" : "pt-3",
-      )}
-    >
-      {label}
-    </p>
+    <p className={cn("px-3 pb-1 text-[11.5px] text-muted", first ? "pt-0" : "pt-3")}>{label}</p>
   );
 }
 
@@ -165,22 +163,22 @@ function NavItem({
       aria-label={collapsed ? label : undefined}
       className={({ isActive }) =>
         cn(
-          "min-h-9 rounded-xs group relative flex items-center gap-3 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.09em] transition-colors",
+          "group relative flex min-h-9 items-center gap-3 rounded-lg px-3 py-1.5 text-[13.5px] transition-colors",
           collapsed && "justify-center px-0",
           isActive
-            ? "bg-ember-dim text-heading [&_svg]:text-ember shadow-[inset_2px_0_0_var(--color-ember)]"
+            ? "bg-ember/10 font-medium text-heading [&_svg]:text-ember"
             : "text-body hover:bg-white/4 hover:text-heading",
         )
       }
     >
       <span className="relative shrink-0">
-        <Icon size={14} />
+        <Icon size={16} />
         {badge && collapsed && (
           <span
             role="img"
             aria-label={badgeLabel}
             title={badgeLabel}
-            className="bg-warn absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full"
+            className="absolute -top-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-warn"
           />
         )}
       </span>
@@ -192,9 +190,9 @@ function NavItem({
               role="img"
               aria-label={badgeLabel}
               title={badgeLabel}
-              className="bg-warn/15 text-warn inline-flex items-center gap-1.5 rounded-full px-1.5 py-0.5 text-[9px] font-medium normal-case tracking-normal"
+              className="inline-flex items-center gap-1.5 rounded-full bg-warn/15 px-2 py-0.5 text-[11px] font-medium text-warn"
             >
-              <span className="bg-warn h-1.5 w-1.5 rounded-full" />
+              <span className="h-1.5 w-1.5 rounded-full bg-warn" />
               {badgeText}
             </span>
           )}
@@ -363,45 +361,65 @@ export default function AppShell({ children }: { children: ReactNode }) {
   // subtree each time — every second while a pause counts down.
   function bottomControls({ inDrawer = false }: { inDrawer?: boolean } = {}) {
     const compact = collapsed && !inDrawer;
-    const Icon = blockingEnabled ? ShieldCheck : ShieldOff;
-    const btnCls = cn(
-      "mt-0.5 flex w-full items-center gap-3 rounded-xs px-3 py-2 text-xs text-muted transition-colors hover:bg-white/5 hover:text-heading",
-      compact && "justify-center px-0",
+    const iconBtn = cn(
+      "text-muted hover:text-heading group relative flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition-colors hover:bg-white/5",
     );
+    const themeLabel = theme === "dark" ? t("sidebar.light_mode") : t("sidebar.dark_mode");
+    const dot = paused ? "bg-warn" : blockingEnabled ? "bg-cached" : "bg-warn";
 
     return (
       <>
-        {!compact && (
-          <div className="control-surface-muted plate-ticks border-bdr/70 rounded-xs mb-2 border p-3">
-            <div className="text-heading mb-1.5 flex items-center gap-2 font-mono text-[11px] font-medium uppercase tracking-widest">
-              <span className="relative flex h-2 w-2">
-                {blockingEnabled && (
-                  <span className="bg-ember absolute inline-flex h-full w-full animate-ping opacity-50" />
-                )}
-                <span
-                  className={cn(
-                    "relative inline-flex h-2 w-2",
-                    blockingEnabled ? "bg-ember shadow-[0_0_8px_var(--color-ember)]" : "bg-warn",
-                  )}
-                />
-              </span>
-              <Icon size={12} className={blockingEnabled ? "text-ember" : "text-warn"} />
+        {compact ? (
+          <div className="group relative mb-1 flex justify-center py-2">
+            <span
+              className={cn("h-2 w-2 rounded-full", dot)}
+              aria-label={
+                paused
+                  ? t("pause.paused", { defaultValue: "Filtering paused" })
+                  : blockingEnabled
+                    ? t("sidebar.status_online")
+                    : t("sidebar.status_filtering_off")
+              }
+              role="img"
+            />
+            <span className="sidebar-tooltip">
               {paused
                 ? t("pause.paused", { defaultValue: "Filtering paused" })
                 : blockingEnabled
                   ? t("sidebar.status_online")
                   : t("sidebar.status_filtering_off")}
+            </span>
+          </div>
+        ) : (
+          <div className="mb-2 rounded-xl border border-bdr bg-card p-3">
+            <div className="flex items-center gap-2.5">
+              <span
+                className={cn(
+                  "h-2 w-2 shrink-0 rounded-full",
+                  dot,
+                  blockingEnabled && "shadow-[0_0_0_4px_rgba(92,200,168,0.14)]",
+                )}
+              />
+              <div className="min-w-0">
+                <p className="text-[13.5px] font-semibold text-heading">
+                  {paused
+                    ? t("pause.paused", { defaultValue: "Filtering paused" })
+                    : blockingEnabled
+                      ? t("sidebar.status_online")
+                      : t("sidebar.status_filtering_off")}
+                </p>
+                <p className="text-xs text-muted">
+                  {paused
+                    ? t("pause.time_left", {
+                        time: fmtCountdown(pause.globalLeft ?? 0),
+                        defaultValue: "{{time}} left",
+                      })
+                    : blockingEnabled
+                      ? t("sidebar.control_plane")
+                      : t("sidebar.filtering_off_hint")}
+                </p>
+              </div>
             </div>
-            <p className="text-muted text-[10px]">
-              {paused
-                ? t("pause.time_left", {
-                    time: fmtCountdown(pause.globalLeft ?? 0),
-                    defaultValue: "{{time}} left",
-                  })
-                : blockingEnabled
-                  ? t("sidebar.control_plane")
-                  : t("sidebar.filtering_off_hint")}
-            </p>
             {/* Pause filtering for a while — or bring it back early. */}
             {configuredOn && (
               <div className="mt-2.5 flex items-center gap-1">
@@ -409,13 +427,13 @@ export default function AppShell({ children }: { children: ReactNode }) {
                   <button
                     type="button"
                     onClick={() => runPause(pause.resumeGlobal)}
-                    className="border-ember/40 text-ember hover:bg-ember/10 rounded-xs flex flex-1 items-center justify-center gap-1.5 border px-2 py-1 font-mono text-[10px] uppercase tracking-wider transition-colors"
+                    className="flex h-7 flex-1 items-center justify-center gap-1.5 rounded-lg border border-ember/40 text-xs font-medium text-ember transition-colors hover:bg-ember/10"
                   >
-                    <Play size={10} /> {t("pause.resume", { defaultValue: "Resume" })}
+                    <Play size={11} /> {t("pause.resume", { defaultValue: "Resume" })}
                   </button>
                 ) : (
                   <>
-                    <Pause size={11} className="text-muted mr-0.5 shrink-0" />
+                    <Pause size={12} className="mr-1 shrink-0 text-muted" />
                     {PAUSE_OPTIONS.map((m) => (
                       <button
                         key={m}
@@ -425,7 +443,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
                           time: fmtMinutes(m),
                           defaultValue: "Pause filtering for {{time}}",
                         })}
-                        className="border-bdr/70 text-muted hover:border-warn/50 hover:text-warn rounded-xs flex-1 border px-1.5 py-1 font-mono text-[10px] tabular-nums transition-colors"
+                        className="h-7 flex-1 rounded-lg border border-bdr text-xs text-body tabular-nums transition-colors hover:border-warn/50 hover:text-warn"
                       >
                         {fmtMinutes(m)}
                       </button>
@@ -437,24 +455,16 @@ export default function AppShell({ children }: { children: ReactNode }) {
           </div>
         )}
 
-        {/* Lang switcher */}
-        <div
-          className={cn(
-            "rounded-xs group relative mt-0.5 flex w-full items-center px-3 py-2 text-xs",
-            compact ? "justify-center px-0" : "gap-3",
-          )}
-        >
-          {!compact && <Languages size={14} className="text-muted shrink-0" />}
+        <div className={cn("flex items-center gap-1", compact && "flex-col")}>
           {compact ? (
-            <>
-              <button
-                onClick={cycleLang}
-                className="text-muted hover:text-heading font-mono text-[10px] font-semibold transition-colors"
-              >
-                {currentLang.toUpperCase()}
-              </button>
+            <button
+              type="button"
+              onClick={cycleLang}
+              className={cn(iconBtn, "font-mono text-[11px] font-semibold")}
+            >
+              {currentLang.toUpperCase()}
               <span className="sidebar-tooltip">{t(`lang.${currentLang}`)}</span>
-            </>
+            </button>
           ) : (
             <Select
               value={currentLang}
@@ -469,46 +479,40 @@ export default function AppShell({ children }: { children: ReactNode }) {
               ))}
             </Select>
           )}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label={themeLabel}
+            title={themeLabel}
+            className={iconBtn}
+          >
+            {theme === "dark" ? <Sun size={15} /> : <Moon size={15} />}
+            {compact && <span className="sidebar-tooltip">{themeLabel}</span>}
+          </button>
+          <button
+            type="button"
+            onClick={handleLogout}
+            aria-label={t("sidebar.logout")}
+            title={t("sidebar.logout")}
+            className={cn(iconBtn, "hover:bg-blocked/10 hover:text-blocked")}
+          >
+            <LogOut size={15} />
+            {compact && <span className="sidebar-tooltip">{t("sidebar.logout")}</span>}
+          </button>
         </div>
-
-        {/* Theme toggle */}
-        <button onClick={toggleTheme} className={cn("group relative", btnCls)}>
-          {theme === "dark" ? <Sun size={14} /> : <Moon size={14} />}
-          {!compact && (
-            <span>{theme === "dark" ? t("sidebar.light_mode") : t("sidebar.dark_mode")}</span>
-          )}
-          {compact && (
-            <span className="sidebar-tooltip">
-              {theme === "dark" ? t("sidebar.light_mode") : t("sidebar.dark_mode")}
-            </span>
-          )}
-        </button>
-
-        {/* Logout */}
-        <button
-          onClick={handleLogout}
-          className={cn(
-            "text-muted hover:bg-blocked/10 hover:text-blocked rounded-xs group relative mt-0.5 flex w-full items-center gap-3 px-3 py-2 text-xs transition-colors",
-            compact && "justify-center px-0",
-          )}
-        >
-          <LogOut size={14} />
-          {!compact && <span>{t("sidebar.logout")}</span>}
-          {compact && <span className="sidebar-tooltip">{t("sidebar.logout")}</span>}
-        </button>
       </>
     );
   }
 
   return (
-    <div className="app-canvas bg-void flex h-full justify-center overflow-hidden">
-      <div className="border-bdr/70 bg-void/50 max-w-420 relative flex h-full w-full border-x shadow-[0_0_90px_rgba(0,0,0,0.5)]">
+    <div className="app-canvas flex h-full justify-center overflow-hidden bg-void">
+      <div className="relative flex h-full w-full max-w-420 border-x border-bdr/70">
         {/* ── Desktop sidebar ─────────────────────────────────────────────── */}
         {/* `relative z-20` keeps the rail above the content column: <main> carries a
             transform (the page fade), which makes it a stacking context of its own and
             would otherwise paint over the collapsed rail's hover tooltips. */}
         <aside
-          className={`border-bdr/85 bg-sidebar/95 relative z-20 hidden h-full shrink-0 flex-col border-r shadow-[18px_0_44px_rgba(0,0,0,0.2)] backdrop-blur-xl transition-[width] duration-200 md:flex ${collapsed ? "w-16" : "w-60"}`}
+          className={`relative z-20 hidden h-full shrink-0 flex-col border-r border-bdr bg-sidebar transition-[width] duration-200 md:flex ${collapsed ? "w-16" : "w-60"}`}
         >
           <Link
             to="/"
@@ -516,7 +520,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
             title="Ferrite dashboard"
             aria-label="Ferrite dashboard"
             className={cn(
-              "border-bdr/85 hover:bg-white/3 flex h-16 shrink-0 items-center border-b transition-colors",
+              "flex h-16 shrink-0 items-center transition-colors hover:bg-white/3",
               collapsed ? "justify-center px-0" : "gap-2.5 px-4",
             )}
           >
@@ -534,7 +538,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
               onClick={() => setPaletteOpen(true)}
               aria-label={t("palette.open", { defaultValue: "Search" })}
               className={cn(
-                "border-bdr/70 text-muted hover:text-heading hover:border-ember/40 rounded-xs group relative mb-3 flex w-full items-center gap-2.5 border px-3 py-1.5 text-[11px] transition-colors",
+                "group relative mb-4 flex h-9 w-full items-center gap-2.5 rounded-lg border border-bdr bg-void/40 px-3 text-[13px] text-muted transition-colors hover:border-ember/40 hover:text-heading",
                 collapsed && "justify-center px-0",
               )}
             >
@@ -544,11 +548,15 @@ export default function AppShell({ children }: { children: ReactNode }) {
                   <span className="flex-1 text-left">
                     {t("palette.open", { defaultValue: "Search" })}
                   </span>
-                  <kbd className="border-bdr/70 rounded-xs border px-1 font-mono text-[9px]">⌘K</kbd>
+                  <kbd className="rounded-md border border-bdr px-1.5 font-mono text-[10px]">
+                    ⌘K
+                  </kbd>
                 </>
               )}
               {collapsed && (
-                <span className="sidebar-tooltip">{t("palette.open", { defaultValue: "Search" })}</span>
+                <span className="sidebar-tooltip">
+                  {t("palette.open", { defaultValue: "Search" })}
+                </span>
               )}
             </button>
             {NAV_GROUPS.map((group, gi) => (
@@ -569,12 +577,12 @@ export default function AppShell({ children }: { children: ReactNode }) {
             ))}
           </nav>
 
-          <div className={cn("border-bdr/85 border-t px-2 py-3", !collapsed && "px-3")}>
+          <div className={cn("px-2 py-3", !collapsed && "px-3")}>
             <button
               onClick={toggleCollapsed}
               title={collapsed ? t("sidebar.expand") : t("sidebar.collapse")}
               className={cn(
-                "text-muted hover:text-heading rounded-xs flex w-full items-center gap-3 px-3 py-2 text-xs transition-colors hover:bg-white/5",
+                "mb-1 flex w-full items-center gap-3 rounded-lg px-3 py-2 text-xs text-muted transition-colors hover:bg-white/5 hover:text-heading",
                 collapsed && "justify-center px-0",
               )}
             >
@@ -586,7 +594,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
         </aside>
 
         {/* ── Mobile top bar ──────────────────────────────────────────────── */}
-        <div className="border-bdr/85 bg-sidebar/95 fixed inset-x-0 top-0 z-30 flex items-center justify-between border-b px-4 py-2.5 backdrop-blur-xl md:hidden">
+        <div className="fixed inset-x-0 top-0 z-30 flex items-center justify-between border-b border-bdr bg-sidebar/95 px-4 py-2.5 backdrop-blur-xl md:hidden">
           <Link
             to="/"
             onClick={handleLogoClick}
@@ -598,14 +606,14 @@ export default function AppShell({ children }: { children: ReactNode }) {
           <button
             type="button"
             onClick={() => setPaletteOpen(true)}
-            className="border-bdr/75 bg-panel/70 text-muted hover:text-heading rounded-xs ml-auto mr-2 border p-2 transition-colors"
+            className="mr-2 ml-auto rounded-lg border border-bdr p-2 text-muted transition-colors hover:text-heading"
             aria-label={t("palette.open", { defaultValue: "Search" })}
           >
             <Search size={18} />
           </button>
           <button
             onClick={() => setMobileOpen((v) => !v)}
-            className="border-bdr/75 bg-panel/70 text-muted hover:text-heading rounded-xs border p-2 transition-colors"
+            className="rounded-lg border border-bdr p-2 text-muted transition-colors hover:text-heading"
             aria-label="Toggle menu"
           >
             {mobileOpen ? <X size={18} /> : <Menu size={18} />}
@@ -616,21 +624,26 @@ export default function AppShell({ children }: { children: ReactNode }) {
         {mobileOpen && (
           <>
             <div
-              className="bg-void/60 fixed inset-0 z-20 backdrop-blur-sm md:hidden"
+              className="fixed inset-0 z-20 bg-void/60 backdrop-blur-sm md:hidden"
               onClick={() => setMobileOpen(false)}
             />
-            <div className="border-bdr/85 bg-sidebar/95 fixed left-0 top-0 z-30 flex h-full w-64 flex-col border-r shadow-2xl backdrop-blur-xl md:hidden">
+            <div className="fixed top-0 left-0 z-30 flex h-full w-64 flex-col border-r border-bdr bg-sidebar shadow-2xl md:hidden">
               <Link
                 to="/"
                 onClick={handleLogoClick}
                 aria-label="Ferrite dashboard"
-                className="border-bdr/85 hover:bg-white/3 flex h-16 items-center gap-2.5 border-b px-4"
+                className="flex h-16 items-center gap-2.5 px-4 hover:bg-white/3"
               >
                 <FerriteBrand />
               </Link>
               <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 py-4">
                 {NAV_GROUPS.map((group, gi) => (
-                  <div key={group.key} role="group" aria-label={t(group.key)} className="space-y-0.5">
+                  <div
+                    key={group.key}
+                    role="group"
+                    aria-label={t(group.key)}
+                    className="space-y-0.5"
+                  >
                     <NavGroupLabel label={t(group.key)} collapsed={false} first={gi === 0} />
                     {group.items.map((item) => (
                       <NavItem
@@ -647,9 +660,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
                   </div>
                 ))}
               </nav>
-              <div className="border-bdr/85 border-t p-3">
-                {bottomControls({ inDrawer: true })}
-              </div>
+              <div className="p-3">{bottomControls({ inDrawer: true })}</div>
             </div>
           </>
         )}
@@ -668,12 +679,12 @@ export default function AppShell({ children }: { children: ReactNode }) {
         {/* ── Main content ────────────────────────────────────────────────── */}
         <main
           key={pathname + reloadKey}
-          className="animate-fade-up min-w-0 flex-1 overflow-y-auto pt-14 md:pt-0"
+          className="min-w-0 flex-1 animate-fade-up overflow-y-auto pt-14 md:pt-0"
         >
           {/* A paused resolver lets everything through — say so on every page,
               including on a phone where the sidebar card is out of sight. */}
           {paused && (
-            <div className="border-warn/30 bg-warn/10 text-warn sticky top-0 z-10 flex items-center gap-2 border-b px-4 py-2 text-xs backdrop-blur">
+            <div className="sticky top-0 z-10 flex items-center gap-2 border-b border-warn/30 bg-warn/10 px-4 py-2 text-xs text-warn backdrop-blur">
               <Pause size={12} className="shrink-0" />
               <span className="min-w-0 flex-1">
                 {t("pause.banner", {
@@ -684,7 +695,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
               <button
                 type="button"
                 onClick={() => runPause(pause.resumeGlobal)}
-                className="hover:text-heading shrink-0 font-mono text-[11px] font-semibold uppercase tracking-wider transition-colors"
+                className="shrink-0 text-xs font-semibold transition-colors hover:text-heading"
               >
                 {t("pause.resume", { defaultValue: "Resume" })}
               </button>

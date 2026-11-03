@@ -50,7 +50,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                   t.action!.onClick();
                   dismiss(t.id);
                 }}
-                className="text-ember hover:text-heading shrink-0 font-mono text-[11px] font-semibold uppercase tracking-wider transition-colors"
+                className="text-ember hover:text-heading shrink-0 text-[13px] font-semibold transition-colors"
               >
                 {t.action.label}
               </button>

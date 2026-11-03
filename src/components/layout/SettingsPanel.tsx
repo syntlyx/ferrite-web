@@ -26,20 +26,20 @@ export function SettingsPanel({
 }) {
   return (
     <Card className="overflow-hidden p-0">
-      <div className="border-bdr/60 flex flex-col gap-3 border-b px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 border-b border-bdr/60 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex min-w-0 items-center gap-3">
-          <span className="border-ember/15 bg-ember/10 text-ember rounded-xs shrink-0 border p-2">
+          <span className="shrink-0 rounded-lg bg-ember/10 p-2 text-ember">
             <Icon size={16} />
           </span>
           <div className="min-w-0">
-            <p className="text-heading text-sm font-semibold">{title}</p>
-            {sub && <p className="text-muted mt-0.5 text-xs leading-relaxed">{sub}</p>}
+            <p className="text-[15px] font-semibold text-heading">{title}</p>
+            {sub && <p className="mt-0.5 text-xs leading-relaxed text-muted">{sub}</p>}
           </div>
         </div>
         {badge && <div className="shrink-0">{badge}</div>}
       </div>
-      <div className="divide-bdr/55 divide-y px-4">{children}</div>
-      {footer && <div className="border-bdr/55 bg-void/20 border-t px-4 py-3">{footer}</div>}
+      <div className="divide-y divide-bdr/55 px-5">{children}</div>
+      {footer && <div className="border-t border-bdr/55 bg-void/20 px-5 py-3">{footer}</div>}
     </Card>
   );
 }
@@ -67,10 +67,10 @@ export function SettingRow({
     >
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <p className="text-heading text-sm font-medium">{label}</p>
+          <p className="text-sm font-medium text-heading">{label}</p>
           {badge}
         </div>
-        {sub && <p className="text-muted mt-0.5 text-xs leading-relaxed">{sub}</p>}
+        {sub && <p className="mt-0.5 text-xs leading-relaxed text-muted">{sub}</p>}
       </div>
       <div className="flex min-w-0 items-center gap-2 sm:justify-end">{children}</div>
     </div>
@@ -90,8 +90,8 @@ export function SettingBlock({
   return (
     <div className="space-y-3 py-4">
       <div className="min-w-0">
-        <p className="text-heading text-sm font-medium">{label}</p>
-        {sub && <p className="text-muted mt-0.5 text-xs leading-relaxed">{sub}</p>}
+        <p className="text-sm font-medium text-heading">{label}</p>
+        {sub && <p className="mt-0.5 text-xs leading-relaxed text-muted">{sub}</p>}
       </div>
       {children}
     </div>
@@ -109,11 +109,11 @@ export function StatusBadge({
   labelUnset: string;
 }) {
   return set ? (
-    <span className="bg-ember/10 text-ember rounded-full px-2 py-0.5 text-[10px] font-medium">
+    <span className="rounded-full bg-ember/10 px-2 py-0.5 text-[10px] font-medium text-ember">
       {labelSet}
     </span>
   ) : (
-    <span className="bg-bdr text-muted rounded-full px-2 py-0.5 text-[10px] font-medium">
+    <span className="rounded-full bg-bdr px-2 py-0.5 text-[10px] font-medium text-muted">
       {labelUnset}
     </span>
   );
@@ -141,22 +141,20 @@ export function StatusTile({
   }[tone];
 
   return (
-    <div className="control-surface border-bdr/75 rounded-xs border p-4">
+    <div className="control-surface rounded-xl border border-bdr p-4">
       <div className="mb-3 flex items-center justify-between gap-3">
-        <p className="text-muted font-mono text-[10px] font-medium uppercase tracking-[0.12em]">
-          {label}
-        </p>
-        <span className={cn("rounded-xs border p-1.5", toneClass)}>
+        <p className="text-[13px] text-muted">{label}</p>
+        <span className={cn("rounded-md border p-1.5", toneClass)}>
           <Icon size={13} />
         </span>
       </div>
-      <p className="text-heading text-lg font-semibold tabular-nums">{value}</p>
-      {sub && <p className="text-muted mt-1 truncate text-[11px]">{sub}</p>}
+      <p className="text-lg font-semibold text-heading tabular-nums">{value}</p>
+      {sub && <p className="mt-1 truncate text-[11px] text-muted">{sub}</p>}
     </div>
   );
 }
 
-/** Tiny uppercase caption above a field. */
+/** Small caption above a field. */
 export function FieldLabel({ children }: { children: ReactNode }) {
-  return <span className="text-muted block text-[10px] uppercase tracking-wider">{children}</span>;
+  return <span className="block text-xs text-muted">{children}</span>;
 }

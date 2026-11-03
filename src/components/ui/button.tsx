@@ -18,17 +18,16 @@ type IconBtnProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 // height is the `size`. Both controls and inputs share the same h-9 so they line
 // up in a form row — don't reintroduce per-call height/width classes.
 const VARIANTS = {
-  primary:
-    "bg-ember text-on-ember font-semibold shadow-[0_4px_14px_rgba(255,106,56,0.18)] hover:bg-ember-h",
+  primary: "bg-ember text-on-ember font-semibold hover:bg-ember-h",
   ghost:
-    "border border-bdr/90 bg-panel/55 text-body font-medium hover:border-ember/35 hover:bg-white/[0.07] hover:text-heading",
+    "border border-bdr bg-transparent text-body font-medium hover:border-ember/35 hover:bg-white/[0.05] hover:text-heading",
   danger:
-    "border border-bdr/90 bg-panel/45 text-body font-medium hover:border-blocked/40 hover:bg-blocked/6 hover:text-blocked",
+    "border border-bdr bg-transparent text-body font-medium hover:border-blocked/40 hover:bg-blocked/6 hover:text-blocked",
 };
 
 const SIZES = {
-  sm: "h-8 px-3 text-[11px]",
-  md: "h-9 px-3.5 text-[11px]",
+  sm: "h-8 px-3 text-xs",
+  md: "h-9 px-3.5 text-[13px]",
 };
 
 export function Btn({
@@ -42,7 +41,7 @@ export function Btn({
   return (
     <button
       className={cn(
-        "rounded-xs inline-flex items-center justify-center gap-1.5 uppercase tracking-[0.08em] transition-colors disabled:opacity-40",
+        "inline-flex items-center justify-center gap-1.5 rounded-lg transition-colors disabled:opacity-40",
         SIZES[size],
         VARIANTS[variant],
         block && "w-full",

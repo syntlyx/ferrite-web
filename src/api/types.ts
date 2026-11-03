@@ -19,6 +19,8 @@ export interface LoginResponse {
 export interface TopClientEntry {
   name: string;
   total: number;
+  /** How many of `total` were blocked (absent from older servers). */
+  blocked?: number;
   ips: string[];
   macs: string[];
 }

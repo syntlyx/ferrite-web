@@ -13,7 +13,7 @@ export function FilterBar({ children, meta }: { children: ReactNode; meta?: Reac
       <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
         {children}
         {meta != null && (
-          <div className="text-muted shrink-0 text-[11px] tabular-nums lg:ml-auto">{meta}</div>
+          <div className="shrink-0 text-[11px] text-muted tabular-nums lg:ml-auto">{meta}</div>
         )}
       </div>
     </Card>

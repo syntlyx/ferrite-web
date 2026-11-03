@@ -121,7 +121,7 @@ export function SessionsCard() {
                   <p className="flex flex-wrap items-center gap-2 text-xs text-heading">
                     {what}
                     {s.current && (
-                      <span className="rounded-xs border border-cached/25 bg-cached/10 px-1.5 py-px font-mono text-[9px] tracking-[0.08em] text-cached uppercase">
+                      <span className="rounded-xs border border-cached/25 bg-cached/10 px-1.5 py-px font-mono text-[10px] text-cached">
                         {t("sessions.this", { defaultValue: "This browser" })}
                       </span>
                     )}

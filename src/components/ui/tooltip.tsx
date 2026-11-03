@@ -73,7 +73,7 @@ export function Tooltip({
               visibility: coords ? "visible" : "hidden",
             }}
             className={cn(
-              "rounded-xs border-bdr bg-card text-heading pointer-events-none fixed z-50 border px-2.5 py-1.5 text-[11px] leading-relaxed shadow-lg",
+              "pointer-events-none fixed z-50 rounded-xs border border-bdr bg-card px-2.5 py-1.5 text-[11px] leading-relaxed text-heading shadow-lg",
               className,
             )}
           >

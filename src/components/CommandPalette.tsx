@@ -206,7 +206,7 @@ export function CommandPalette({
               return (
                 <div key={item.id}>
                   {first && (
-                    <p className="px-4 pt-2 pb-1 font-mono text-[9px] tracking-[0.16em] text-muted/70 uppercase">
+                    <p className="px-4 pt-2 pb-1 text-xs text-muted/70">
                       {groupLabel[item.group]}
                     </p>
                   )}

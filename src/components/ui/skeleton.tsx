@@ -6,5 +6,5 @@ interface SkeletonProps {
 
 /** Pulsing placeholder block. Use className to set h-* and w-* / rounded-*. */
 export function Skeleton({ className }: SkeletonProps) {
-  return <div className={cn("rounded-xs bg-bdr animate-pulse", className)} aria-hidden="true" />;
+  return <div className={cn("animate-pulse rounded-xs bg-bdr", className)} aria-hidden="true" />;
 }

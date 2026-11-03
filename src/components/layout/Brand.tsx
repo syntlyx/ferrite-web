@@ -14,7 +14,7 @@ export function FerriteMark({ className }: FerriteMarkProps) {
   return (
     <span
       className={cn(
-        "rounded-xs border-ember/30 bg-void relative inline-flex shrink-0 items-center justify-center overflow-hidden border shadow-[0_0_24px_rgba(255,106,56,0.22)]",
+        "relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-lg bg-void",
         className,
       )}
     >
@@ -29,7 +29,9 @@ export function FerriteBrand({ collapsed, className, markClassName }: FerriteBra
       <FerriteMark className={cn("h-8 w-8", markClassName)} />
       {!collapsed && (
         <span className="min-w-0">
-          <span className="display-title text-heading block text-base">ferrite</span>
+          <span className="block text-[17px] font-semibold tracking-[-0.01em] text-heading">
+            ferrite
+          </span>
         </span>
       )}
     </span>

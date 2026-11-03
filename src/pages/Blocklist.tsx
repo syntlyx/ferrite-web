@@ -420,7 +420,7 @@ export default function Blocklist() {
       {err && <Err msg={err} />}
 
       {/* Domain inspector */}
-      <Card className="plate-ticks mb-4">
+      <Card className="mb-4">
         <SectionLabel>{t("blocklist.quick_curate", { defaultValue: "Quick curate" })}</SectionLabel>
         <form onSubmit={handleCheck} className="grid grid-cols-[minmax(0,1fr)_auto] gap-2">
           <SearchInput
@@ -445,7 +445,7 @@ export default function Blocklist() {
               <div className="flex min-w-0 flex-wrap items-center gap-2.5">
                 <span
                   className={cn(
-                    "rounded-xs flex items-center gap-1.5 border px-2.5 py-1 font-mono text-[11px] font-semibold uppercase tracking-[0.08em]",
+                    "rounded-xs flex items-center gap-1.5 border px-2.5 py-1 text-[13px] font-semibold",
                     checkResult.blocked
                       ? "border-blocked/25 bg-blocked/10 text-blocked"
                       : "border-cached/25 bg-cached/10 text-cached",

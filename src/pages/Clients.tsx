@@ -16,6 +16,8 @@ import {
   ChevronDown,
   ChevronsUpDown,
   Tag,
+  LayoutGrid,
+  List as ListIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { api } from "@/api";
@@ -33,7 +35,6 @@ import {
   IconBtn,
   Input,
   SearchInput,
-  Bar,
   SectionLabel,
   Skeleton,
   Th,
@@ -50,6 +51,8 @@ import { DEVICE_ICON, deviceKind } from "@/lib/device-kind";
 import { usePause, fmtCountdown, PAUSE_OPTIONS } from "@/stores/pause";
 import { openDevicePanel } from "@/stores/device-panel";
 import { deviceTokens } from "@/api/clients";
+import { useLocalStorage } from "@/hooks/use-local-storage";
+import { ProfileChip, ProfileGroups, useProfileIndex } from "@/components/ProfileGroups";
 import type { AddAliasBody, ClientAlias, ClientEntry } from "@/api/types";
 
 // ── Aliases panel ─────────────────────────────────────────────────────────────
@@ -82,7 +85,7 @@ function TypeToggle({
           type="button"
           onClick={() => onChange(t)}
           className={cn(
-            "border-bdr/60 not-last:border-r px-3.5 py-2 font-mono text-[11px] font-medium uppercase tracking-[0.06em] transition-colors",
+            "border-bdr/60 not-last:border-r px-3.5 py-2 text-[13px] font-medium transition-colors",
             value === t
               ? "bg-ember-dim text-ember"
               : "bg-sidebar/90 text-muted hover:bg-white/4 hover:text-heading",
@@ -356,7 +359,7 @@ function SortHeader({
         type="button"
         onClick={() => onSort(field)}
         className={cn(
-          "group inline-flex items-center gap-1 align-middle font-mono text-[10px] font-medium uppercase tracking-[0.12em] transition-colors hover:text-heading",
+          "group inline-flex items-center gap-1 align-middle text-xs font-medium transition-colors hover:text-heading",
           active ? "text-ember" : "text-muted",
         )}
       >
@@ -408,6 +411,10 @@ export default function Clients() {
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<SortState>({ key: "total", dir: "desc" });
   const [prefill, setPrefill] = useState<AliasPrefill | null>(null);
+  const profileIndex = useProfileIndex();
+  // The table, or the devices sorted into the profiles that hold them.
+  const [mode, setMode] = useLocalStorage("ferrite.clients.view", "list");
+  const grouped = mode === "groups" && profileIndex != null;
 
   // Hand a client's address to the aliases form below (prefer MAC — it follows
   // the device across IPs). Clients with neither an IP nor MAC can't be aliased.
@@ -623,8 +630,36 @@ export default function Clients() {
               className="w-full min-w-0 lg:flex-1"
               inputClass="font-mono"
             />
+            <div
+              role="group"
+              aria-label={t("groups.view", { defaultValue: "Show" })}
+              className="bg-void/40 border-bdr flex w-fit shrink-0 gap-0.5 rounded-lg border p-0.5"
+            >
+              {(
+                [
+                  ["list", ListIcon, t("groups.as_list", { defaultValue: "List" })],
+                  ["groups", LayoutGrid, t("groups.by_profile", { defaultValue: "By profile" })],
+                ] as const
+              ).map(([value, Icon, label]) => (
+                <button
+                  key={value}
+                  type="button"
+                  aria-pressed={mode === value}
+                  onClick={() => setMode(value)}
+                  className={cn(
+                    "flex h-8 items-center gap-1.5 rounded-md px-3 text-[13px] font-medium transition-colors",
+                    mode === value ? "bg-raised text-heading" : "text-muted hover:text-body",
+                  )}
+                >
+                  <Icon size={13} /> {label}
+                </button>
+              ))}
+            </div>
           </FilterBar>
 
+          {grouped && <ProfileGroups clients={view} index={profileIndex} />}
+
+          {!grouped && (
           <Card className="p-0! mb-4 overflow-x-auto">
             <table className="w-full text-xs">
               <thead>
@@ -637,7 +672,9 @@ export default function Clients() {
                     onSort={onSort}
                     className="px-3 sm:px-4"
                   />
-                  <Th className="hidden md:table-cell">{t("clients.col_ips")}</Th>
+                  <Th className="hidden lg:table-cell">
+                    {t("groups.col_profile", { defaultValue: "Profile" })}
+                  </Th>
                   <Th className="hidden w-36 lg:table-cell">{t("clients.col_activity")}</Th>
                   <SortHeader
                     label={t("clients.col_total")}
@@ -689,6 +726,7 @@ export default function Clients() {
                       tokens.map((k) => pause.clientLeft.get(k)).find((v) => v != null) ?? null;
                     const kind = deviceKind(c.name);
                     const DeviceIcon = DEVICE_ICON[kind];
+                    const profileAt = profileIndex?.of(c) ?? null;
                     return (
                       <TableRow key={c.name + rank} className="group">
                         <Td className="text-muted hidden tabular-nums sm:table-cell">{rank}</Td>
@@ -696,10 +734,8 @@ export default function Clients() {
                           <div className="flex items-center gap-1.5">
                             <span
                               className={cn(
-                                "rounded-xs flex h-6 w-6 shrink-0 items-center justify-center border",
-                                kind === "unknown"
-                                  ? "border-bdr/50 text-muted/60"
-                                  : "border-ember/20 bg-ember/5 text-ember/80",
+                                "flex h-7 w-7 shrink-0 items-center justify-center rounded-lg",
+                                kind === "unknown" ? "bg-raised/60 text-muted" : "bg-raised text-body",
                               )}
                             >
                               <DeviceIcon size={13} />
@@ -709,7 +745,7 @@ export default function Clients() {
                               onClick={() =>
                                 openDevicePanel({ macs: c.macs, ips: c.ips, name: c.name })
                               }
-                              className="text-heading hover:text-ember cursor-pointer text-left font-medium transition-colors"
+                              className="text-heading hover:text-ember cursor-pointer text-left text-[13.5px] font-medium transition-colors"
                             >
                               {c.name}
                             </button>
@@ -720,7 +756,7 @@ export default function Clients() {
                             )}
                             {isNewDevice(c.first_seen) && (
                               <span
-                                className="border-cached/35 bg-cached/10 text-cached rounded-xs border px-1 py-0.5 font-mono text-[9px] uppercase tracking-wider"
+                                className="border-cached/35 bg-cached/10 text-cached rounded-xs border px-1 py-0.5 font-mono text-[10px]"
                                 title={t("clients.new_badge_hint", {
                                   when: fmtRelTime(c.first_seen!),
                                   defaultValue: "First seen {{when}}",
@@ -739,20 +775,36 @@ export default function Clients() {
                               </IconBtn>
                             )}
                           </div>
+                          <div className="mt-0.5 hidden pl-8.5 md:block">
+                            <IpList ips={c.ips} />
+                          </div>
                           {/* What a phone's hidden columns would have said. */}
-                          <span className="text-muted mt-0.5 block whitespace-nowrap pl-7.5 font-mono text-[10px] md:hidden">
+                          <span className="text-muted mt-0.5 block whitespace-nowrap pl-8.5 font-mono text-[10px] md:hidden">
                             {[...c.ips].sort((a, b) => ipRank(a) - ipRank(b))[0]}
                             <span className="sm:hidden"> · {fmtRelTime(c.last_seen)}</span>
                           </span>
                         </Td>
-                        <Td className="hidden md:table-cell">
-                          <IpList ips={c.ips} />
+                        <Td className="hidden lg:table-cell">
+                          {profileAt != null && profileIndex ? (
+                            <ProfileChip
+                              index={profileAt}
+                              name={profileIndex.profiles[profileAt].name}
+                            />
+                          ) : (
+                            <span className="text-muted">—</span>
+                          )}
                         </Td>
                         <Td className="hidden lg:table-cell">
-                          <Bar
-                            value={(c.total / maxTotal) * 100}
-                            color={rank === 1 ? "bg-ember" : "bg-ember/40"}
-                          />
+                          <div className="bg-bdr/70 relative h-1.5 overflow-hidden rounded-full">
+                            <div
+                              className="bg-muted/45 absolute inset-y-0 left-0 rounded-full"
+                              style={{ width: `${(c.total / maxTotal) * 100}%` }}
+                            />
+                            <div
+                              className="bg-blocked absolute inset-y-0 left-0 rounded-full"
+                              style={{ width: `${(c.blocked / maxTotal) * 100}%` }}
+                            />
+                          </div>
                         </Td>
                         <Td className="text-body px-3 text-right tabular-nums sm:px-4">
                           {fmt(c.total)}
@@ -800,18 +852,13 @@ export default function Clients() {
                                 ))}
                               </span>
                             ) : (
-                              <span
-                                className={cn(
-                                  "hidden rounded-full px-2 py-0.5 text-[10px] font-medium sm:inline",
-                                  filteringOn ? "bg-ember/10 text-ember" : "bg-warn/10 text-warn",
-                                )}
-                              >
-                                {!blockingEnabled
-                                  ? t("clients.filtering_global_off")
-                                  : c.blocking_bypassed
-                                    ? t("clients.filtering_bypassed")
-                                    : t("clients.filtering_on")}
-                              </span>
+                              !filteringOn && (
+                                <span className="bg-warn/10 text-warn hidden rounded-full px-2 py-0.5 text-[11px] font-medium sm:inline">
+                                  {!blockingEnabled
+                                    ? t("clients.filtering_global_off")
+                                    : t("clients.filtering_bypassed")}
+                                </span>
+                              )
                             )}
                             <Switch
                               checked={filteringOn && pausedLeft == null}
@@ -852,6 +899,7 @@ export default function Clients() {
               </tbody>
             </table>
           </Card>
+          )}
 
           {hasMore && (
             <div className="mb-4 flex justify-center">
