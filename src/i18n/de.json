@@ -314,7 +314,6 @@
     "live_changes": "Ohne Neustart aktiv",
     "live_changes_sub": "Diese Werte werden sofort im laufenden Service angewendet.",
     "restart_changes": "Wird gespeichert, dann startet der Supervisor Ferrite neu.",
-    "restart_changes_sub": "Listener und Cache-Größen brauchen einen Neustart.",
     "entries_unit": "Einträge",
     "general": "Allgemeine Einstellungen",
     "min_ttl": "Min. TTL",
@@ -483,7 +482,8 @@
     "dns_block_private_relay": "iCloud Private Relay abschalten",
     "dns_block_private_relay_sub": "Apple-Geräten mitteilen, dass Private Relay in diesem Netz nicht verfügbar ist, damit Safari über ferrite auflöst. Das ist eine Datenschutz-Entscheidung des Geräteinhabers, daher bleibt es aus, bis du es einschaltest.",
     "dns_strip_ech": "Encrypted Client Hello entfernen",
-    "dns_strip_ech_sub": "ECH aus HTTPS-Einträgen entfernen, damit Browser den Namen der Website im TLS-Handshake lesbar lassen. DoH-Server sperrt man besser mit einer Liste wie HaGeZis DoH-Bypass."
+    "dns_strip_ech_sub": "ECH aus HTTPS-Einträgen entfernen, damit Browser den Namen der Website im TLS-Handshake lesbar lassen. DoH-Server sperrt man besser mit einer Liste wie HaGeZis DoH-Bypass.",
+    "network_sub": "Wo ferrite lauscht und wie viel es zwischenspeichert. Cache-Größen gelten sofort; eine neue Lauschadresse braucht einen Neustart."
   },
   "login": {
     "sign_in": "Anmelden",

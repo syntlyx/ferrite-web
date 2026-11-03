@@ -313,6 +313,15 @@ function LocationChips({
   );
 }
 
+/** The fields that still take effect only after a restart. */
+const RESTART_FIELDS: (keyof PatchSettingsBody)[] = [
+  "storage_backend",
+  "storage_path",
+  "blocklist_cache_dir",
+  "dns_bind_addr",
+  "api_bind_addr",
+];
+
 function RestartBadge() {
   const { t } = useTranslation();
   return (
@@ -983,8 +992,10 @@ export default function Settings() {
 
   const hotPatch = settings ? buildHotPatch(form, logIgnore, settings) : {};
   const restartPatch = settings ? buildRestartPatch(restartForm, settings) : {};
-  const restartNeeded = Object.keys(restartPatch).length > 0;
-  const dirty = Object.keys(hotPatch).length > 0 || restartNeeded;
+  // Only where ferrite listens and where it stores still need a restart;
+  // everything else on the restart form applies live now.
+  const restartNeeded = RESTART_FIELDS.some((k) => k in restartPatch);
+  const dirty = Object.keys(hotPatch).length > 0 || Object.keys(restartPatch).length > 0;
 
   async function handleSave(e: SubmitEvent) {
     e.preventDefault();
@@ -1526,7 +1537,6 @@ export default function Settings() {
                 title={t("settings.upstream_resolvers")}
                 sub={t("settings.upstream_resolvers_sub")}
                 icon={RadioTower}
-                badge={<RestartBadge />}
               >
                 <SettingBlock label={t("settings.upstream")} sub={t("settings.upstream_sub")}>
                   <UpstreamEditor
@@ -1540,7 +1550,6 @@ export default function Settings() {
                 title={t("settings.zone_routing")}
                 sub={t("settings.zone_routing_sub")}
                 icon={Route}
-                badge={<RestartBadge />}
               >
                 <SettingBlock label={t("settings.zones")} sub={t("settings.zones_sub")}>
                   <ZonesEditor
@@ -1579,11 +1588,14 @@ export default function Settings() {
               </SettingsPanel>
               <SettingsPanel
                 title={t("settings.network")}
-                sub={t("settings.restart_changes_sub")}
+                sub={t("settings.network_sub")}
                 icon={RadioTower}
-                badge={<RestartBadge />}
               >
-                <SettingRow label={t("settings.dns_bind")} sub={t("settings.dns_bind_sub")}>
+                <SettingRow
+                  label={t("settings.dns_bind")}
+                  sub={t("settings.dns_bind_sub")}
+                  badge={<RestartBadge />}
+                >
                   <Input
                     value={restartForm.dns_bind_addr}
                     onChange={setR("dns_bind_addr")}
@@ -1611,7 +1623,11 @@ export default function Settings() {
                     onChange={setR("blocklist_decision_cache_size")}
                   />
                 </SettingRow>
-                <SettingRow label={t("settings.api_bind")} sub={t("settings.api_bind_sub")}>
+                <SettingRow
+                  label={t("settings.api_bind")}
+                  sub={t("settings.api_bind_sub")}
+                  badge={<RestartBadge />}
+                >
                   <Input
                     value={restartForm.api_bind_addr}
                     onChange={setR("api_bind_addr")}
@@ -1627,7 +1643,6 @@ export default function Settings() {
                 title={t("settings.panel")}
                 sub={t("settings.panel_sub")}
                 icon={PanelTop}
-                badge={<RestartBadge />}
               >
                 <SettingRow
                   label={t("settings.panel_enabled")}
