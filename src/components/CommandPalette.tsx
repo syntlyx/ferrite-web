@@ -9,6 +9,7 @@ import {
   Globe2,
   Hash,
   ListFilter,
+  Monitor,
   Moon,
   Pause,
   Play,
@@ -130,7 +131,7 @@ export function CommandPalette({
   const navigate = useNavigate();
   const toast = useToast();
   const pause = usePause();
-  const { theme, toggle: toggleTheme } = useTheme();
+  const { nextPref: nextTheme, toggle: toggleTheme } = useTheme();
   const [query, setQuery] = useState("");
   const [active, setActive] = useState(0);
   const [found, setFound] = useState<Entities>(NONE);
@@ -294,9 +295,9 @@ export function CommandPalette({
       {
         id: "theme",
         group: "actions",
-        label: theme === "dark" ? t("sidebar.light_mode") : t("sidebar.dark_mode"),
-        words: "theme light dark",
-        icon: theme === "dark" ? Sun : Moon,
+        label: t(`sidebar.${nextTheme}_mode`),
+        words: "theme light dark system auto",
+        icon: nextTheme === "system" ? Monitor : nextTheme === "light" ? Sun : Moon,
         run: toggleTheme,
       },
     ];
@@ -321,7 +322,7 @@ export function CommandPalette({
     });
     groups.sort((a, b) => b.best - a.best || a.order - b.order);
     return groups.flatMap((g) => g.rows.map((r) => r.item));
-  }, [query, pages, pageLabel, pageIcon, found, pause, theme, toggleTheme, navigate, t, toast]);
+  }, [query, pages, pageLabel, pageIcon, found, pause, nextTheme, toggleTheme, navigate, t, toast]);
 
   useEffect(() => setActive(0), [query]);
 

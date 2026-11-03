@@ -7,27 +7,28 @@ import { cn } from "@/lib/utils";
 import { DemoBanner } from "@/demo/DemoBanner";
 import { FerriteBrand } from "@/components/layout/Brand";
 import {
-  LayoutDashboard,
-  List,
-  Users,
-  Shield,
-  UserCog,
-  Globe,
-  Server,
-  Waypoints,
-  ScrollText,
-  Wrench,
-  Settings,
-  LogOut,
-  Menu,
-  X,
   ChevronLeft,
   ChevronRight,
-  Sun,
+  Globe,
+  LayoutDashboard,
+  List,
+  LogOut,
+  Menu,
+  Monitor,
   Moon,
   Pause,
   Play,
+  ScrollText,
   Search,
+  Server,
+  Settings,
+  Shield,
+  Sun,
+  UserCog,
+  Users,
+  Waypoints,
+  Wrench,
+  X,
 } from "lucide-react";
 import { api } from "@/api";
 import { useTheme } from "@/providers/ThemeProvider";
@@ -244,7 +245,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
     m >= 60
       ? t("pause.hours_short", { count: m / 60, defaultValue: "{{count}}h" })
       : t("pause.minutes_short", { count: m, defaultValue: "{{count}}m" });
-  const { theme, toggle: toggleTheme } = useTheme();
+  const { pref: themePref, toggle: toggleTheme } = useTheme();
   const pageVisible = usePageVisible();
 
   // Live "update available" indicator. The server re-checks upstream releases on
@@ -367,7 +368,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
     const iconBtn = cn(
       "text-muted hover:text-heading group relative flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition-colors hover:bg-white/5",
     );
-    const themeLabel = theme === "dark" ? t("sidebar.light_mode") : t("sidebar.dark_mode");
+    const themeLabel = t(`sidebar.theme_${themePref}`);
     const dot = paused ? "bg-warn" : blockingEnabled ? "bg-cached" : "bg-warn";
 
     return (
@@ -506,7 +507,13 @@ export default function AppShell({ children }: { children: ReactNode }) {
             title={themeLabel}
             className={iconBtn}
           >
-            {theme === "dark" ? <Sun size={15} /> : <Moon size={15} />}
+            {themePref === "system" ? (
+              <Monitor size={15} />
+            ) : themePref === "light" ? (
+              <Sun size={15} />
+            ) : (
+              <Moon size={15} />
+            )}
             {compact && <span className="sidebar-tooltip">{themeLabel}</span>}
           </button>
           <button

@@ -28,7 +28,11 @@
     "update_badge": "Mise à jour",
     "update_available": "Mise à jour disponible - ouvrir les Paramètres",
     "tunnel_down": "Un egress est hors service — ouvrir Tunnels",
-    "tunnel_badge": "Down"
+    "tunnel_badge": "Down",
+    "system_mode": "Comme le système",
+    "theme_system": "Thème : comme le système",
+    "theme_light": "Thème : clair",
+    "theme_dark": "Thème : sombre"
   },
   "lang": {
     "en": "English",

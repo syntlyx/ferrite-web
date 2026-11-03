@@ -28,7 +28,11 @@
     "update_badge": "Update",
     "update_available": "Update available — open Settings",
     "tunnel_down": "An egress is down — open Tunnels",
-    "tunnel_badge": "Down"
+    "tunnel_badge": "Down",
+    "system_mode": "Match the system",
+    "theme_system": "Theme: as the system",
+    "theme_light": "Theme: light",
+    "theme_dark": "Theme: dark"
   },
   "lang": {
     "en": "English",

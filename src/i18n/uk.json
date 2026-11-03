@@ -28,7 +28,11 @@
     "update_badge": "Оновлення",
     "update_available": "Доступне оновлення — відкрийте Налаштування",
     "tunnel_down": "Egress лежить — відкрийте Тунелі",
-    "tunnel_badge": "Down"
+    "tunnel_badge": "Down",
+    "system_mode": "Як у системі",
+    "theme_system": "Тема: як у системі",
+    "theme_light": "Тема: світла",
+    "theme_dark": "Тема: темна"
   },
   "lang": {
     "en": "English",

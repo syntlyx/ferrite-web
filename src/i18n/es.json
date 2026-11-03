@@ -28,7 +28,11 @@
     "update_badge": "Actualización",
     "update_available": "Actualización disponible - abrir Ajustes",
     "tunnel_down": "Un egress está caído — abre Túneles",
-    "tunnel_badge": "Down"
+    "tunnel_badge": "Down",
+    "system_mode": "Como el sistema",
+    "theme_system": "Tema: como el sistema",
+    "theme_light": "Tema: claro",
+    "theme_dark": "Tema: oscuro"
   },
   "lang": {
     "en": "English",
