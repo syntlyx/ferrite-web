@@ -22,6 +22,8 @@
   --color-card: #171411;
   --color-panel: #1c1814;
   --color-raised: #262019;
+  /* An off switch's track: the same as raised here, darker in the light theme. */
+  --color-track: #262019;
   --color-bdr: #2c2620;
 
   /* Text */
@@ -89,6 +91,13 @@ body {
 }
 
 /* ── Reusable patterns ───────────────────────────────────────────────────── */
+
+/* Keyboard focus in the brand colour, not the browser's white ring. Inputs keep
+   their own border + ring, so this covers buttons, tabs, links and the like. */
+:where(button, a, [role="tab"], [role="switch"], summary, label):focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-ember) 55%, transparent);
+  outline-offset: 2px;
+}
 
 /* Sidebar collapsed tooltip — appears to the right of icon on hover */
 .sidebar-tooltip {
@@ -206,6 +215,7 @@ body {
   --color-card: #fffdf9;
   --color-panel: #f5f0e8;
   --color-raised: #ebe3d8;
+  --color-track: #cdc2b4;
   --color-bdr: #e0d6c9;
 
   --color-heading: #1d140d;

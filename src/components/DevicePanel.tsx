@@ -21,11 +21,10 @@ import { useToast } from "@/hooks/use-toast";
 import { closeDevicePanel, useDevicePanel, type DevicePanelTarget } from "@/stores/device-panel";
 import { openDomainPanel } from "@/stores/domain-panel";
 import { fmtCountdown, PAUSE_OPTIONS, usePause } from "@/stores/pause";
+import { Tag } from "@/components/feedback/Badge";
 
 function Heading({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="mb-2 text-xs text-muted">{children}</p>
-  );
+  return <p className="mb-2 text-xs text-muted">{children}</p>;
 }
 
 /** The device a target names: the first client sharing a MAC, an IP or the name. */
@@ -291,9 +290,7 @@ export function DevicePanel() {
             <Icon size={17} />
           </span>
           <div className="min-w-0 flex-1">
-            <p className="text-xs text-muted">
-              {t("device.title", { defaultValue: "Device" })}
-            </p>
+            <p className="text-xs text-muted">{t("device.title", { defaultValue: "Device" })}</p>
             {naming != null ? (
               <form
                 className="mt-1 flex items-center gap-1.5"
@@ -399,9 +396,7 @@ export function DevicePanel() {
                     )
                   )}
                   {stats?.first_seen && Date.now() / 1000 - stats.first_seen < 86400 && (
-                    <span className="rounded-xs border border-cached/35 bg-cached/10 px-1.5 py-0.5 font-mono text-[10px] text-cached">
-                      {t("clients.new_badge", { defaultValue: "new" })}
-                    </span>
+                    <Tag tone="cached">{t("clients.new_badge", { defaultValue: "new" })}</Tag>
                   )}
                 </div>
 

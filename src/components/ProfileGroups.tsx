@@ -69,7 +69,7 @@ export function ProfileChip({ index, name }: { index: number; name: string }) {
   return (
     <span
       className={cn(
-        "inline-flex max-w-full items-center truncate rounded-full px-2 py-0.5 text-xs font-medium",
+        "inline-flex max-w-full items-center truncate rounded-xs px-2 py-0.5 text-xs font-medium",
         profileTone(index),
       )}
     >

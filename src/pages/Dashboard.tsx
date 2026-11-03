@@ -39,6 +39,7 @@ import type {
   TimeseriesBucket,
   TopClientEntry,
 } from "@/api/types";
+import { Segmented } from "@/components/ui/segmented";
 
 const SUMMARY_REFRESH = 1_000;
 const SYS_REFRESH = 5_000;
@@ -449,23 +450,16 @@ function RangeButtons({
   onChange: (h: TopHours) => void;
 }) {
   return (
-    <div className="flex items-center gap-0.5">
-      {RANGES.map((r) => (
-        <button
-          key={r.value}
-          type="button"
-          onClick={() => onChange(r.value)}
-          disabled={loading && r.value !== value}
-          aria-pressed={value === r.value}
-          className={cn(
-            "rounded-md px-2 py-1 text-xs transition-colors disabled:opacity-40",
-            value === r.value ? "bg-raised text-heading" : "text-muted hover:text-heading",
-          )}
-        >
-          {r.label}
-        </button>
-      ))}
-    </div>
+    <Segmented
+      size="sm"
+      value={value}
+      onChange={onChange}
+      options={RANGES.map((r) => ({
+        value: r.value,
+        label: r.label,
+        disabled: loading && r.value !== value,
+      }))}
+    />
   );
 }
 

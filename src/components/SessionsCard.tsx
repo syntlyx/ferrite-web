@@ -55,7 +55,7 @@ export function SessionsCard() {
       toast(
         t("sessions.others_signed_out", {
           count: removed,
-          defaultValue: "Signed out {{count}} other session(s)",
+          defaultValue: "Signed out {{count}} other sessions",
         }),
       );
       load();

@@ -61,6 +61,8 @@ import type {
   ProxyStatsResponse,
   ServiceCatalog,
 } from "@/api/types";
+import { Segmented } from "@/components/ui/segmented";
+import { Tag } from "@/components/feedback/Badge";
 
 const KINDS: EgressKind[] = ["direct", "socks5", "wireguard", "evasion"];
 
@@ -599,11 +601,6 @@ export default function Tunnels() {
                   defaultValue: "The tunnels and proxies traffic can be routed through.",
                 })}
                 icon={Cable}
-                badge={
-                  <span className="text-muted font-mono text-[11px] tabular-nums">
-                    {cfg.egresses.length}
-                  </span>
-                }
                 footer={
                   <div className="flex justify-end">
                     <Btn variant="ghost" onClick={addEgress}>
@@ -869,11 +866,6 @@ export default function Tunnels() {
                   defaultValue: "Which domains route through which egress, and for which devices.",
                 })}
                 icon={ListFilter}
-                badge={
-                  <span className="text-muted font-mono text-[11px] tabular-nums">
-                    {cfg.rules.length}
-                  </span>
-                }
               >
                 <div className="space-y-3 py-4">
                   {/* Toolbar: filter by domain/egress + add */}
@@ -970,9 +962,7 @@ export default function Tunnels() {
                                       className="text-body"
                                     />
                                     <span className="text-heading truncate">{svc?.name ?? r.service}</span>
-                                    <span className="text-muted border-bdr/70 rounded-xs shrink-0 border px-1 font-mono text-[10px]">
-                                      {t("tunnels.rule_service_tag", { defaultValue: "service" })}
-                                    </span>
+                                    <Tag>{t("tunnels.rule_service_tag", { defaultValue: "service" })}</Tag>
                                   </>
                                 ) : (
                                   <span className="text-warn italic">
@@ -1010,7 +1000,7 @@ export default function Tunnels() {
                                   ? t("tunnels.rule_all_devices", { defaultValue: "All devices" })
                                   : t("tunnels.rule_n_devices", {
                                       count: selectedCount,
-                                      defaultValue: "{{count}} device(s)",
+                                      defaultValue: "{{count}} devices",
                                     })}
                               </span>
                             </button>
@@ -1064,23 +1054,25 @@ export default function Tunnels() {
                               </div>
 
                               {/* Phones: the domain on its own line, the rest beneath. */}
+                              {/* Every row the same two lines: name · hits · actions, then
+                                  egress · devices · fail-closed — nothing wraps on its own. */}
                               <div className="space-y-1.5 sm:hidden">
                                 <div className="flex items-center gap-2">
                                   {pattern}
-                                  {actions}
-                                </div>
-                                <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
-                                  {egress}
-                                  {devices}
-                                  <span className="text-muted flex items-center gap-1.5 text-[11px]">
-                                    {failClosed}
-                                    {t("tunnels.fail_closed", { defaultValue: "Fail-closed" })}
-                                  </span>
                                   <span
-                                    className="text-muted font-mono text-[11px] tabular-nums"
+                                    className="text-muted shrink-0 font-mono text-[11px] tabular-nums"
                                     title={hitsHint}
                                   >
-                                    {t("tunnels.col_hits", { defaultValue: "Hits" })} {fmt(hits)}
+                                    {fmt(hits)}
+                                  </span>
+                                  {actions}
+                                </div>
+                                <div className="flex items-center gap-3">
+                                  {egress}
+                                  {devices}
+                                  <span className="text-muted ml-auto flex shrink-0 items-center gap-1.5 text-[11px]">
+                                    {failClosed}
+                                    {t("tunnels.fail_closed", { defaultValue: "Fail-closed" })}
                                   </span>
                                 </div>
                               </div>
@@ -1089,36 +1081,27 @@ export default function Tunnels() {
                               {isOpen && (
                                 <div className="border-bdr/50 mt-2.5 space-y-3 border-t pt-3">
                                   {/* What the rule routes: one domain pattern, or a whole catalog service. */}
-                                  <div className="border-bdr/70 rounded-xs inline-flex border p-0.5">
-                                    {(["domain", "service"] as const).map((mode) => {
-                                      const active = (mode === "service") === isService;
-                                      return (
-                                        <button
-                                          key={mode}
-                                          type="button"
-                                          aria-pressed={active}
-                                          onClick={() =>
-                                            active
-                                              ? undefined
-                                              : updateRule(
-                                                  i,
-                                                  mode === "service"
-                                                    ? { service: "", pattern: "" }
-                                                    : { service: undefined, pattern: "" },
-                                                )
-                                          }
-                                          className={cn(
-                                            "rounded-xs px-2.5 py-1 text-xs transition-colors",
-                                            active ? "bg-ember/12 text-ember" : "text-muted hover:text-ember",
-                                          )}
-                                        >
-                                          {mode === "service"
-                                            ? t("tunnels.rule_mode_service", { defaultValue: "Service" })
-                                            : t("tunnels.rule_mode_domain", { defaultValue: "Domain" })}
-                                        </button>
-                                      );
-                                    })}
-                                  </div>
+                                  <Segmented
+                                    value={isService ? "service" : "domain"}
+                                    onChange={(mode) =>
+                                      updateRule(
+                                        i,
+                                        mode === "service"
+                                          ? { service: "", pattern: "" }
+                                          : { service: undefined, pattern: "" },
+                                      )
+                                    }
+                                    options={[
+                                      {
+                                        value: "domain",
+                                        label: t("tunnels.rule_mode_domain", { defaultValue: "Domain" }),
+                                      },
+                                      {
+                                        value: "service",
+                                        label: t("tunnels.rule_mode_service", { defaultValue: "Service" }),
+                                      },
+                                    ]}
+                                  />
                                   <div className="grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1fr)_14rem]">
                                     {isService ? (
                                       <label className="space-y-1">
@@ -1243,7 +1226,7 @@ export default function Tunnels() {
                             })
                           : t("tunnels.rules_count", {
                               count: cfg.rules.length,
-                              defaultValue: "{{count}} rule(s)",
+                              defaultValue: "{{count}} rules",
                             })}
                       </p>
                       <p className="text-muted/80 text-[11px] leading-relaxed">
@@ -1444,16 +1427,26 @@ function EgressChip({
 
 function HealthBadge({ status }: { status?: "up" | "down" }) {
   const { t } = useTranslation();
-  const down = status === "down";
+  // Same colours as the dot on a rule's egress chip: green up, red down, grey
+  // while the first probe hasn't answered yet (or the egress is off).
   return (
     <span
       className={cn(
         "inline-flex items-center gap-1.5 font-mono text-[11px]",
-        down ? "text-warn" : "text-ember",
+        status === "up" ? "text-cached" : status === "down" ? "text-blocked" : "text-muted",
       )}
     >
-      <Waypoints size={11} />
-      {down ? t("tunnels.down", { defaultValue: "down" }) : t("tunnels.up", { defaultValue: "up" })}
+      <span
+        className={cn(
+          "h-1.5 w-1.5 rounded-full",
+          status === "up" ? "bg-cached" : status === "down" ? "bg-blocked" : "bg-muted/50",
+        )}
+      />
+      {status === "up"
+        ? t("tunnels.up", { defaultValue: "up" })
+        : status === "down"
+          ? t("tunnels.down", { defaultValue: "down" })
+          : "—"}
     </span>
   );
 }

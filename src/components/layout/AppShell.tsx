@@ -7,9 +7,11 @@ import { cn } from "@/lib/utils";
 import { DemoBanner } from "@/demo/DemoBanner";
 import { FerriteBrand } from "@/components/layout/Brand";
 import {
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   Globe,
+  Languages,
   LayoutDashboard,
   List,
   LogOut,
@@ -36,7 +38,6 @@ import { useLocalStorage } from "@/hooks/use-local-storage";
 import { usePageVisible } from "@/hooks/use-page-visible";
 import { useSettings } from "@/stores/settings";
 import { usePause, fmtCountdown, PAUSE_OPTIONS } from "@/stores/pause";
-import { Select } from "@/components/ui";
 import { DomainPanel } from "@/components/DomainPanel";
 import { DevicePanel } from "@/components/DevicePanel";
 import { CommandPalette } from "@/components/CommandPalette";
@@ -192,7 +193,7 @@ function NavItem({
               role="img"
               aria-label={badgeLabel}
               title={badgeLabel}
-              className="inline-flex items-center gap-1.5 rounded-full bg-warn/15 px-2 py-0.5 text-[11px] font-medium text-warn"
+              className="inline-flex items-center gap-1.5 rounded-xs border border-current/15 bg-warn/10 px-1.5 py-0.5 font-mono text-[10px] font-medium text-warn"
             >
               <span className="h-1.5 w-1.5 rounded-full bg-warn" />
               {badgeText}
@@ -487,18 +488,28 @@ export default function AppShell({ children }: { children: ReactNode }) {
               <span className="sidebar-tooltip">{t(`lang.${currentLang}`)}</span>
             </button>
           ) : (
-            <Select
-              value={currentLang}
-              onChange={(e) => switchLang(langCode(e.target.value))}
-              className="min-w-0 flex-1"
-              aria-label="Language"
+            // The closed control shows just the code, so it never clips beside the
+            // icon buttons; the native list underneath names every language in full.
+            <label
+              title={t(`lang.${currentLang}`)}
+              className="relative flex h-9 min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-lg border border-bdr bg-void/50 px-3 text-[13px] text-body transition-colors focus-within:border-ember hover:border-ember/35"
             >
-              {LANGS.map((lang) => (
-                <option key={lang.code} value={lang.code}>
-                  {lang.label} · {t(`lang.${lang.code}`)}
-                </option>
-              ))}
-            </Select>
+              <Languages size={14} className="shrink-0 text-muted" />
+              <span className="flex-1 font-medium">{currentLang.toUpperCase()}</span>
+              <ChevronDown size={12} className="shrink-0 text-muted" />
+              <select
+                value={currentLang}
+                onChange={(e) => switchLang(langCode(e.target.value))}
+                aria-label="Language"
+                className="absolute inset-0 cursor-pointer appearance-none opacity-0"
+              >
+                {LANGS.map((lang) => (
+                  <option key={lang.code} value={lang.code}>
+                    {t(`lang.${lang.code}`)}
+                  </option>
+                ))}
+              </select>
+            </label>
           )}
           <button
             type="button"

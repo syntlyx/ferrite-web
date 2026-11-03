@@ -43,6 +43,7 @@ import { Input, Btn, IconBtn, Skeleton, Switch } from "@/components/ui";
 import { useToast } from "@/hooks/use-toast";
 import { useConfirm } from "@/hooks/use-confirm";
 import { useRowKeys } from "@/hooks/use-row-keys";
+import { Tag } from "@/components/feedback/Badge";
 
 /** Slugify a display name into a stable profile id (mirrors the server). */
 const slug = (s: string) =>
@@ -91,12 +92,7 @@ function Field({
 }) {
   return (
     <div className="mb-2 flex items-center justify-between gap-2">
-      <span
-        className={cn(
-          "flex items-center gap-1.5 text-[13px]",
-          tone ?? "text-muted",
-        )}
-      >
+      <span className={cn("flex items-center gap-1.5 text-[13px]", tone ?? "text-muted")}>
         <Icon size={11} /> {label}
       </span>
       {aside && <span className="font-mono text-[10px] text-muted tabular-nums">{aside}</span>}
@@ -262,21 +258,16 @@ function ProfileSummary({
           {pr.name || t("profiles.unnamed", { defaultValue: "Unnamed profile" })}
         </span>
         {on !== null && (
-          <span
-            className={cn(
-              "rounded-xs border px-1.5 py-0.5 font-mono text-[10px]",
-              on ? "border-cached/40 bg-cached/10 text-cached" : "border-bdr/70 text-muted",
-            )}
-          >
+          <Tag tone={on ? "cached" : "muted"}>
             {on
               ? t("profiles.on_now", { defaultValue: "On now" })
               : t("profiles.off_now", { defaultValue: "Off now" })}
-          </span>
+          </Tag>
         )}
         {pr.default_deny && (
-          <span className="rounded-xs border border-warn/40 bg-warn/10 px-1.5 py-0.5 font-mono text-[10px] text-warn">
+          <Tag tone="warn">
             {t("profiles.default_deny_short", { defaultValue: "Allowed only" })}
-          </span>
+          </Tag>
         )}
       </div>
       <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] text-muted">

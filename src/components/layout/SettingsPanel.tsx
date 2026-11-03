@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 import type { ComponentType, ReactNode } from "react";
 import { Card } from "./Card";
+import { Tag } from "@/components/feedback/Badge";
 
 // Shared configuration-page primitives. Used by the Settings and Tunnels pages
 // so both sit on the same panel/row/tile rhythm. Keep visual changes here, not
@@ -99,7 +100,7 @@ export function SettingBlock({
   );
 }
 
-/** Pill toggling between a "set" (ember) and "unset" (muted) state. */
+/** A tag toggling between a "set" (ember) and "unset" (muted) state. */
 export function StatusBadge({
   set,
   labelSet,
@@ -109,15 +110,7 @@ export function StatusBadge({
   labelSet: string;
   labelUnset: string;
 }) {
-  return set ? (
-    <span className="rounded-full bg-ember/10 px-2 py-0.5 text-[10px] font-medium text-ember">
-      {labelSet}
-    </span>
-  ) : (
-    <span className="rounded-full bg-bdr px-2 py-0.5 text-[10px] font-medium text-muted">
-      {labelUnset}
-    </span>
-  );
+  return <Tag tone={set ? "ember" : "muted"}>{set ? labelSet : labelUnset}</Tag>;
 }
 
 /** Compact metric tile for an at-a-glance overview strip. */

@@ -27,6 +27,7 @@ import { useConfirm } from "@/hooks/use-confirm";
 import type { AddListBody, PatchListBody, SubscriptionList } from "@/api/types";
 import { LIST_CATALOG } from "@/data/list-catalog";
 import type { CatalogCategory, CatalogList } from "@/data/list-catalog";
+import { Tag, type TagTone } from "@/components/feedback/Badge";
 
 /** Badge colour per catalog category. Typed as a full Record so adding a new
  *  category to the catalog forces an update here (compile error otherwise). */
@@ -39,14 +40,14 @@ function urlHost(url: string): string {
   }
 }
 
-const CATEGORY_BADGE: Record<CatalogCategory, string> = {
-  general: "bg-upstream/10 text-upstream",
-  ads: "bg-ember/10 text-ember",
-  tracking: "bg-warn/10 text-warn",
-  malware: "bg-blocked/10 text-blocked",
-  phishing: "bg-blocked/10 text-blocked",
-  adult: "bg-white/5 text-muted",
-  gambling: "bg-white/5 text-muted",
+const CATEGORY_TONE: Record<CatalogCategory, TagTone> = {
+  general: "upstream",
+  ads: "ember",
+  tracking: "warn",
+  malware: "blocked",
+  phishing: "blocked",
+  adult: "muted",
+  gambling: "muted",
 };
 
 /** The API surface a subscription set (blocklists or allowlists) needs — both
@@ -256,9 +257,10 @@ function SubscriptionTable({
             ) : (
               lists.map((l) => (
                 <TableRow key={l.name}>
-                  <Td className="text-heading font-medium">
-                    {l.name}
-                    <span className="text-muted block max-w-40 truncate font-mono text-[10px] font-normal sm:hidden">
+                  {/* On a phone the name takes what is left and truncates. */}
+                  <Td className="text-heading w-full max-w-0 font-medium sm:w-auto sm:max-w-none">
+                    <span className="block truncate">{l.name}</span>
+                    <span className="text-muted block truncate font-mono text-[10px] font-normal sm:hidden">
                       {urlHost(l.url)}
                     </span>
                   </Td>
@@ -533,14 +535,7 @@ export default function Lists() {
                           <Star size={10} className="fill-ember text-ember" />
                         </span>
                       )}
-                      <span
-                        className={cn(
-                          "rounded-xs shrink-0 px-1 py-0.5 text-xs",
-                          CATEGORY_BADGE[item.category],
-                        )}
-                      >
-                        {item.category}
-                      </span>
+                      <Tag tone={CATEGORY_TONE[item.category]}>{item.category}</Tag>
                     </span>
                     <span className="text-muted mt-0.5 block truncate text-[11px]">
                       {added ? t("lists.added", { defaultValue: "Added" }) : item.desc}

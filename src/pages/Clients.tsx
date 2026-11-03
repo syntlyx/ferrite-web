@@ -54,10 +54,11 @@ import { deviceTokens } from "@/api/clients";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { ProfileChip, ProfileGroups, useProfileIndex } from "@/components/ProfileGroups";
 import type { AddAliasBody, ClientAlias, ClientEntry } from "@/api/types";
+import { Segmented } from "@/components/ui/segmented";
+import { Tag as Mark } from "@/components/feedback/Badge";
 
 // ── Aliases panel ─────────────────────────────────────────────────────────────
 
-const addrTypeBadgeCls = "rounded px-1.5 py-0.5 text-[10px] font-medium";
 type AliasKeyType = "IP" | "MAC";
 
 /** A request from a client row to prefill the aliases form. `nonce` bumps on each
@@ -78,23 +79,11 @@ function TypeToggle({
   onChange: (type: AliasKeyType) => void;
 }) {
   return (
-    <div className="border-bdr/80 rounded-xs flex w-fit shrink-0 overflow-hidden border">
-      {(["IP", "MAC"] as const).map((t) => (
-        <button
-          key={t}
-          type="button"
-          onClick={() => onChange(t)}
-          className={cn(
-            "border-bdr/60 not-last:border-r px-3.5 py-2 text-[13px] font-medium transition-colors",
-            value === t
-              ? "bg-ember-dim text-ember"
-              : "bg-sidebar/90 text-muted hover:bg-white/4 hover:text-heading",
-          )}
-        >
-          {t}
-        </button>
-      ))}
-    </div>
+    <Segmented
+      value={value}
+      onChange={onChange}
+      options={(["IP", "MAC"] as const).map((t) => ({ value: t, label: t }))}
+    />
   );
 }
 
@@ -143,10 +132,10 @@ function IpList({ ips }: { ips: string[] }) {
 
 function AddrTypeBadge({ alias }: { alias: ClientAlias }) {
   if (alias.mac)
-    return <span className={cn(addrTypeBadgeCls, "bg-upstream/10 text-upstream/80")}>MAC</span>;
+    return <Mark tone="upstream">MAC</Mark>;
   if (alias.ip?.includes(":"))
-    return <span className={cn(addrTypeBadgeCls, "bg-warn/10 text-warn/80")}>IPv6</span>;
-  return <span className={cn(addrTypeBadgeCls, "bg-ember/10 text-ember/70")}>IPv4</span>;
+    return <Mark tone="warn">IPv6</Mark>;
+  return <Mark tone="ember">IPv4</Mark>;
 }
 
 function aliasKey(a: ClientAlias): string {
@@ -312,13 +301,13 @@ function AliasesPanel({ prefill }: { prefill: AliasPrefill | null }) {
                     <AddrTypeBadge alias={a} />
                   </Td>
                   <Td className="text-body font-mono">{a.mac ?? a.ip}</Td>
-                  <Td className="text-heading">{a.name}</Td>
+                  <Td className="text-heading w-full max-w-0 truncate sm:w-auto sm:max-w-none">{a.name}</Td>
                   <Td className="text-right">
                     <IconBtn
                       danger
                       onClick={() => handleRemove(a)}
                       disabled={removing === aliasKey(a)}
-                      className="opacity-0 group-hover:opacity-100"
+                      className="opacity-0 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
                     >
                       <Trash2 size={12} />
                     </IconBtn>
@@ -647,31 +636,24 @@ export default function Clients() {
               className="w-full min-w-0 lg:flex-1"
               inputClass="font-mono"
             />
-            <div
-              role="group"
-              aria-label={t("groups.view", { defaultValue: "Show" })}
-              className="bg-void/40 border-bdr flex w-fit shrink-0 gap-0.5 rounded-lg border p-0.5"
-            >
-              {(
+            <Segmented
+              ariaLabel={t("groups.view", { defaultValue: "Show" })}
+              value={mode}
+              onChange={setMode}
+              options={(
                 [
                   ["list", ListIcon, t("groups.as_list", { defaultValue: "List" })],
                   ["groups", LayoutGrid, t("groups.by_profile", { defaultValue: "By profile" })],
                 ] as const
-              ).map(([value, Icon, label]) => (
-                <button
-                  key={value}
-                  type="button"
-                  aria-pressed={mode === value}
-                  onClick={() => setMode(value)}
-                  className={cn(
-                    "flex h-8 items-center gap-1.5 rounded-md px-3 text-[13px] font-medium transition-colors",
-                    mode === value ? "bg-raised text-heading" : "text-muted hover:text-body",
-                  )}
-                >
-                  <Icon size={13} /> {label}
-                </button>
-              ))}
-            </div>
+              ).map(([value, Icon, label]) => ({
+                value,
+                label: (
+                  <>
+                    <Icon size={13} /> {label}
+                  </>
+                ),
+              }))}
+            />
           </FilterBar>
 
           {grouped && <ProfileGroups clients={view} index={profileIndex} />}
@@ -705,7 +687,7 @@ export default function Clients() {
                     field="blocked"
                     sort={sort}
                     onSort={onSort}
-                    className="px-3 text-right sm:px-4"
+                    className="hidden px-3 text-right sm:table-cell sm:px-4"
                   />
                   <Th className="px-3 text-right sm:px-4">
                     <span className="hidden sm:inline">{t("clients.col_filtering")}</span>
@@ -747,8 +729,10 @@ export default function Clients() {
                     return (
                       <TableRow key={c.name + rank} className="group">
                         <Td className="text-muted hidden tabular-nums sm:table-cell">{rank}</Td>
-                        <Td className="px-3 sm:px-4">
-                          <div className="flex items-center gap-1.5">
+                        {/* On a phone the name column takes what the numbers leave and
+                            truncates, instead of pushing them off the screen. */}
+                        <Td className="w-full max-w-0 px-3 sm:w-auto sm:max-w-none sm:px-4">
+                          <div className="flex min-w-0 items-center gap-1.5">
                             <span
                               className={cn(
                                 "flex h-7 w-7 shrink-0 items-center justify-center rounded-lg",
@@ -762,25 +746,21 @@ export default function Clients() {
                               onClick={() =>
                                 openDevicePanel({ macs: c.macs, ips: c.ips, name: c.name })
                               }
-                              className="text-heading hover:text-ember cursor-pointer text-left text-[13.5px] font-medium transition-colors"
+                              className="text-heading hover:text-ember min-w-0 cursor-pointer truncate text-left text-[13.5px] font-medium transition-colors"
                             >
                               {c.name}
                             </button>
-                            {c.is_alias && (
-                              <span className="bg-ember/10 text-ember/70 rounded px-1 py-0.5 text-[10px]">
-                                {t("clients.alias_badge")}
-                              </span>
-                            )}
+                            {c.is_alias && <Mark tone="ember">{t("clients.alias_badge")}</Mark>}
                             {isNewDevice(c.first_seen) && (
-                              <span
-                                className="border-cached/35 bg-cached/10 text-cached rounded-xs border px-1 py-0.5 font-mono text-[10px]"
+                              <Mark
+                                tone="cached"
                                 title={t("clients.new_badge_hint", {
                                   when: fmtRelTime(c.first_seen!),
                                   defaultValue: "First seen {{when}}",
                                 })}
                               >
                                 {t("clients.new_badge", { defaultValue: "new" })}
-                              </span>
+                              </Mark>
                             )}
                             {canName && (
                               <IconBtn
@@ -796,7 +776,7 @@ export default function Clients() {
                             <IpList ips={c.ips} />
                           </div>
                           {/* What a phone's hidden columns would have said. */}
-                          <span className="text-muted mt-0.5 block whitespace-nowrap pl-8.5 font-mono text-[10px] md:hidden">
+                          <span className="text-muted mt-0.5 block truncate pl-8.5 font-mono text-[10px] md:hidden">
                             {[...c.ips].sort((a, b) => ipRank(a) - ipRank(b))[0]}
                             <span className="sm:hidden"> · {fmtRelTime(c.last_seen)}</span>
                           </span>
@@ -825,8 +805,12 @@ export default function Clients() {
                         </Td>
                         <Td className="text-body px-3 text-right tabular-nums sm:px-4">
                           {fmt(c.total)}
+                          {/* A phone drops the Blocked column; its number rides here. */}
+                          <span className="text-blocked block text-[10px] sm:hidden">
+                            {fmt(c.blocked)}
+                          </span>
                         </Td>
-                        <Td className="px-3 text-right sm:px-4">
+                        <Td className="hidden px-3 text-right sm:table-cell sm:px-4">
                           <span className="text-blocked tabular-nums">{fmt(c.blocked)}</span>
                           {c.total > 0 && (
                             <span className="text-muted ml-1 hidden sm:inline">
@@ -846,18 +830,18 @@ export default function Clients() {
                                   type="button"
                                   onClick={() => resumeDevice(tokens)}
                                   title={t("pause.resume", { defaultValue: "Resume" })}
-                                  className="bg-warn/10 text-warn hover:bg-warn/20 inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-mono text-[10px] tabular-nums transition-colors"
+                                  className="bg-warn/10 text-warn hover:bg-warn/20 border-current/15 rounded-xs inline-flex items-center gap-1 border px-1.5 py-0.5 font-mono text-[10px] font-medium tabular-nums transition-colors"
                                 >
                                   <Pause size={9} />
                                   {fmtCountdown(pausedLeft)}
                                 </button>
                               ) : (
                                 !filteringOn && (
-                                  <span className="bg-warn/10 text-warn rounded-full px-2 py-0.5 text-[11px] font-medium">
+                                  <Mark tone="warn">
                                     {!blockingEnabled
                                       ? t("clients.filtering_global_off")
                                       : t("clients.filtering_bypassed")}
-                                  </span>
+                                  </Mark>
                                 )
                               )}
                             </span>

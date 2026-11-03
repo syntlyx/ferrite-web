@@ -70,7 +70,7 @@ function CopyBtn({ text }: { text: string }) {
   return (
     <button
       onClick={handleCopy}
-      className="text-muted hover:text-ember ml-1 inline-flex opacity-0 transition-all group-hover:opacity-100"
+      className="text-muted hover:text-ember ml-1 inline-flex opacity-0 transition-all group-hover:opacity-100 [@media(hover:none)]:opacity-100"
       title="Copy"
     >
       {copied ? <Check size={11} className="text-ember" /> : <Copy size={11} />}
@@ -161,8 +161,8 @@ function ClientMultiSelect({
       <button
         onClick={() => setOpen((v) => !v)}
         className={cn(
-          "bg-sidebar hover:border-ember/30 focus:border-ember rounded-xs flex h-9 w-full items-center gap-2 border px-3 text-xs transition-colors focus:outline-none",
-          selected.size > 0 ? "border-ember/40 text-body" : "border-bdr text-muted",
+          "flex h-9 w-full items-center gap-2 rounded-lg border bg-void/50 px-3 text-[13px] transition-colors hover:border-ember/35 focus:border-ember focus:ring-2 focus:ring-ember/15 focus:outline-none",
+          selected.size > 0 ? "border-ember/40 text-heading" : "border-bdr text-body",
         )}
       >
         <Users size={12} className={selected.size > 0 ? "text-ember" : "text-muted"} />
@@ -173,7 +173,7 @@ function ClientMultiSelect({
       </button>
 
       {open && (
-        <div className="min-w-52 animate-fade-down border-bdr bg-card rounded-xs absolute left-0 top-full z-30 mt-1 border shadow-2xl">
+        <div className="min-w-52 animate-fade-down border-bdr bg-card absolute left-0 top-full z-30 mt-1 rounded-lg border shadow-2xl">
           {clients.length === 0 ? (
             <p className="text-muted px-3 py-3 text-xs">{t("queries.no_clients")}</p>
           ) : (
@@ -583,7 +583,7 @@ export default function Queries() {
               title={t("queries.group_repeats_hint", {
                 defaultValue: "Fold identical queries in a row into one line",
               })}
-              className={cn(grouped && "border-ember/40 text-ember")}
+              className={cn(grouped && "bg-raised text-heading")}
             >
               <Layers size={12} /> {t("queries.group_repeats", { defaultValue: "Group" })}
             </Btn>
@@ -592,7 +592,7 @@ export default function Queries() {
               onClick={() => setDensityPref(compact ? "0" : "1")}
               aria-pressed={compact}
               title={t("queries.compact_hint", { defaultValue: "Tighter rows, more of the log on screen" })}
-              className={cn(compact && "border-ember/40 text-ember")}
+              className={cn(compact && "bg-raised text-heading")}
             >
               <Rows3 size={12} /> {t("queries.compact", { defaultValue: "Compact" })}
             </Btn>
@@ -695,7 +695,7 @@ export default function Queries() {
             <table className={cn("w-full text-xs", compact && "[&_td]:py-1")}>
               <thead>
                 <tr className="border-bdr border-b">
-                  <Th>{t("queries.col_time")}</Th>
+                  <Th className="hidden sm:table-cell">{t("queries.col_time")}</Th>
                   <Th>{t("queries.col_domain")}</Th>
                   <Th className="hidden sm:table-cell">{t("queries.col_type")}</Th>
                   <Th className="hidden sm:table-cell">{t("queries.col_client")}</Th>
@@ -717,7 +717,7 @@ export default function Queries() {
                 ) : (
                   runs.map(({ row: r, count, since }) => (
                     <TableRow key={r.id} className={cn("border-l-2", STATUS_EDGE[r.status])}>
-                      <Td className="text-muted whitespace-nowrap">
+                      <Td className="text-muted hidden whitespace-nowrap sm:table-cell">
                         <span
                           title={
                             count > 1
@@ -729,7 +729,7 @@ export default function Queries() {
                         </span>
                       </Td>
 
-                      <Td className="text-heading max-w-44 font-mono sm:max-w-xs">
+                      <Td className="text-heading max-w-60 font-mono sm:max-w-xs">
                         <span className="group flex items-center">
                           <button
                             className="hover:text-ember cursor-pointer truncate text-left transition-colors"
@@ -758,7 +758,8 @@ export default function Queries() {
                         </span>
                         {/* The columns a phone hides, folded under the domain. */}
                         <span className="text-muted block truncate text-[10px] sm:hidden">
-                          {qtypeName(r.query_type)} · {r.client_name || r.client_ip}
+                          {new Date(r.timestamp).toLocaleTimeString()} · {qtypeName(r.query_type)} ·{" "}
+                          {r.client_name || r.client_ip}
                         </span>
                       </Td>
 

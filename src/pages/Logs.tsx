@@ -151,7 +151,11 @@ export default function Logs() {
             </p>
           ) : (
             shown.map((e) => (
-              <div key={e.id} className="flex gap-2 whitespace-pre-wrap break-all">
+              // A phone puts the message on its own line under time · level · target.
+              <div
+                key={e.id}
+                className="flex flex-wrap gap-x-2 whitespace-pre-wrap break-all sm:flex-nowrap"
+              >
                 <span className="text-muted shrink-0">
                   {new Date(e.timestamp).toLocaleTimeString()}
                 </span>
@@ -163,8 +167,10 @@ export default function Logs() {
                 >
                   {e.level}
                 </span>
-                <span className="text-muted shrink-0">{e.target}</span>
-                <span className="text-body">{e.message}</span>
+                <span className="text-muted min-w-0 sm:shrink-0">{e.target}</span>
+                <span className="text-body min-w-0 basis-full sm:flex-1 sm:basis-auto">
+                  {e.message}
+                </span>
               </div>
             ))
           )}

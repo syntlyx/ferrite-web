@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
-import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui";
 import type { SafeSearchSettings, YoutubeRestrict } from "@/api/types";
+import { Segmented } from "@/components/ui/segmented";
 
 const LEVELS: YoutubeRestrict[] = ["off", "moderate", "strict"];
 
@@ -52,36 +52,22 @@ export function SafeSearchControls({
         <p className="text-xs text-body">
           {t("safesearch.youtube_label", { defaultValue: "YouTube Restricted Mode" })}
         </p>
-        <div className="inline-flex self-start rounded-xs border border-bdr/70 p-0.5">
-          {LEVELS.map((lvl, i) => {
-            const active = i === level;
-            const locked = i < floorLevel;
-            return (
-              <button
-                key={lvl}
-                type="button"
-                aria-pressed={active}
-                disabled={disabled || locked}
-                onClick={() => onChange({ ...value, youtube_restricted: lvl })}
-                title={
-                  locked
-                    ? t("safesearch.network_on", { defaultValue: "On for the whole network" })
-                    : undefined
-                }
-                className={cn(
-                  "rounded-xs px-2.5 py-1 text-xs transition-colors disabled:cursor-not-allowed",
-                  active
-                    ? "bg-ember/12 text-ember"
-                    : locked
-                      ? "text-muted/40"
-                      : "text-muted hover:text-ember",
-                )}
-              >
-                {t(`safesearch.level_${lvl}`, { defaultValue: lvl })}
-              </button>
-            );
-          })}
-        </div>
+        <Segmented
+          className="self-start"
+          disabled={disabled}
+          value={LEVELS[level]}
+          onChange={(lvl) => onChange({ ...value, youtube_restricted: lvl })}
+          options={LEVELS.map((lvl, i) => ({
+            value: lvl,
+            label: t(`safesearch.level_${lvl}`, { defaultValue: lvl }),
+            // Below the network's own level: a profile can only be stricter.
+            disabled: i < floorLevel,
+            title:
+              i < floorLevel
+                ? t("safesearch.network_on", { defaultValue: "On for the whole network" })
+                : undefined,
+          }))}
+        />
       </div>
     </div>
   );

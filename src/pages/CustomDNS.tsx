@@ -23,12 +23,13 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useConfirm } from "@/hooks/use-confirm";
 import type { CustomRecord, DnsRecordType } from "@/api/types";
+import { Tag, type TagTone } from "@/components/feedback/Badge";
 
 const TYPES: DnsRecordType[] = ["A", "AAAA", "CNAME"];
-const TYPE_COLOR: Record<DnsRecordType, string> = {
-  A: "text-cached",
-  AAAA: "text-upstream",
-  CNAME: "text-warn",
+const TYPE_TONE: Record<DnsRecordType, TagTone> = {
+  A: "cached",
+  AAAA: "upstream",
+  CNAME: "warn",
 };
 
 interface CustomRecordForm {
@@ -182,7 +183,7 @@ export default function CustomDNS() {
               <tr className="border-bdr border-b">
                 <Th>{t("dns.col_domain")}</Th>
                 <Th>{t("dns.col_type")}</Th>
-                <Th>{t("dns.col_value")}</Th>
+                <Th className="hidden sm:table-cell">{t("dns.col_value")}</Th>
                 <Th className="hidden sm:table-cell">{t("dns.col_ttl")}</Th>
                 <Th />
               </tr>
@@ -204,15 +205,15 @@ export default function CustomDNS() {
                       })
                     }
                   >
-                    <Td className="text-heading font-mono">{r.domain}</Td>
-                    <Td>
-                      <span
-                        className={cn("font-mono font-semibold", TYPE_COLOR[r.type] ?? "text-body")}
-                      >
-                        {r.type}
-                      </span>
+                    <Td className="text-heading font-mono break-all">
+                      {r.domain}
+                      {/* A phone drops the Value column; the answer rides under the name. */}
+                      <span className="text-muted block text-[10px] sm:hidden">→ {r.value}</span>
                     </Td>
-                    <Td className="text-body font-mono">{r.value}</Td>
+                    <Td>
+                      <Tag tone={TYPE_TONE[r.type] ?? "muted"}>{r.type}</Tag>
+                    </Td>
+                    <Td className="text-body hidden font-mono break-all sm:table-cell">{r.value}</Td>
                     <Td className="text-muted hidden tabular-nums sm:table-cell">{r.ttl}s</Td>
                     <Td className="text-right">
                       <IconBtn

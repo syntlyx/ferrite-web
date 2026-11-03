@@ -290,6 +290,10 @@ function DnsLookup() {
   return (
     <ToolPanel
       title={t("tools.dns_lookup", { defaultValue: "DNS lookup" })}
+      help={t("tools.dns_lookup_help", {
+        defaultValue:
+          "Resolve a name through ferrite's upstream resolvers and show every record that comes back.",
+      })}
       loading={loading}
       err={err}
       loadingText={t("tools.looking_up", { defaultValue: "Looking up…" })}
@@ -397,6 +401,10 @@ function DnssecCheck() {
   return (
     <ToolPanel
       title={t("tools.dnssec", { defaultValue: "DNSSEC check" })}
+      help={t("tools.dnssec_help", {
+        defaultValue:
+          "Validate a name's DNSSEC chain of trust, from the root down to the answer.",
+      })}
       loading={loading}
       err={err}
       controls={
@@ -632,6 +640,10 @@ function Whois() {
   return (
     <ToolPanel
       title={t("tools.whois", { defaultValue: "WHOIS" })}
+      help={t("tools.whois_help", {
+        defaultValue:
+          "Registrar, key dates and name servers for a domain, straight from its registry.",
+      })}
       loading={loading}
       err={err}
       loadingText={t("tools.looking_up", { defaultValue: "Looking up…" })}
@@ -785,6 +797,10 @@ function CertInspector({ egresses }: { egresses: { id: string; name: string }[] 
   return (
     <ToolPanel
       title={t("tools.cert", { defaultValue: "Certificate inspector" })}
+      help={t("tools.cert_help", {
+        defaultValue:
+          "Fetch the TLS certificate a host presents \u2014 issuer, names and expiry \u2014 directly or through a tunnel.",
+      })}
       loading={loading}
       err={err}
       controls={
@@ -951,6 +967,10 @@ function TcpProbe({ egresses }: { egresses: { id: string; name: string }[] }) {
   return (
     <ToolPanel
       title={t("tools.tcp_probe", { defaultValue: "TCP probe" })}
+      help={t("tools.tcp_probe_help", {
+        defaultValue:
+          "Open a TCP connection to host:port, directly or through a tunnel, and time it.",
+      })}
       loading={loading}
       err={err}
       controls={

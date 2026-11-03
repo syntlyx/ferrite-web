@@ -81,6 +81,7 @@ import {
   hotFormFromSettings,
   restartFormFromSettings,
 } from "@/lib/settings-form";
+import { Segmented } from "@/components/ui/segmented";
 import type {
   HotForm,
   ResolverSwitch,
@@ -88,6 +89,7 @@ import type {
   UpstreamDraft,
   ZoneDraft,
 } from "@/lib/settings-form";
+import { Tag } from "@/components/feedback/Badge";
 
 type ClearableSecretField = "api_key" | "password";
 
@@ -232,7 +234,7 @@ function SettingsOverview({
         icon={ShieldCheck}
         label={t("settings.auth")}
         value={passwordSet ? t("common.enabled") : t("common.disabled")}
-        sub={apiKeySet ? t("settings.api_key_set_short") : t("settings.api_key_not_set")}
+        sub={apiKeySet ? t("settings.api_key_set_short") : t("settings.api_key_none_short")}
         tone={passwordSet ? "ember" : "warn"}
       />
       <StatusTile
@@ -297,10 +299,10 @@ function LocationChips({
             onClick={() => onPick(v)}
             title={v}
             className={cn(
-              "rounded-full border px-2 py-0.5 text-[10px] transition-colors",
+              "rounded-xs border px-2 py-0.5 text-[11px] transition-colors",
               value === v
                 ? "border-ember/40 bg-ember/10 text-ember"
-                : "border-border text-muted-foreground hover:border-ember/30",
+                : "border-bdr text-muted hover:border-ember/30 hover:text-body",
             )}
           >
             {sug.ram_backed ? "RAM" : t("settings.storage_disk")} · {sug.dir}
@@ -325,9 +327,9 @@ const RESTART_FIELDS: (keyof PatchSettingsBody)[] = [
 function RestartBadge() {
   const { t } = useTranslation();
   return (
-    <span className="flex items-center gap-1 rounded-full bg-warn/10 px-2 py-0.5 text-[10px] font-medium text-warn">
+    <Tag tone="warn" className="gap-1">
       <AlertTriangle size={9} /> {t("settings.requires_restart")}
-    </span>
+    </Tag>
   );
 }
 
@@ -338,23 +340,14 @@ const UPSTREAM_TYPES = ["plain", "tls", "https", "quic"] as const;
 function TypeSegments({ value, onChange }: { value: string; onChange: (type: string) => void }) {
   const { t } = useTranslation();
   return (
-    <div className="flex w-fit overflow-hidden rounded-xs border border-bdr/80">
-      {UPSTREAM_TYPES.map((type) => (
-        <button
-          key={type}
-          type="button"
-          onClick={() => onChange(type)}
-          className={cn(
-            "border-bdr/60 px-2.5 py-1.5 text-xs font-medium transition-colors not-last:border-r",
-            type === value
-              ? "bg-ember-dim text-ember"
-              : "text-muted hover:bg-white/4 hover:text-heading",
-          )}
-        >
-          {t(`settings.upstream_${type === "plain" ? "plain" : type}`)}
-        </button>
-      ))}
-    </div>
+    <Segmented
+      value={value}
+      onChange={onChange}
+      options={UPSTREAM_TYPES.map((type) => ({
+        value: type,
+        label: t(`settings.upstream_${type}`),
+      }))}
+    />
   );
 }
 
@@ -755,13 +748,11 @@ function UpdatesCard() {
           <span className="w-20 text-muted">{label}</span>
           <span className="font-mono text-heading">{component.current}</span>
           {component.update_available ? (
-            <span className="flex items-center gap-1 rounded-full bg-ember/10 px-2 py-0.5 text-[10px] font-medium text-ember">
-              → {component.latest}
-            </span>
+            <Tag tone="ember">→ {component.latest}</Tag>
           ) : component.blocked ? (
-            <span className="flex items-center gap-1 rounded-full bg-upstream/10 px-2 py-0.5 text-[10px] font-medium text-upstream">
+            <Tag tone="upstream">
               {t("settings.update_blocked")} {component.blocked.version}
-            </span>
+            </Tag>
           ) : (
             <span className="text-muted/60">{t("settings.up_to_date")}</span>
           )}
@@ -1697,6 +1688,7 @@ export default function Settings() {
               >
                 <SettingRow
                   label={t("settings.api_key")}
+                  sub={t("settings.api_key_sub")}
                   badge={
                     <StatusBadge
                       set={apiKeySet}
@@ -1725,7 +1717,7 @@ export default function Settings() {
                       value={form.api_key}
                       onChange={setF("api_key")}
                       placeholder={apiKeySet ? "••••••••" : t("settings.api_key_placeholder")}
-                      className="font-mono"
+                      className="font-mono placeholder:font-sans"
                     />
                     <Btn
                       type="button"
