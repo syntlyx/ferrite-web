@@ -818,7 +818,7 @@
   },
   "palette": {
     "open": "Suche",
-    "placeholder": "Seiten und Geräte suchen oder eine Domain eingeben…",
+    "placeholder": "Einstellungen, Seiten und Geräte suchen oder eine Domain eingeben…",
     "check": "{{domain}} prüfen",
     "domain": "Domain",
     "pages": "Seiten",
@@ -828,7 +828,15 @@
     "resume": "Filterung fortsetzen",
     "refresh": "Alle Listen aktualisieren",
     "refreshed": "Listen aktualisiert",
-    "empty": "Keine Treffer."
+    "empty": "Keine Treffer.",
+    "sections": "Einstellungen und Bereiche",
+    "profiles": "Profile",
+    "lists": "Listen",
+    "records": "DNS-Einträge",
+    "tunnels": "Tunnel",
+    "move": "wählen",
+    "go": "öffnen",
+    "tip": "Probieren Sie „rate limit“, „ntfy“ oder einen Gerätenamen"
   },
   "domain": {
     "title": "Domain",

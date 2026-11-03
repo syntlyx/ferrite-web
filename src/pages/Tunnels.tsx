@@ -48,6 +48,7 @@ import { useToast } from "@/hooks/use-toast";
 import { usePageVisible } from "@/hooks/use-page-visible";
 import { deviceTokens } from "@/api/clients";
 import { DevicePicker } from "@/components/DevicePicker";
+import { useTabParam } from "@/hooks/use-tab-param";
 import { ServiceIcon } from "@/components/ServicePicker";
 import type {
   ClientEntry,
@@ -135,6 +136,7 @@ const EMPTY: ProxyConfig = {
 export default function Tunnels() {
   const { t } = useTranslation();
   const toast = useToast();
+  const [tab, setTab] = useTabParam("rules");
 
   const [cfg, setCfg] = useState<ProxyConfig>(EMPTY);
   // Snapshot of the last loaded config; the sticky save bar shows only when the
@@ -483,7 +485,7 @@ export default function Tunnels() {
             />
           </div>
 
-          <Tabs defaultValue="rules">
+          <Tabs value={tab} onValueChange={setTab}>
             <TabsList className="flex-wrap">
               <TabsTrigger value="general">
                 {t("tunnels.general", { defaultValue: "General" })}

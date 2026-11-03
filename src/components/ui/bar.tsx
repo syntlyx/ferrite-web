@@ -35,5 +35,14 @@ export function StatusDot({ status }: { status: string }) {
 }
 
 export function SectionLabel({ children, className }: SectionLabelProps) {
-  return <p className={cn("mb-3 text-[15px] font-semibold text-heading", className)}>{children}</p>;
+  // The command palette finds a section by its label and marks the whole card.
+  return (
+    <p
+      className={cn("mb-3 text-[15px] font-semibold text-heading", className)}
+      data-search={typeof children === "string" ? children : undefined}
+      data-search-scope="card"
+    >
+      {children}
+    </p>
+  );
 }

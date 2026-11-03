@@ -95,7 +95,26 @@ body {
   @apply rounded-xs border-bdr bg-card text-heading pointer-events-none absolute left-full top-1/2 z-50 ml-3 -translate-x-1 -translate-y-1/2 whitespace-nowrap border px-2.5 py-1.5 text-[11px] opacity-0 shadow-lg transition-[opacity,transform] duration-150 group-hover:translate-x-0 group-hover:opacity-100;
 }
 
+/* A block the command palette jumped to: a ring around it for a moment,
+   held a few pixels off so it frames the block instead of touching its text. */
+.search-flash {
+  border-radius: 0.75rem;
+  outline: 2px solid transparent;
+  outline-offset: 6px;
+  animation: search-flash 1.8s ease-out;
+}
+
 /* ── Keyframes ───────────────────────────────────────────────────────────── */
+
+@keyframes search-flash {
+  0%,
+  45% {
+    outline-color: var(--color-ember);
+  }
+  100% {
+    outline-color: transparent;
+  }
+}
 
 @keyframes fade-up {
   from {

@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import type { ChangeEvent, SubmitEvent, InputHTMLAttributes } from "react";
 import { useTranslation } from "react-i18next";
-import { useSearchParams } from "react-router";
 import { useRowKeys } from "@/hooks/use-row-keys";
 import {
   Save,
@@ -55,6 +54,7 @@ import {
   TabsTrigger,
 } from "@/components/ui";
 import { useToast } from "@/hooks/use-toast";
+import { useTabParam } from "@/hooks/use-tab-param";
 import { useConfirm } from "@/hooks/use-confirm";
 import { BackupCard } from "@/components/BackupCard";
 import { ImportCard } from "@/components/ImportCard";
@@ -809,9 +809,9 @@ function UpdatesCard() {
 
 export default function Settings() {
   const { t } = useTranslation();
-  // `/settings?tab=notifications` opens that tab — other pages link here.
-  const [searchParams] = useSearchParams();
-  const initialTab = searchParams.get("tab") ?? "general";
+  // `/settings?tab=notifications` opens that tab — other pages and the
+  // command palette link here.
+  const [tab, setTab] = useTabParam("general");
   const toast = useToast();
 
   const [settings, setSettings] = useState<SettingsType | null>(null);
@@ -1093,7 +1093,7 @@ export default function Settings() {
         <form onSubmit={handleSave} className="space-y-4">
           <SettingsOverview settings={settings} apiKeySet={apiKeySet} passwordSet={passwordSet} />
 
-          <Tabs defaultValue={initialTab}>
+          <Tabs value={tab} onValueChange={setTab}>
             <TabsList className="flex-wrap">
               <TabsTrigger value="general">{t("settings.general")}</TabsTrigger>
               <TabsTrigger value="resolvers">{t("settings.upstream_resolvers")}</TabsTrigger>

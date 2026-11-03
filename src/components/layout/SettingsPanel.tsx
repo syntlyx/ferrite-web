@@ -25,7 +25,7 @@ export function SettingsPanel({
   children: ReactNode;
 }) {
   return (
-    <Card className="overflow-hidden p-0">
+    <Card className="overflow-hidden p-0" data-search={title}>
       <div className="flex flex-col gap-3 border-b border-bdr/60 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex min-w-0 items-center gap-3">
           <span className="shrink-0 rounded-lg bg-ember/10 p-2 text-ember">
@@ -60,6 +60,7 @@ export function SettingRow({
 }) {
   return (
     <div
+      data-search={label}
       className={cn(
         "grid gap-3 py-4 sm:grid-cols-[minmax(0,1fr)_minmax(18rem,24rem)]",
         align === "center" ? "sm:items-center" : "sm:items-start",
@@ -88,7 +89,7 @@ export function SettingBlock({
   children: ReactNode;
 }) {
   return (
-    <div className="space-y-3 py-4">
+    <div className="space-y-3 py-4" data-search={label}>
       <div className="min-w-0">
         <p className="text-sm font-medium text-heading">{label}</p>
         {sub && <p className="mt-0.5 text-xs leading-relaxed text-muted">{sub}</p>}

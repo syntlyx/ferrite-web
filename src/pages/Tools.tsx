@@ -36,6 +36,7 @@ import type {
   TcpProbeResult,
   DomainCheckResult,
 } from "@/api/types";
+import { useTabParam } from "@/hooks/use-tab-param";
 
 const RECORD_TYPES = ["A", "AAAA", "CNAME", "MX", "TXT", "NS", "SOA", "PTR", "SRV", "CAA"];
 
@@ -130,13 +131,13 @@ function useEgresses() {
 export default function Tools() {
   const { t } = useTranslation();
   const egresses = useEgresses();
-  const [tab, setTab] = useState("dns");
+  const [tab, setTab] = useTabParam("dns");
   const [pending, setPending] = useState<Pending | null>(null);
 
   const dispatch = useCallback((tool: ToolId, req: ToolRequest) => {
     setTab(TAB_OF[tool]);
     setPending((p) => ({ tool, req, nonce: (p?.nonce ?? 0) + 1 }));
-  }, []);
+  }, [setTab]);
 
   const bus = useMemo<ToolsBus>(() => ({ dispatch, pending }), [dispatch, pending]);
 

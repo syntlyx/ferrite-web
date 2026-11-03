@@ -818,7 +818,7 @@
   },
   "palette": {
     "open": "Buscar",
-    "placeholder": "Busca páginas y dispositivos, o escribe un dominio…",
+    "placeholder": "Busca ajustes, páginas y dispositivos, o escribe un dominio…",
     "check": "Comprobar {{domain}}",
     "domain": "Dominio",
     "pages": "Páginas",
@@ -828,7 +828,15 @@
     "resume": "Reanudar el filtrado",
     "refresh": "Actualizar todas las listas",
     "refreshed": "Listas actualizadas",
-    "empty": "Nada coincide."
+    "empty": "Nada coincide.",
+    "sections": "Ajustes y secciones",
+    "profiles": "Perfiles",
+    "lists": "Listas",
+    "records": "Registros DNS",
+    "tunnels": "Túneles",
+    "move": "mover",
+    "go": "abrir",
+    "tip": "Prueba «rate limit», «ntfy» o el nombre de un dispositivo"
   },
   "domain": {
     "title": "Dominio",

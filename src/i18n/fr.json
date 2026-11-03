@@ -818,7 +818,7 @@
   },
   "palette": {
     "open": "Rechercher",
-    "placeholder": "Cherchez des pages et des appareils, ou tapez un domaine…",
+    "placeholder": "Cherchez réglages, pages et appareils, ou tapez un domaine…",
     "check": "Vérifier {{domain}}",
     "domain": "Domaine",
     "pages": "Pages",
@@ -828,7 +828,15 @@
     "resume": "Reprendre le filtrage",
     "refresh": "Actualiser toutes les listes",
     "refreshed": "Listes actualisées",
-    "empty": "Aucun résultat."
+    "empty": "Aucun résultat.",
+    "sections": "Réglages et sections",
+    "profiles": "Profils",
+    "lists": "Listes",
+    "records": "Enregistrements DNS",
+    "tunnels": "Tunnels",
+    "move": "naviguer",
+    "go": "ouvrir",
+    "tip": "Essayez « rate limit », « ntfy » ou un nom d'appareil"
   },
   "domain": {
     "title": "Domaine",

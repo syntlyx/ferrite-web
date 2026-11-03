@@ -818,7 +818,7 @@
   },
   "palette": {
     "open": "Search",
-    "placeholder": "Search pages and devices, or type a domain…",
+    "placeholder": "Search settings, pages and devices, or type a domain…",
     "check": "Check {{domain}}",
     "domain": "Domain",
     "pages": "Pages",
@@ -828,7 +828,15 @@
     "resume": "Resume filtering",
     "refresh": "Refresh all lists",
     "refreshed": "Lists refreshed",
-    "empty": "Nothing matches."
+    "empty": "Nothing matches.",
+    "sections": "Settings and sections",
+    "profiles": "Profiles",
+    "lists": "Lists",
+    "records": "DNS records",
+    "tunnels": "Tunnels",
+    "move": "move",
+    "go": "open",
+    "tip": "Try “rate limit”, “ntfy” or a device name"
   },
   "domain": {
     "title": "Domain",
