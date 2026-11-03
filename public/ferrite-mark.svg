@@ -1,34 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Ferrite">
-  <defs>
-    <linearGradient id="fm-plate" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#181210"/>
-      <stop offset="1" stop-color="#0b0907"/>
-    </linearGradient>
-    <linearGradient id="fm-ember" x1="16" y1="13" x2="46" y2="51" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#ffb27d"/>
-      <stop offset="0.55" stop-color="#ff6a38"/>
-      <stop offset="1" stop-color="#e8481a"/>
-    </linearGradient>
-    <filter id="fm-glow" x="-40%" y="-40%" width="180%" height="180%">
-      <feGaussianBlur stdDeviation="3"/>
-    </filter>
-  </defs>
-
-  <rect width="64" height="64" rx="12" fill="url(#fm-plate)"/>
-  <rect x="0.5" y="0.5" width="63" height="63" rx="11.5" fill="none" stroke="#3a2c21" stroke-width="1"/>
-
-  <!-- corner ticks -->
-  <g fill="#ff6a38" opacity="0.55">
-    <path d="M7 7h9v1.6H8.6V16H7Z"/>
-    <path d="M57 7v9h-1.6V8.6H48V7Z"/>
-    <path d="M7 57v-9h1.6v7.4H16V57Z"/>
-    <path d="M57 57h-9v-1.6h7.4V48H57Z"/>
-  </g>
-
-  <!-- forged F monogram -->
-  <path d="M16 13h24l6 6v3H25v8h15v9H25v12h-9Z" fill="url(#fm-ember)" filter="url(#fm-glow)" opacity="0.55"/>
-  <path d="M16 13h24l6 6v3H25v8h15v9H25v12h-9Z" fill="url(#fm-ember)"/>
-
-  <!-- ember spark -->
-  <rect x="40" y="45" width="6" height="6" fill="#ffc29e"/>
+  <rect width="64" height="64" rx="14" fill="#1c1814"/>
+  <rect x="0.5" y="0.5" width="63" height="63" rx="13.5" fill="none" stroke="#2c2620"/>
+  <path d="M18 12h29v9H28v8h16v9H28v14H18Z" fill="#ff6a38"/>
 </svg>
