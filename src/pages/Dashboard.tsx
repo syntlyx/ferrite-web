@@ -77,11 +77,60 @@ function buildChartData(buckets: TimeseriesBucket[]) {
 
 type TopHours = 0 | 24 | 168;
 
-interface HistoricalTop {
+interface HistoricalDomains {
   domains: [string, number][];
   blocked: [string, number][];
+}
+
+interface HistoricalClients {
   clients: TopClientEntry[];
   blockedClients: TopClientEntry[];
+}
+
+const loadTopDomains = (hours: number): Promise<HistoricalDomains> =>
+  Promise.all([
+    api.statsTopDomains({ hours, limit: 20 }),
+    api.statsTopBlocked({ hours, limit: 20 }),
+  ]).then(([d, b]) => ({
+    domains: d.domains.map((x) => [x.domain, x.count]),
+    blocked: b.domains.map((x) => [x.domain, x.count]),
+  }));
+
+const loadTopClients = (hours: number): Promise<HistoricalClients> =>
+  Promise.all([
+    api.statsTopClients({ hours, limit: 20 }),
+    api.statsTopClients({ hours, limit: 20, by: "blocked" }),
+  ]).then(([c, cb]) => ({ clients: c.clients, blockedClients: cb.clients }));
+
+/**
+ * One top-list card's time range. Each card keeps its own: switching Top
+ * clients to 7 days leaves Top domains where it was. Live (0) reads the
+ * summary the page already polls; a past range fetches once per switch, and
+ * a late answer for a range already left behind is dropped.
+ */
+function useTopRange<T>(load: (hours: number) => Promise<T>) {
+  const [hours, setHours] = useState<TopHours>(0);
+  const [data, setData] = useState<T | null>(null);
+  const [loading, setLoading] = useState(false);
+  const seq = useRef(0);
+  useEffect(() => {
+    const id = ++seq.current;
+    if (hours === 0) {
+      setData(null);
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    load(hours)
+      .then((d) => {
+        if (id === seq.current) setData(d);
+      })
+      .catch((e) => console.error("Failed to fetch top stats:", e))
+      .finally(() => {
+        if (id === seq.current) setLoading(false);
+      });
+  }, [hours, load]);
+  return { hours, setHours, data, loading };
 }
 
 // ── Totals ────────────────────────────────────────────────────────────────────
@@ -1160,11 +1209,9 @@ export default function Dashboard() {
   // without a remount.
   const statsDisabled = useSettings()?.storage?.keep_stats === false;
 
-  // Top domains / clients time range
-  const [topHours, setTopHours] = useState<TopHours>(0);
-  const [historicalTop, setHistoricalTop] = useState<HistoricalTop | null>(null);
-  const [topLoading, setTopLoading] = useState(false);
-  const topFetchId = useRef(0);
+  // Top domains and top clients each keep their own time range.
+  const domainRange = useTopRange(loadTopDomains);
+  const clientRange = useTopRange(loadTopClients);
 
   const fetchAll = useCallback(async () => {
     try {
@@ -1180,7 +1227,7 @@ export default function Dashboard() {
   const fetchSys = useCallback(async () => {
     // setInterval doesn't wait for the async callback, so a slow request can
     // overlap the next tick. Guard with a sequence id so a late older response
-    // can't overwrite a newer snapshot (matches the topFetchId pattern below).
+    // can't overwrite a newer snapshot (the same guard useTopRange uses).
     const id = ++sysFetchId.current;
     try {
       const data = await api.statsSystem();
@@ -1235,54 +1282,30 @@ export default function Dashboard() {
     };
   }, [fetchSys, pageVisible]);
 
-  useEffect(() => {
-    if (topHours === 0) {
-      setHistoricalTop(null);
-      return;
-    }
-    const id = ++topFetchId.current;
-    setTopLoading(true);
-    Promise.all([
-      api.statsTopDomains({ hours: topHours, limit: 20 }),
-      api.statsTopBlocked({ hours: topHours, limit: 20 }),
-      api.statsTopClients({ hours: topHours, limit: 20 }),
-      api.statsTopClients({ hours: topHours, limit: 20, by: "blocked" }),
-    ])
-      .then(([d, b, c, cb]) => {
-        if (id !== topFetchId.current) return;
-        setHistoricalTop({
-          domains: d.domains.map((x) => [x.domain, x.count]),
-          blocked: b.domains.map((x) => [x.domain, x.count]),
-          clients: c.clients,
-          blockedClients: cb.clients,
-        });
-      })
-      .catch((e) => console.error("Failed to fetch top stats:", e))
-      .finally(() => {
-        if (id === topFetchId.current) setTopLoading(false);
-      });
-  }, [topHours]);
-
   const chartData = useMemo(() => (stats ? buildChartData(stats.timeseries) : []), [stats]);
 
+  const live = (hours: TopHours) => hours === 0;
   const effectiveDomains = useMemo(
-    () => (topHours === 0 ? (stats?.top_domains ?? []) : (historicalTop?.domains ?? [])),
-    [topHours, stats, historicalTop],
+    () =>
+      live(domainRange.hours) ? (stats?.top_domains ?? []) : (domainRange.data?.domains ?? []),
+    [domainRange.hours, domainRange.data, stats],
   );
   const effectiveBlocked = useMemo(
-    () => (topHours === 0 ? (stats?.top_blocked ?? []) : (historicalTop?.blocked ?? [])),
-    [topHours, stats, historicalTop],
+    () =>
+      live(domainRange.hours) ? (stats?.top_blocked ?? []) : (domainRange.data?.blocked ?? []),
+    [domainRange.hours, domainRange.data, stats],
   );
   const effectiveClients = useMemo(
-    () => (topHours === 0 ? (stats?.top_clients ?? []) : (historicalTop?.clients ?? [])),
-    [topHours, stats, historicalTop],
+    () =>
+      live(clientRange.hours) ? (stats?.top_clients ?? []) : (clientRange.data?.clients ?? []),
+    [clientRange.hours, clientRange.data, stats],
   );
   const effectiveBlockedClients = useMemo(
     () =>
-      topHours === 0
+      live(clientRange.hours)
         ? (stats?.top_blocked_clients ?? null)
-        : (historicalTop?.blockedClients ?? null),
-    [topHours, stats, historicalTop],
+        : (clientRange.data?.blockedClients ?? null),
+    [clientRange.hours, clientRange.data, stats],
   );
 
   return (
@@ -1336,17 +1359,17 @@ export default function Dashboard() {
             <TopDomains
               topQueried={effectiveDomains}
               topBlocked={effectiveBlocked}
-              topHours={topHours}
-              topLoading={topLoading}
-              onRangeChange={setTopHours}
+              topHours={domainRange.hours}
+              topLoading={domainRange.loading}
+              onRangeChange={domainRange.setHours}
               navigate={navigate}
             />
             <TopClients
               rows={effectiveClients}
               blockedRows={effectiveBlockedClients}
-              topHours={topHours}
-              topLoading={topLoading}
-              onRangeChange={setTopHours}
+              topHours={clientRange.hours}
+              topLoading={clientRange.loading}
+              onRangeChange={clientRange.setHours}
               navigate={navigate}
             />
             <LiveFeed
