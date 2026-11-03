@@ -464,12 +464,25 @@ function get(path: string, qs: URLSearchParams): Json {
   }
   if (p.startsWith("/update"))
     return {
-      server: { current: "0.2.0", latest: "0.2.0", update_available: false },
-      web: { current: "0.2.0", latest: "0.2.0", update_available: false },
+      // The raw server shape — the API client turns it into server/web rows.
+      current_server_version: "0.2.0",
+      current_web_version: "0.2.0",
+      server_update: null,
+      web_update: null,
+      incompatible_web_update: null,
+      checked_at: Math.floor(Date.now() / 1000) - 3600,
       stale: false,
       check_pending: false,
+      last_error: null,
     };
-  if (p === "/sync") return { enabled: false };
+  if (p === "/sync")
+    return {
+      primary: "",
+      api_key_set: false,
+      interval: 300,
+      sections: ["filtering", "records", "devices", "dns"],
+      status: { last_attempt: null, last_ok: null, last_change: null, changed: [], error: null },
+    };
   return {};
 }
 

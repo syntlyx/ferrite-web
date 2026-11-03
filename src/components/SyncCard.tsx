@@ -28,7 +28,23 @@ export function SyncCard({ onRestarting }: { onRestarting: () => void }) {
   const [sections, setSections] = useState<SyncSection[]>([]);
   const [busy, setBusy] = useState<"save" | "now" | null>(null);
 
-  const load = (v: SyncView) => {
+  const load = (raw: SyncView) => {
+    // Every field defaulted: an older server, or a stand-in API, may leave
+    // some out, and one missing string shouldn't take the Settings page down.
+    const v: SyncView = {
+      ...raw,
+      primary: raw.primary ?? "",
+      api_key_set: raw.api_key_set ?? false,
+      interval: raw.interval ?? 300,
+      sections: raw.sections ?? [],
+      status: raw.status ?? {
+        last_attempt: null,
+        last_ok: null,
+        last_change: null,
+        changed: [],
+        error: null,
+      },
+    };
     setView(v);
     setPrimary(v.primary);
     setKey("");
@@ -109,25 +125,28 @@ export function SyncCard({ onRestarting }: { onRestarting: () => void }) {
         defaultValue:
           "Run two resolvers that answer alike: this box takes the chosen parts of a primary's configuration every few minutes, and restarts for a second when something changed. Edit on the primary.",
       })}
+      // No footer bar at all until there is something to put in it.
       footer={
-        <div className="flex flex-wrap items-center justify-end gap-2">
-          {following && (
-            <Btn
-              type="button"
-              variant="ghost"
-              onClick={() => void syncNow()}
-              disabled={busy !== null}
-            >
-              <RefreshCw size={12} className={cn(busy === "now" && "animate-spin")} />{" "}
-              {t("sync.now", { defaultValue: "Sync now" })}
-            </Btn>
-          )}
-          {dirty && (
-            <Btn type="button" onClick={() => void save()} disabled={busy !== null}>
-              <Save size={12} /> {t("common.save", { defaultValue: "Save" })}
-            </Btn>
-          )}
-        </div>
+        (following || dirty) && (
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            {following && (
+              <Btn
+                type="button"
+                variant="ghost"
+                onClick={() => void syncNow()}
+                disabled={busy !== null}
+              >
+                <RefreshCw size={12} className={cn(busy === "now" && "animate-spin")} />{" "}
+                {t("sync.now", { defaultValue: "Sync now" })}
+              </Btn>
+            )}
+            {dirty && (
+              <Btn type="button" onClick={() => void save()} disabled={busy !== null}>
+                <Save size={12} /> {t("common.save", { defaultValue: "Save" })}
+              </Btn>
+            )}
+          </div>
+        )
       }
     >
       <SettingRow
