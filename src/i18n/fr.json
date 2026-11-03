@@ -100,7 +100,7 @@
     "reclaimable": "cache",
     "sensor_unavailable": "capteur indisponible",
     "swap_off": "swap désactivé",
-    "of_ram": "% de RAM",
+    "of_ram": "de la RAM",
     "stats_disabled": "Les statistiques sont désactivées dans Réglages → Confidentialité. Les totaux depuis le démarrage continuent ; les classements et le graphique restent vides, et les statistiques antérieures ne sont pas renvoyées.",
     "dropped_stats_warning": "{{count}} statistiques de requêtes perdues sous charge — les compteurs et le flux en direct peuvent être sous-estimés.",
     "system_more": "Détails",

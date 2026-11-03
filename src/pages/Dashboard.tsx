@@ -834,7 +834,7 @@ function SystemBar({ sys }: { sys: SystemStats }) {
       ? "text-blocked"
       : sys.swap.used_percent > 50
         ? "text-warn"
-        : "text-upstream";
+        : "text-heading";
 
   const hasSwap = sys.swap.total_bytes > 0;
   const memoryDetail =
@@ -1012,22 +1012,24 @@ function SystemBar({ sys }: { sys: SystemStats }) {
               </span>
             </span>
             <span className="text-xs">
+              <span className="text-heading font-medium tabular-nums">
+                {sys.process.memory_percent.toFixed(2)}%
+              </span>
+              <span className="text-muted"> {t("dashboard.of_ram")}</span>
+            </span>
+            <span className="text-xs">
               <span className="text-muted">{t("dashboard.cpu")} </span>
               <span className="text-heading font-medium tabular-nums">
                 {sys.process.cpu_percent.toFixed(2)}%
               </span>
             </span>
-            <span className="text-muted/50 text-[11px] tabular-nums">
-              {sys.process.memory_percent.toFixed(2)}
-              {t("dashboard.of_ram")}
-            </span>
           </>
         )}
-        <span className={cn("text-xs tabular-nums", hasSwap ? swapColor : "text-muted/55")}>
+        <span className={cn("text-xs tabular-nums", hasSwap ? swapColor : "text-muted")}>
           <span className="text-muted">{hasSwap ? "swap " : ""}</span>
           {hasSwap ? (
             <>
-              {formatBytes(sys.swap.used_bytes)}
+              <span className="font-medium">{formatBytes(sys.swap.used_bytes)}</span>
               <span className="text-muted font-normal"> / {formatBytes(sys.swap.total_bytes)}</span>
             </>
           ) : (

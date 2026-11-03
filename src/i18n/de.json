@@ -100,7 +100,7 @@
     "reclaimable": "cache",
     "sensor_unavailable": "Sensor nicht verfügbar",
     "swap_off": "Swap aus",
-    "of_ram": "% RAM",
+    "of_ram": "des RAM",
     "stats_disabled": "Statistiken sind unter Einstellungen → Datenschutz ausgeschaltet. Die Summen seit dem Start laufen weiter; Top-Listen und Graph bleiben leer, und frühere Statistiken werden nicht zurückgeliefert.",
     "dropped_stats_warning": "{{count}} Abfragestatistiken wurden unter Last verworfen — Zähler und Live-Feed können zu niedrig liegen.",
     "system_more": "Details",

@@ -100,7 +100,7 @@
     "reclaimable": "cache",
     "sensor_unavailable": "sensor unavailable",
     "swap_off": "swap off",
-    "of_ram": "% of RAM",
+    "of_ram": "of RAM",
     "stats_disabled": "Statistics are switched off in Settings → Privacy. The totals since start still update; the top lists and the graph stay empty, and earlier statistics are not served back.",
     "dropped_stats_warning": "{{count}} query stats were dropped under load — counters and the live feed may be undercounting.",
     "system_more": "Details",

@@ -100,7 +100,7 @@
     "reclaimable": "caché",
     "sensor_unavailable": "sensor no disponible",
     "swap_off": "swap desactivado",
-    "of_ram": "% de RAM",
+    "of_ram": "de la RAM",
     "stats_disabled": "Las estadísticas están desactivadas en Ajustes → Privacidad. Los totales desde el arranque siguen actualizándose; los tops y el gráfico quedan vacíos, y las estadísticas anteriores no se devuelven.",
     "dropped_stats_warning": "Se descartaron {{count}} estadísticas de consultas por carga — los contadores y el feed en vivo pueden quedarse cortos.",
     "system_more": "Detalles",
