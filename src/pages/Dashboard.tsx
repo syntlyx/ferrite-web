@@ -368,6 +368,12 @@ function TopDomains({
 
 // ── Top clients card ──────────────────────────────────────────────────────────
 
+/** A whole-number share; "<1%" rather than a misleading 0% for a few. */
+function share(part: number, total: number): string {
+  const v = (part / total) * 100;
+  return v > 0 && v < 1 ? "<1%" : `${Math.round(v)}%`;
+}
+
 function TopClients({
   rows,
   topLoading,
@@ -420,7 +426,7 @@ function TopClients({
                         className="text-blocked/90 mono text-[11px] tabular-nums"
                         title={t("dashboard.share_blocked", { defaultValue: "share blocked" })}
                       >
-                        {pct(blocked, c.total)}
+                        {share(blocked, c.total)}
                       </span>
                     )}
                     <span className="mono text-muted w-12 text-right tabular-nums">

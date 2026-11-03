@@ -22,9 +22,8 @@
     "logout": "Вийти",
     "light_mode": "Світла тема",
     "dark_mode": "Темна тема",
-    "status_online": "Фільтрація увімкнена",
+    "status_online": "Фільтрація діє",
     "status_filtering_off": "Фільтрацію вимкнено",
-    "control_plane": "Реклама й трекери блокуються",
     "filtering_off_hint": "DNS працює без блокування",
     "update_badge": "Оновлення",
     "update_available": "Доступне оновлення — відкрийте Налаштування",
@@ -734,7 +733,8 @@
     "pause_device": "Призупинити фільтрацію для цього пристрою",
     "banner": "Фільтрацію призупинено — ще {{time}} усе резолвиться без блокування.",
     "minutes_short": "{{count}} хв",
-    "hours_short": "{{count}} год"
+    "hours_short": "{{count}} год",
+    "pause": "Призупинити фільтрацію"
   },
   "backup": {
     "title": "Резервна копія",

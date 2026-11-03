@@ -24,7 +24,6 @@
     "dark_mode": "Modo oscuro",
     "status_online": "Filtrado activo",
     "status_filtering_off": "Filtrado desactivado",
-    "control_plane": "Se bloquean anuncios y rastreadores",
     "filtering_off_hint": "DNS funciona sin bloqueo",
     "update_badge": "Actualización",
     "update_available": "Actualización disponible - abrir Ajustes",
@@ -734,7 +733,8 @@
     "pause_device": "Pausar el filtrado para este dispositivo",
     "banner": "El filtrado está en pausa: todo se resuelve durante {{time}} más.",
     "minutes_short": "{{count}} min",
-    "hours_short": "{{count}} h"
+    "hours_short": "{{count}} h",
+    "pause": "Pausar el filtrado"
   },
   "backup": {
     "title": "Copia de seguridad",

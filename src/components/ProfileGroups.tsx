@@ -169,12 +169,14 @@ function DeviceTile({ c }: { c: ClientEntry }) {
         <span className="block h-1.5 overflow-hidden rounded-full bg-bdr/70">
           <span
             className="block h-full rounded-full bg-blocked"
-            style={{ width: `${Math.max(share, 1.5)}%` }}
+            style={{ width: share > 0 ? `${Math.max(share, 1.5)}%` : 0 }}
           />
         </span>
         <span className="flex justify-between text-xs text-muted">
           <span>
-            <span className="font-semibold text-heading tabular-nums">{share.toFixed(0)}%</span>{" "}
+            <span className="font-semibold text-heading tabular-nums">
+              {share > 0 && share < 1 ? "<1" : share.toFixed(0)}%
+            </span>{" "}
             {t("groups.blocked", { defaultValue: "blocked" })}
           </span>
           <span className="tabular-nums">

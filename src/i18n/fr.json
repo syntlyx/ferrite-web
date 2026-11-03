@@ -24,7 +24,6 @@
     "dark_mode": "Mode sombre",
     "status_online": "Filtrage actif",
     "status_filtering_off": "Filtrage désactivé",
-    "control_plane": "Publicités et traqueurs bloqués",
     "filtering_off_hint": "DNS fonctionne sans blocage",
     "update_badge": "Mise à jour",
     "update_available": "Mise à jour disponible - ouvrir les Paramètres",
@@ -734,7 +733,8 @@
     "pause_device": "Mettre le filtrage en pause pour cet appareil",
     "banner": "Le filtrage est en pause — tout se résout encore pendant {{time}}.",
     "minutes_short": "{{count}} min",
-    "hours_short": "{{count}} h"
+    "hours_short": "{{count}} h",
+    "pause": "Suspendre le filtrage"
   },
   "backup": {
     "title": "Sauvegarde et restauration",

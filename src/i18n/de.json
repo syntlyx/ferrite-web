@@ -22,9 +22,8 @@
     "logout": "Abmelden",
     "light_mode": "Heller Modus",
     "dark_mode": "Dunkler Modus",
-    "status_online": "Filterung ist aktiv",
+    "status_online": "Filter aktiv",
     "status_filtering_off": "Filterung deaktiviert",
-    "control_plane": "Werbung und Tracker werden blockiert",
     "filtering_off_hint": "DNS läuft ohne Blockierung",
     "update_badge": "Update",
     "update_available": "Update verfügbar - Einstellungen öffnen",
@@ -734,7 +733,8 @@
     "pause_device": "Filterung für dieses Gerät pausieren",
     "banner": "Filterung pausiert — noch {{time}} wird alles aufgelöst.",
     "minutes_short": "{{count}} Min",
-    "hours_short": "{{count}} Std"
+    "hours_short": "{{count}} Std",
+    "pause": "Filterung pausieren"
   },
   "backup": {
     "title": "Sicherung & Wiederherstellung",

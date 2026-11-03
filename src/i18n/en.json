@@ -24,7 +24,6 @@
     "dark_mode": "Dark mode",
     "status_online": "Filtering is on",
     "status_filtering_off": "Filtering disabled",
-    "control_plane": "Ads and trackers are blocked",
     "filtering_off_hint": "DNS runs without blocking",
     "update_badge": "Update",
     "update_available": "Update available — open Settings",
@@ -734,7 +733,8 @@
     "pause_device": "Pause filtering for this device",
     "banner": "Filtering is paused — everything resolves for {{time}} more.",
     "minutes_short": "{{count}}m",
-    "hours_short": "{{count}}h"
+    "hours_short": "{{count}}h",
+    "pause": "Pause filtering"
   },
   "backup": {
     "title": "Backup & restore",

@@ -116,7 +116,7 @@ function NavGroupLabel({
     return first ? null : <div className="mx-2 my-2 border-t border-bdr/70" aria-hidden />;
   }
   return (
-    <p className={cn("px-3 pb-1 text-[11.5px] text-muted", first ? "pt-0" : "pt-3")}>{label}</p>
+    <p className={cn("px-3 pb-1 text-[11.5px] text-muted", first ? "pt-0" : "pt-2.5")}>{label}</p>
   );
 }
 
@@ -163,7 +163,7 @@ function NavItem({
       aria-label={collapsed ? label : undefined}
       className={({ isActive }) =>
         cn(
-          "group relative flex min-h-9 items-center gap-3 rounded-lg px-3 py-1.5 text-[13.5px] transition-colors",
+          "group relative flex min-h-[34px] items-center gap-3 rounded-lg px-3 py-1 text-[13.5px] transition-colors",
           collapsed && "justify-center px-0",
           isActive
             ? "bg-ember/10 font-medium text-heading [&_svg]:text-ember"
@@ -210,6 +210,8 @@ export default function AppShell({ children }: { children: ReactNode }) {
   const [reloadKey, setReloadKey] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
+  // The box-wide pause lengths, shown on demand to keep the sidebar short.
+  const [pauseOpen, setPauseOpen] = useState(false);
   // ⌘K / Ctrl+K opens the command palette from anywhere.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -391,7 +393,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
             </span>
           </div>
         ) : (
-          <div className="mb-2 rounded-xl border border-bdr bg-card p-3">
+          <div className="mb-2 rounded-xl border border-bdr bg-card px-3 py-2.5">
             <div className="flex items-center gap-2.5">
               <span
                 className={cn(
@@ -400,56 +402,70 @@ export default function AppShell({ children }: { children: ReactNode }) {
                   blockingEnabled && "shadow-[0_0_0_4px_rgba(92,200,168,0.14)]",
                 )}
               />
-              <div className="min-w-0">
-                <p className="text-[13.5px] font-semibold text-heading">
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-[13.5px] font-semibold text-heading">
                   {paused
                     ? t("pause.paused", { defaultValue: "Filtering paused" })
                     : blockingEnabled
                       ? t("sidebar.status_online")
                       : t("sidebar.status_filtering_off")}
                 </p>
-                <p className="text-xs text-muted">
-                  {paused
-                    ? t("pause.time_left", {
-                        time: fmtCountdown(pause.globalLeft ?? 0),
-                        defaultValue: "{{time}} left",
-                      })
-                    : blockingEnabled
-                      ? t("sidebar.control_plane")
+                {(paused || !blockingEnabled) && (
+                  <p className="truncate text-xs text-muted">
+                    {paused
+                      ? t("pause.time_left", {
+                          time: fmtCountdown(pause.globalLeft ?? 0),
+                          defaultValue: "{{time}} left",
+                        })
                       : t("sidebar.filtering_off_hint")}
-                </p>
+                  </p>
+                )}
               </div>
-            </div>
-            {/* Pause filtering for a while — or bring it back early. */}
-            {configuredOn && (
-              <div className="mt-2.5 flex items-center gap-1">
-                {paused ? (
+              {/* Pause filtering for a while — or bring it back early. */}
+              {configuredOn &&
+                (paused ? (
                   <button
                     type="button"
                     onClick={() => runPause(pause.resumeGlobal)}
-                    className="flex h-7 flex-1 items-center justify-center gap-1.5 rounded-lg border border-ember/40 text-xs font-medium text-ember transition-colors hover:bg-ember/10"
+                    className="flex h-7 shrink-0 items-center gap-1 rounded-lg border border-ember/40 px-2 text-xs font-medium text-ember transition-colors hover:bg-ember/10"
                   >
                     <Play size={11} /> {t("pause.resume", { defaultValue: "Resume" })}
                   </button>
                 ) : (
-                  <>
-                    <Pause size={12} className="mr-1 shrink-0 text-muted" />
-                    {PAUSE_OPTIONS.map((m) => (
-                      <button
-                        key={m}
-                        type="button"
-                        onClick={() => runPause(() => pause.pauseGlobal(m))}
-                        title={t("pause.pause_for", {
-                          time: fmtMinutes(m),
-                          defaultValue: "Pause filtering for {{time}}",
-                        })}
-                        className="h-7 flex-1 rounded-lg border border-bdr text-xs text-body tabular-nums transition-colors hover:border-warn/50 hover:text-warn"
-                      >
-                        {fmtMinutes(m)}
-                      </button>
-                    ))}
-                  </>
-                )}
+                  <button
+                    type="button"
+                    onClick={() => setPauseOpen((v) => !v)}
+                    aria-expanded={pauseOpen}
+                    aria-label={t("pause.pause", { defaultValue: "Pause filtering" })}
+                    title={t("pause.pause", { defaultValue: "Pause filtering" })}
+                    className={cn(
+                      "flex h-7 w-7 shrink-0 items-center justify-center rounded-lg transition-colors hover:bg-white/5 hover:text-warn",
+                      pauseOpen ? "text-warn" : "text-muted",
+                    )}
+                  >
+                    <Pause size={13} />
+                  </button>
+                ))}
+            </div>
+            {configuredOn && !paused && pauseOpen && (
+              <div className="mt-2.5 flex items-center gap-1">
+                {PAUSE_OPTIONS.map((m) => (
+                  <button
+                    key={m}
+                    type="button"
+                    onClick={() => {
+                      setPauseOpen(false);
+                      runPause(() => pause.pauseGlobal(m));
+                    }}
+                    title={t("pause.pause_for", {
+                      time: fmtMinutes(m),
+                      defaultValue: "Pause filtering for {{time}}",
+                    })}
+                    className="h-7 flex-1 rounded-lg border border-bdr text-xs text-body tabular-nums transition-colors hover:border-warn/50 hover:text-warn"
+                  >
+                    {fmtMinutes(m)}
+                  </button>
+                ))}
               </div>
             )}
           </div>
@@ -499,6 +515,18 @@ export default function AppShell({ children }: { children: ReactNode }) {
             <LogOut size={15} />
             {compact && <span className="sidebar-tooltip">{t("sidebar.logout")}</span>}
           </button>
+          {!inDrawer && (
+            <button
+              type="button"
+              onClick={toggleCollapsed}
+              aria-label={collapsed ? t("sidebar.expand") : t("sidebar.collapse")}
+              title={collapsed ? t("sidebar.expand") : t("sidebar.collapse")}
+              className={iconBtn}
+            >
+              {collapsed ? <ChevronRight size={15} /> : <ChevronLeft size={15} />}
+              {compact && <span className="sidebar-tooltip">{t("sidebar.expand")}</span>}
+            </button>
+          )}
         </div>
       </>
     );
@@ -520,7 +548,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
             title="Ferrite dashboard"
             aria-label="Ferrite dashboard"
             className={cn(
-              "flex h-16 shrink-0 items-center transition-colors hover:bg-white/3",
+              "flex h-14 shrink-0 items-center transition-colors hover:bg-white/3",
               collapsed ? "justify-center px-0" : "gap-2.5 px-4",
             )}
           >
@@ -529,7 +557,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
 
           <nav
             className={cn(
-              "min-h-0 flex-1 space-y-0.5 overflow-y-auto py-4",
+              "min-h-0 flex-1 space-y-0.5 overflow-y-auto py-3",
               collapsed ? "px-2" : "px-3",
             )}
           >
@@ -538,7 +566,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
               onClick={() => setPaletteOpen(true)}
               aria-label={t("palette.open", { defaultValue: "Search" })}
               className={cn(
-                "group relative mb-4 flex h-9 w-full items-center gap-2.5 rounded-lg border border-bdr bg-void/40 px-3 text-[13px] text-muted transition-colors hover:border-ember/40 hover:text-heading",
+                "group relative mb-2 flex h-9 w-full items-center gap-2.5 rounded-lg border border-bdr bg-void/40 px-3 text-[13px] text-muted transition-colors hover:border-ember/40 hover:text-heading",
                 collapsed && "justify-center px-0",
               )}
             >
@@ -577,20 +605,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
             ))}
           </nav>
 
-          <div className={cn("px-2 py-3", !collapsed && "px-3")}>
-            <button
-              onClick={toggleCollapsed}
-              title={collapsed ? t("sidebar.expand") : t("sidebar.collapse")}
-              className={cn(
-                "mb-1 flex w-full items-center gap-3 rounded-lg px-3 py-2 text-xs text-muted transition-colors hover:bg-white/5 hover:text-heading",
-                collapsed && "justify-center px-0",
-              )}
-            >
-              {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
-              {!collapsed && <span>{t("sidebar.collapse")}</span>}
-            </button>
-            {bottomControls()}
-          </div>
+          <div className={cn("px-2 py-3", !collapsed && "px-3")}>{bottomControls()}</div>
         </aside>
 
         {/* ── Mobile top bar ──────────────────────────────────────────────── */}
