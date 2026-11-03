@@ -401,6 +401,23 @@ export default function Clients() {
   const pause = usePause();
   // The row whose pause-length chips are showing, if any.
   const [pausePicker, setPausePicker] = useState("");
+  // The lengths float over the table, so a click anywhere else, or Escape,
+  // puts them away.
+  useEffect(() => {
+    if (!pausePicker) return;
+    const onDown = (e: MouseEvent) => {
+      if (!(e.target as Element | null)?.closest?.("[data-pause-picker]")) setPausePicker("");
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setPausePicker("");
+    };
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [pausePicker]);
   const pauseDevice = (keys: string[], minutes: number) => {
     setPausePicker("");
     pause.pauseClients(keys, minutes).catch((e: Error) => toast(e.message, "error"));
@@ -818,67 +835,78 @@ export default function Clients() {
                           )}
                         </Td>
                         <Td className="px-3 text-right sm:px-4">
+                          {/* Every state keeps the same width — a countdown or a badge
+                              sits in a reserved slot, the lengths float over the row —
+                              so pausing a device never reflows the table. */}
                           <div className="inline-flex items-center gap-2">
-                            {pausedLeft != null ? (
-                              // Paused for a while: the countdown, which also resumes.
-                              <button
-                                type="button"
-                                onClick={() => resumeDevice(tokens)}
-                                title={t("pause.resume", { defaultValue: "Resume" })}
-                                className="bg-warn/10 text-warn hover:bg-warn/20 inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-mono text-[10px] tabular-nums transition-colors"
-                              >
-                                <Pause size={9} />
-                                {fmtCountdown(pausedLeft)}
-                              </button>
-                            ) : pausePicker === c.name ? (
-                              <span className="hidden items-center gap-1 sm:inline-flex">
-                                {PAUSE_OPTIONS.map((m) => (
-                                  <button
-                                    key={m}
-                                    type="button"
-                                    onClick={() => pauseDevice(tokens, m)}
-                                    className="border-bdr/70 text-muted hover:border-warn/50 hover:text-warn rounded-xs border px-1.5 py-0.5 font-mono text-[10px] tabular-nums transition-colors"
-                                  >
-                                    {m >= 60
-                                      ? t("pause.hours_short", {
-                                          count: m / 60,
-                                          defaultValue: "{{count}}h",
-                                        })
-                                      : t("pause.minutes_short", {
-                                          count: m,
-                                          defaultValue: "{{count}}m",
-                                        })}
-                                  </button>
-                                ))}
-                              </span>
-                            ) : (
-                              !filteringOn && (
-                                <span className="bg-warn/10 text-warn hidden rounded-full px-2 py-0.5 text-[11px] font-medium sm:inline">
-                                  {!blockingEnabled
-                                    ? t("clients.filtering_global_off")
-                                    : t("clients.filtering_bypassed")}
-                                </span>
-                              )
-                            )}
+                            <span className="hidden min-w-[4.5rem] justify-end sm:inline-flex">
+                              {pausedLeft != null ? (
+                                // Paused for a while: the countdown, which also resumes.
+                                <button
+                                  type="button"
+                                  onClick={() => resumeDevice(tokens)}
+                                  title={t("pause.resume", { defaultValue: "Resume" })}
+                                  className="bg-warn/10 text-warn hover:bg-warn/20 inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-mono text-[10px] tabular-nums transition-colors"
+                                >
+                                  <Pause size={9} />
+                                  {fmtCountdown(pausedLeft)}
+                                </button>
+                              ) : (
+                                !filteringOn && (
+                                  <span className="bg-warn/10 text-warn rounded-full px-2 py-0.5 text-[11px] font-medium">
+                                    {!blockingEnabled
+                                      ? t("clients.filtering_global_off")
+                                      : t("clients.filtering_bypassed")}
+                                  </span>
+                                )
+                              )}
+                            </span>
                             <Switch
                               checked={filteringOn && pausedLeft == null}
                               onCheckedChange={() => toggleClientBlocking(c)}
                               disabled={!blockingEnabled || togglingBlocking === c.name}
                             />
-                            {filteringOn && pausedLeft == null && (
-                              <IconBtn
-                                onClick={() => setPausePicker(pausePicker === c.name ? "" : c.name)}
-                                title={t("pause.pause_device", {
-                                  defaultValue: "Pause filtering for this device",
-                                })}
-                                className={cn(
-                                  "hidden sm:inline-flex",
-                                  pausePicker === c.name && "text-warn",
-                                )}
-                              >
-                                <Pause size={11} />
-                              </IconBtn>
-                            )}
+                            <span
+                              data-pause-picker
+                              className="relative hidden w-4 justify-center sm:inline-flex"
+                            >
+                              {filteringOn && pausedLeft == null && (
+                                <IconBtn
+                                  onClick={() =>
+                                    setPausePicker(pausePicker === c.name ? "" : c.name)
+                                  }
+                                  title={t("pause.pause_device", {
+                                    defaultValue: "Pause filtering for this device",
+                                  })}
+                                  aria-expanded={pausePicker === c.name}
+                                  className={cn(pausePicker === c.name && "text-warn")}
+                                >
+                                  <Pause size={11} />
+                                </IconBtn>
+                              )}
+                              {pausePicker === c.name && filteringOn && pausedLeft == null && (
+                                <span className="border-bdr bg-panel absolute right-full top-1/2 z-20 mr-2 flex -translate-y-1/2 items-center gap-1 rounded-lg border p-1 shadow-lg">
+                                  {PAUSE_OPTIONS.map((m) => (
+                                    <button
+                                      key={m}
+                                      type="button"
+                                      onClick={() => pauseDevice(tokens, m)}
+                                      className="border-bdr text-body hover:border-warn/50 hover:text-warn h-7 rounded-md border px-2 font-mono text-[11px] tabular-nums transition-colors"
+                                    >
+                                      {m >= 60
+                                        ? t("pause.hours_short", {
+                                            count: m / 60,
+                                            defaultValue: "{{count}}h",
+                                          })
+                                        : t("pause.minutes_short", {
+                                            count: m,
+                                            defaultValue: "{{count}}m",
+                                          })}
+                                    </button>
+                                  ))}
+                                </span>
+                              )}
+                            </span>
                           </div>
                         </Td>
                         <Td className="text-muted hidden whitespace-nowrap text-right sm:table-cell">
