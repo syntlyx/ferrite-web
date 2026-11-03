@@ -177,7 +177,20 @@ export type HotForm = {
   debug_logging: boolean;
   log_queries: boolean;
   keep_stats: boolean;
+  dns_dnssec: boolean;
+  dns_strip_ecs: boolean;
+  dns_firefox_canary: boolean;
+  dns_block_private_relay: boolean;
+  dns_strip_ech: boolean;
 };
+
+/** The resolver switches: booleans on the live form, applied without a restart. */
+export type ResolverSwitch =
+  | "dns_dnssec"
+  | "dns_strip_ecs"
+  | "dns_firefox_canary"
+  | "dns_block_private_relay"
+  | "dns_strip_ech";
 
 export type RestartForm = {
   storage_backend: StorageBackend;
@@ -185,8 +198,6 @@ export type RestartForm = {
   blocklist_cache_dir: string;
   dns_bind_addr: string;
   dns_cache_size: string;
-  dns_strip_ecs: boolean;
-  dns_dnssec: boolean;
   blocklist_decision_cache_size: string;
   api_bind_addr: string;
   upstream: UpstreamDraft[];
@@ -219,6 +230,12 @@ export function hotFormFromSettings(s: SettingsType): Omit<HotForm, "api_key" | 
     // Recording is on unless the operator switched it off.
     log_queries: s.storage?.log_queries ?? true,
     keep_stats: s.storage?.keep_stats ?? true,
+    // The resolver switches, each with the server's default.
+    dns_dnssec: s.dns?.dnssec ?? true,
+    dns_strip_ecs: s.dns?.strip_ecs ?? true,
+    dns_firefox_canary: s.dns?.firefox_canary ?? true,
+    dns_block_private_relay: s.dns?.block_private_relay ?? false,
+    dns_strip_ech: s.dns?.strip_ech ?? false,
   };
 }
 
@@ -231,8 +248,6 @@ export function restartFormFromSettings(s: SettingsType): RestartForm {
     blocklist_cache_dir: s.storage?.blocklist_cache_dir ?? "",
     dns_bind_addr: s.dns?.bind_addr ?? "",
     dns_cache_size: String(s.dns?.cache_size ?? ""),
-    dns_strip_ecs: s.dns?.strip_ecs ?? true,
-    dns_dnssec: s.dns?.dnssec ?? true,
     blocklist_decision_cache_size: String(s.blocklist?.decision_cache_size ?? ""),
     api_bind_addr: s.api?.bind_addr ?? "",
     upstream: upstreamsToDraft(s.upstream),
@@ -260,6 +275,15 @@ export function buildHotPatch(
     patch.dns_client_ttl = Number(form.dns_client_ttl);
   if (form.dns_serve_stale !== (settings.dns?.serve_stale ?? false))
     patch.dns_serve_stale = form.dns_serve_stale;
+  if (form.dns_dnssec !== (settings.dns?.dnssec ?? true)) patch.dns_dnssec = form.dns_dnssec;
+  if (form.dns_strip_ecs !== (settings.dns?.strip_ecs ?? true))
+    patch.dns_strip_ecs = form.dns_strip_ecs;
+  if (form.dns_firefox_canary !== (settings.dns?.firefox_canary ?? true))
+    patch.dns_firefox_canary = form.dns_firefox_canary;
+  if (form.dns_block_private_relay !== (settings.dns?.block_private_relay ?? false))
+    patch.dns_block_private_relay = form.dns_block_private_relay;
+  if (form.dns_strip_ech !== (settings.dns?.strip_ech ?? false))
+    patch.dns_strip_ech = form.dns_strip_ech;
   // The field shows whole hours; compare in hours too, so a value set in
   // seconds elsewhere (config file, API) isn't rewritten by an unrelated save.
   if (
@@ -345,9 +369,6 @@ export function buildRestartPatch(form: RestartForm, settings: SettingsType): Pa
     patch.dns_bind_addr = form.dns_bind_addr;
   if (form.dns_cache_size !== String(settings.dns?.cache_size ?? ""))
     patch.dns_cache_size = Number(form.dns_cache_size);
-  if (form.dns_strip_ecs !== (settings.dns?.strip_ecs ?? true))
-    patch.dns_strip_ecs = form.dns_strip_ecs;
-  if (form.dns_dnssec !== (settings.dns?.dnssec ?? true)) patch.dns_dnssec = form.dns_dnssec;
   if (form.blocklist_decision_cache_size !== String(settings.blocklist?.decision_cache_size ?? ""))
     patch.blocklist_decision_cache_size = Number(form.blocklist_decision_cache_size);
   if (form.api_bind_addr !== (settings.api?.bind_addr ?? ""))

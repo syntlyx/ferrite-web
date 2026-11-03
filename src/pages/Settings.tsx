@@ -81,7 +81,13 @@ import {
   hotFormFromSettings,
   restartFormFromSettings,
 } from "@/lib/settings-form";
-import type { HotForm, RestartForm, UpstreamDraft, ZoneDraft } from "@/lib/settings-form";
+import type {
+  HotForm,
+  ResolverSwitch,
+  RestartForm,
+  UpstreamDraft,
+  ZoneDraft,
+} from "@/lib/settings-form";
 
 type ClearableSecretField = "api_key" | "password";
 
@@ -839,6 +845,11 @@ export default function Settings() {
     debug_logging: false,
     log_queries: true,
     keep_stats: true,
+    dns_dnssec: true,
+    dns_strip_ecs: true,
+    dns_firefox_canary: true,
+    dns_block_private_relay: false,
+    dns_strip_ech: false,
   });
   const [logIgnore, setLogIgnore] = useState<string[]>([]);
   const [logIgnoreInput, setLogIgnoreInput] = useState("");
@@ -854,8 +865,6 @@ export default function Settings() {
     blocklist_cache_dir: "",
     dns_bind_addr: "",
     dns_cache_size: "",
-    dns_strip_ecs: true,
-    dns_dnssec: true,
     blocklist_decision_cache_size: "",
     api_bind_addr: "",
     upstream: [],
@@ -1029,6 +1038,7 @@ export default function Settings() {
     | "keep_stats"
     | "blocklist_block_response"
     | "dns_serve_stale"
+    | ResolverSwitch
   >;
   const setF = (key: TextFormField) => (e: ChangeEvent<HTMLInputElement>) =>
     setForm((p) => ({ ...p, [key]: e.target.value }));
@@ -1059,9 +1069,43 @@ export default function Settings() {
       defaultValue: "The server declines to answer. Some devices then try another resolver.",
     }),
   };
+  // The resolver's live switches: each row is a label, a hint and a switch.
+  const resolverSwitches: { key: ResolverSwitch; label: string; sub: string }[] = [
+    {
+      key: "dns_dnssec",
+      label: t("settings.dns_dnssec", { defaultValue: "Request DNSSEC" }),
+      sub: t("settings.dns_dnssec_sub", {
+        defaultValue:
+          "Set the DO bit and forward signatures. Enforcement needs a validating resolver over DoT/DoH.",
+      }),
+    },
+    {
+      key: "dns_strip_ecs",
+      label: t("settings.dns_strip_ecs", { defaultValue: "Don't send client subnet" }),
+      sub: t("settings.dns_strip_ecs_sub", {
+        defaultValue:
+          "Strip EDNS Client Subnet from upstream queries so the resolver never learns the client's subnet.",
+      }),
+    },
+    {
+      key: "dns_firefox_canary",
+      label: t("settings.dns_firefox_canary"),
+      sub: t("settings.dns_firefox_canary_sub"),
+    },
+    {
+      key: "dns_block_private_relay",
+      label: t("settings.dns_block_private_relay"),
+      sub: t("settings.dns_block_private_relay_sub"),
+    },
+    {
+      key: "dns_strip_ech",
+      label: t("settings.dns_strip_ech"),
+      sub: t("settings.dns_strip_ech_sub"),
+    },
+  ];
   type RestartTextField = Exclude<
     keyof RestartForm,
-    "upstream" | "zones" | "panel_enabled" | "dns_strip_ecs" | "dns_dnssec"
+    "upstream" | "zones" | "panel_enabled"
   >;
   const setR = (key: RestartTextField) => (e: ChangeEvent<HTMLInputElement>) =>
     setRestartForm((p) => ({ ...p, [key]: e.target.value }));
@@ -1509,6 +1553,31 @@ export default function Settings() {
 
             <TabsContent value="network" className="space-y-4 pt-4">
               <SettingsPanel
+                title={t("settings.resolver")}
+                sub={t("settings.resolver_sub")}
+                icon={ShieldCheck}
+              >
+                {resolverSwitches.map(({ key, label, sub }) => (
+                  <SettingRow
+                    key={key}
+                    label={label}
+                    sub={sub}
+                    badge={
+                      <StatusBadge
+                        set={form[key]}
+                        labelSet={t("common.enabled")}
+                        labelUnset={t("common.disabled")}
+                      />
+                    }
+                  >
+                    <Switch
+                      checked={form[key]}
+                      onCheckedChange={(checked) => setForm((p) => ({ ...p, [key]: checked }))}
+                    />
+                  </SettingRow>
+                ))}
+              </SettingsPanel>
+              <SettingsPanel
                 title={t("settings.network")}
                 sub={t("settings.restart_changes_sub")}
                 icon={RadioTower}
@@ -1528,48 +1597,6 @@ export default function Settings() {
                     unit={t("settings.entries_unit")}
                     value={restartForm.dns_cache_size}
                     onChange={setR("dns_cache_size")}
-                  />
-                </SettingRow>
-                <SettingRow
-                  label={t("settings.dns_dnssec", { defaultValue: "Request DNSSEC" })}
-                  sub={t("settings.dns_dnssec_sub", {
-                    defaultValue:
-                      "Set the DO bit and forward signatures. Enforcement needs a validating resolver over DoT/DoH.",
-                  })}
-                  badge={
-                    <StatusBadge
-                      set={restartForm.dns_dnssec}
-                      labelSet={t("common.enabled")}
-                      labelUnset={t("common.disabled")}
-                    />
-                  }
-                >
-                  <Switch
-                    checked={restartForm.dns_dnssec}
-                    onCheckedChange={(checked) =>
-                      setRestartForm((p) => ({ ...p, dns_dnssec: checked }))
-                    }
-                  />
-                </SettingRow>
-                <SettingRow
-                  label={t("settings.dns_strip_ecs", { defaultValue: "Don't send client subnet" })}
-                  sub={t("settings.dns_strip_ecs_sub", {
-                    defaultValue:
-                      "Strip EDNS Client Subnet from upstream queries so the resolver never learns the client's subnet.",
-                  })}
-                  badge={
-                    <StatusBadge
-                      set={restartForm.dns_strip_ecs}
-                      labelSet={t("common.enabled")}
-                      labelUnset={t("common.disabled")}
-                    />
-                  }
-                >
-                  <Switch
-                    checked={restartForm.dns_strip_ecs}
-                    onCheckedChange={(checked) =>
-                      setRestartForm((p) => ({ ...p, dns_strip_ecs: checked }))
-                    }
                   />
                 </SettingRow>
                 <SettingRow

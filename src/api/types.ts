@@ -594,6 +594,12 @@ export interface DnsConfig {
   log_ignore?: string[];
   strip_ecs?: boolean;
   dnssec?: boolean;
+  /** Answer Firefox's DoH canary with NXDOMAIN (default on). */
+  firefox_canary?: boolean;
+  /** Turn iCloud Private Relay off for the network (default off). */
+  block_private_relay?: boolean;
+  /** Strip Encrypted Client Hello from HTTPS/SVCB answers (default off). */
+  strip_ech?: boolean;
 }
 
 export interface UpstreamConfig {
@@ -753,6 +759,9 @@ export interface PatchSettingsBody {
   dns_cache_size?: number;
   dns_strip_ecs?: boolean;
   dns_dnssec?: boolean;
+  dns_firefox_canary?: boolean;
+  dns_block_private_relay?: boolean;
+  dns_strip_ech?: boolean;
   blocklist_decision_cache_size?: number;
   api_bind_addr?: string;
   upstream?: UpstreamConfig[];

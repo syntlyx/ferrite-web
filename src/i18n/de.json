@@ -475,7 +475,15 @@
     "allowed_clients": "Nur beantworten",
     "allowed_clients_sub": "IPs oder Bereiche, einer pro Zeile. Leer beantwortet alle — setzen, wenn Port 53 von außen erreichbar sein könnte. Alle anderen bekommen gar keine Antwort.",
     "denied_clients": "Nie beantworten",
-    "denied_clients_sub": "IPs oder Bereiche, einer pro Zeile. Geht der Liste oben vor."
+    "denied_clients_sub": "IPs oder Bereiche, einer pro Zeile. Geht der Liste oben vor.",
+    "resolver": "Resolver",
+    "resolver_sub": "Was die Box verlässt und was Geräte hier hält. Gilt sofort, ohne Neustart.",
+    "dns_firefox_canary": "Firefox bei diesem Resolver halten",
+    "dns_firefox_canary_sub": "Auf Firefox' DoH-Canary antworten, damit Firefox nicht von selbst auf DNS over HTTPS wechselt und den Filter umgeht. Von Hand eingeschaltetes DoH bleibt an.",
+    "dns_block_private_relay": "iCloud Private Relay abschalten",
+    "dns_block_private_relay_sub": "Apple-Geräten mitteilen, dass Private Relay in diesem Netz nicht verfügbar ist, damit Safari über ferrite auflöst. Das ist eine Datenschutz-Entscheidung des Geräteinhabers, daher bleibt es aus, bis du es einschaltest.",
+    "dns_strip_ech": "Encrypted Client Hello entfernen",
+    "dns_strip_ech_sub": "ECH aus HTTPS-Einträgen entfernen, damit Browser den Namen der Website im TLS-Handshake lesbar lassen. DoH-Server sperrt man besser mit einer Liste wie HaGeZis DoH-Bypass."
   },
   "login": {
     "sign_in": "Anmelden",
