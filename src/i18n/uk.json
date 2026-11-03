@@ -112,7 +112,9 @@
     "just_now": "Щойно",
     "all_clients": "Усі пристрої",
     "blocklist_size": "{{n}} доменів у блоклисті",
-    "share_blocked": "частка заблокованого"
+    "share_blocked": "частка заблокованого",
+    "tab_queries": "Запити",
+    "open_blocklist": "Блокліст"
   },
   "queries": {
     "title": "Журнал запитів",

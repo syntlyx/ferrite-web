@@ -1,5 +1,5 @@
-import { useEffect, useCallback, useState, useRef, useMemo, memo } from "react";
-import type { ComponentType, ReactNode } from "react";
+import { useEffect, useCallback, useLayoutEffect, useState, useRef, useMemo, memo } from "react";
+import type { ComponentType, ReactNode, Ref } from "react";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
@@ -19,7 +19,7 @@ import { PageContainer } from "@/components/layout/PageContainer";
 import { Card } from "@/components/layout/Card";
 import { Err } from "@/components/feedback/Err";
 import { Notice } from "@/components/feedback/Notice";
-import { Bar, Skeleton, Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui";
+import { Bar, Skeleton, Tabs, TabsList, TabsTrigger } from "@/components/ui";
 import { usePageVisible } from "@/hooks/use-page-visible";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useSettings } from "@/stores/settings";
@@ -81,6 +81,7 @@ interface HistoricalTop {
   domains: [string, number][];
   blocked: [string, number][];
   clients: TopClientEntry[];
+  blockedClients: TopClientEntry[];
 }
 
 // ── Totals ────────────────────────────────────────────────────────────────────
@@ -218,18 +219,105 @@ const ChartTooltip = ({
   );
 };
 
+// ── List cards ────────────────────────────────────────────────────────────────
+
+/** The fewest rows a list shows; more when its card is taller. */
+const MIN_ROWS = 10;
+
+/**
+ * How many rows of a list fit the height its card was stretched to. The three
+ * list cards share a grid row, so the tallest sets the height and the others
+ * show as many more rows as fit instead of ending in a gap. The pitch is
+ * measured from the first two rendered rows, not assumed.
+ */
+function useFitRows(available: number) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [count, setCount] = useState(MIN_ROWS);
+  useLayoutEffect(() => {
+    const box = ref.current;
+    if (!box) return;
+    const measure = () => {
+      const rows = box.querySelectorAll<HTMLElement>("[data-row]");
+      if (rows.length < 2) return;
+      const pitch = rows[1].offsetTop - rows[0].offsetTop;
+      if (pitch <= 0) return;
+      const fit = Math.floor((box.clientHeight - rows[0].offsetHeight) / pitch) + 1;
+      setCount(Math.max(MIN_ROWS, Math.min(available, fit)));
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(box);
+    return () => observer.disconnect();
+  }, [available]);
+  return [ref, count] as const;
+}
+
+/**
+ * The shape all three lists share: a title with its control, two tabs across
+ * the width, the list filling the card, and a link to the page behind it.
+ */
+function ListCard({
+  title,
+  right,
+  tabs,
+  tab,
+  onTab,
+  footer,
+  loading,
+  boxRef,
+  children,
+}: {
+  title: string;
+  right: ReactNode;
+  tabs: [string, string][];
+  tab: string;
+  onTab: (value: string) => void;
+  footer: { label: string; onClick: () => void };
+  loading?: boolean;
+  boxRef?: Ref<HTMLDivElement>;
+  children: ReactNode;
+}) {
+  return (
+    <Card className={cn("flex h-full flex-col", loading && "pointer-events-none opacity-60")}>
+      <div className="mb-3 flex min-h-7 flex-wrap items-center justify-between gap-2">
+        <h2 className="text-heading text-[15px] font-semibold">{title}</h2>
+        {right}
+      </div>
+      <Tabs value={tab} onValueChange={onTab}>
+        <TabsList className="mb-3 grid w-full grid-cols-2">
+          {tabs.map(([value, label]) => (
+            <TabsTrigger key={value} value={value}>
+              {label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
+      <div ref={boxRef} className="min-h-0 flex-1">
+        {children}
+      </div>
+      <button
+        type="button"
+        onClick={footer.onClick}
+        className="border-bdr/70 text-muted hover:text-ember mt-3 flex items-center gap-1 border-t pt-4 text-xs transition-colors"
+      >
+        {footer.label} <ArrowRight size={11} />
+      </button>
+    </Card>
+  );
+}
+
 // ── Domain rows ───────────────────────────────────────────────────────────────
 
 function DomainRows({
   rows,
+  limit,
   barColor,
-  textColor,
   onRowClick,
   quickRule,
 }: {
   rows: [string, number][];
+  limit: number;
   barColor: string;
-  textColor: string;
   onRowClick: (label: string) => void;
   /** The one-click rule each row offers: block a queried domain, allow a blocked one. */
   quickRule: QuickRuleKind;
@@ -239,10 +327,11 @@ function DomainRows({
   if (rows.length === 0) return <p className="text-muted py-2 text-xs">{t("dashboard.no_data")}</p>;
   return (
     <div className="space-y-1">
-      {rows.slice(0, 10).map(([label, count], i) => (
+      {rows.slice(0, limit).map(([label, count], i) => (
         // A div, not a button: the row holds the quick-rule button of its own.
         <div
           key={label}
+          data-row
           role="button"
           tabIndex={0}
           onClick={() => onRowClick(label)}
@@ -259,12 +348,7 @@ function DomainRows({
               <span className="mono text-muted w-4 shrink-0 text-right text-[10px] tabular-nums">
                 {i + 1}
               </span>
-              <span
-                className={cn(
-                  "mono group-hover:text-ember truncate text-[13px] transition-colors",
-                  textColor,
-                )}
-              >
+              <span className="mono text-body group-hover:text-ember truncate text-[13px] transition-colors">
                 {label}
               </span>
               <QuickRuleBtn domain={label} kind={quickRule} />
@@ -300,8 +384,10 @@ function RangeButtons({
       {RANGES.map((r) => (
         <button
           key={r.value}
+          type="button"
           onClick={() => onChange(r.value)}
           disabled={loading && r.value !== value}
+          aria-pressed={value === r.value}
           className={cn(
             "rounded-md px-2 py-1 text-xs transition-colors disabled:opacity-40",
             value === r.value ? "bg-raised text-heading" : "text-muted hover:text-heading",
@@ -322,47 +408,44 @@ function TopDomains({
   topHours,
   topLoading,
   onRangeChange,
+  navigate,
 }: {
   topQueried: [string, number][];
   topBlocked: [string, number][];
   topHours: TopHours;
   topLoading: boolean;
   onRangeChange: (h: TopHours) => void;
+  navigate: (to: string) => void;
 }) {
   const { t } = useTranslation();
+  const [tab, setTab] = useState("queried");
+  const rows = tab === "queried" ? topQueried : topBlocked;
+  const [boxRef, limit] = useFitRows(rows.length);
   return (
-    <Card className={cn("h-full", topLoading && "pointer-events-none opacity-60")}>
-      <Tabs defaultValue="queried" className="w-full">
-        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-heading text-[15px] font-semibold">
-            {t("dashboard.top_domains", { defaultValue: "Top domains" })}
-          </h2>
-          <RangeButtons value={topHours} loading={topLoading} onChange={onRangeChange} />
-        </div>
-        <TabsList className="mb-3">
-          <TabsTrigger value="queried">{t("dashboard.top_queried")}</TabsTrigger>
-          <TabsTrigger value="blocked">{t("dashboard.top_blocked")}</TabsTrigger>
-        </TabsList>
-        <TabsContent value="queried">
-          <DomainRows
-            rows={topQueried}
-            barColor="bg-muted/55"
-            textColor="text-body"
-            onRowClick={(d) => openDomainPanel(d)}
-            quickRule="block"
-          />
-        </TabsContent>
-        <TabsContent value="blocked">
-          <DomainRows
-            rows={topBlocked}
-            barColor="bg-blocked"
-            textColor="text-body"
-            onRowClick={(d) => openDomainPanel(d)}
-            quickRule="allow"
-          />
-        </TabsContent>
-      </Tabs>
-    </Card>
+    <ListCard
+      title={t("dashboard.top_domains", { defaultValue: "Top domains" })}
+      right={<RangeButtons value={topHours} loading={topLoading} onChange={onRangeChange} />}
+      tabs={[
+        ["queried", t("dashboard.top_queried")],
+        ["blocked", t("dashboard.top_blocked")],
+      ]}
+      tab={tab}
+      onTab={setTab}
+      footer={{
+        label: t("dashboard.open_blocklist", { defaultValue: "Blocklist" }),
+        onClick: () => navigate("/blocklist"),
+      }}
+      loading={topLoading}
+      boxRef={boxRef}
+    >
+      <DomainRows
+        rows={rows}
+        limit={limit}
+        barColor={tab === "queried" ? "bg-muted/55" : "bg-blocked"}
+        onRowClick={(d) => openDomainPanel(d)}
+        quickRule={tab === "queried" ? "block" : "allow"}
+      />
+    </ListCard>
   );
 }
 
@@ -376,37 +459,58 @@ function share(part: number, total: number): string {
 
 function TopClients({
   rows,
+  blockedRows,
+  topHours,
   topLoading,
+  onRangeChange,
   navigate,
 }: {
   rows: TopClientEntry[];
+  /** The devices with the most blocked queries; absent from older servers. */
+  blockedRows: TopClientEntry[] | null;
+  topHours: TopHours;
   topLoading: boolean;
+  onRangeChange: (h: TopHours) => void;
   navigate: (to: string) => void;
 }) {
   const { t } = useTranslation();
-  const max = rows[0]?.total ?? 1;
+  const [tab, setTab] = useState("queries");
+  const byBlocked = tab === "blocked";
+  const shown = byBlocked
+    ? (blockedRows ??
+      [...rows].filter((c) => (c.blocked ?? 0) > 0).sort((a, b) => (b.blocked ?? 0) - (a.blocked ?? 0)))
+    : rows;
+  const [boxRef, limit] = useFitRows(shown.length);
+  const max = byBlocked ? (shown[0]?.blocked ?? 1) : (shown[0]?.total ?? 1);
   return (
-    <Card className={cn("h-full", topLoading && "pointer-events-none opacity-60")}>
-      <div className="mb-3 flex items-center justify-between gap-2">
-        <h2 className="text-heading text-[15px] font-semibold">{t("dashboard.top_clients")}</h2>
-        <button
-          type="button"
-          onClick={() => navigate("/clients")}
-          className="text-muted hover:text-ember flex items-center gap-1 text-xs transition-colors"
-        >
-          {t("dashboard.all_clients", { defaultValue: "All clients" })} <ArrowRight size={11} />
-        </button>
-      </div>
-      {rows.length === 0 ? (
+    <ListCard
+      title={t("dashboard.top_clients")}
+      right={<RangeButtons value={topHours} loading={topLoading} onChange={onRangeChange} />}
+      tabs={[
+        ["queries", t("dashboard.tab_queries", { defaultValue: "Queries" })],
+        ["blocked", t("dashboard.top_blocked")],
+      ]}
+      tab={tab}
+      onTab={setTab}
+      footer={{
+        label: t("dashboard.all_clients", { defaultValue: "All clients" }),
+        onClick: () => navigate("/clients"),
+      }}
+      loading={topLoading}
+      boxRef={boxRef}
+    >
+      {shown.length === 0 ? (
         <p className="text-muted py-2 text-xs">{t("dashboard.no_data")}</p>
       ) : (
         <div className="space-y-1">
-          {rows.slice(0, 10).map((c, i) => {
+          {shown.slice(0, limit).map((c, i) => {
             const DeviceIcon = DEVICE_ICON[deviceKind(c.name)];
             const blocked = c.blocked ?? null;
             return (
               <button
                 key={c.name}
+                data-row
+                type="button"
                 onClick={() => openDevicePanel({ macs: c.macs, ips: c.ips, name: c.name })}
                 className="hover:bg-white/4 group w-full cursor-pointer rounded-lg px-2 py-1.5 text-left transition-colors"
               >
@@ -430,15 +534,17 @@ function TopClients({
                       </span>
                     )}
                     <span className="mono text-muted w-12 text-right tabular-nums">
-                      {fmt(c.total)}
+                      {fmt(byBlocked ? (blocked ?? 0) : c.total)}
                     </span>
                   </span>
                 </div>
                 <div className="bg-bdr/70 relative h-1 overflow-hidden rounded-full">
-                  <div
-                    className="bg-muted/45 absolute inset-y-0 left-0 rounded-full"
-                    style={{ width: `${(c.total / max) * 100}%` }}
-                  />
+                  {!byBlocked && (
+                    <div
+                      className="bg-muted/45 absolute inset-y-0 left-0 rounded-full"
+                      style={{ width: `${(c.total / max) * 100}%` }}
+                    />
+                  )}
                   {blocked != null && (
                     <div
                       className="bg-blocked absolute inset-y-0 left-0 rounded-full"
@@ -451,7 +557,7 @@ function TopClients({
           })}
         </div>
       )}
-    </Card>
+    </ListCard>
   );
 }
 
@@ -473,13 +579,16 @@ const STATUS_LABEL: Record<QueryStatus, string> = {
   routed: "text-routed/70",
 };
 
+/** The live feed's length — it sets the height the two top lists fill. */
+const FEED_ROWS = 11;
+
 function FeedRows({ rows }: { rows: QueryEntry[] }) {
   const { t } = useTranslation();
   if (rows.length === 0)
     return <p className="text-muted py-2 text-xs">{t("dashboard.no_queries")}</p>;
   return (
     <div className="space-y-1">
-      {rows.slice(0, 11).map((r) => {
+      {rows.slice(0, FEED_ROWS).map((r) => {
         // A blocked row says why already; its RCODE is whatever block_response chose.
         const showRcode = r.rcode !== 0 && r.status !== "blocked";
         const isCname = r.upstream?.startsWith("cname:") ?? false;
@@ -492,6 +601,7 @@ function FeedRows({ rows }: { rows: QueryEntry[] }) {
         return (
           <button
             key={r.id}
+            type="button"
             onClick={() => openDomainPanel(r.domain, r.client_ip)}
             className="hover:bg-white/4 group flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-left transition-colors"
           >
@@ -548,37 +658,26 @@ function LiveFeed({
   navigate: (to: string) => void;
 }) {
   const { t } = useTranslation();
+  const [tab, setTab] = useState("all");
   return (
-    <Card className="flex h-full flex-col">
-      <Tabs defaultValue="all" className="flex flex-1 flex-col">
-        <div className="mb-3 flex items-center justify-between gap-2">
-          <h2 className="text-heading text-[15px] font-semibold">
-            {t("dashboard.just_now", { defaultValue: "Just now" })}
-          </h2>
-          <span className="text-ember flex items-center gap-1.5 text-xs">
-            <span className="bg-ember h-1.5 w-1.5 animate-pulse rounded-full" />
-            {t("dashboard.live")}
-          </span>
-        </div>
-        <TabsList className="mb-3">
-          <TabsTrigger value="all">{t("dashboard.all")}</TabsTrigger>
-          <TabsTrigger value="blocked">{t("dashboard.blocked")}</TabsTrigger>
-        </TabsList>
-        <TabsContent value="all">
-          <FeedRows rows={rows} />
-        </TabsContent>
-        <TabsContent value="blocked">
-          <FeedRows rows={recentBlocked} />
-        </TabsContent>
-      </Tabs>
-
-      <button
-        onClick={() => navigate("/queries")}
-        className="border-bdr/70 text-muted hover:text-ember mt-auto flex items-center gap-1 border-t pt-4 text-xs transition-colors"
-      >
-        {t("dashboard.view_all_queries")} <ArrowRight size={11} />
-      </button>
-    </Card>
+    <ListCard
+      title={t("dashboard.just_now", { defaultValue: "Just now" })}
+      right={
+        <span className="text-ember flex items-center gap-1.5 text-xs">
+          <span className="bg-ember h-1.5 w-1.5 animate-pulse rounded-full" />
+          {t("dashboard.live")}
+        </span>
+      }
+      tabs={[
+        ["all", t("dashboard.all")],
+        ["blocked", t("dashboard.top_blocked")],
+      ]}
+      tab={tab}
+      onTab={setTab}
+      footer={{ label: t("dashboard.view_all_queries"), onClick: () => navigate("/queries") }}
+    >
+      <FeedRows rows={tab === "all" ? rows : recentBlocked} />
+    </ListCard>
   );
 }
 
@@ -1122,16 +1221,18 @@ export default function Dashboard() {
     const id = ++topFetchId.current;
     setTopLoading(true);
     Promise.all([
-      api.statsTopDomains({ hours: topHours, limit: 10 }),
-      api.statsTopBlocked({ hours: topHours, limit: 10 }),
-      api.statsTopClients({ hours: topHours, limit: 10 }),
+      api.statsTopDomains({ hours: topHours, limit: 20 }),
+      api.statsTopBlocked({ hours: topHours, limit: 20 }),
+      api.statsTopClients({ hours: topHours, limit: 20 }),
+      api.statsTopClients({ hours: topHours, limit: 20, by: "blocked" }),
     ])
-      .then(([d, b, c]) => {
+      .then(([d, b, c, cb]) => {
         if (id !== topFetchId.current) return;
         setHistoricalTop({
           domains: d.domains.map((x) => [x.domain, x.count]),
           blocked: b.domains.map((x) => [x.domain, x.count]),
           clients: c.clients,
+          blockedClients: cb.clients,
         });
       })
       .catch((e) => console.error("Failed to fetch top stats:", e))
@@ -1152,6 +1253,13 @@ export default function Dashboard() {
   );
   const effectiveClients = useMemo(
     () => (topHours === 0 ? (stats?.top_clients ?? []) : (historicalTop?.clients ?? [])),
+    [topHours, stats, historicalTop],
+  );
+  const effectiveBlockedClients = useMemo(
+    () =>
+      topHours === 0
+        ? (stats?.top_blocked_clients ?? null)
+        : (historicalTop?.blockedClients ?? null),
     [topHours, stats, historicalTop],
   );
 
@@ -1209,8 +1317,16 @@ export default function Dashboard() {
               topHours={topHours}
               topLoading={topLoading}
               onRangeChange={setTopHours}
+              navigate={navigate}
             />
-            <TopClients rows={effectiveClients} topLoading={topLoading} navigate={navigate} />
+            <TopClients
+              rows={effectiveClients}
+              blockedRows={effectiveBlockedClients}
+              topHours={topHours}
+              topLoading={topLoading}
+              onRangeChange={setTopHours}
+              navigate={navigate}
+            />
             <LiveFeed
               rows={stats.recent_domains}
               recentBlocked={stats.recent_blocked}

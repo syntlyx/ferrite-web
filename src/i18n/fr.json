@@ -112,7 +112,9 @@
     "just_now": "À l'instant",
     "all_clients": "Tous les clients",
     "blocklist_size": "{{n}} domaines sur la liste de blocage",
-    "share_blocked": "part bloquée"
+    "share_blocked": "part bloquée",
+    "tab_queries": "Requêtes",
+    "open_blocklist": "Liste de blocage"
   },
   "queries": {
     "title": "Journal des requêtes",

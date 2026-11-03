@@ -112,7 +112,9 @@
     "just_now": "Just now",
     "all_clients": "All clients",
     "blocklist_size": "{{n}} domains on the blocklist",
-    "share_blocked": "share blocked"
+    "share_blocked": "share blocked",
+    "tab_queries": "Queries",
+    "open_blocklist": "Blocklist"
   },
   "queries": {
     "title": "Query log",

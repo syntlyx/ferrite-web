@@ -112,7 +112,9 @@
     "just_now": "Gerade eben",
     "all_clients": "Alle Geräte",
     "blocklist_size": "{{n}} Domains auf der Sperrliste",
-    "share_blocked": "Anteil blockiert"
+    "share_blocked": "Anteil blockiert",
+    "tab_queries": "Abfragen",
+    "open_blocklist": "Sperrliste"
   },
   "queries": {
     "title": "Abfrageprotokoll",

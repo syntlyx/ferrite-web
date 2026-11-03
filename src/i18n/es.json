@@ -112,7 +112,9 @@
     "just_now": "Ahora mismo",
     "all_clients": "Todos los clientes",
     "blocklist_size": "{{n}} dominios en la lista de bloqueo",
-    "share_blocked": "proporción bloqueada"
+    "share_blocked": "proporción bloqueada",
+    "tab_queries": "Consultas",
+    "open_blocklist": "Lista de bloqueo"
   },
   "queries": {
     "title": "Registro de consultas",

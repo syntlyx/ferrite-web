@@ -37,6 +37,8 @@ export interface StatsSummary {
   top_domains: [string, number][];
   top_blocked: [string, number][];
   top_clients: TopClientEntry[];
+  /** The devices with the most blocked queries (absent from older servers). */
+  top_blocked_clients?: TopClientEntry[];
   recent_domains: QueryEntry[];
   recent_blocked: QueryEntry[];
   timeseries: TimeseriesBucket[];
@@ -126,6 +128,8 @@ export interface TopClientsResponse {
 export interface TopBlockedParams {
   limit?: number; // default 20, max 200
   hours?: number; // default 24, max 168
+  /** Top clients only: order by blocked queries instead of all. */
+  by?: "blocked";
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
