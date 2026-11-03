@@ -1,6 +1,6 @@
 import { Component, lazy, Suspense, useCallback, useEffect, useState } from "react";
 import type { ErrorInfo, ReactNode } from "react";
-import { BrowserRouter, Routes, Route, Navigate, Link } from "react-router";
+import { BrowserRouter, HashRouter, Routes, Route, Navigate, Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { ShieldAlert, X } from "lucide-react";
 import { api } from "@/api";
@@ -158,12 +158,16 @@ const FullScreenFallback = ({ label = "Loading…" }: { label?: string }) => (
   </div>
 );
 
+// The demo is served as static files under /demo/, where no server knows the
+// panel's paths, so it keeps them after a "#".
+const Router = __FERRITE_DEMO__ ? HashRouter : BrowserRouter;
+
 export default function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider>
         <ToastProvider>
-          <BrowserRouter>
+          <Router>
             <Suspense fallback={<FullScreenFallback />}>
               <Routes>
                 <Route path="/login" element={<Login />} />
@@ -193,7 +197,7 @@ export default function App() {
                 />
               </Routes>
             </Suspense>
-          </BrowserRouter>
+          </Router>
         </ToastProvider>
       </ThemeProvider>
     </ErrorBoundary>

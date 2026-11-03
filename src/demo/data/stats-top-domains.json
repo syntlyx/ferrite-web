@@ -1,0 +1,86 @@
+{
+  "domains": [
+    {
+      "count": 9688,
+      "domain": "telemetry.canva.com"
+    },
+    {
+      "count": 3510,
+      "domain": "f-log-extension.grammarly.io"
+    },
+    {
+      "count": 2580,
+      "domain": "chat.ui8.net"
+    },
+    {
+      "count": 2548,
+      "domain": "gateway.fe2.apple-dns.net"
+    },
+    {
+      "count": 2148,
+      "domain": "ssl.gstatic.com"
+    },
+    {
+      "count": 2078,
+      "domain": "www.figma.com"
+    },
+    {
+      "count": 1962,
+      "domain": "aepxlg.adobe.com"
+    },
+    {
+      "count": 1917,
+      "domain": "errors.figma.com"
+    },
+    {
+      "count": 1739,
+      "domain": "www.google.com"
+    },
+    {
+      "count": 1646,
+      "domain": "gnar.grammarly.com"
+    },
+    {
+      "count": 1532,
+      "domain": "clients2.google.com"
+    },
+    {
+      "count": 1462,
+      "domain": "eu.api.miwifi.com"
+    },
+    {
+      "count": 1451,
+      "domain": "signaler-pa.clients6.google.com"
+    },
+    {
+      "count": 1450,
+      "domain": "extension.femetrics.grammarly.io"
+    },
+    {
+      "count": 1386,
+      "domain": "app-measurement.com"
+    },
+    {
+      "count": 1278,
+      "domain": "mobile.events.data.microsoft.com"
+    },
+    {
+      "count": 1273,
+      "domain": "s3-figma-force-client-reloads-production.figma.com"
+    },
+    {
+      "count": 1260,
+      "domain": "ab.chatgpt.com"
+    },
+    {
+      "count": 1177,
+      "domain": "mail.google.com"
+    },
+    {
+      "count": 1056,
+      "domain": "xp.apple.com"
+    }
+  ],
+  "from_ts": 1782254360,
+  "to_ts": 1782340760
+}

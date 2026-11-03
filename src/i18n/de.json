@@ -1004,5 +1004,10 @@
     "empty": "Kein kürzlich gesehenes Gerät ist in diesem Profil.",
     "devices_one": "{{count}} Gerät",
     "devices_other": "{{count}} Geräte"
+  },
+  "demo": {
+    "banner": "Dies ist eine Demo mit Beispieldaten. Schau dich um und ändere, was du willst: nichts wird gespeichert.",
+    "install": "ferrite holen",
+    "not_saved": "Demo: diese Änderung wird nicht gespeichert."
   }
 }

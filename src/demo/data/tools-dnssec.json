@@ -1,0 +1,28 @@
+{
+  "answers": [
+    {
+      "data": "104.16.133.229",
+      "name": "cloudflare.com.",
+      "ttl": 115,
+      "type": "A"
+    },
+    {
+      "data": "104.16.132.229",
+      "name": "cloudflare.com.",
+      "ttl": 115,
+      "type": "A"
+    },
+    {
+      "data": "AAENAgAAASxqPbtwajr8UIbJCmNsb3VkZmxhcmUDY29tADrCF9HCU04T92P57C4mcKsAunBSpF8NkMUm9qW0x1hg0cfXHFP8n41vDjd6zCkstRrRYaD69yv0WbNJE//9xf0=",
+      "name": "cloudflare.com.",
+      "ttl": 115,
+      "type": "RRSIG"
+    }
+  ],
+  "authenticated": true,
+  "query": "cloudflare.com",
+  "rcode": "NoError",
+  "rrsig_count": 1,
+  "type": "A",
+  "upstream": "doh://cloudflare-dns.com"
+}

@@ -1,0 +1,34 @@
+{
+  "records": [
+    {
+      "domain": "router.home.lan",
+      "type": "A",
+      "value": "192.168.1.1",
+      "ttl": 3600
+    },
+    {
+      "domain": "nas.home.lan",
+      "type": "A",
+      "value": "192.168.1.20",
+      "ttl": 3600
+    },
+    {
+      "domain": "printer.home.lan",
+      "type": "A",
+      "value": "192.168.1.30",
+      "ttl": 300
+    },
+    {
+      "domain": "*.lab.home.lan",
+      "type": "A",
+      "value": "192.168.1.50",
+      "ttl": 600
+    },
+    {
+      "domain": "grafana.home.lan",
+      "type": "CNAME",
+      "value": "nas.home.lan",
+      "ttl": 3600
+    }
+  ]
+}

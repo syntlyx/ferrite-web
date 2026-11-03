@@ -1011,5 +1011,10 @@
     "devices_one": "{{count}} dispositivo",
     "devices_many": "{{count}} dispositivos",
     "devices_other": "{{count}} dispositivos"
+  },
+  "demo": {
+    "banner": "Esta es una demo con datos de ejemplo. Explora y cambia lo que quieras: no se guarda nada.",
+    "install": "Obtener ferrite",
+    "not_saved": "Demo: este cambio no se guarda."
   }
 }

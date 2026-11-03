@@ -1,0 +1,86 @@
+{
+  "lists": [
+    {
+      "domains_loaded": 83944,
+      "enabled": true,
+      "name": "StevenBlack",
+      "url": "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts"
+    },
+    {
+      "domains_loaded": 90097,
+      "enabled": true,
+      "name": "StevenBlack Gambling",
+      "url": "https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/gambling/hosts"
+    },
+    {
+      "domains_loaded": 2193,
+      "enabled": true,
+      "name": "StevenBlack Fake News",
+      "url": "https://raw.githubusercontent.com/StevenBlack/hosts/master/extensions/fakenews/hosts"
+    },
+    {
+      "domains_loaded": 16,
+      "enabled": true,
+      "name": "Amazon FireTV",
+      "url": "https://perflyst.github.io/PiHoleBlocklist/AmazonFireTV.txt"
+    },
+    {
+      "domains_loaded": 24,
+      "enabled": true,
+      "name": "SessionReplay",
+      "url": "https://perflyst.github.io/PiHoleBlocklist/SessionReplay.txt"
+    },
+    {
+      "domains_loaded": 245,
+      "enabled": true,
+      "name": "SmartTV",
+      "url": "https://raw.githubusercontent.com/Perflyst/PiHoleBlocklist/master/SmartTV.txt"
+    },
+    {
+      "domains_loaded": 80,
+      "enabled": true,
+      "name": "Android Tracking",
+      "url": "https://perflyst.github.io/PiHoleBlocklist/android-tracking.txt"
+    },
+    {
+      "domains_loaded": 1631628,
+      "enabled": true,
+      "name": "AdBlock List",
+      "url": "https://raw.githubusercontent.com/r0xd4n3t/pihole-adblock-lists/main/pihole_adlists.txt"
+    },
+    {
+      "domains_loaded": 13467,
+      "enabled": true,
+      "name": "Hacked Malware Web Sites",
+      "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_9.txt"
+    },
+    {
+      "domains_loaded": 17227,
+      "enabled": true,
+      "name": "DNS Bypass",
+      "parse_stats": {
+        "cosmetic_skipped": 0,
+        "exceptions": 0,
+        "kept": 17227,
+        "scoped_skipped": 0,
+        "unblocked_by_exception": 0,
+        "unsupported_skipped": 0
+      },
+      "url": "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/doh-vpn-proxy-bypass.txt"
+    },
+    {
+      "domains_loaded": 51106,
+      "enabled": true,
+      "name": "easylist",
+      "parse_stats": {
+        "cosmetic_skipped": 10599,
+        "exceptions": 272,
+        "kept": 53397,
+        "scoped_skipped": 169,
+        "unblocked_by_exception": 18,
+        "unsupported_skipped": 2731
+      },
+      "url": "https://easylist.to/easylist/easylist.txt"
+    }
+  ]
+}

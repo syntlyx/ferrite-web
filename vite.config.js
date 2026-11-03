@@ -8,6 +8,9 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  // FERRITE_DEMO=1 builds the public demo: the API answers from sample data in
+  // the page. Anything else compiles that path out.
+  define: { __FERRITE_DEMO__: JSON.stringify(process.env.FERRITE_DEMO === "1") },
   resolve: {
     alias: { "@": path.resolve(__dirname, "./src") },
   },

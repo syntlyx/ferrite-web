@@ -1,0 +1,1010 @@
+[
+  {
+    "blocked": 121,
+    "bucket": 1782254400,
+    "cached": 83,
+    "total": 481,
+    "upstream": 277
+  },
+  {
+    "blocked": 261,
+    "bucket": 1782255000,
+    "cached": 162,
+    "total": 890,
+    "upstream": 467
+  },
+  {
+    "blocked": 129,
+    "bucket": 1782255600,
+    "cached": 72,
+    "total": 554,
+    "upstream": 353
+  },
+  {
+    "blocked": 193,
+    "bucket": 1782256200,
+    "cached": 62,
+    "total": 579,
+    "upstream": 324
+  },
+  {
+    "blocked": 161,
+    "bucket": 1782256800,
+    "cached": 73,
+    "total": 658,
+    "upstream": 424
+  },
+  {
+    "blocked": 171,
+    "bucket": 1782257400,
+    "cached": 69,
+    "total": 596,
+    "upstream": 356
+  },
+  {
+    "blocked": 181,
+    "bucket": 1782258000,
+    "cached": 91,
+    "total": 612,
+    "upstream": 340
+  },
+  {
+    "blocked": 243,
+    "bucket": 1782258600,
+    "cached": 86,
+    "total": 642,
+    "upstream": 313
+  },
+  {
+    "blocked": 255,
+    "bucket": 1782259200,
+    "cached": 94,
+    "total": 729,
+    "upstream": 380
+  },
+  {
+    "blocked": 156,
+    "bucket": 1782259800,
+    "cached": 69,
+    "total": 443,
+    "upstream": 218
+  },
+  {
+    "blocked": 160,
+    "bucket": 1782260400,
+    "cached": 77,
+    "total": 587,
+    "upstream": 350
+  },
+  {
+    "blocked": 184,
+    "bucket": 1782261000,
+    "cached": 124,
+    "total": 697,
+    "upstream": 389
+  },
+  {
+    "blocked": 105,
+    "bucket": 1782261600,
+    "cached": 84,
+    "total": 491,
+    "upstream": 302
+  },
+  {
+    "blocked": 167,
+    "bucket": 1782262200,
+    "cached": 97,
+    "total": 646,
+    "upstream": 382
+  },
+  {
+    "blocked": 153,
+    "bucket": 1782262800,
+    "cached": 59,
+    "total": 541,
+    "upstream": 329
+  },
+  {
+    "blocked": 150,
+    "bucket": 1782263400,
+    "cached": 66,
+    "total": 490,
+    "upstream": 274
+  },
+  {
+    "blocked": 144,
+    "bucket": 1782264000,
+    "cached": 45,
+    "total": 474,
+    "upstream": 285
+  },
+  {
+    "blocked": 180,
+    "bucket": 1782264600,
+    "cached": 66,
+    "total": 704,
+    "upstream": 458
+  },
+  {
+    "blocked": 191,
+    "bucket": 1782265200,
+    "cached": 58,
+    "total": 738,
+    "upstream": 489
+  },
+  {
+    "blocked": 261,
+    "bucket": 1782265800,
+    "cached": 86,
+    "total": 873,
+    "upstream": 526
+  },
+  {
+    "blocked": 317,
+    "bucket": 1782266400,
+    "cached": 67,
+    "total": 816,
+    "upstream": 432
+  },
+  {
+    "blocked": 205,
+    "bucket": 1782267000,
+    "cached": 59,
+    "total": 515,
+    "upstream": 251
+  },
+  {
+    "blocked": 180,
+    "bucket": 1782267600,
+    "cached": 51,
+    "total": 470,
+    "upstream": 239
+  },
+  {
+    "blocked": 169,
+    "bucket": 1782268200,
+    "cached": 70,
+    "total": 650,
+    "upstream": 411
+  },
+  {
+    "blocked": 111,
+    "bucket": 1782268800,
+    "cached": 62,
+    "total": 409,
+    "upstream": 236
+  },
+  {
+    "blocked": 105,
+    "bucket": 1782269400,
+    "cached": 63,
+    "total": 418,
+    "upstream": 250
+  },
+  {
+    "blocked": 203,
+    "bucket": 1782270000,
+    "cached": 64,
+    "total": 632,
+    "upstream": 365
+  },
+  {
+    "blocked": 286,
+    "bucket": 1782270600,
+    "cached": 46,
+    "total": 519,
+    "upstream": 187
+  },
+  {
+    "blocked": 162,
+    "bucket": 1782271200,
+    "cached": 47,
+    "total": 410,
+    "upstream": 201
+  },
+  {
+    "blocked": 160,
+    "bucket": 1782271800,
+    "cached": 96,
+    "total": 644,
+    "upstream": 388
+  },
+  {
+    "blocked": 188,
+    "bucket": 1782272400,
+    "cached": 64,
+    "total": 495,
+    "upstream": 243
+  },
+  {
+    "blocked": 107,
+    "bucket": 1782273000,
+    "cached": 61,
+    "total": 400,
+    "upstream": 232
+  },
+  {
+    "blocked": 168,
+    "bucket": 1782273600,
+    "cached": 68,
+    "total": 591,
+    "upstream": 355
+  },
+  {
+    "blocked": 220,
+    "bucket": 1782274200,
+    "cached": 99,
+    "total": 788,
+    "upstream": 469
+  },
+  {
+    "blocked": 261,
+    "bucket": 1782274800,
+    "cached": 64,
+    "total": 614,
+    "upstream": 289
+  },
+  {
+    "blocked": 356,
+    "bucket": 1782275400,
+    "cached": 99,
+    "total": 843,
+    "upstream": 388
+  },
+  {
+    "blocked": 216,
+    "bucket": 1782276000,
+    "cached": 75,
+    "total": 730,
+    "upstream": 439
+  },
+  {
+    "blocked": 115,
+    "bucket": 1782276600,
+    "cached": 61,
+    "total": 385,
+    "upstream": 209
+  },
+  {
+    "blocked": 136,
+    "bucket": 1782277200,
+    "cached": 68,
+    "total": 552,
+    "upstream": 348
+  },
+  {
+    "blocked": 395,
+    "bucket": 1782277800,
+    "cached": 70,
+    "total": 831,
+    "upstream": 366
+  },
+  {
+    "blocked": 414,
+    "bucket": 1782278400,
+    "cached": 80,
+    "total": 816,
+    "upstream": 322
+  },
+  {
+    "blocked": 214,
+    "bucket": 1782279000,
+    "cached": 69,
+    "total": 542,
+    "upstream": 259
+  },
+  {
+    "blocked": 245,
+    "bucket": 1782279600,
+    "cached": 120,
+    "total": 663,
+    "upstream": 298
+  },
+  {
+    "blocked": 258,
+    "bucket": 1782280200,
+    "cached": 94,
+    "total": 632,
+    "upstream": 280
+  },
+  {
+    "blocked": 304,
+    "bucket": 1782280800,
+    "cached": 73,
+    "total": 644,
+    "upstream": 267
+  },
+  {
+    "blocked": 271,
+    "bucket": 1782281400,
+    "cached": 104,
+    "total": 641,
+    "upstream": 266
+  },
+  {
+    "blocked": 271,
+    "bucket": 1782282000,
+    "cached": 89,
+    "total": 626,
+    "upstream": 266
+  },
+  {
+    "blocked": 189,
+    "bucket": 1782282600,
+    "cached": 60,
+    "total": 511,
+    "upstream": 262
+  },
+  {
+    "blocked": 143,
+    "bucket": 1782283200,
+    "cached": 60,
+    "total": 458,
+    "upstream": 255
+  },
+  {
+    "blocked": 709,
+    "bucket": 1782283800,
+    "cached": 110,
+    "total": 1237,
+    "upstream": 418
+  },
+  {
+    "blocked": 414,
+    "bucket": 1782284400,
+    "cached": 113,
+    "total": 871,
+    "upstream": 344
+  },
+  {
+    "blocked": 582,
+    "bucket": 1782285000,
+    "cached": 176,
+    "total": 1271,
+    "upstream": 513
+  },
+  {
+    "blocked": 524,
+    "bucket": 1782285600,
+    "cached": 98,
+    "total": 999,
+    "upstream": 377
+  },
+  {
+    "blocked": 204,
+    "bucket": 1782286200,
+    "cached": 63,
+    "total": 585,
+    "upstream": 318
+  },
+  {
+    "blocked": 199,
+    "bucket": 1782286800,
+    "cached": 74,
+    "total": 625,
+    "upstream": 352
+  },
+  {
+    "blocked": 171,
+    "bucket": 1782287400,
+    "cached": 84,
+    "total": 592,
+    "upstream": 337
+  },
+  {
+    "blocked": 147,
+    "bucket": 1782288000,
+    "cached": 60,
+    "total": 490,
+    "upstream": 283
+  },
+  {
+    "blocked": 343,
+    "bucket": 1782288600,
+    "cached": 84,
+    "total": 841,
+    "upstream": 414
+  },
+  {
+    "blocked": 208,
+    "bucket": 1782289200,
+    "cached": 85,
+    "total": 639,
+    "upstream": 346
+  },
+  {
+    "blocked": 278,
+    "bucket": 1782289800,
+    "cached": 72,
+    "total": 688,
+    "upstream": 338
+  },
+  {
+    "blocked": 169,
+    "bucket": 1782290400,
+    "cached": 54,
+    "total": 538,
+    "upstream": 315
+  },
+  {
+    "blocked": 426,
+    "bucket": 1782291000,
+    "cached": 107,
+    "total": 901,
+    "upstream": 368
+  },
+  {
+    "blocked": 310,
+    "bucket": 1782291600,
+    "cached": 127,
+    "total": 814,
+    "upstream": 377
+  },
+  {
+    "blocked": 179,
+    "bucket": 1782292200,
+    "cached": 59,
+    "total": 593,
+    "upstream": 355
+  },
+  {
+    "blocked": 188,
+    "bucket": 1782292800,
+    "cached": 138,
+    "total": 708,
+    "upstream": 382
+  },
+  {
+    "blocked": 237,
+    "bucket": 1782293400,
+    "cached": 131,
+    "total": 765,
+    "upstream": 397
+  },
+  {
+    "blocked": 147,
+    "bucket": 1782294000,
+    "cached": 93,
+    "total": 738,
+    "upstream": 498
+  },
+  {
+    "blocked": 200,
+    "bucket": 1782294600,
+    "cached": 69,
+    "total": 725,
+    "upstream": 456
+  },
+  {
+    "blocked": 679,
+    "bucket": 1782295200,
+    "cached": 177,
+    "total": 1427,
+    "upstream": 571
+  },
+  {
+    "blocked": 623,
+    "bucket": 1782295800,
+    "cached": 171,
+    "total": 1237,
+    "upstream": 443
+  },
+  {
+    "blocked": 235,
+    "bucket": 1782296400,
+    "cached": 82,
+    "total": 643,
+    "upstream": 326
+  },
+  {
+    "blocked": 403,
+    "bucket": 1782297000,
+    "cached": 124,
+    "total": 1078,
+    "upstream": 551
+  },
+  {
+    "blocked": 201,
+    "bucket": 1782297600,
+    "cached": 121,
+    "total": 690,
+    "upstream": 368
+  },
+  {
+    "blocked": 353,
+    "bucket": 1782298200,
+    "cached": 92,
+    "total": 825,
+    "upstream": 380
+  },
+  {
+    "blocked": 294,
+    "bucket": 1782298800,
+    "cached": 50,
+    "total": 658,
+    "upstream": 314
+  },
+  {
+    "blocked": 333,
+    "bucket": 1782299400,
+    "cached": 47,
+    "total": 667,
+    "upstream": 287
+  },
+  {
+    "blocked": 501,
+    "bucket": 1782300000,
+    "cached": 147,
+    "total": 1047,
+    "upstream": 399
+  },
+  {
+    "blocked": 298,
+    "bucket": 1782300600,
+    "cached": 94,
+    "total": 759,
+    "upstream": 367
+  },
+  {
+    "blocked": 373,
+    "bucket": 1782301200,
+    "cached": 79,
+    "total": 804,
+    "upstream": 352
+  },
+  {
+    "blocked": 569,
+    "bucket": 1782301800,
+    "cached": 103,
+    "total": 1077,
+    "upstream": 405
+  },
+  {
+    "blocked": 303,
+    "bucket": 1782302400,
+    "cached": 83,
+    "total": 735,
+    "upstream": 349
+  },
+  {
+    "blocked": 534,
+    "bucket": 1782303000,
+    "cached": 153,
+    "total": 1312,
+    "upstream": 625
+  },
+  {
+    "blocked": 316,
+    "bucket": 1782303600,
+    "cached": 111,
+    "total": 869,
+    "upstream": 442
+  },
+  {
+    "blocked": 216,
+    "bucket": 1782304200,
+    "cached": 93,
+    "total": 675,
+    "upstream": 366
+  },
+  {
+    "blocked": 274,
+    "bucket": 1782304800,
+    "cached": 125,
+    "total": 1025,
+    "upstream": 626
+  },
+  {
+    "blocked": 240,
+    "bucket": 1782305400,
+    "cached": 118,
+    "total": 1025,
+    "upstream": 667
+  },
+  {
+    "blocked": 303,
+    "bucket": 1782306000,
+    "cached": 76,
+    "total": 941,
+    "upstream": 562
+  },
+  {
+    "blocked": 274,
+    "bucket": 1782306600,
+    "cached": 88,
+    "total": 718,
+    "upstream": 356
+  },
+  {
+    "blocked": 297,
+    "bucket": 1782307200,
+    "cached": 84,
+    "total": 795,
+    "upstream": 414
+  },
+  {
+    "blocked": 282,
+    "bucket": 1782307800,
+    "cached": 140,
+    "total": 890,
+    "upstream": 468
+  },
+  {
+    "blocked": 543,
+    "bucket": 1782308400,
+    "cached": 123,
+    "total": 1107,
+    "upstream": 441
+  },
+  {
+    "blocked": 1350,
+    "bucket": 1782309000,
+    "cached": 229,
+    "total": 2201,
+    "upstream": 622
+  },
+  {
+    "blocked": 308,
+    "bucket": 1782309600,
+    "cached": 144,
+    "total": 884,
+    "upstream": 432
+  },
+  {
+    "blocked": 252,
+    "bucket": 1782310200,
+    "cached": 106,
+    "total": 886,
+    "upstream": 528
+  },
+  {
+    "blocked": 229,
+    "bucket": 1782310800,
+    "cached": 102,
+    "total": 785,
+    "upstream": 454
+  },
+  {
+    "blocked": 290,
+    "bucket": 1782311400,
+    "cached": 137,
+    "total": 1057,
+    "upstream": 630
+  },
+  {
+    "blocked": 355,
+    "bucket": 1782312000,
+    "cached": 140,
+    "total": 991,
+    "upstream": 496
+  },
+  {
+    "blocked": 597,
+    "bucket": 1782312600,
+    "cached": 115,
+    "total": 1169,
+    "upstream": 457
+  },
+  {
+    "blocked": 2832,
+    "bucket": 1782313200,
+    "cached": 221,
+    "total": 3829,
+    "upstream": 776
+  },
+  {
+    "blocked": 653,
+    "bucket": 1782313800,
+    "cached": 85,
+    "total": 1159,
+    "upstream": 421
+  },
+  {
+    "blocked": 498,
+    "bucket": 1782314400,
+    "cached": 47,
+    "total": 802,
+    "upstream": 257
+  },
+  {
+    "blocked": 434,
+    "bucket": 1782315000,
+    "cached": 53,
+    "total": 748,
+    "upstream": 261
+  },
+  {
+    "blocked": 556,
+    "bucket": 1782315600,
+    "cached": 114,
+    "total": 1243,
+    "upstream": 573
+  },
+  {
+    "blocked": 521,
+    "bucket": 1782316200,
+    "cached": 180,
+    "total": 1176,
+    "upstream": 475
+  },
+  {
+    "blocked": 419,
+    "bucket": 1782316800,
+    "cached": 120,
+    "total": 1044,
+    "upstream": 505
+  },
+  {
+    "blocked": 262,
+    "bucket": 1782317400,
+    "cached": 69,
+    "total": 853,
+    "upstream": 522
+  },
+  {
+    "blocked": 245,
+    "bucket": 1782318000,
+    "cached": 76,
+    "total": 634,
+    "upstream": 313
+  },
+  {
+    "blocked": 190,
+    "bucket": 1782318600,
+    "cached": 110,
+    "total": 928,
+    "upstream": 628
+  },
+  {
+    "blocked": 173,
+    "bucket": 1782319200,
+    "cached": 93,
+    "total": 656,
+    "upstream": 390
+  },
+  {
+    "blocked": 164,
+    "bucket": 1782319800,
+    "cached": 107,
+    "total": 647,
+    "upstream": 376
+  },
+  {
+    "blocked": 250,
+    "bucket": 1782320400,
+    "cached": 90,
+    "total": 664,
+    "upstream": 324
+  },
+  {
+    "blocked": 277,
+    "bucket": 1782321000,
+    "cached": 91,
+    "total": 876,
+    "upstream": 508
+  },
+  {
+    "blocked": 415,
+    "bucket": 1782321600,
+    "cached": 131,
+    "total": 1058,
+    "upstream": 512
+  },
+  {
+    "blocked": 195,
+    "bucket": 1782322200,
+    "cached": 106,
+    "total": 786,
+    "upstream": 485
+  },
+  {
+    "blocked": 156,
+    "bucket": 1782322800,
+    "cached": 65,
+    "total": 590,
+    "upstream": 369
+  },
+  {
+    "blocked": 370,
+    "bucket": 1782323400,
+    "cached": 99,
+    "total": 911,
+    "upstream": 442
+  },
+  {
+    "blocked": 311,
+    "bucket": 1782324000,
+    "cached": 61,
+    "total": 798,
+    "upstream": 426
+  },
+  {
+    "blocked": 407,
+    "bucket": 1782324600,
+    "cached": 169,
+    "total": 1305,
+    "upstream": 729
+  },
+  {
+    "blocked": 239,
+    "bucket": 1782325200,
+    "cached": 86,
+    "total": 757,
+    "upstream": 432
+  },
+  {
+    "blocked": 175,
+    "bucket": 1782325800,
+    "cached": 60,
+    "total": 646,
+    "upstream": 411
+  },
+  {
+    "blocked": 228,
+    "bucket": 1782326400,
+    "cached": 102,
+    "total": 768,
+    "upstream": 438
+  },
+  {
+    "blocked": 330,
+    "bucket": 1782327000,
+    "cached": 82,
+    "total": 1003,
+    "upstream": 591
+  },
+  {
+    "blocked": 183,
+    "bucket": 1782327600,
+    "cached": 94,
+    "total": 634,
+    "upstream": 357
+  },
+  {
+    "blocked": 207,
+    "bucket": 1782328200,
+    "cached": 72,
+    "total": 842,
+    "upstream": 563
+  },
+  {
+    "blocked": 381,
+    "bucket": 1782328800,
+    "cached": 91,
+    "total": 978,
+    "upstream": 506
+  },
+  {
+    "blocked": 378,
+    "bucket": 1782329400,
+    "cached": 134,
+    "total": 1094,
+    "upstream": 582
+  },
+  {
+    "blocked": 439,
+    "bucket": 1782330000,
+    "cached": 130,
+    "total": 1166,
+    "upstream": 597
+  },
+  {
+    "blocked": 513,
+    "bucket": 1782330600,
+    "cached": 194,
+    "total": 1282,
+    "upstream": 575
+  },
+  {
+    "blocked": 460,
+    "bucket": 1782331200,
+    "cached": 149,
+    "total": 1165,
+    "upstream": 556
+  },
+  {
+    "blocked": 358,
+    "bucket": 1782331800,
+    "cached": 127,
+    "total": 926,
+    "upstream": 441
+  },
+  {
+    "blocked": 566,
+    "bucket": 1782332400,
+    "cached": 266,
+    "total": 1478,
+    "upstream": 646
+  },
+  {
+    "blocked": 478,
+    "bucket": 1782333000,
+    "cached": 132,
+    "total": 1112,
+    "upstream": 502
+  },
+  {
+    "blocked": 566,
+    "bucket": 1782333600,
+    "cached": 102,
+    "total": 1079,
+    "upstream": 411
+  },
+  {
+    "blocked": 387,
+    "bucket": 1782334200,
+    "cached": 124,
+    "total": 887,
+    "upstream": 376
+  },
+  {
+    "blocked": 372,
+    "bucket": 1782334800,
+    "cached": 140,
+    "total": 936,
+    "upstream": 424
+  },
+  {
+    "blocked": 432,
+    "bucket": 1782335400,
+    "cached": 90,
+    "total": 948,
+    "upstream": 426
+  },
+  {
+    "blocked": 548,
+    "bucket": 1782336000,
+    "cached": 278,
+    "total": 1337,
+    "upstream": 511
+  },
+  {
+    "blocked": 472,
+    "bucket": 1782336600,
+    "cached": 313,
+    "total": 1496,
+    "upstream": 711
+  },
+  {
+    "blocked": 373,
+    "bucket": 1782337200,
+    "cached": 102,
+    "total": 976,
+    "upstream": 501
+  },
+  {
+    "blocked": 369,
+    "bucket": 1782337800,
+    "cached": 68,
+    "total": 884,
+    "upstream": 425
+  },
+  {
+    "blocked": 490,
+    "bucket": 1782338400,
+    "cached": 231,
+    "total": 1304,
+    "upstream": 539
+  },
+  {
+    "blocked": 508,
+    "bucket": 1782339000,
+    "cached": 295,
+    "total": 1438,
+    "upstream": 543
+  },
+  {
+    "blocked": 347,
+    "bucket": 1782339600,
+    "cached": 97,
+    "total": 891,
+    "upstream": 439
+  },
+  {
+    "blocked": 303,
+    "bucket": 1782340200,
+    "cached": 68,
+    "total": 709,
+    "upstream": 338
+  }
+]

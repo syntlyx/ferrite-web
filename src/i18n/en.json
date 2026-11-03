@@ -1004,5 +1004,10 @@
     "empty": "No device seen lately is in this profile.",
     "devices_one": "{{count}} device",
     "devices_other": "{{count}} devices"
+  },
+  "demo": {
+    "banner": "This is a demo with sample data. Look around and change anything: nothing is saved.",
+    "install": "Get ferrite",
+    "not_saved": "Demo: that change isn't saved."
   }
 }

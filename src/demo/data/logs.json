@@ -1,0 +1,116 @@
+{
+  "logs": [
+    {
+      "id": 1000,
+      "timestamp": "2026-06-25T02:25:06.000Z",
+      "level": "INFO",
+      "target": "ferrite",
+      "message": "ferrite v0.1.5 starting"
+    },
+    {
+      "id": 1001,
+      "timestamp": "2026-06-25T02:25:07.500Z",
+      "level": "INFO",
+      "target": "ferrite::storage::sqlite",
+      "message": "SQLite storage opened"
+    },
+    {
+      "id": 1002,
+      "timestamp": "2026-06-25T02:25:09.000Z",
+      "level": "INFO",
+      "target": "ferrite::app",
+      "message": "custom whitelist/blacklist loaded from storage"
+    },
+    {
+      "id": 1003,
+      "timestamp": "2026-06-25T02:25:10.500Z",
+      "level": "INFO",
+      "target": "ferrite::app",
+      "message": "seeded query counters from storage: 341520 total"
+    },
+    {
+      "id": 1004,
+      "timestamp": "2026-06-25T02:25:12.000Z",
+      "level": "INFO",
+      "target": "ferrite::clients::registry",
+      "message": "restored 14 devices, 31 IP bindings"
+    },
+    {
+      "id": 1005,
+      "timestamp": "2026-06-25T02:25:13.500Z",
+      "level": "INFO",
+      "target": "ferrite::blocklist::engine",
+      "message": "blocklist loaded from disk: 1670934 domains"
+    },
+    {
+      "id": 1006,
+      "timestamp": "2026-06-25T02:25:15.000Z",
+      "level": "INFO",
+      "target": "ferrite::proxy::egress::wireguard",
+      "message": "wg 'proton-nl': UDP recv buffer 8192 KiB"
+    },
+    {
+      "id": 1007,
+      "timestamp": "2026-06-25T02:25:16.500Z",
+      "level": "INFO",
+      "target": "ferrite::proxy::egress::wireguard",
+      "message": "wg 'proton-us-pa': UDP recv buffer 8192 KiB"
+    },
+    {
+      "id": 1008,
+      "timestamp": "2026-06-25T02:25:18.000Z",
+      "level": "INFO",
+      "target": "ferrite::dns::server",
+      "message": "DNS server listening on [::]:53"
+    },
+    {
+      "id": 1009,
+      "timestamp": "2026-06-25T02:25:19.500Z",
+      "level": "INFO",
+      "target": "ferrite::proxy::intercept",
+      "message": "proxy: TLS/SNI listener on 0.0.0.0:443"
+    },
+    {
+      "id": 1010,
+      "timestamp": "2026-06-25T02:25:21.000Z",
+      "level": "INFO",
+      "target": "ferrite::api",
+      "message": "panel/API listener on http://0.0.0.0:80"
+    },
+    {
+      "id": 1011,
+      "timestamp": "2026-06-25T02:25:22.500Z",
+      "level": "WARN",
+      "target": "ferrite::upstream::doh",
+      "message": "DoH doh://cloudflare-dns.com: stream reset, retrying on a fresh connection"
+    },
+    {
+      "id": 1012,
+      "timestamp": "2026-06-25T02:25:24.000Z",
+      "level": "INFO",
+      "target": "ferrite::stats::writer",
+      "message": "stats writer started"
+    },
+    {
+      "id": 1013,
+      "timestamp": "2026-06-25T02:25:25.500Z",
+      "level": "INFO",
+      "target": "ferrite::updater",
+      "message": "updater check loop started (interval: 3600s)"
+    },
+    {
+      "id": 1014,
+      "timestamp": "2026-06-25T02:25:27.000Z",
+      "level": "INFO",
+      "target": "ferrite::blocklist::refresh",
+      "message": "blocklist refreshed: 1670934 unique domains"
+    },
+    {
+      "id": 1015,
+      "timestamp": "2026-06-25T02:25:28.500Z",
+      "level": "INFO",
+      "target": "ferrite::snapshot::save",
+      "message": "snapshot saved: 184 dns entries, 341520 queries"
+    }
+  ]
+}

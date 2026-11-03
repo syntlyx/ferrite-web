@@ -1,0 +1,8 @@
+{
+  "whitelist": [
+    "*.github.com",
+    "cdn.jsdelivr.net",
+    "fonts.gstatic.com",
+    "*.home.lan"
+  ]
+}

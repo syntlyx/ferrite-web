@@ -1,0 +1,14 @@
+{
+  "answers": [
+    {
+      "data": "140.82.121.3",
+      "name": "github.com.",
+      "ttl": 29,
+      "type": "A"
+    }
+  ],
+  "query": "github.com",
+  "rcode": "NoError",
+  "type": "A",
+  "upstream": "doh://cloudflare-dns.com"
+}

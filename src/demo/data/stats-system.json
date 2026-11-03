@@ -1,0 +1,45 @@
+{
+  "cpu_temp_celsius": 49.444000244140625,
+  "cpu_usage_percent": 0.6265664100646973,
+  "disk": {
+    "mount": "/",
+    "total_bytes": 493478227968,
+    "used_bytes": 28613087232,
+    "used_percent": 5.7982471384442595
+  },
+  "load_avg": {
+    "fifteen": 0.03,
+    "five": 0.04,
+    "one": 0
+  },
+  "memory": {
+    "allocated_bytes": 795672576,
+    "available_bytes": 3644911616,
+    "free_bytes": 3298832384,
+    "reclaimable_bytes": 346079232,
+    "total_bytes": 4094504960,
+    "used_bytes": 449593344,
+    "used_percent": 10.980407848864836
+  },
+  "network": {
+    "interfaces": [
+      "eth0"
+    ],
+    "link_speed_mbps": 2500,
+    "rx_bytes_per_sec": 900,
+    "rx_utilization_percent": 0.000288,
+    "tx_bytes_per_sec": 700,
+    "tx_utilization_percent": 0.00022400000000000002
+  },
+  "process": {
+    "cpu_percent": 0.6265664100646973,
+    "memory_bytes": 49647616,
+    "memory_percent": 1.212542578040985
+  },
+  "swap": {
+    "total_bytes": 2147479552,
+    "used_bytes": 0,
+    "used_percent": 0
+  },
+  "uptime_seconds": 220536
+}

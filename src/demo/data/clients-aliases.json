@@ -1,0 +1,59 @@
+{
+  "aliases": [
+    {
+      "mac": "02:20:4b:ea:75:0c",
+      "name": "living-room-tv",
+      "type": "mac"
+    },
+    {
+      "mac": "02:1b:30:85:ba:87",
+      "name": "kitchen-echo",
+      "type": "mac"
+    },
+    {
+      "mac": "02:a5:da:3b:d0:f1",
+      "name": "office-imac",
+      "type": "mac"
+    },
+    {
+      "mac": "02:40:6b:0a:95:ac",
+      "name": "macbook-air-m2",
+      "type": "mac"
+    },
+    {
+      "mac": "02:63:58:8d:22:ef",
+      "name": "pixel-8-pro",
+      "type": "mac"
+    },
+    {
+      "mac": "02:3e:e9:14:9f:52",
+      "name": "macbook-air-m2",
+      "type": "mac"
+    },
+    {
+      "mac": "02:fd:d2:d3:08:69",
+      "name": "ipad-mini",
+      "type": "mac"
+    },
+    {
+      "mac": "02:94:1f:be:69:08",
+      "name": "ps5-console",
+      "type": "mac"
+    },
+    {
+      "mac": "02:19:ee:4f:84:ed",
+      "name": "switch-dock",
+      "type": "mac"
+    },
+    {
+      "mac": "02:03:f8:2d:42:8f",
+      "name": "thinkpad-x1",
+      "type": "mac"
+    },
+    {
+      "mac": "02:b9:8e:ef:a4:8d",
+      "name": "desktop-pc",
+      "type": "mac"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "blocked": true,
+  "domain": "app-measurement.com",
+  "routing": {
+    "enabled": true,
+    "match": null
+  },
+  "sources": [
+    {
+      "kind": "list",
+      "matched": "app-measurement.com",
+      "name": "StevenBlack"
+    },
+    {
+      "kind": "list",
+      "matched": "app-measurement.com",
+      "name": "StevenBlack Gambling"
+    },
+    {
+      "kind": "list",
+      "matched": "app-measurement.com",
+      "name": "Android Tracking"
+    },
+    {
+      "kind": "list",
+      "matched": "app-measurement.com",
+      "name": "AdBlock List"
+    }
+  ],
+  "whitelisted": false
+}

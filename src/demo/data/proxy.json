@@ -1,0 +1,66 @@
+{
+  "egress_health": {
+    "proton-nl": "up",
+    "proton-us-pa": "up"
+  },
+  "max_buffer_kb": 16384,
+  "proxy": {
+    "egresses": [
+      {
+        "buffer_kb": 512,
+        "config": "[Interface]\nPrivateKey = ********\nAddress = 10.2.0.2/32\nDNS = 10.2.0.1\n\n[Peer]\nPublicKey = (hidden)\nEndpoint = vpn.example.net:51820\nAllowedIPs = 0.0.0.0/0, ::/0",
+        "enabled": true,
+        "id": "proton-nl",
+        "kind": "wireguard",
+        "name": "Proton NL"
+      },
+      {
+        "buffer_kb": 512,
+        "config": "[Interface]\nPrivateKey = ********\nAddress = 10.2.0.2/32\nDNS = 10.2.0.1\n\n[Peer]\nPublicKey = (hidden)\nEndpoint = vpn.example.net:51820\nAllowedIPs = 0.0.0.0/0, ::/0",
+        "enabled": true,
+        "id": "proton-us-pa",
+        "kind": "wireguard",
+        "name": "Proton US PA"
+      }
+    ],
+    "enabled": true,
+    "http_port": 80,
+    "https_port": 443,
+    "max_connections": 1024,
+    "rules": [
+      {
+        "pattern": "netflix.com",
+        "egress": "proton-nl",
+        "fail_closed": true
+      },
+      {
+        "pattern": "*.bbc.co.uk",
+        "egress": "proton-nl",
+        "fail_closed": true
+      },
+      {
+        "pattern": "chatgpt.com",
+        "egress": "proton-us-pa",
+        "fail_closed": true
+      },
+      {
+        "pattern": "openai.com",
+        "egress": "proton-us-pa",
+        "fail_closed": true
+      },
+      {
+        "pattern": "spotify.com",
+        "egress": "proton-nl",
+        "fail_closed": false
+      },
+      {
+        "pattern": "whatismyipaddress.com",
+        "egress": "proton-us-pa",
+        "fail_closed": false,
+        "clients": [
+          "02:ee:19:84:4f:02"
+        ]
+      }
+    ]
+  }
+}

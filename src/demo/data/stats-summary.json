@@ -1,0 +1,1756 @@
+{
+  "total_queries": 341444,
+  "blocked_queries": 152724,
+  "cached_queries": 38566,
+  "upstream_queries": 149919,
+  "block_percentage": 44.72885744075163,
+  "total_domains_blocked": 1670934,
+  "dropped_stats": 0,
+  "top_domains": [
+    [
+      "telemetry.canva.com",
+      39902
+    ],
+    [
+      "f-log-extension.grammarly.io",
+      7222
+    ],
+    [
+      "chat.ui8.net",
+      6417
+    ],
+    [
+      "gateway.fe2.apple-dns.net",
+      6382
+    ],
+    [
+      "www.figma.com",
+      6047
+    ],
+    [
+      "self.events.data.microsoft.com",
+      5242
+    ],
+    [
+      "ssl.gstatic.com",
+      5210
+    ],
+    [
+      "aepxlg.adobe.com",
+      4751
+    ],
+    [
+      "clients2.google.com",
+      4221
+    ],
+    [
+      "errors.figma.com",
+      3945
+    ]
+  ],
+  "top_blocked": [
+    [
+      "telemetry.canva.com",
+      39902
+    ],
+    [
+      "f-log-extension.grammarly.io",
+      7222
+    ],
+    [
+      "self.events.data.microsoft.com",
+      5242
+    ],
+    [
+      "aepxlg.adobe.com",
+      4751
+    ],
+    [
+      "errors.figma.com",
+      3945
+    ],
+    [
+      "gnar.grammarly.com",
+      3530
+    ],
+    [
+      "extension.femetrics.grammarly.io",
+      3463
+    ],
+    [
+      "mobile.events.data.microsoft.com",
+      3315
+    ],
+    [
+      "app-measurement.com",
+      3310
+    ],
+    [
+      "nexus-websocket-a.intercom.io",
+      2890
+    ]
+  ],
+  "top_clients": [
+    {
+      "name": "nest-hub",
+      "total": 172859,
+      "ips": [
+        "fe80::ad22:9363:6b58:9fb9",
+        "fe80::9718:9e4d:d8e2:1eaf",
+        "fe80::1da2:03e3:dbd8:1039",
+        "fe80::385f:03fe:aea9:7a48",
+        "192.168.1.82",
+        "fe80::c4b8:cbed:3b02:b74f"
+      ],
+      "macs": [
+        "02:ee:19:84:4f:02"
+      ]
+    },
+    {
+      "name": "hue-bridge",
+      "total": 40384,
+      "ips": [
+        "fe80::bd6d:b638:4943:746e",
+        "fe80::666f:320e:1339:ded8",
+        "192.168.1.2"
+      ],
+      "macs": [
+        "02:15:8a:eb:c0:a1"
+      ]
+    },
+    {
+      "name": "robovac",
+      "total": 34532,
+      "ips": [
+        "fe80::ad3d:4048:3913:c9fe",
+        "192.168.1.155"
+      ],
+      "macs": [
+        "02:3f:34:09:de:73"
+      ]
+    },
+    {
+      "name": "pixel-8-pro",
+      "total": 26885,
+      "ips": [
+        "fe80::870c:f401:c8d6:6a4b",
+        "192.168.1.114",
+        "fe80::054e:39af:7764:b94d",
+        "fe80::0522:eb63:c358:f7b9"
+      ],
+      "macs": [
+        "02:63:58:8d:22:ef"
+      ]
+    },
+    {
+      "name": "desktop-pc",
+      "total": 26748,
+      "ips": [
+        "192.168.1.94",
+        "fe80::c1d3:0ad2:35fd:2894"
+      ],
+      "macs": [
+        "02:b9:8e:ef:a4:8d"
+      ]
+    },
+    {
+      "name": "living-room-tv",
+      "total": 10602,
+      "ips": [
+        "192.168.1.106",
+        "fe80::4f06:9e27:d8bc:1aa5",
+        "fe80::c5b7:dc56:0781:52a0",
+        "fe80::51d5:fe80:29ab:8636",
+        "fe80::c297:0db6:38e1:8600",
+        "fe80::97cf:636e:d999:a538"
+      ],
+      "macs": [
+        "02:20:4b:ea:75:0c"
+      ]
+    },
+    {
+      "name": "samsung-frame-tv",
+      "total": 6312,
+      "ips": [
+        "fe80::2f31:27fc:ed67:711a",
+        "fe80::a787:8ee6:5451:0530"
+      ],
+      "macs": [
+        "02:26:91:dc:c7:fa"
+      ]
+    },
+    {
+      "name": "shield-tv",
+      "total": 4141,
+      "ips": [
+        "fe80::aeba:e31b:5230:a151",
+        "fe80::e40d:dcd8:04e3:300e",
+        "192.168.1.147",
+        "192.168.1.182"
+      ],
+      "macs": [
+        "02:0c:37:d6:01:20"
+      ]
+    },
+    {
+      "name": "ipad-mini",
+      "total": 3728,
+      "ips": [
+        "192.168.1.50"
+      ],
+      "macs": [
+        "02:fd:d2:d3:08:69"
+      ]
+    },
+    {
+      "name": "kindle-oasis",
+      "total": 3537,
+      "ips": [
+        "fe80::3869:6394:c21f:45d2",
+        "fe80::c8e1:276c:5297:0cca",
+        "fe80::77d3:c0d2:ebfd:de94",
+        "fe80::9e3d:3148:2a13:bafe",
+        "fe80::35b5:e060:0b8b:6a16",
+        "fe80::542e:888f:8fc4:9d2d",
+        "192.168.1.112"
+      ],
+      "macs": [
+        "02:7d:52:53:88:e9"
+      ]
+    }
+  ],
+  "recent_domains": [
+    {
+      "id": 9870403,
+      "timestamp": "2026-06-24T22:39:17.929724084Z",
+      "domain": "a1744.dscw154.akamai.net",
+      "query_type": 65,
+      "client_ip": "fe80::666f:320e:1339:ded8",
+      "device": "02:15:8a:eb:c0:a1",
+      "status": "upstream",
+      "latency_ms": 10,
+      "upstream": "doh://cloudflare-dns.com",
+      "rcode": 0,
+      "client_name": "hue-bridge"
+    },
+    {
+      "id": 9870402,
+      "timestamp": "2026-06-24T22:39:17.918454332Z",
+      "domain": "netcts.cdn-apple.com",
+      "query_type": 28,
+      "client_ip": "fe80::666f:320e:1339:ded8",
+      "device": "02:15:8a:eb:c0:a1",
+      "status": "upstream",
+      "latency_ms": 13,
+      "upstream": "doh://cloudflare-dns.com",
+      "rcode": 0,
+      "client_name": "hue-bridge"
+    },
+    {
+      "id": 9870401,
+      "timestamp": "2026-06-24T22:39:17.918407375Z",
+      "domain": "netcts.cdn-apple.com",
+      "query_type": 1,
+      "client_ip": "fe80::666f:320e:1339:ded8",
+      "device": "02:15:8a:eb:c0:a1",
+      "status": "upstream",
+      "latency_ms": 12,
+      "upstream": "doh://cloudflare-dns.com",
+      "rcode": 0,
+      "client_name": "hue-bridge"
+    },
+    {
+      "id": 9870400,
+      "timestamp": "2026-06-24T22:39:17.916595581Z",
+      "domain": "netcts.cdn-apple.com",
+      "query_type": 65,
+      "client_ip": "fe80::666f:320e:1339:ded8",
+      "device": "02:15:8a:eb:c0:a1",
+      "status": "upstream",
+      "latency_ms": 11,
+      "upstream": "doh://cloudflare-dns.com",
+      "rcode": 0,
+      "client_name": "hue-bridge"
+    },
+    {
+      "id": 9870399,
+      "timestamp": "2026-06-24T22:39:17.823012893Z",
+      "domain": "mask.icloud.com",
+      "query_type": 1,
+      "client_ip": "fe80::666f:320e:1339:ded8",
+      "device": "02:15:8a:eb:c0:a1",
+      "status": "blocked",
+      "latency_ms": 0,
+      "upstream": null,
+      "rcode": 3,
+      "client_name": "hue-bridge"
+    },
+    {
+      "id": 9870398,
+      "timestamp": "2026-06-24T22:39:17.822006665Z",
+      "domain": "mask.icloud.com",
+      "query_type": 28,
+      "client_ip": "fe80::666f:320e:1339:ded8",
+      "device": "02:15:8a:eb:c0:a1",
+      "status": "blocked",
+      "latency_ms": 0,
+      "upstream": null,
+      "rcode": 3,
+      "client_name": "hue-bridge"
+    },
+    {
+      "id": 9870397,
+      "timestamp": "2026-06-24T22:39:17.821612340Z",
+      "domain": "mask.icloud.com",
+      "query_type": 65,
+      "client_ip": "fe80::666f:320e:1339:ded8",
+      "device": "02:15:8a:eb:c0:a1",
+      "status": "blocked",
+      "latency_ms": 0,
+      "upstream": null,
+      "rcode": 3,
+      "client_name": "hue-bridge"
+    },
+    {
+      "id": 9870396,
+      "timestamp": "2026-06-24T22:39:17.342955009Z",
+      "domain": "collector.telemetry-p.aws.remedygames.online",
+      "query_type": 28,
+      "client_ip": "fe80::77d3:c0d2:ebfd:de94",
+      "device": "02:7d:52:53:88:e9",
+      "status": "blocked",
+      "latency_ms": 0,
+      "upstream": null,
+      "rcode": 3,
+      "client_name": "kindle-oasis"
+    },
+    {
+      "id": 9870395,
+      "timestamp": "2026-06-24T22:39:17.342792263Z",
+      "domain": "collector.telemetry-p.aws.remedygames.online",
+      "query_type": 1,
+      "client_ip": "fe80::77d3:c0d2:ebfd:de94",
+      "device": "02:7d:52:53:88:e9",
+      "status": "blocked",
+      "latency_ms": 0,
+      "upstream": null,
+      "rcode": 3,
+      "client_name": "kindle-oasis"
+    },
+    {
+      "id": 9870394,
+      "timestamp": "2026-06-24T22:39:15.701139551Z",
+      "domain": "notifications-pa.googleapis.com",
+      "query_type": 1,
+      "client_ip": "fe80::054e:39af:7764:b94d",
+      "device": "02:63:58:8d:22:ef",
+      "status": "upstream",
+      "latency_ms": 10,
+      "upstream": "doh://cloudflare-dns.com",
+      "rcode": 0,
+      "client_name": "pixel-8-pro"
+    },
+    {
+      "id": 9870393,
+      "timestamp": "2026-06-24T22:39:15.701120885Z",
+      "domain": "notifications-pa.googleapis.com",
+      "query_type": 28,
+      "client_ip": "fe80::054e:39af:7764:b94d",
+      "device": "02:63:58:8d:22:ef",
+      "status": "upstream",
+      "latency_ms": 11,
+      "upstream": "doh://cloudflare-dns.com",
+      "rcode": 0,
+      "client_name": "pixel-8-pro"
+    },
+    {
+      "id": 9870392,
+      "timestamp": "2026-06-24T22:39:15.699593752Z",
+      "domain": "notifications-pa.googleapis.com",
+      "query_type": 65,
+      "client_ip": "fe80::054e:39af:7764:b94d",
+      "device": "02:63:58:8d:22:ef",
+      "status": "upstream",
+      "latency_ms": 10,
+      "upstream": "doh://cloudflare-dns.com",
+      "rcode": 0,
+      "client_name": "pixel-8-pro"
+    },
+    {
+      "id": 9870391,
+      "timestamp": "2026-06-24T22:39:15.215119549Z",
+      "domain": "firebaselogging-pa.googleapis.com",
+      "query_type": 1,
+      "client_ip": "fe80::9b08:07fd:dcd2:591f",
+      "device": "02:8d:22:63:58:b9",
+      "status": "blocked",
+      "latency_ms": 0,
+      "upstream": null,
+      "rcode": 3,
+      "client_name": "homepod-mini"
+    },
+    {
+      "id": 9870390,
+      "timestamp": "2026-06-24T22:39:15.214742140Z",
+      "domain": "firebaselogging-pa.googleapis.com",
+      "query_type": 28,
+      "client_ip": "fe80::9b08:07fd:dcd2:591f",
+      "device": "02:8d:22:63:58:b9",
+      "status": "blocked",
+      "latency_ms": 0,
+      "upstream": null,
+      "rcode": 3,
+      "client_name": "homepod-mini"
+    },
+    {
+      "id": 9870389,
+      "timestamp": "2026-06-24T22:39:15.214588435Z",
+      "domain": "firebaselogging-pa.googleapis.com",
+      "query_type": 65,
+      "client_ip": "fe80::9b08:07fd:dcd2:591f",
+      "device": "02:8d:22:63:58:b9",
+      "status": "blocked",
+      "latency_ms": 0,
+      "upstream": null,
+      "rcode": 3,
+      "client_name": "homepod-mini"
+    },
+    {
+      "id": 9870388,
+      "timestamp": "2026-06-24T22:39:15.198087174Z",
+      "domain": "iphone-ld.origin-apple.com.akadns.net",
+      "query_type": 1,
+      "client_ip": "fe80::054e:39af:7764:b94d",
+      "device": "02:63:58:8d:22:ef",
+      "status": "upstream",
+      "latency_ms": 17,
+      "upstream": "doh://cloudflare-dns.com",
+      "rcode": 0,
+      "client_name": "pixel-8-pro"
+    },
+    {
+      "id": 9870387,
+      "timestamp": "2026-06-24T22:39:15.196099801Z",
+      "domain": "iphone-ld.v.aaplimg.com",
+      "query_type": 65,
+      "client_ip": "fe80::054e:39af:7764:b94d",
+      "device": "02:63:58:8d:22:ef",
+      "status": "cached",
+      "latency_ms": 0,
+      "upstream": null,
+      "rcode": 0,
+      "client_name": "pixel-8-pro"
+    },
+    {
+      "id": 9870386,
+      "timestamp": "2026-06-24T22:39:15.190688045Z",
+      "domain": "iphone-ld.origin-apple.com.akadns.net",
+      "query_type": 28,
+      "client_ip": "fe80::054e:39af:7764:b94d",
+      "device": "02:63:58:8d:22:ef",
+      "status": "upstream",
+      "latency_ms": 12,
+      "upstream": "doh://cloudflare-dns.com",
+      "rcode": 0,
+      "client_name": "pixel-8-pro"
+    },
+    {
+      "id": 9870385,
+      "timestamp": "2026-06-24T22:39:15.190658004Z",
+      "domain": "iphone-ld.origin-apple.com.akadns.net",
+      "query_type": 65,
+      "client_ip": "fe80::054e:39af:7764:b94d",
+      "device": "02:63:58:8d:22:ef",
+      "status": "upstream",
+      "latency_ms": 12,
+      "upstream": "doh://cloudflare-dns.com",
+      "rcode": 0,
+      "client_name": "pixel-8-pro"
+    },
+    {
+      "id": 9870384,
+      "timestamp": "2026-06-24T22:39:14.879684021Z",
+      "domain": "web.facebook.com",
+      "query_type": 1,
+      "client_ip": "fe80::ad3d:4048:3913:c9fe",
+      "device": "02:3f:34:09:de:73",
+      "status": "blocked",
+      "latency_ms": 0,
+      "upstream": null,
+      "rcode": 3,
+      "client_name": "robovac"
+    }
+  ],
+  "recent_blocked": [
+    {
+      "id": 9870399,
+      "timestamp": "2026-06-24T22:39:17.823012893Z",
+      "domain": "mask.icloud.com",
+      "query_type": 1,
+      "client_ip": "fe80::666f:320e:1339:ded8",
+      "device": "02:15:8a:eb:c0:a1",
+      "status": "blocked",
+      "latency_ms": 0,
+      "upstream": null,
+      "rcode": 3,
+      "client_name": "hue-bridge"
+    },
+    {
+      "id": 9870398,
+      "timestamp": "2026-06-24T22:39:17.822006665Z",
+      "domain": "mask.icloud.com",
+      "query_type": 28,
+      "client_ip": "fe80::666f:320e:1339:ded8",
+      "device": "02:15:8a:eb:c0:a1",
+      "status": "blocked",
+      "latency_ms": 0,
+      "upstream": null,
+      "rcode": 3,
+      "client_name": "hue-bridge"
+    },
+    {
+      "id": 9870397,
+      "timestamp": "2026-06-24T22:39:17.821612340Z",
+      "domain": "mask.icloud.com",
+      "query_type": 65,
+      "client_ip": "fe80::666f:320e:1339:ded8",
+      "device": "02:15:8a:eb:c0:a1",
+      "status": "blocked",
+      "latency_ms": 0,
+      "upstream": null,
+      "rcode": 3,
+      "client_name": "hue-bridge"
+    },
+    {
+      "id": 9870396,
+      "timestamp": "2026-06-24T22:39:17.342955009Z",
+      "domain": "collector.telemetry-p.aws.remedygames.online",
+      "query_type": 28,
+      "client_ip": "fe80::77d3:c0d2:ebfd:de94",
+      "device": "02:7d:52:53:88:e9",
+      "status": "blocked",
+      "latency_ms": 0,
+      "upstream": null,
+      "rcode": 3,
+      "client_name": "kindle-oasis"
+    },
+    {
+      "id": 9870395,
+      "timestamp": "2026-06-24T22:39:17.342792263Z",
+      "domain": "collector.telemetry-p.aws.remedygames.online",
+      "query_type": 1,
+      "client_ip": "fe80::77d3:c0d2:ebfd:de94",
+      "device": "02:7d:52:53:88:e9",
+      "status": "blocked",
+      "latency_ms": 0,
+      "upstream": null,
+      "rcode": 3,
+      "client_name": "kindle-oasis"
+    },
+    {
+      "id": 9870391,
+      "timestamp": "2026-06-24T22:39:15.215119549Z",
+      "domain": "firebaselogging-pa.googleapis.com",
+      "query_type": 1,
+      "client_ip": "fe80::9b08:07fd:dcd2:591f",
+      "device": "02:8d:22:63:58:b9",
+      "status": "blocked",
+      "latency_ms": 0,
+      "upstream": null,
+      "rcode": 3,
+      "client_name": "homepod-mini"
+    },
+    {
+      "id": 9870390,
+      "timestamp": "2026-06-24T22:39:15.214742140Z",
+      "domain": "firebaselogging-pa.googleapis.com",
+      "query_type": 28,
+      "client_ip": "fe80::9b08:07fd:dcd2:591f",
+      "device": "02:8d:22:63:58:b9",
+      "status": "blocked",
+      "latency_ms": 0,
+      "upstream": null,
+      "rcode": 3,
+      "client_name": "homepod-mini"
+    },
+    {
+      "id": 9870389,
+      "timestamp": "2026-06-24T22:39:15.214588435Z",
+      "domain": "firebaselogging-pa.googleapis.com",
+      "query_type": 65,
+      "client_ip": "fe80::9b08:07fd:dcd2:591f",
+      "device": "02:8d:22:63:58:b9",
+      "status": "blocked",
+      "latency_ms": 0,
+      "upstream": null,
+      "rcode": 3,
+      "client_name": "homepod-mini"
+    },
+    {
+      "id": 9870384,
+      "timestamp": "2026-06-24T22:39:14.879684021Z",
+      "domain": "web.facebook.com",
+      "query_type": 1,
+      "client_ip": "fe80::ad3d:4048:3913:c9fe",
+      "device": "02:3f:34:09:de:73",
+      "status": "blocked",
+      "latency_ms": 0,
+      "upstream": null,
+      "rcode": 3,
+      "client_name": "robovac"
+    },
+    {
+      "id": 9870383,
+      "timestamp": "2026-06-24T22:39:14.878492881Z",
+      "domain": "web.facebook.com",
+      "query_type": 28,
+      "client_ip": "fe80::ad3d:4048:3913:c9fe",
+      "device": "02:3f:34:09:de:73",
+      "status": "blocked",
+      "latency_ms": 0,
+      "upstream": null,
+      "rcode": 3,
+      "client_name": "robovac"
+    },
+    {
+      "id": 9870382,
+      "timestamp": "2026-06-24T22:39:14.575397516Z",
+      "domain": "http-intake.logs.us5.datadoghq.com",
+      "query_type": 28,
+      "client_ip": "fe80::666f:320e:1339:ded8",
+      "device": "02:15:8a:eb:c0:a1",
+      "status": "blocked",
+      "latency_ms": 0,
+      "upstream": null,
+      "rcode": 3,
+      "client_name": "hue-bridge"
+    },
+    {
+      "id": 9870381,
+      "timestamp": "2026-06-24T22:39:14.574185084Z",
+      "domain": "http-intake.logs.us5.datadoghq.com",
+      "query_type": 1,
+      "client_ip": "fe80::666f:320e:1339:ded8",
+      "device": "02:15:8a:eb:c0:a1",
+      "status": "blocked",
+      "latency_ms": 0,
+      "upstream": null,
+      "rcode": 3,
+      "client_name": "hue-bridge"
+    },
+    {
+      "id": 9870362,
+      "timestamp": "2026-06-24T22:39:14.395335232Z",
+      "domain": "appsgrowthpromo-pa.googleapis.com",
+      "query_type": 1,
+      "client_ip": "fe80::054e:39af:7764:b94d",
+      "device": "02:63:58:8d:22:ef",
+      "status": "blocked",
+      "latency_ms": 0,
+      "upstream": null,
+      "rcode": 3,
+      "client_name": "pixel-8-pro"
+    },
+    {
+      "id": 9870361,
+      "timestamp": "2026-06-24T22:39:14.395214777Z",
+      "domain": "appsgrowthpromo-pa.googleapis.com",
+      "query_type": 28,
+      "client_ip": "fe80::054e:39af:7764:b94d",
+      "device": "02:63:58:8d:22:ef",
+      "status": "blocked",
+      "latency_ms": 0,
+      "upstream": null,
+      "rcode": 3,
+      "client_name": "pixel-8-pro"
+    },
+    {
+      "id": 9870360,
+      "timestamp": "2026-06-24T22:39:14.394300130Z",
+      "domain": "appsgrowthpromo-pa.googleapis.com",
+      "query_type": 65,
+      "client_ip": "fe80::054e:39af:7764:b94d",
+      "device": "02:63:58:8d:22:ef",
+      "status": "blocked",
+      "latency_ms": 0,
+      "upstream": null,
+      "rcode": 3,
+      "client_name": "pixel-8-pro"
+    },
+    {
+      "id": 9870342,
+      "timestamp": "2026-06-24T22:39:12.888918416Z",
+      "domain": "iphonesubmissions.apple.com",
+      "query_type": 1,
+      "client_ip": "fe80::054e:39af:7764:b94d",
+      "device": "02:63:58:8d:22:ef",
+      "status": "blocked",
+      "latency_ms": 0,
+      "upstream": null,
+      "rcode": 3,
+      "client_name": "pixel-8-pro"
+    },
+    {
+      "id": 9870341,
+      "timestamp": "2026-06-24T22:39:12.888222807Z",
+      "domain": "iphonesubmissions.apple.com",
+      "query_type": 28,
+      "client_ip": "fe80::054e:39af:7764:b94d",
+      "device": "02:63:58:8d:22:ef",
+      "status": "blocked",
+      "latency_ms": 0,
+      "upstream": null,
+      "rcode": 3,
+      "client_name": "pixel-8-pro"
+    },
+    {
+      "id": 9870340,
+      "timestamp": "2026-06-24T22:39:12.888117809Z",
+      "domain": "iphonesubmissions.apple.com",
+      "query_type": 65,
+      "client_ip": "fe80::054e:39af:7764:b94d",
+      "device": "02:63:58:8d:22:ef",
+      "status": "blocked",
+      "latency_ms": 0,
+      "upstream": null,
+      "rcode": 3,
+      "client_name": "pixel-8-pro"
+    },
+    {
+      "id": 9870339,
+      "timestamp": "2026-06-24T22:39:12.427431999Z",
+      "domain": "grs.platform.dbankcloud.ru",
+      "query_type": 1,
+      "client_ip": "fe80::ad3d:4048:3913:c9fe",
+      "device": "02:3f:34:09:de:73",
+      "status": "blocked",
+      "latency_ms": 0,
+      "upstream": null,
+      "rcode": 3,
+      "client_name": "robovac"
+    },
+    {
+      "id": 9870338,
+      "timestamp": "2026-06-24T22:39:12.423258341Z",
+      "domain": "grs.platform.dbankcloud.ru",
+      "query_type": 28,
+      "client_ip": "fe80::ad3d:4048:3913:c9fe",
+      "device": "02:3f:34:09:de:73",
+      "status": "blocked",
+      "latency_ms": 0,
+      "upstream": null,
+      "rcode": 3,
+      "client_name": "robovac"
+    }
+  ],
+  "timeseries": [
+    {
+      "bucket": 1782254400,
+      "total": 481,
+      "blocked": 121,
+      "cached": 83,
+      "upstream": 277
+    },
+    {
+      "bucket": 1782255000,
+      "total": 890,
+      "blocked": 261,
+      "cached": 162,
+      "upstream": 467
+    },
+    {
+      "bucket": 1782255600,
+      "total": 554,
+      "blocked": 129,
+      "cached": 72,
+      "upstream": 353
+    },
+    {
+      "bucket": 1782256200,
+      "total": 579,
+      "blocked": 193,
+      "cached": 62,
+      "upstream": 324
+    },
+    {
+      "bucket": 1782256800,
+      "total": 658,
+      "blocked": 161,
+      "cached": 73,
+      "upstream": 424
+    },
+    {
+      "bucket": 1782257400,
+      "total": 596,
+      "blocked": 171,
+      "cached": 69,
+      "upstream": 356
+    },
+    {
+      "bucket": 1782258000,
+      "total": 612,
+      "blocked": 181,
+      "cached": 91,
+      "upstream": 340
+    },
+    {
+      "bucket": 1782258600,
+      "total": 642,
+      "blocked": 243,
+      "cached": 86,
+      "upstream": 313
+    },
+    {
+      "bucket": 1782259200,
+      "total": 729,
+      "blocked": 255,
+      "cached": 94,
+      "upstream": 380
+    },
+    {
+      "bucket": 1782259800,
+      "total": 443,
+      "blocked": 156,
+      "cached": 69,
+      "upstream": 218
+    },
+    {
+      "bucket": 1782260400,
+      "total": 587,
+      "blocked": 160,
+      "cached": 77,
+      "upstream": 350
+    },
+    {
+      "bucket": 1782261000,
+      "total": 697,
+      "blocked": 184,
+      "cached": 124,
+      "upstream": 389
+    },
+    {
+      "bucket": 1782261600,
+      "total": 491,
+      "blocked": 105,
+      "cached": 84,
+      "upstream": 302
+    },
+    {
+      "bucket": 1782262200,
+      "total": 646,
+      "blocked": 167,
+      "cached": 97,
+      "upstream": 382
+    },
+    {
+      "bucket": 1782262800,
+      "total": 541,
+      "blocked": 153,
+      "cached": 59,
+      "upstream": 329
+    },
+    {
+      "bucket": 1782263400,
+      "total": 490,
+      "blocked": 150,
+      "cached": 66,
+      "upstream": 274
+    },
+    {
+      "bucket": 1782264000,
+      "total": 474,
+      "blocked": 144,
+      "cached": 45,
+      "upstream": 285
+    },
+    {
+      "bucket": 1782264600,
+      "total": 704,
+      "blocked": 180,
+      "cached": 66,
+      "upstream": 458
+    },
+    {
+      "bucket": 1782265200,
+      "total": 738,
+      "blocked": 191,
+      "cached": 58,
+      "upstream": 489
+    },
+    {
+      "bucket": 1782265800,
+      "total": 873,
+      "blocked": 261,
+      "cached": 86,
+      "upstream": 526
+    },
+    {
+      "bucket": 1782266400,
+      "total": 816,
+      "blocked": 317,
+      "cached": 67,
+      "upstream": 432
+    },
+    {
+      "bucket": 1782267000,
+      "total": 515,
+      "blocked": 205,
+      "cached": 59,
+      "upstream": 251
+    },
+    {
+      "bucket": 1782267600,
+      "total": 470,
+      "blocked": 180,
+      "cached": 51,
+      "upstream": 239
+    },
+    {
+      "bucket": 1782268200,
+      "total": 650,
+      "blocked": 169,
+      "cached": 70,
+      "upstream": 411
+    },
+    {
+      "bucket": 1782268800,
+      "total": 409,
+      "blocked": 111,
+      "cached": 62,
+      "upstream": 236
+    },
+    {
+      "bucket": 1782269400,
+      "total": 418,
+      "blocked": 105,
+      "cached": 63,
+      "upstream": 250
+    },
+    {
+      "bucket": 1782270000,
+      "total": 632,
+      "blocked": 203,
+      "cached": 64,
+      "upstream": 365
+    },
+    {
+      "bucket": 1782270600,
+      "total": 519,
+      "blocked": 286,
+      "cached": 46,
+      "upstream": 187
+    },
+    {
+      "bucket": 1782271200,
+      "total": 410,
+      "blocked": 162,
+      "cached": 47,
+      "upstream": 201
+    },
+    {
+      "bucket": 1782271800,
+      "total": 644,
+      "blocked": 160,
+      "cached": 96,
+      "upstream": 388
+    },
+    {
+      "bucket": 1782272400,
+      "total": 495,
+      "blocked": 188,
+      "cached": 64,
+      "upstream": 243
+    },
+    {
+      "bucket": 1782273000,
+      "total": 400,
+      "blocked": 107,
+      "cached": 61,
+      "upstream": 232
+    },
+    {
+      "bucket": 1782273600,
+      "total": 591,
+      "blocked": 168,
+      "cached": 68,
+      "upstream": 355
+    },
+    {
+      "bucket": 1782274200,
+      "total": 788,
+      "blocked": 220,
+      "cached": 99,
+      "upstream": 469
+    },
+    {
+      "bucket": 1782274800,
+      "total": 614,
+      "blocked": 261,
+      "cached": 64,
+      "upstream": 289
+    },
+    {
+      "bucket": 1782275400,
+      "total": 843,
+      "blocked": 356,
+      "cached": 99,
+      "upstream": 388
+    },
+    {
+      "bucket": 1782276000,
+      "total": 730,
+      "blocked": 216,
+      "cached": 75,
+      "upstream": 439
+    },
+    {
+      "bucket": 1782276600,
+      "total": 385,
+      "blocked": 115,
+      "cached": 61,
+      "upstream": 209
+    },
+    {
+      "bucket": 1782277200,
+      "total": 552,
+      "blocked": 136,
+      "cached": 68,
+      "upstream": 348
+    },
+    {
+      "bucket": 1782277800,
+      "total": 831,
+      "blocked": 395,
+      "cached": 70,
+      "upstream": 366
+    },
+    {
+      "bucket": 1782278400,
+      "total": 816,
+      "blocked": 414,
+      "cached": 80,
+      "upstream": 322
+    },
+    {
+      "bucket": 1782279000,
+      "total": 542,
+      "blocked": 214,
+      "cached": 69,
+      "upstream": 259
+    },
+    {
+      "bucket": 1782279600,
+      "total": 663,
+      "blocked": 245,
+      "cached": 120,
+      "upstream": 298
+    },
+    {
+      "bucket": 1782280200,
+      "total": 632,
+      "blocked": 258,
+      "cached": 94,
+      "upstream": 280
+    },
+    {
+      "bucket": 1782280800,
+      "total": 644,
+      "blocked": 304,
+      "cached": 73,
+      "upstream": 267
+    },
+    {
+      "bucket": 1782281400,
+      "total": 641,
+      "blocked": 271,
+      "cached": 104,
+      "upstream": 266
+    },
+    {
+      "bucket": 1782282000,
+      "total": 626,
+      "blocked": 271,
+      "cached": 89,
+      "upstream": 266
+    },
+    {
+      "bucket": 1782282600,
+      "total": 511,
+      "blocked": 189,
+      "cached": 60,
+      "upstream": 262
+    },
+    {
+      "bucket": 1782283200,
+      "total": 458,
+      "blocked": 143,
+      "cached": 60,
+      "upstream": 255
+    },
+    {
+      "bucket": 1782283800,
+      "total": 1237,
+      "blocked": 709,
+      "cached": 110,
+      "upstream": 418
+    },
+    {
+      "bucket": 1782284400,
+      "total": 871,
+      "blocked": 414,
+      "cached": 113,
+      "upstream": 344
+    },
+    {
+      "bucket": 1782285000,
+      "total": 1271,
+      "blocked": 582,
+      "cached": 176,
+      "upstream": 513
+    },
+    {
+      "bucket": 1782285600,
+      "total": 999,
+      "blocked": 524,
+      "cached": 98,
+      "upstream": 377
+    },
+    {
+      "bucket": 1782286200,
+      "total": 585,
+      "blocked": 204,
+      "cached": 63,
+      "upstream": 318
+    },
+    {
+      "bucket": 1782286800,
+      "total": 625,
+      "blocked": 199,
+      "cached": 74,
+      "upstream": 352
+    },
+    {
+      "bucket": 1782287400,
+      "total": 592,
+      "blocked": 171,
+      "cached": 84,
+      "upstream": 337
+    },
+    {
+      "bucket": 1782288000,
+      "total": 490,
+      "blocked": 147,
+      "cached": 60,
+      "upstream": 283
+    },
+    {
+      "bucket": 1782288600,
+      "total": 841,
+      "blocked": 343,
+      "cached": 84,
+      "upstream": 414
+    },
+    {
+      "bucket": 1782289200,
+      "total": 639,
+      "blocked": 208,
+      "cached": 85,
+      "upstream": 346
+    },
+    {
+      "bucket": 1782289800,
+      "total": 688,
+      "blocked": 278,
+      "cached": 72,
+      "upstream": 338
+    },
+    {
+      "bucket": 1782290400,
+      "total": 538,
+      "blocked": 169,
+      "cached": 54,
+      "upstream": 315
+    },
+    {
+      "bucket": 1782291000,
+      "total": 901,
+      "blocked": 426,
+      "cached": 107,
+      "upstream": 368
+    },
+    {
+      "bucket": 1782291600,
+      "total": 814,
+      "blocked": 310,
+      "cached": 127,
+      "upstream": 377
+    },
+    {
+      "bucket": 1782292200,
+      "total": 593,
+      "blocked": 179,
+      "cached": 59,
+      "upstream": 355
+    },
+    {
+      "bucket": 1782292800,
+      "total": 708,
+      "blocked": 188,
+      "cached": 138,
+      "upstream": 382
+    },
+    {
+      "bucket": 1782293400,
+      "total": 765,
+      "blocked": 237,
+      "cached": 131,
+      "upstream": 397
+    },
+    {
+      "bucket": 1782294000,
+      "total": 738,
+      "blocked": 147,
+      "cached": 93,
+      "upstream": 498
+    },
+    {
+      "bucket": 1782294600,
+      "total": 725,
+      "blocked": 200,
+      "cached": 69,
+      "upstream": 456
+    },
+    {
+      "bucket": 1782295200,
+      "total": 1427,
+      "blocked": 679,
+      "cached": 177,
+      "upstream": 571
+    },
+    {
+      "bucket": 1782295800,
+      "total": 1237,
+      "blocked": 623,
+      "cached": 171,
+      "upstream": 443
+    },
+    {
+      "bucket": 1782296400,
+      "total": 643,
+      "blocked": 235,
+      "cached": 82,
+      "upstream": 326
+    },
+    {
+      "bucket": 1782297000,
+      "total": 1078,
+      "blocked": 403,
+      "cached": 124,
+      "upstream": 551
+    },
+    {
+      "bucket": 1782297600,
+      "total": 690,
+      "blocked": 201,
+      "cached": 121,
+      "upstream": 368
+    },
+    {
+      "bucket": 1782298200,
+      "total": 825,
+      "blocked": 353,
+      "cached": 92,
+      "upstream": 380
+    },
+    {
+      "bucket": 1782298800,
+      "total": 658,
+      "blocked": 294,
+      "cached": 50,
+      "upstream": 314
+    },
+    {
+      "bucket": 1782299400,
+      "total": 667,
+      "blocked": 333,
+      "cached": 47,
+      "upstream": 287
+    },
+    {
+      "bucket": 1782300000,
+      "total": 1047,
+      "blocked": 501,
+      "cached": 147,
+      "upstream": 399
+    },
+    {
+      "bucket": 1782300600,
+      "total": 759,
+      "blocked": 298,
+      "cached": 94,
+      "upstream": 367
+    },
+    {
+      "bucket": 1782301200,
+      "total": 804,
+      "blocked": 373,
+      "cached": 79,
+      "upstream": 352
+    },
+    {
+      "bucket": 1782301800,
+      "total": 1077,
+      "blocked": 569,
+      "cached": 103,
+      "upstream": 405
+    },
+    {
+      "bucket": 1782302400,
+      "total": 735,
+      "blocked": 303,
+      "cached": 83,
+      "upstream": 349
+    },
+    {
+      "bucket": 1782303000,
+      "total": 1312,
+      "blocked": 534,
+      "cached": 153,
+      "upstream": 625
+    },
+    {
+      "bucket": 1782303600,
+      "total": 869,
+      "blocked": 316,
+      "cached": 111,
+      "upstream": 442
+    },
+    {
+      "bucket": 1782304200,
+      "total": 675,
+      "blocked": 216,
+      "cached": 93,
+      "upstream": 366
+    },
+    {
+      "bucket": 1782304800,
+      "total": 1025,
+      "blocked": 274,
+      "cached": 125,
+      "upstream": 626
+    },
+    {
+      "bucket": 1782305400,
+      "total": 1025,
+      "blocked": 240,
+      "cached": 118,
+      "upstream": 667
+    },
+    {
+      "bucket": 1782306000,
+      "total": 941,
+      "blocked": 303,
+      "cached": 76,
+      "upstream": 562
+    },
+    {
+      "bucket": 1782306600,
+      "total": 718,
+      "blocked": 274,
+      "cached": 88,
+      "upstream": 356
+    },
+    {
+      "bucket": 1782307200,
+      "total": 795,
+      "blocked": 297,
+      "cached": 84,
+      "upstream": 414
+    },
+    {
+      "bucket": 1782307800,
+      "total": 890,
+      "blocked": 282,
+      "cached": 140,
+      "upstream": 468
+    },
+    {
+      "bucket": 1782308400,
+      "total": 1107,
+      "blocked": 543,
+      "cached": 123,
+      "upstream": 441
+    },
+    {
+      "bucket": 1782309000,
+      "total": 2201,
+      "blocked": 1350,
+      "cached": 229,
+      "upstream": 622
+    },
+    {
+      "bucket": 1782309600,
+      "total": 884,
+      "blocked": 308,
+      "cached": 144,
+      "upstream": 432
+    },
+    {
+      "bucket": 1782310200,
+      "total": 886,
+      "blocked": 252,
+      "cached": 106,
+      "upstream": 528
+    },
+    {
+      "bucket": 1782310800,
+      "total": 785,
+      "blocked": 229,
+      "cached": 102,
+      "upstream": 454
+    },
+    {
+      "bucket": 1782311400,
+      "total": 1057,
+      "blocked": 290,
+      "cached": 137,
+      "upstream": 630
+    },
+    {
+      "bucket": 1782312000,
+      "total": 991,
+      "blocked": 355,
+      "cached": 140,
+      "upstream": 496
+    },
+    {
+      "bucket": 1782312600,
+      "total": 1169,
+      "blocked": 597,
+      "cached": 115,
+      "upstream": 457
+    },
+    {
+      "bucket": 1782313200,
+      "total": 3829,
+      "blocked": 2832,
+      "cached": 221,
+      "upstream": 776
+    },
+    {
+      "bucket": 1782313800,
+      "total": 1159,
+      "blocked": 653,
+      "cached": 85,
+      "upstream": 421
+    },
+    {
+      "bucket": 1782314400,
+      "total": 802,
+      "blocked": 498,
+      "cached": 47,
+      "upstream": 257
+    },
+    {
+      "bucket": 1782315000,
+      "total": 748,
+      "blocked": 434,
+      "cached": 53,
+      "upstream": 261
+    },
+    {
+      "bucket": 1782315600,
+      "total": 1243,
+      "blocked": 556,
+      "cached": 114,
+      "upstream": 573
+    },
+    {
+      "bucket": 1782316200,
+      "total": 1176,
+      "blocked": 521,
+      "cached": 180,
+      "upstream": 475
+    },
+    {
+      "bucket": 1782316800,
+      "total": 1044,
+      "blocked": 419,
+      "cached": 120,
+      "upstream": 505
+    },
+    {
+      "bucket": 1782317400,
+      "total": 853,
+      "blocked": 262,
+      "cached": 69,
+      "upstream": 522
+    },
+    {
+      "bucket": 1782318000,
+      "total": 634,
+      "blocked": 245,
+      "cached": 76,
+      "upstream": 313
+    },
+    {
+      "bucket": 1782318600,
+      "total": 928,
+      "blocked": 190,
+      "cached": 110,
+      "upstream": 628
+    },
+    {
+      "bucket": 1782319200,
+      "total": 656,
+      "blocked": 173,
+      "cached": 93,
+      "upstream": 390
+    },
+    {
+      "bucket": 1782319800,
+      "total": 647,
+      "blocked": 164,
+      "cached": 107,
+      "upstream": 376
+    },
+    {
+      "bucket": 1782320400,
+      "total": 664,
+      "blocked": 250,
+      "cached": 90,
+      "upstream": 324
+    },
+    {
+      "bucket": 1782321000,
+      "total": 876,
+      "blocked": 277,
+      "cached": 91,
+      "upstream": 508
+    },
+    {
+      "bucket": 1782321600,
+      "total": 1058,
+      "blocked": 415,
+      "cached": 131,
+      "upstream": 512
+    },
+    {
+      "bucket": 1782322200,
+      "total": 786,
+      "blocked": 195,
+      "cached": 106,
+      "upstream": 485
+    },
+    {
+      "bucket": 1782322800,
+      "total": 590,
+      "blocked": 156,
+      "cached": 65,
+      "upstream": 369
+    },
+    {
+      "bucket": 1782323400,
+      "total": 911,
+      "blocked": 370,
+      "cached": 99,
+      "upstream": 442
+    },
+    {
+      "bucket": 1782324000,
+      "total": 798,
+      "blocked": 311,
+      "cached": 61,
+      "upstream": 426
+    },
+    {
+      "bucket": 1782324600,
+      "total": 1305,
+      "blocked": 407,
+      "cached": 169,
+      "upstream": 729
+    },
+    {
+      "bucket": 1782325200,
+      "total": 757,
+      "blocked": 239,
+      "cached": 86,
+      "upstream": 432
+    },
+    {
+      "bucket": 1782325800,
+      "total": 646,
+      "blocked": 175,
+      "cached": 60,
+      "upstream": 411
+    },
+    {
+      "bucket": 1782326400,
+      "total": 768,
+      "blocked": 228,
+      "cached": 102,
+      "upstream": 438
+    },
+    {
+      "bucket": 1782327000,
+      "total": 1003,
+      "blocked": 330,
+      "cached": 82,
+      "upstream": 591
+    },
+    {
+      "bucket": 1782327600,
+      "total": 634,
+      "blocked": 183,
+      "cached": 94,
+      "upstream": 357
+    },
+    {
+      "bucket": 1782328200,
+      "total": 842,
+      "blocked": 207,
+      "cached": 72,
+      "upstream": 563
+    },
+    {
+      "bucket": 1782328800,
+      "total": 978,
+      "blocked": 381,
+      "cached": 91,
+      "upstream": 506
+    },
+    {
+      "bucket": 1782329400,
+      "total": 1094,
+      "blocked": 378,
+      "cached": 134,
+      "upstream": 582
+    },
+    {
+      "bucket": 1782330000,
+      "total": 1166,
+      "blocked": 439,
+      "cached": 130,
+      "upstream": 597
+    },
+    {
+      "bucket": 1782330600,
+      "total": 1282,
+      "blocked": 513,
+      "cached": 194,
+      "upstream": 575
+    },
+    {
+      "bucket": 1782331200,
+      "total": 1165,
+      "blocked": 460,
+      "cached": 149,
+      "upstream": 556
+    },
+    {
+      "bucket": 1782331800,
+      "total": 926,
+      "blocked": 358,
+      "cached": 127,
+      "upstream": 441
+    },
+    {
+      "bucket": 1782332400,
+      "total": 1478,
+      "blocked": 566,
+      "cached": 266,
+      "upstream": 646
+    },
+    {
+      "bucket": 1782333000,
+      "total": 1112,
+      "blocked": 478,
+      "cached": 132,
+      "upstream": 502
+    },
+    {
+      "bucket": 1782333600,
+      "total": 1079,
+      "blocked": 566,
+      "cached": 102,
+      "upstream": 411
+    },
+    {
+      "bucket": 1782334200,
+      "total": 887,
+      "blocked": 387,
+      "cached": 124,
+      "upstream": 376
+    },
+    {
+      "bucket": 1782334800,
+      "total": 936,
+      "blocked": 372,
+      "cached": 140,
+      "upstream": 424
+    },
+    {
+      "bucket": 1782335400,
+      "total": 948,
+      "blocked": 432,
+      "cached": 90,
+      "upstream": 426
+    },
+    {
+      "bucket": 1782336000,
+      "total": 1337,
+      "blocked": 548,
+      "cached": 278,
+      "upstream": 511
+    },
+    {
+      "bucket": 1782336600,
+      "total": 1496,
+      "blocked": 472,
+      "cached": 313,
+      "upstream": 711
+    },
+    {
+      "bucket": 1782337200,
+      "total": 976,
+      "blocked": 373,
+      "cached": 102,
+      "upstream": 501
+    },
+    {
+      "bucket": 1782337800,
+      "total": 884,
+      "blocked": 369,
+      "cached": 68,
+      "upstream": 425
+    },
+    {
+      "bucket": 1782338400,
+      "total": 1304,
+      "blocked": 490,
+      "cached": 231,
+      "upstream": 539
+    },
+    {
+      "bucket": 1782339000,
+      "total": 1438,
+      "blocked": 508,
+      "cached": 295,
+      "upstream": 543
+    },
+    {
+      "bucket": 1782339600,
+      "total": 891,
+      "blocked": 347,
+      "cached": 97,
+      "upstream": 439
+    },
+    {
+      "bucket": 1782340200,
+      "total": 709,
+      "blocked": 303,
+      "cached": 68,
+      "upstream": 338
+    }
+  ]
+}

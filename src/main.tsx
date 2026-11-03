@@ -4,6 +4,9 @@ import "./index.css";
 import { initialLanguage } from "./i18n";
 import App from "./App";
 
+// The demo signs itself in: its API lives in the page and has no password.
+if (__FERRITE_DEMO__) localStorage.setItem("ferrite_token", "demo");
+
 const root = createRoot(document.getElementById("root")!);
 const render = () =>
   root.render(

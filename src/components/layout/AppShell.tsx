@@ -4,6 +4,7 @@ import { NavLink, Link, useNavigate, useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
 import { loadLanguage } from "@/i18n";
 import { cn } from "@/lib/utils";
+import { DemoBanner } from "@/demo/DemoBanner";
 import { FerriteBrand } from "@/components/layout/Brand";
 import {
   LayoutDashboard,
@@ -699,6 +700,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
           key={pathname + reloadKey}
           className="min-w-0 flex-1 animate-fade-up overflow-y-auto pt-14 md:pt-0"
         >
+          {__FERRITE_DEMO__ && <DemoBanner />}
           {/* A paused resolver lets everything through — say so on every page,
               including on a phone where the sidebar card is out of sight. */}
           {paused && (

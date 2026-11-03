@@ -85,6 +85,14 @@ async function request<T>(
   body?: unknown,
   opts?: RequestOpts,
 ): Promise<T> {
+  // The demo build answers everything in the page, from sample data. The
+  // branch is compiled out of a normal build, sample data included.
+  if (__FERRITE_DEMO__) {
+    const { demoRequest } = await import("@/demo/mock");
+    const data = await demoRequest(method, path, body);
+    return (opts?.textResponse ? JSON.stringify(data, null, 2) : data) as T;
+  }
+
   const token = getToken();
   const headers: Record<string, string> = {
     "Content-Type": opts?.rawContentType ?? "application/json",

@@ -18,7 +18,7 @@ export function FerriteMark({ className }: FerriteMarkProps) {
         className,
       )}
     >
-      <img src="/ferrite-mark.svg" alt="" className="h-full w-full object-cover" />
+      <img src={`${import.meta.env.BASE_URL}ferrite-mark.svg`} alt="" className="h-full w-full object-cover" />
     </span>
   );
 }

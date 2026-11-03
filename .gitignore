@@ -25,3 +25,4 @@ dist-ssr
 
 # Local TypeScript build cache — regenerated on every build.
 tsconfig.tsbuildinfo
+dist-demo

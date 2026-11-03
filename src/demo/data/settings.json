@@ -1,0 +1,173 @@
+{
+  "api": {
+    "api_key": null,
+    "bind_addr": "0.0.0.0:80",
+    "password_hash": null
+  },
+  "blocklist": {
+    "client_bypass": [],
+    "decision_cache_size": 10000,
+    "enabled": true,
+    "lists": [
+      {
+        "enabled": true,
+        "name": "StevenBlack",
+        "url": "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts"
+      },
+      {
+        "enabled": true,
+        "name": "StevenBlack Gambling",
+        "url": "https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/gambling/hosts"
+      },
+      {
+        "enabled": true,
+        "name": "StevenBlack Fake News",
+        "url": "https://raw.githubusercontent.com/StevenBlack/hosts/master/extensions/fakenews/hosts"
+      },
+      {
+        "enabled": true,
+        "name": "Amazon FireTV",
+        "url": "https://perflyst.github.io/PiHoleBlocklist/AmazonFireTV.txt"
+      },
+      {
+        "enabled": true,
+        "name": "SessionReplay",
+        "url": "https://perflyst.github.io/PiHoleBlocklist/SessionReplay.txt"
+      },
+      {
+        "enabled": true,
+        "name": "SmartTV",
+        "url": "https://raw.githubusercontent.com/Perflyst/PiHoleBlocklist/master/SmartTV.txt"
+      },
+      {
+        "enabled": true,
+        "name": "Android Tracking",
+        "url": "https://perflyst.github.io/PiHoleBlocklist/android-tracking.txt"
+      },
+      {
+        "enabled": true,
+        "name": "AdBlock List",
+        "url": "https://raw.githubusercontent.com/r0xd4n3t/pihole-adblock-lists/main/pihole_adlists.txt"
+      },
+      {
+        "enabled": true,
+        "name": "Hacked Malware Web Sites",
+        "url": "https://adguardteam.github.io/HostlistsRegistry/assets/filter_9.txt"
+      },
+      {
+        "enabled": true,
+        "name": "DNS Bypass",
+        "url": "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/doh-vpn-proxy-bypass.txt"
+      },
+      {
+        "enabled": true,
+        "name": "easylist",
+        "url": "https://easylist.to/easylist/easylist.txt"
+      }
+    ],
+    "whitelist": [],
+    "wildcard_block": []
+  },
+  "custom_records": [],
+  "debug_logging": false,
+  "dns": {
+    "bind_addr": "[::]:53",
+    "cache_size": 10000,
+    "dnssec": true,
+    "log_ignore": [
+      "*.arpa",
+      "*.local",
+      "*.localdomain",
+      "fe.te",
+      "*.wlan0"
+    ],
+    "max_ttl": 3600,
+    "min_ttl": 60,
+    "strip_ecs": true
+  },
+  "panel": {
+    "domain": "fe.te",
+    "enabled": true
+  },
+  "proxy": {
+    "egresses": [
+      {
+        "buffer_kb": 512,
+        "config": "[Interface]\nPrivateKey = ********\nAddress = 10.2.0.2/32\nDNS = 10.2.0.1\n\n[Peer]\nPublicKey = (hidden)\nEndpoint = vpn.example.net:51820\nAllowedIPs = 0.0.0.0/0, ::/0",
+        "enabled": true,
+        "id": "proton-nl",
+        "kind": "wireguard",
+        "name": "Proton NL"
+      },
+      {
+        "buffer_kb": 512,
+        "config": "[Interface]\nPrivateKey = ********\nAddress = 10.2.0.2/32\nDNS = 10.2.0.1\n\n[Peer]\nPublicKey = (hidden)\nEndpoint = vpn.example.net:51820\nAllowedIPs = 0.0.0.0/0, ::/0",
+        "enabled": true,
+        "id": "proton-us-pa",
+        "kind": "wireguard",
+        "name": "Proton US PA"
+      }
+    ],
+    "enabled": true,
+    "http_port": 80,
+    "https_port": 443,
+    "max_connections": 1024,
+    "rules": [
+      {
+        "pattern": "netflix.com",
+        "egress": "proton-nl",
+        "fail_closed": true
+      },
+      {
+        "pattern": "*.bbc.co.uk",
+        "egress": "proton-nl",
+        "fail_closed": true
+      },
+      {
+        "pattern": "chatgpt.com",
+        "egress": "proton-us-pa",
+        "fail_closed": true
+      },
+      {
+        "pattern": "openai.com",
+        "egress": "proton-us-pa",
+        "fail_closed": true
+      },
+      {
+        "pattern": "spotify.com",
+        "egress": "proton-nl",
+        "fail_closed": false
+      },
+      {
+        "pattern": "whatismyipaddress.com",
+        "egress": "proton-us-pa",
+        "fail_closed": false,
+        "clients": [
+          "02:ee:19:84:4f:02"
+        ]
+      }
+    ]
+  },
+  "storage": {
+    "log_retention_days": 30,
+    "path": "/var/lib/ferrite/.local/share/ferrite/ferrite.db"
+  },
+  "upstream": [
+    {
+      "bootstrap_ip": "1.1.1.1",
+      "type": "https",
+      "url": "https://cloudflare-dns.com/dns-query"
+    }
+  ],
+  "web_dir": "/usr/share/ferrite/web",
+  "zones": [
+    {
+      "name": "1.168.192.in-addr.arpa",
+      "upstream": "192.168.1.1:53"
+    },
+    {
+      "name": "8.b.d.0.1.0.0.2.ip6.arpa",
+      "upstream": "192.168.1.1:53"
+    }
+  ]
+}

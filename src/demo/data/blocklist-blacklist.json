@@ -1,0 +1,7 @@
+{
+  "blacklist": [
+    "ads.example.com",
+    "telemetry.example.net",
+    "tracker.example.org"
+  ]
+}

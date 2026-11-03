@@ -1,0 +1,86 @@
+{
+  "domains": [
+    {
+      "count": 9688,
+      "domain": "telemetry.canva.com"
+    },
+    {
+      "count": 3510,
+      "domain": "f-log-extension.grammarly.io"
+    },
+    {
+      "count": 1962,
+      "domain": "aepxlg.adobe.com"
+    },
+    {
+      "count": 1917,
+      "domain": "errors.figma.com"
+    },
+    {
+      "count": 1646,
+      "domain": "gnar.grammarly.com"
+    },
+    {
+      "count": 1450,
+      "domain": "extension.femetrics.grammarly.io"
+    },
+    {
+      "count": 1386,
+      "domain": "app-measurement.com"
+    },
+    {
+      "count": 1278,
+      "domain": "mobile.events.data.microsoft.com"
+    },
+    {
+      "count": 1056,
+      "domain": "xp.apple.com"
+    },
+    {
+      "count": 911,
+      "domain": "www.googletagmanager.com"
+    },
+    {
+      "count": 855,
+      "domain": "web.facebook.com"
+    },
+    {
+      "count": 847,
+      "domain": "googleads.g.doubleclick.net"
+    },
+    {
+      "count": 781,
+      "domain": "voilatile-pa.googleapis.com"
+    },
+    {
+      "count": 744,
+      "domain": "collector.telemetry-p.aws.remedygames.online"
+    },
+    {
+      "count": 586,
+      "domain": "userlocation.googleapis.com"
+    },
+    {
+      "count": 584,
+      "domain": "o13855.ingest.sentry.io"
+    },
+    {
+      "count": 548,
+      "domain": "telemetry.1passwordservices.com"
+    },
+    {
+      "count": 484,
+      "domain": "a.nel.cloudflare.com"
+    },
+    {
+      "count": 462,
+      "domain": "firebaselogging-pa.googleapis.com"
+    },
+    {
+      "count": 441,
+      "domain": "fpkph.cdnpk.net"
+    }
+  ],
+  "from_ts": 1782254361,
+  "to_ts": 1782340761
+}
