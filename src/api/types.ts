@@ -1231,6 +1231,47 @@ export interface DhcpLease {
 
 export type CertSource = "letsencrypt" | "files";
 
+/** Who may set a device up from `/setup` without the panel's password. */
+export type SelfSetup = "off" | "named" | "anyone";
+
+/** A client's device name in encrypted DNS, and what to type in. */
+export interface SecureDnsDevice {
+  enabled: boolean;
+  id: string | null;
+  /** Android's Private DNS name; only with DNS over TLS on 853. */
+  android?: string | null;
+  doh_url?: string | null;
+  /** An Apple profile can be made for it. */
+  apple?: boolean;
+  /** Made just now. */
+  new?: boolean;
+}
+
+/** What `/setup` tells the device asking. */
+export type SetupInfo =
+  | { state: "away" | "off" | "closed" }
+  | { state: "unnamed"; ip: string; mac: string | null }
+  | {
+      state: "ready";
+      mode: SelfSetup;
+      named: boolean;
+      name: string | null;
+      ip: string;
+      mac: string | null;
+      id: string | null;
+      hostname: string;
+    };
+
+/** A device set up from `/setup`. */
+export interface SetupResult {
+  id: string;
+  name: string;
+  new: boolean;
+  android: string | null;
+  doh_url: string | null;
+  profile_url: string | null;
+}
+
 export interface SecureDnsAcme {
   email?: string;
   /** Write-only: never sent back; blank on save keeps the saved one. */
@@ -1251,6 +1292,7 @@ export interface SecureDnsSettings {
   devices?: string[];
   /** Reverse proxies whose X-Real-IP / X-Forwarded-For is believed. */
   proxies?: string[];
+  self_setup?: SelfSetup;
 }
 
 export interface SecureDnsAcmeStatus {

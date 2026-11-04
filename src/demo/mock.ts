@@ -476,6 +476,18 @@ function get(path: string, qs: URLSearchParams): Json {
       last_error: null,
     };
   if (p === "/secure-dns") return secureView();
+  if (p === "/secure-dns/device") return secureDevice(qs.get("name") ?? "", false);
+  if (p === "/setup")
+    return {
+      state: "ready",
+      mode: secureCfg.self_setup ?? "named",
+      named: true,
+      name: "iPhone Alex",
+      ip: "192.168.1.42",
+      mac: "5c:e9:1e:6c:e7:87",
+      id: secureDevice("iPhone Alex", false).id,
+      hostname: secureCfg.hostname,
+    };
   if (p === "/dhcp") return dhcpView();
   if (p === "/dhcp/leases") return dhcpLeases();
   if (p === "/sync")
@@ -568,6 +580,36 @@ let secureCfg: Json = {
   devices: ["pixel-8", "iphone", "macbook"],
 };
 let secureToken = true;
+/** A client's device name in encrypted DNS, made as the server makes it
+ *  (less the transliteration): its name, a dash and four letters. */
+function secureDevice(name: string, make: boolean): Json {
+  const c = secureCfg;
+  if (!c.enabled || !c.hostname) return { enabled: false, id: null };
+  const base =
+    name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "") || "device";
+  const devices: string[] = c.devices ?? [];
+  let id = devices.find((d) => d === base || new RegExp(`^${base}-[a-z0-9]{4}$`).test(d)) ?? null;
+  const made = !id && make;
+  if (made) {
+    id = `${base}-${Math.random().toString(36).slice(2, 6)}`;
+    secureCfg = { ...c, devices: [...devices, id] };
+  }
+  if (!id) return { enabled: true, id: null };
+  return {
+    enabled: true,
+    id,
+    new: made,
+    apple: true,
+    android: c.dot_port === 853 ? `${id}.${c.hostname}` : null,
+    doh_url: c.doh_port
+      ? `https://${c.hostname}${c.doh_port === 443 ? "" : `:${c.doh_port}`}/dns-query/${id}`
+      : null,
+  };
+}
+
 function secureView(): Json {
   const c = secureCfg;
   const on = c.enabled && !!c.hostname;
@@ -624,6 +666,11 @@ function write(method: string, path: string, body: Json): Json {
   if (path === "/dhcp/check")
     return { servers: [], checked_at: Math.floor(Date.now() / 1000), error: null };
   if (path === "/secure-dns/renew") return secureView();
+  if (path === "/secure-dns/device") return secureDevice(String(body?.name ?? ""), true);
+  if (path === "/setup") {
+    const d = secureDevice("iPhone Alex", true);
+    return { ...d, name: "iPhone Alex", profile_url: "#" };
+  }
   if (path === "/secure-dns/profile-link")
     // Nothing to install in the demo: the link goes nowhere.
     return { url: "#", device: body.device };

@@ -22,6 +22,7 @@ import { closeDevicePanel, useDevicePanel, type DevicePanelTarget } from "@/stor
 import { openDomainPanel } from "@/stores/domain-panel";
 import { fmtCountdown, PAUSE_OPTIONS, usePause } from "@/stores/pause";
 import { Tag } from "@/components/feedback/Badge";
+import { SecureDnsSection } from "@/components/SecureDnsDevice";
 
 function Heading({ children }: { children: React.ReactNode }) {
   return <p className="mb-2 text-xs text-muted">{children}</p>;
@@ -224,6 +225,14 @@ export function DevicePanel() {
   const dayBlocked = stats?.activity.reduce((n, a) => n + a.blocked, 0) ?? 0;
   const ip = client?.ips[0] ?? target.ips?.[0];
   const profileActive = profile ? (profiles?.active?.[profile.id] ?? true) : false;
+  // Its device name in encrypted DNS, or a name to make one from: a bare
+  // address isn't one.
+  const secureName = (() => {
+    const id = client?.devices?.find((d) => d.startsWith("id:"));
+    if (id) return id.slice(3);
+    if (!client?.name || [...client.ips, ...client.macs].includes(client.name)) return null;
+    return client.name;
+  })();
 
   async function run(work: () => Promise<unknown>, done?: string) {
     setBusy(true);
@@ -560,6 +569,11 @@ export function DevicePanel() {
                     ))}
                   </ul>
                 </div>
+              )}
+
+              {/* Encrypted DNS */}
+              {secureName && (
+                <SecureDnsSection name={secureName} heading={(text) => <Heading>{text}</Heading>} />
               )}
 
               {stats === null && client !== undefined && (

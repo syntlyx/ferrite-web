@@ -27,6 +27,7 @@ import * as importer from "./importer";
 import * as sync from "./sync";
 import * as dhcp from "./dhcp";
 import * as secureDns from "./secure-dns";
+import * as setup from "./setup";
 import * as services from "./services";
 import * as notifications from "./notifications";
 
@@ -134,6 +135,10 @@ export const api = {
   putSecureDns: secureDns.put,
   renewSecureDns: secureDns.renew,
   secureDnsProfileLink: secureDns.profileLink,
+  secureDnsDevice: secureDns.device,
+  makeSecureDnsDevice: secureDns.makeDevice,
+  setupInfo: setup.info,
+  setupClaim: setup.claim,
   getDhcp: dhcp.get,
   putDhcp: dhcp.put,
   dhcpLeases: dhcp.leases,

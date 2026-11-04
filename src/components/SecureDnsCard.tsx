@@ -1,25 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  AlertTriangle,
-  Check,
-  Copy,
-  Download,
-  Lock,
-  Plus,
-  RefreshCw,
-  Save,
-  Trash2,
-} from "lucide-react";
+import { AlertTriangle, Lock, Plus, RefreshCw, Save, Trash2 } from "lucide-react";
 import { api } from "@/api";
-import type { CertSource, SecureDnsSettings, SecureDnsView } from "@/api/types";
-import { copyToClipboard } from "@/lib/utils";
+import type { CertSource, SecureDnsSettings, SecureDnsView, SelfSetup } from "@/api/types";
 import { relTime } from "@/lib/format";
 import { FieldLabel, SettingRow, SettingsPanel } from "@/components/layout/SettingsPanel";
 import { Tag } from "@/components/feedback/Badge";
 import { Btn, IconBtn, Input, Skeleton, Switch } from "@/components/ui";
 import { Segmented } from "@/components/ui/segmented";
 import { useToast } from "@/hooks/use-toast";
+import { Copyable, DeviceHowTo } from "@/components/SecureDnsDevice";
 
 /** A client ID as the server takes it: one DNS label. */
 function toLabel(s: string): string {
@@ -28,29 +18,6 @@ function toLabel(s: string): string {
     .replace(/[^a-z0-9-]+/g, "-")
     .replace(/^-+|-+$/g, "")
     .slice(0, 63);
-}
-
-function Copyable({ value }: { value: string }) {
-  const { t } = useTranslation();
-  const [done, setDone] = useState(false);
-  return (
-    <div className="flex min-w-0 items-center gap-2 rounded-lg border border-bdr bg-void/50 px-3 py-2">
-      <code className="min-w-0 flex-1 truncate font-mono text-[12px] text-heading">{value}</code>
-      <button
-        type="button"
-        title={t("common.copy", { defaultValue: "Copy" })}
-        onClick={() =>
-          void copyToClipboard(value).then(() => {
-            setDone(true);
-            setTimeout(() => setDone(false), 1200);
-          })
-        }
-        className="shrink-0 text-muted transition-colors hover:text-ember"
-      >
-        {done ? <Check size={13} className="text-cached" /> : <Copy size={13} />}
-      </button>
-    </div>
-  );
 }
 
 function Problem({ children, action }: { children: string; action?: React.ReactNode }) {
@@ -187,16 +154,6 @@ export function SecureDnsCard() {
     if (await saveDevices([...devices, newId])) setDevice("");
   }
 
-  async function openProfile(name: string) {
-    try {
-      const { url } = await api.secureDnsProfileLink(name);
-      // A download on a computer; on an iPhone, Safari offers to install it.
-      window.location.href = url;
-    } catch (e) {
-      toast((e as Error).message, "error");
-    }
-  }
-
   async function retry() {
     try {
       setView(await api.renewSecureDns());
@@ -219,6 +176,26 @@ export function SecureDnsCard() {
         {err ?? t("secure.not_listening", { defaultValue: "not listening" })}
       </Tag>
     );
+
+  const setupUrl = `${window.location.origin}/setup`;
+  const selfSetupModes: { value: SelfSetup; label: string }[] = [
+    { value: "off", label: t("secure.self_off", { defaultValue: "Off" }) },
+    { value: "named", label: t("secure.self_named", { defaultValue: "Named devices" }) },
+    { value: "anyone", label: t("secure.self_anyone", { defaultValue: "Anyone at home" }) },
+  ];
+  const selfSetupHint: Record<SelfSetup, string> = {
+    off: t("secure.self_off_hint", {
+      defaultValue: "Devices are added here, and profiles handed over from here or from Clients.",
+    }),
+    named: t("secure.self_named_hint", {
+      defaultValue:
+        "Only devices you've named in Clients. A guest is told to ask you, and shown its address so you can find it.",
+    }),
+    anyone: t("secure.self_anyone_hint", {
+      defaultValue:
+        "Any device on your network, guests too. Remove the ones that shouldn't be in the list below.",
+    }),
+  };
 
   const sources: { value: CertSource; label: string }[] = [
     { value: "letsencrypt", label: "Let's Encrypt" },
@@ -477,6 +454,26 @@ export function SecureDnsCard() {
           />
         </SettingRow>
       )}
+      <SettingRow
+        label={t("secure.self_setup", { defaultValue: "Setting up without the password" })}
+        sub={t("secure.self_setup_sub", {
+          defaultValue:
+            "A device at home opens {{url}} and sets itself up: it gets a device name of its own and its profile. You're told through Notifications.",
+          url: setupUrl,
+        })}
+        align="start"
+      >
+        <div className="w-full space-y-1.5">
+          <Segmented
+            value={form.self_setup ?? "named"}
+            options={selfSetupModes}
+            onChange={(v) => set("self_setup", v)}
+            ariaLabel={t("secure.self_setup", { defaultValue: "Setting up without the password" })}
+          />
+          <p className="text-[11px] text-muted">{selfSetupHint[form.self_setup ?? "named"]}</p>
+          {on && (form.self_setup ?? "named") !== "off" && <Copyable value={setupUrl} />}
+        </div>
+      </SettingRow>
 
       {on && host && (st.dot || st.doh) && (
         <div
@@ -521,44 +518,7 @@ export function SecureDnsCard() {
                         <Trash2 size={13} />
                       </IconBtn>
                     </div>
-                    <div className="grid gap-2.5 lg:grid-cols-3">
-                      {dot && (
-                        <div className="min-w-0 space-y-1">
-                          <FieldLabel>
-                            {t("secure.android", {
-                              defaultValue: "Android · Settings → Network → Private DNS",
-                            })}
-                          </FieldLabel>
-                          <Copyable value={dot} />
-                        </div>
-                      )}
-                      <div className="min-w-0 space-y-1">
-                        <FieldLabel>
-                          {t("secure.apple", { defaultValue: "iPhone, iPad, Mac" })}
-                        </FieldLabel>
-                        <Btn
-                          type="button"
-                          variant="ghost"
-                          className="w-full"
-                          title={t("secure.apple_hint", {
-                            defaultValue:
-                              "Open this on the device itself; then Settings → Profile Downloaded → Install.",
-                          })}
-                          onClick={() => void openProfile(d)}
-                        >
-                          <Download size={12} />{" "}
-                          {t("secure.apple_profile", { defaultValue: "Install profile" })}
-                        </Btn>
-                      </div>
-                      {doh && (
-                        <div className="min-w-0 space-y-1">
-                          <FieldLabel>
-                            {t("secure.doh_url", { defaultValue: "Browsers · DNS over HTTPS" })}
-                          </FieldLabel>
-                          <Copyable value={doh} />
-                        </div>
-                      )}
-                    </div>
+                    <DeviceHowTo id={d} android={dot} doh={doh} grid="lg:grid-cols-3" />
                   </li>
                 );
               })}

@@ -57,6 +57,8 @@ export function Btn({
 export function IconBtn({ danger, spin, className, children, ...props }: IconBtnProps) {
   return (
     <button
+      // Never a form's submit by accident: Settings cards sit inside one.
+      type="button"
       className={cn(
         "rounded-xs transition-colors disabled:opacity-30",
         danger ? "text-muted hover:text-blocked" : "text-muted hover:text-heading",

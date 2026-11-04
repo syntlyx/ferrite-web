@@ -39,6 +39,7 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { error: Error | 
 }
 
 const Login = lazy(() => import("@/pages/Login"));
+const Setup = lazy(() => import("@/pages/Setup"));
 const Dashboard = lazy(() => import("@/pages/Dashboard"));
 const Queries = lazy(() => import("@/pages/Queries"));
 const Clients = lazy(() => import("@/pages/Clients"));
@@ -172,6 +173,8 @@ export default function App() {
             <Suspense fallback={<FullScreenFallback />}>
               <Routes>
                 <Route path="/login" element={<Login />} />
+                {/* A phone at home setting itself up: no sign-in. */}
+                <Route path="/setup" element={<Setup />} />
                 <Route
                   path="/*"
                   element={
