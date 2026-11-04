@@ -539,6 +539,7 @@ function dhcpView(): Json {
       interface: "eth0",
       ipv6: ["fd00::10", "2a02:8000:1::10"],
     },
+    rivals: { servers: [], checked_at: Math.floor(Date.now() / 1000) - 640, error: null },
   };
 }
 function dhcpLeases(): Json {
@@ -620,6 +621,8 @@ function secureView(): Json {
 
 function write(method: string, path: string, body: Json): Json {
   if (path === "/auth" || path === "/auth/login") return { token: "demo", expires_in: 86400 };
+  if (path === "/dhcp/check")
+    return { servers: [], checked_at: Math.floor(Date.now() / 1000), error: null };
   if (path === "/secure-dns/renew") return secureView();
   if (path === "/secure-dns/profile-link")
     // Nothing to install in the demo: the link goes nowhere.

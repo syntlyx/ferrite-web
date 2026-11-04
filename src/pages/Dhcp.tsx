@@ -6,6 +6,7 @@ import {
   Network,
   Plus,
   RadioTower,
+  Radar,
   RefreshCw,
   Save,
   Server,
@@ -171,6 +172,7 @@ export default function Dhcp() {
   const [leases, setLeases] = useState<DhcpLease[]>([]);
   const [err, setErr] = useState("");
   const [saving, setSaving] = useState(false);
+  const [checking, setChecking] = useState(false);
 
   const adopt = useCallback((v: DhcpView) => {
     const f = toForm(v);
@@ -209,7 +211,9 @@ export default function Dhcp() {
       void loadLeases();
       api
         .getDhcp()
-        .then((v) => setView((prev) => (prev ? { ...prev, status: v.status } : v)))
+        .then((v) =>
+          setView((prev) => (prev ? { ...prev, status: v.status, rivals: v.rivals } : v)),
+        )
         .catch(() => {});
     }, POLL_MS);
     return () => clearInterval(id);
@@ -241,10 +245,36 @@ export default function Dhcp() {
   const set = <K extends keyof Form>(k: K, v: Form[K]) => setForm({ ...form, [k]: v });
   const det = view.detected;
   const st = view.status;
+  const rivals = view.rivals ?? { servers: [], checked_at: null, error: null };
   const on = view.dhcp.enabled;
+
+  /** Ask the network for other DHCP servers; the answer lands in the view. */
+  async function checkRivals() {
+    setChecking(true);
+    try {
+      const rivals = await api.dhcpCheck();
+      setView((prev) => (prev ? { ...prev, rivals } : prev));
+    } catch (e) {
+      toast((e as Error).message, "error");
+    } finally {
+      setChecking(false);
+    }
+  }
+
+  async function forget(l: DhcpLease) {
+    try {
+      await api.dhcpForget(l.mac);
+      setLeases((p) => p.filter((x) => x.mac !== l.mac));
+      toast(t("dhcp.forgotten", { ip: l.ip, defaultValue: "{{ip}} is back in the pool" }));
+    } catch (e) {
+      toast((e as Error).message, "error");
+    }
+  }
 
   function toggleServer(next: boolean) {
     if (!form) return;
+    // About to hand out addresses: see first whether something else does.
+    if (next && !on) void checkRivals();
     // Switching on with no pool yet: start from a hundred addresses.
     if (next && !form.pool_start && !form.pool_end) {
       const pool = suggestPool(form.server_ip || det.server_ip, form.subnet_mask);
@@ -384,13 +414,25 @@ export default function Dhcp() {
           })}
           icon={Server}
         >
-          {!on && (
-            <Warning>
-              {t("dhcp.one_server", {
+          {rivals.servers.length > 0 ? (
+            <Warning tone={on ? "blocked" : "warn"}>
+              {t("dhcp.rivals_found", {
+                servers: rivals.servers.map((r) => r.server).join(", "),
+                offered: rivals.servers[0].offered,
                 defaultValue:
-                  "A network takes one DHCP server. Switch off the one in your router when you switch this on, or devices get answers from both.",
+                  "{{servers}} also hands out addresses (it offered {{offered}}). A network takes one DHCP server: switch that one off, or devices get their address and DNS from whichever answers first.",
               })}
             </Warning>
+          ) : (
+            !on &&
+            !rivals.checked_at && (
+              <Warning>
+                {t("dhcp.one_server", {
+                  defaultValue:
+                    "A network takes one DHCP server. Switch off the one in your router when you switch this on, or devices get answers from both.",
+                })}
+              </Warning>
+            )
           )}
           {on && st.error && <Warning tone="blocked">{st.error}</Warning>}
           <SettingRow
@@ -401,6 +443,41 @@ export default function Dhcp() {
             })}
           >
             <Switch checked={form.enabled} onCheckedChange={toggleServer} />
+          </SettingRow>
+          <SettingRow
+            label={t("dhcp.rivals", { defaultValue: "Other DHCP servers" })}
+            sub={t("dhcp.rivals_sub", {
+              defaultValue:
+                "ferrite asks the network the way a new device would, and again every half hour while it serves.",
+            })}
+          >
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              {rivals.checked_at &&
+                (rivals.error ? (
+                  <span className="text-[11px] text-muted">{rivals.error}</span>
+                ) : rivals.servers.length > 0 ? (
+                  <Tag tone="blocked">{rivals.servers.map((r) => r.server).join(", ")}</Tag>
+                ) : (
+                  <Tag tone="cached">
+                    {t("dhcp.rivals_none", {
+                      when: relTime(rivals.checked_at, i18n.language),
+                      defaultValue: "none answered · {{when}}",
+                    })}
+                  </Tag>
+                ))}
+              <Btn
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => void checkRivals()}
+                disabled={checking}
+              >
+                <Radar size={11} className={cn(checking && "animate-pulse")} />{" "}
+                {checking
+                  ? t("dhcp.checking", { defaultValue: "Asking…" })
+                  : t("dhcp.check", { defaultValue: "Check" })}
+              </Btn>
+            </div>
           </SettingRow>
           <SettingRow
             label={t("dhcp.pool", { defaultValue: "Address pool" })}
@@ -577,6 +654,15 @@ export default function Dhcp() {
                       <Lock size={11} /> {t("dhcp.reserve", { defaultValue: "Reserve" })}
                     </Btn>
                   )}
+                  <IconBtn
+                    danger
+                    title={t("dhcp.forget", {
+                      defaultValue: "Forget: the address goes back to the pool",
+                    })}
+                    onClick={() => void forget(l)}
+                  >
+                    <Trash2 size={12} />
+                  </IconBtn>
                 </div>
               );
             })

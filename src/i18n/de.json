@@ -1098,7 +1098,15 @@
     "hours_one": "{{count}} Stunde",
     "hours_other": "{{count}} Stunden",
     "minutes_one": "{{count}} Minute",
-    "minutes_other": "{{count}} Minuten"
+    "minutes_other": "{{count}} Minuten",
+    "rivals": "Andere DHCP-Server",
+    "rivals_sub": "ferrite fragt das Netz wie ein neues Gerät, und während es Adressen vergibt, jede halbe Stunde erneut.",
+    "rivals_none": "keiner geantwortet · {{when}}",
+    "rivals_found": "{{servers}} vergibt ebenfalls Adressen (bot {{offered}} an). Ein Netz verträgt nur einen DHCP-Server: schalte diesen ab, sonst bekommen Geräte Adresse und DNS von dem, der zuerst antwortet.",
+    "check": "Prüfen",
+    "checking": "Frage…",
+    "forget": "Vergessen: die Adresse geht zurück in den Pool",
+    "forgotten": "{{ip}} ist wieder im Pool"
   },
   "secure": {
     "title": "Verschlüsseltes DNS",

@@ -1199,11 +1199,20 @@ export interface DhcpDetected {
   ipv6: string[];
 }
 
+/** The last look for other DHCP servers on the network. */
+export interface DhcpRivals {
+  servers: { server: string; offered: string; dns: string[] }[];
+  /** Unix seconds; null = not looked yet. */
+  checked_at: number | null;
+  error: string | null;
+}
+
 export interface DhcpView {
   dhcp: DhcpSettings;
   ra: RaSettings;
   status: DhcpStatus;
   detected: DhcpDetected;
+  rivals: DhcpRivals;
 }
 
 export interface DhcpLease {

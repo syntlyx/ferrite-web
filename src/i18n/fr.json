@@ -1105,7 +1105,15 @@
     "hours_one": "{{count}} heure",
     "hours_other": "{{count}} heures",
     "minutes_one": "{{count}} minute",
-    "minutes_other": "{{count}} minutes"
+    "minutes_other": "{{count}} minutes",
+    "rivals": "Autres serveurs DHCP",
+    "rivals_sub": "ferrite interroge le réseau comme le ferait un nouvel appareil, puis toutes les demi-heures tant qu'il distribue des adresses.",
+    "rivals_none": "aucune réponse · {{when}}",
+    "rivals_found": "{{servers}} distribue aussi des adresses (il a proposé {{offered}}). Un réseau n'accepte qu'un serveur DHCP : désactivez celui-là, sinon les appareils prendront adresse et DNS de celui qui répond en premier.",
+    "check": "Vérifier",
+    "checking": "Interrogation…",
+    "forget": "Oublier : l'adresse retourne dans le pool",
+    "forgotten": "{{ip}} est de retour dans le pool"
   },
   "secure": {
     "title": "DNS chiffré",

@@ -1098,7 +1098,15 @@
     "hours_one": "{{count}} hour",
     "hours_other": "{{count}} hours",
     "minutes_one": "{{count}} minute",
-    "minutes_other": "{{count}} minutes"
+    "minutes_other": "{{count}} minutes",
+    "rivals": "Other DHCP servers",
+    "rivals_sub": "ferrite asks the network the way a new device would, and again every half hour while it serves.",
+    "rivals_none": "none answered · {{when}}",
+    "rivals_found": "{{servers}} also hands out addresses (it offered {{offered}}). A network takes one DHCP server: switch that one off, or devices get their address and DNS from whichever answers first.",
+    "check": "Check",
+    "checking": "Asking…",
+    "forget": "Forget: the address goes back to the pool",
+    "forgotten": "{{ip}} is back in the pool"
   },
   "secure": {
     "title": "Encrypted DNS",

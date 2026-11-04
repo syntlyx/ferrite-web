@@ -137,6 +137,8 @@ export const api = {
   getDhcp: dhcp.get,
   putDhcp: dhcp.put,
   dhcpLeases: dhcp.leases,
+  dhcpCheck: dhcp.check,
+  dhcpForget: dhcp.forget,
   getSync: sync.get,
   putSync: sync.put,
   syncNow: sync.now,

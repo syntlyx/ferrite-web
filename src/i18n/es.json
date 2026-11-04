@@ -1105,7 +1105,15 @@
     "hours_one": "{{count}} hora",
     "hours_other": "{{count}} horas",
     "minutes_one": "{{count}} minuto",
-    "minutes_other": "{{count}} minutos"
+    "minutes_other": "{{count}} minutos",
+    "rivals": "Otros servidores DHCP",
+    "rivals_sub": "ferrite pregunta a la red como lo haría un dispositivo nuevo, y otra vez cada media hora mientras reparte direcciones.",
+    "rivals_none": "nadie respondió · {{when}}",
+    "rivals_found": "{{servers}} también reparte direcciones (ofreció {{offered}}). Una red admite un solo servidor DHCP: apágalo, o los dispositivos tomarán dirección y DNS de quien responda primero.",
+    "check": "Comprobar",
+    "checking": "Preguntando…",
+    "forget": "Olvidar: la dirección vuelve al pool",
+    "forgotten": "{{ip}} vuelve al pool"
   },
   "secure": {
     "title": "DNS cifrado",
