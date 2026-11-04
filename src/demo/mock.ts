@@ -627,6 +627,8 @@ function secureView(): Json {
       dot_shared: false,
       // Tunnels listen on 443 in the demo: DNS over HTTPS shares it.
       doh_shared: on && c.doh_port === 443,
+      doh3: on && c.doh_port !== 0 && c.http3 !== false,
+      doh3_error: null,
       cert: on
         ? {
             names: [c.hostname, `*.${c.hostname}`],

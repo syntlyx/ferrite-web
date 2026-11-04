@@ -437,6 +437,33 @@ export function SecureDnsCard() {
           )}
         </div>
       </SettingRow>
+      {form.doh_port !== 0 && (
+        <SettingRow
+          label={t("secure.http3", { defaultValue: "DNS over HTTP/3" })}
+          sub={t("secure.http3_sub", {
+            port: form.doh_port,
+            defaultValue:
+              "QUIC on UDP {{port}}: quicker on a poor mobile network, and devices move to it on their own. Away from home the router has to send UDP {{port}} straight here — a reverse proxy can't pass QUIC on.",
+          })}
+          align="start"
+        >
+          <div className="flex flex-col items-end gap-1.5">
+            <Switch checked={form.http3 ?? true} onCheckedChange={(v) => set("http3", v)} />
+            {on &&
+              (view.config.http3 ?? true) &&
+              (st.doh3 ? (
+                <Tag tone="cached">
+                  {t("secure.http3_on", {
+                    port: view.config.doh_port,
+                    defaultValue: "listening on {{port}}/udp",
+                  })}
+                </Tag>
+              ) : (
+                st.doh3_error && <Tag tone="blocked">{st.doh3_error}</Tag>
+              ))}
+          </div>
+        </SettingRow>
+      )}
       {(form.doh_port !== 0 || form.proxyText !== "") && (
         <SettingRow
           label={t("secure.proxies", { defaultValue: "Reverse proxy" })}

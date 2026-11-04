@@ -1182,7 +1182,10 @@
     "self_anyone": "Anyone at home",
     "self_off_hint": "Devices are added here, and profiles handed over from here or from Clients.",
     "self_named_hint": "Only devices you've named in Clients. A guest is told to ask you, and shown its address so you can find it.",
-    "self_anyone_hint": "Any device on your network, guests too. Remove the ones that shouldn't be in the list below."
+    "self_anyone_hint": "Any device on your network, guests too. Remove the ones that shouldn't be in the list below.",
+    "http3": "DNS over HTTP/3",
+    "http3_sub": "QUIC on UDP {{port}}: quicker on a poor mobile network, and devices move to it on their own. Away from home the router has to send UDP {{port}} straight here — a reverse proxy can't pass QUIC on.",
+    "http3_on": "listening on {{port}}/udp"
   },
   "setup": {
     "title": "Encrypted DNS for this device",

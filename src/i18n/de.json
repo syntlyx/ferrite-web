@@ -1182,7 +1182,10 @@
     "self_anyone": "Alle zu Hause",
     "self_off_hint": "Geräte werden hier hinzugefügt, Profile von hier oder aus Clients weitergegeben.",
     "self_named_hint": "Nur Geräte, die du unter Clients benannt hast. Ein Gast wird gebeten, dich zu fragen, und sieht seine Adresse, damit du ihn findest.",
-    "self_anyone_hint": "Jedes Gerät in deinem Netz, auch Gäste. Entferne unten die, die nicht in die Liste gehören."
+    "self_anyone_hint": "Jedes Gerät in deinem Netz, auch Gäste. Entferne unten die, die nicht in die Liste gehören.",
+    "http3": "DNS over HTTP/3",
+    "http3_sub": "QUIC auf UDP {{port}}: schneller in einem schwachen Mobilnetz, und Geräte wechseln von selbst dorthin. Unterwegs muss der Router UDP {{port}} direkt hierher schicken — ein Reverse Proxy reicht QUIC nicht weiter.",
+    "http3_on": "lauscht auf {{port}}/udp"
   },
   "setup": {
     "title": "Verschlüsseltes DNS für dieses Gerät",

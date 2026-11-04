@@ -1297,6 +1297,8 @@ export interface SecureDnsSettings {
   doh_port: number;
   /** Client IDs answered away from home (at home every device is). */
   devices?: string[];
+  /** DNS over HTTPS over HTTP/3 too, on the DoH port's UDP side. */
+  http3?: boolean;
   /** Reverse proxies whose X-Real-IP / X-Forwarded-For is believed. */
   proxies?: string[];
   self_setup?: SelfSetup;
@@ -1320,6 +1322,9 @@ export interface SecureDnsStatus {
   /** Comes in through Tunnels' listener on the same port. */
   dot_shared: boolean;
   doh_shared: boolean;
+  /** DNS over HTTPS over HTTP/3, on the DoH port's UDP side. */
+  doh3?: boolean;
+  doh3_error?: string | null;
   cert: { names: string[]; issuer: string; not_before: number; not_after: number } | null;
   cert_warning: string | null;
   acme: SecureDnsAcmeStatus | null;
