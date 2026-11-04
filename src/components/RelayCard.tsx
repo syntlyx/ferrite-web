@@ -50,6 +50,10 @@ export function RelayCard() {
   }, [waiting]);
 
   if (!view || !form) return <Skeleton className="h-40 w-full" />;
+  // Until there is a relay to offer, only a box already set up for one (in
+  // config.toml) shows the card: an address and a pin of nothing would only
+  // puzzle everyone else.
+  if (!view.config.enabled && !view.config.server) return null;
 
   const dirty = JSON.stringify(form) !== JSON.stringify(view.config);
   const st = view.status;
