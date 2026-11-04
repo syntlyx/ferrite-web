@@ -1249,6 +1249,8 @@ export interface SecureDnsSettings {
   doh_port: number;
   /** Client IDs answered away from home (at home every device is). */
   devices?: string[];
+  /** Reverse proxies whose X-Real-IP / X-Forwarded-For is believed. */
+  proxies?: string[];
 }
 
 export interface SecureDnsAcmeStatus {

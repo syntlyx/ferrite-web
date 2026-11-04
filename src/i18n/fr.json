@@ -1127,6 +1127,8 @@
     "cert_expires": "expire {{when}}",
     "ports": "Ports",
     "ports_sub": "Android exige le DNS over TLS sur le 853. Le DNS over HTTPS peut partager le 443 avec les tunnels. 0 le désactive.",
+    "proxies": "Proxy inverse",
+    "proxies_sub": "Si Nginx Proxy Manager ou un autre proxy transmet le DNS over HTTPS à ce boîtier : son adresse. C'est alors le client qu'il indique (X-Real-IP) qui compte, et un téléphone derrière reste hors de la maison. Le DNS over TLS doit arriver ici directement.",
     "dot": "DNS over TLS",
     "doh": "DNS over HTTPS",
     "listening": "écoute sur {{port}}",

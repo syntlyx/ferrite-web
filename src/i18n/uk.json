@@ -1138,6 +1138,8 @@
     "cert_expires": "спливає {{when}}",
     "ports": "Порти",
     "ports_sub": "Android потребує DNS over TLS на 853. DNS over HTTPS може ділити 443 з тунелями. 0 вимикає.",
+    "proxies": "Зворотний проксі",
+    "proxies_sub": "Якщо Nginx Proxy Manager чи інший проксі передає сюди DNS over HTTPS — його адреса. Тоді враховується клієнт, якого він називає (X-Real-IP), і телефон за ним лишається поза домом. DNS over TLS має приходити сюди напряму.",
     "dot": "DNS over TLS",
     "doh": "DNS over HTTPS",
     "listening": "слухає {{port}}",

@@ -64,7 +64,7 @@ function Problem({ children, action }: { children: string; action?: React.ReactN
 }
 
 /** The form as edited: the token is typed fresh, never loaded. */
-type Form = SecureDnsSettings & { token: string };
+type Form = SecureDnsSettings & { token: string; proxyText: string };
 
 /**
  * DNS over TLS / HTTPS for devices: the name and certificate, the ports, what
@@ -93,6 +93,7 @@ export function SecureDnsCard() {
       acme: { email: c.acme?.email ?? "", staging: c.acme?.staging ?? false },
       devices: c.devices ?? [],
       token: "",
+      proxyText: (c.proxies ?? []).join(", "),
     };
     setView(v);
     setForm(f);
@@ -140,9 +141,10 @@ export function SecureDnsCard() {
     if (!form) return;
     setBusy(true);
     try {
-      const { token, ...rest } = form;
+      const { token, proxyText, ...rest } = form;
       const v = await api.putSecureDns({
         ...rest,
+        proxies: proxyText.split(/[\s,]+/).filter(Boolean),
         cert_file: form.cert_file?.trim() || null,
         key_file: form.key_file?.trim() || null,
         acme: { ...form.acme, cloudflare_token: token.trim() || null },
@@ -458,6 +460,23 @@ export function SecureDnsCard() {
           )}
         </div>
       </SettingRow>
+      {(form.doh_port !== 0 || form.proxyText !== "") && (
+        <SettingRow
+          label={t("secure.proxies", { defaultValue: "Reverse proxy" })}
+          sub={t("secure.proxies_sub", {
+            defaultValue:
+              "When Nginx Proxy Manager or another proxy passes DNS over HTTPS on to this box, its address. The client it names (X-Real-IP) counts then, so a phone behind it is still away from home. DNS over TLS has to come here directly.",
+          })}
+        >
+          <Input
+            value={form.proxyText}
+            onChange={(e) => set("proxyText", e.target.value)}
+            placeholder="192.168.1.5"
+            className="w-full font-mono"
+            spellCheck={false}
+          />
+        </SettingRow>
+      )}
 
       {on && host && (st.dot || st.doh) && (
         <div
