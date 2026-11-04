@@ -10,3 +10,8 @@ export function get(): Promise<SecureDnsView> {
 export function put(body: SecureDnsSettings): Promise<SecureDnsView> {
   return http.put("/secure-dns", body);
 }
+
+/** Ask Let's Encrypt again now, not at the next try after a failure. */
+export function renew(): Promise<SecureDnsView> {
+  return http.post("/secure-dns/renew");
+}

@@ -132,6 +132,7 @@ export const api = {
   previewImport: importer.preview,
   getSecureDns: secureDns.get,
   putSecureDns: secureDns.put,
+  renewSecureDns: secureDns.renew,
   getDhcp: dhcp.get,
   putDhcp: dhcp.put,
   dhcpLeases: dhcp.leases,

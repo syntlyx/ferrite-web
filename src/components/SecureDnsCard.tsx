@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { AlertTriangle, Check, Copy, Lock, Save } from "lucide-react";
+import { AlertTriangle, Check, Copy, Lock, RefreshCw, Save } from "lucide-react";
 import { api } from "@/api";
-import type { SecureDnsSettings, SecureDnsView } from "@/api/types";
+import type { CertSource, SecureDnsSettings, SecureDnsView } from "@/api/types";
 import { cn, copyToClipboard } from "@/lib/utils";
 import { relTime } from "@/lib/format";
 import { FieldLabel, SettingRow, SettingsPanel } from "@/components/layout/SettingsPanel";
 import { Tag } from "@/components/feedback/Badge";
 import { Btn, Input, Skeleton, Switch } from "@/components/ui";
+import { Segmented } from "@/components/ui/segmented";
 import { useToast } from "@/hooks/use-toast";
 
 /** A client ID as the server takes it: one DNS label. */
@@ -42,14 +43,18 @@ function Copyable({ value }: { value: string }) {
   );
 }
 
-function Problem({ children }: { children: string }) {
+function Problem({ children, action }: { children: string; action?: React.ReactNode }) {
   return (
     <div className="my-4 flex items-start gap-2 rounded-xs border border-warn/35 bg-warn/10 px-3 py-2.5 text-xs text-warn">
       <AlertTriangle size={13} className="mt-px shrink-0" />
-      <span className="min-w-0">{children}</span>
+      <span className="min-w-0 flex-1">{children}</span>
+      {action}
     </div>
   );
 }
+
+/** The form as edited: the token is typed fresh, never loaded. */
+type Form = SecureDnsSettings & { token: string };
 
 /**
  * DNS over TLS / HTTPS for devices: the name and certificate, the ports, what
@@ -61,20 +66,34 @@ export function SecureDnsCard() {
   const { t, i18n } = useTranslation();
   const toast = useToast();
   const [view, setView] = useState<SecureDnsView | null>(null);
-  const [form, setForm] = useState<SecureDnsSettings | null>(null);
+  const [form, setForm] = useState<Form | null>(null);
   const [saved, setSaved] = useState("");
   const [device, setDevice] = useState("");
   const [busy, setBusy] = useState(false);
 
   const adopt = useCallback((v: SecureDnsView) => {
-    const f = {
-      ...v.config,
-      cert_file: v.config.cert_file ?? "",
-      key_file: v.config.key_file ?? "",
+    const c = v.config;
+    // Nothing set up yet: Let's Encrypt is the easy road, so start there.
+    const fresh = !c.enabled && !c.hostname && !c.cert_file && !v.token_set;
+    const f: Form = {
+      ...c,
+      certificate: fresh ? "letsencrypt" : c.certificate,
+      cert_file: c.cert_file ?? "",
+      key_file: c.key_file ?? "",
+      acme: { email: c.acme?.email ?? "", staging: c.acme?.staging ?? false },
+      token: "",
     };
     setView(v);
     setForm(f);
     setSaved(JSON.stringify(f));
+  }, []);
+
+  /** Status only: the form being edited stays as it is. */
+  const refresh = useCallback(() => {
+    api
+      .getSecureDns()
+      .then((v) => setView(v))
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -84,13 +103,24 @@ export function SecureDnsCard() {
       .catch(() => {});
   }, [adopt]);
 
+  // While a certificate is being fetched, follow along.
+  const working = view?.status.acme?.state === "working";
+  useEffect(() => {
+    if (!working) return;
+    const id = setInterval(refresh, 2000);
+    return () => clearInterval(id);
+  }, [working, refresh]);
+
   if (!view || !form) return <Skeleton className="h-40 w-full" />;
 
   const dirty = JSON.stringify(form) !== saved;
-  const set = <K extends keyof SecureDnsSettings>(k: K, v: SecureDnsSettings[K]) =>
-    setForm({ ...form, [k]: v });
+  const set = <K extends keyof Form>(k: K, v: Form[K]) => setForm({ ...form, [k]: v });
+  const setAcme = (patch: Partial<NonNullable<Form["acme"]>>) =>
+    setForm({ ...form, acme: { ...form.acme, ...patch } });
   const st = view.status;
   const on = view.config.enabled;
+  const le = form.certificate === "letsencrypt";
+  const acme = view.config.certificate === "letsencrypt" ? st.acme : null;
   const id = toLabel(device);
   const host = view.config.hostname;
   const dotHost = view.setup.dot_host
@@ -108,10 +138,12 @@ export function SecureDnsCard() {
     if (!form) return;
     setBusy(true);
     try {
+      const { token, ...rest } = form;
       const v = await api.putSecureDns({
-        ...form,
+        ...rest,
         cert_file: form.cert_file?.trim() || null,
         key_file: form.key_file?.trim() || null,
+        acme: { ...form.acme, cloudflare_token: token.trim() || null },
       });
       adopt(v);
       if (v.config.enabled && v.status.error) toast(v.status.error, "error");
@@ -123,18 +155,38 @@ export function SecureDnsCard() {
     }
   }
 
-  const listening = (ok: boolean, err: string | null, port: number) =>
+  async function retry() {
+    try {
+      setView(await api.renewSecureDns());
+    } catch (e) {
+      toast((e as Error).message, "error");
+    }
+  }
+
+  const listening = (ok: boolean, shared: boolean, err: string | null, port: number) =>
     port === 0 ? (
       <Tag>{t("common.disabled", { defaultValue: "Disabled" })}</Tag>
     ) : ok ? (
       <Tag tone="cached">
-        {t("secure.listening", { port, defaultValue: "listening on {{port}}" })}
+        {shared
+          ? t("secure.shared", { port, defaultValue: "on {{port}}, shared with Tunnels" })
+          : t("secure.listening", { port, defaultValue: "listening on {{port}}" })}
       </Tag>
     ) : (
       <Tag tone="blocked">
         {err ?? t("secure.not_listening", { defaultValue: "not listening" })}
       </Tag>
     );
+
+  const sources: { value: CertSource; label: string }[] = [
+    { value: "letsencrypt", label: "Let's Encrypt" },
+    { value: "files", label: t("secure.source_files", { defaultValue: "My own files" }) },
+  ];
+
+  const stepText = (step: string | null) =>
+    step
+      ? t(`secure.step.${step.replace(/[^a-z]+/gi, "_")}`, { defaultValue: step })
+      : t("secure.step.starting", { defaultValue: "starting" });
 
   return (
     <SettingsPanel
@@ -181,34 +233,148 @@ export function SecureDnsCard() {
       </SettingRow>
       <SettingRow
         label={t("secure.cert", { defaultValue: "Certificate" })}
-        sub={t("secure.cert_sub", {
-          defaultValue:
-            "PEM files on this box, for the name and *.name. Renewals are picked up by themselves.",
-        })}
+        sub={
+          le
+            ? t("secure.cert_le_sub", {
+                defaultValue:
+                  "ferrite gets it for the name and *.name and renews it, proving the name with a TXT record through Cloudflare. No port has to be open for that.",
+              })
+            : t("secure.cert_sub", {
+                defaultValue:
+                  "PEM files on this box, for the name and *.name. Renewals are picked up by themselves.",
+              })
+        }
         align="start"
       >
         <div className="grid w-full gap-2">
-          <Input
-            value={form.cert_file ?? ""}
-            onChange={(e) => set("cert_file", e.target.value)}
-            placeholder="/etc/letsencrypt/live/…/fullchain.pem"
-            className="w-full font-mono"
-            spellCheck={false}
+          <Segmented
+            value={form.certificate}
+            options={sources}
+            onChange={(v) => set("certificate", v)}
+            ariaLabel={t("secure.cert", { defaultValue: "Certificate" })}
           />
-          <Input
-            value={form.key_file ?? ""}
-            onChange={(e) => set("key_file", e.target.value)}
-            placeholder="/etc/letsencrypt/live/…/privkey.pem"
-            className="w-full font-mono"
-            spellCheck={false}
-          />
+          {le ? (
+            <>
+              <label className="space-y-1">
+                <FieldLabel>
+                  {t("secure.cf_token", { defaultValue: "Cloudflare API token" })}
+                </FieldLabel>
+                <Input
+                  type="password"
+                  autoComplete="off"
+                  value={form.token}
+                  onChange={(e) => set("token", e.target.value)}
+                  placeholder={
+                    view.token_set
+                      ? t("secure.cf_token_saved", {
+                          defaultValue: "Saved — type a new one to replace it",
+                        })
+                      : t("secure.cf_token_placeholder", {
+                          defaultValue: "Token with “Edit zone DNS” for your zone",
+                        })
+                  }
+                  className="w-full"
+                  spellCheck={false}
+                />
+              </label>
+              <p className="text-[11px] text-muted">
+                {t("secure.cf_token_help", {
+                  defaultValue:
+                    "Cloudflare → My Profile → API Tokens → Create token → “Edit zone DNS”, limited to the zone of the name.",
+                })}
+              </p>
+              <label className="space-y-1">
+                <FieldLabel>
+                  {t("secure.email", { defaultValue: "Email for Let's Encrypt (optional)" })}
+                </FieldLabel>
+                <Input
+                  type="email"
+                  value={form.acme?.email ?? ""}
+                  onChange={(e) => setAcme({ email: e.target.value })}
+                  placeholder="you@example.com"
+                  className="w-full"
+                  spellCheck={false}
+                />
+              </label>
+              <label className="flex items-center justify-between gap-3 pt-1">
+                <span className="min-w-0">
+                  <span className="block text-xs text-heading">
+                    {t("secure.staging", { defaultValue: "Test certificates" })}
+                  </span>
+                  <span className="block text-[11px] text-muted">
+                    {t("secure.staging_sub", {
+                      defaultValue:
+                        "Let's Encrypt's staging service, for trying the setup out. Devices won't trust these.",
+                    })}
+                  </span>
+                </span>
+                <Switch
+                  checked={form.acme?.staging ?? false}
+                  onCheckedChange={(v) => setAcme({ staging: v })}
+                />
+              </label>
+            </>
+          ) : (
+            <>
+              <Input
+                value={form.cert_file ?? ""}
+                onChange={(e) => set("cert_file", e.target.value)}
+                placeholder="/etc/letsencrypt/live/…/fullchain.pem"
+                className="w-full font-mono"
+                spellCheck={false}
+              />
+              <Input
+                value={form.key_file ?? ""}
+                onChange={(e) => set("key_file", e.target.value)}
+                placeholder="/etc/letsencrypt/live/…/privkey.pem"
+                className="w-full font-mono"
+                spellCheck={false}
+              />
+            </>
+          )}
+          {on && acme?.state === "working" && (
+            <p className="flex items-center gap-1.5 text-[11px] text-heading">
+              <RefreshCw size={11} className="animate-spin text-ember" />
+              {t("secure.acme_working", {
+                step: stepText(acme.step),
+                defaultValue: "Getting the certificate: {{step}}…",
+              })}
+            </p>
+          )}
+          {on && acme?.state === "error" && acme.error && (
+            <Problem
+              action={
+                <button
+                  type="button"
+                  onClick={() => void retry()}
+                  className="shrink-0 font-medium underline-offset-2 hover:underline"
+                >
+                  {t("secure.retry", { defaultValue: "Try again" })}
+                </button>
+              }
+            >
+              {acme.next
+                ? t("secure.acme_error", {
+                    error: acme.error,
+                    when: relTime(acme.next, i18n.language),
+                    defaultValue: "{{error}}. Next try {{when}}.",
+                  })
+                : acme.error}
+            </Problem>
+          )}
           {st.cert && (
             <p className="text-[11px] text-muted">
-              {st.cert.names.join(", ")} ·{" "}
+              {st.cert.names.join(", ")} · {st.cert.issuer} ·{" "}
               {t("secure.cert_expires", {
                 when: relTime(st.cert.not_after, i18n.language),
                 defaultValue: "expires {{when}}",
               })}
+              {acme?.state === "ok" && acme.next
+                ? ` · ${t("secure.renews", {
+                    when: relTime(acme.next, i18n.language),
+                    defaultValue: "renews {{when}}",
+                  })}`
+                : ""}
             </p>
           )}
         </div>
@@ -216,7 +382,8 @@ export function SecureDnsCard() {
       <SettingRow
         label={t("secure.ports", { defaultValue: "Ports" })}
         sub={t("secure.ports_sub", {
-          defaultValue: "Android needs DNS over TLS on 853. 0 switches one off.",
+          defaultValue:
+            "Android needs DNS over TLS on 853. DNS over HTTPS can share 443 with Tunnels. 0 switches one off.",
         })}
         align="start"
       >
@@ -245,14 +412,14 @@ export function SecureDnsCard() {
           </label>
           {on && (
             <>
-              <div>{listening(st.dot, st.dot_error, view.config.dot_port)}</div>
-              <div>{listening(st.doh, st.doh_error, view.config.doh_port)}</div>
+              <div>{listening(st.dot, st.dot_shared, st.dot_error, view.config.dot_port)}</div>
+              <div>{listening(st.doh, st.doh_shared, st.doh_error, view.config.doh_port)}</div>
             </>
           )}
         </div>
       </SettingRow>
 
-      {on && host && (st.dot || st.doh) && (
+      {on && host && st.cert && (st.dot || st.doh) && (
         <div
           className="space-y-3 py-4"
           data-search={t("secure.setup", { defaultValue: "Set up a device" })}

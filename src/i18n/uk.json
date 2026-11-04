@@ -1127,7 +1127,7 @@
     "cert_sub": "PEM-файли на цьому пристрої, для імені і *.імені. Оновлені сертифікати підхоплюються самі.",
     "cert_expires": "спливає {{when}}",
     "ports": "Порти",
-    "ports_sub": "Android потребує DNS over TLS на 853. 0 вимикає.",
+    "ports_sub": "Android потребує DNS over TLS на 853. DNS over HTTPS може ділити 443 з тунелями. 0 вимикає.",
     "dot": "DNS over TLS",
     "doh": "DNS over HTTPS",
     "listening": "слухає {{port}}",
@@ -1138,6 +1138,29 @@
     "android": "Android · Налаштування → Мережа → Приватний DNS",
     "ios": "iPhone, Mac, браузери · DNS over HTTPS",
     "save": "Зберегти й застосувати",
-    "saved": "Збережено й застосовано"
+    "saved": "Збережено й застосовано",
+    "shared": "на {{port}}, спільно з тунелями",
+    "source_files": "Власні файли",
+    "cert_le_sub": "ferrite сам отримує його для імені та *.імені й продовжує, підтверджуючи ім'я TXT-записом через Cloudflare. Відкривати порт для цього не треба.",
+    "cf_token": "API-токен Cloudflare",
+    "cf_token_saved": "Збережено — введіть новий, щоб замінити",
+    "cf_token_placeholder": "Токен із «Edit zone DNS» для вашої зони",
+    "cf_token_help": "Cloudflare → My Profile → API Tokens → Create token → «Edit zone DNS», лише для зони цього імені.",
+    "email": "Email для Let's Encrypt (необов'язково)",
+    "staging": "Тестові сертифікати",
+    "staging_sub": "Тестовий сервіс Let's Encrypt, щоб перевірити налаштування. Пристрої таким не довіряють.",
+    "acme_working": "Отримую сертифікат: {{step}}…",
+    "acme_error": "{{error}}. Наступна спроба {{when}}.",
+    "retry": "Спробувати ще",
+    "renews": "продовжиться {{when}}",
+    "step": {
+      "starting": "починаю",
+      "finding_the_zone": "шукаю зону",
+      "opening_the_request": "створюю запит",
+      "adding_the_TXT_record": "додаю TXT-запис",
+      "waiting_for_the_record_to_show_up": "чекаю, поки запис з'явиться",
+      "waiting_for_Let_s_Encrypt_to_check": "чекаю перевірки Let's Encrypt",
+      "getting_the_certificate": "забираю сертифікат"
+    }
   }
 }

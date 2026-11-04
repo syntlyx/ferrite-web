@@ -1116,7 +1116,7 @@
     "cert_sub": "Fichiers PEM sur ce boîtier, pour le nom et *.nom. Les renouvellements sont pris en compte d'eux-mêmes.",
     "cert_expires": "expire {{when}}",
     "ports": "Ports",
-    "ports_sub": "Android exige le DNS over TLS sur le 853. 0 le désactive.",
+    "ports_sub": "Android exige le DNS over TLS sur le 853. Le DNS over HTTPS peut partager le 443 avec les tunnels. 0 le désactive.",
     "dot": "DNS over TLS",
     "doh": "DNS over HTTPS",
     "listening": "écoute sur {{port}}",
@@ -1127,6 +1127,29 @@
     "android": "Android · Paramètres → Réseau → DNS privé",
     "ios": "iPhone, Mac, navigateurs · DNS over HTTPS",
     "save": "Enregistrer et appliquer",
-    "saved": "Enregistré et appliqué"
+    "saved": "Enregistré et appliqué",
+    "shared": "sur le {{port}}, partagé avec les tunnels",
+    "source_files": "Mes fichiers",
+    "cert_le_sub": "ferrite l'obtient pour le nom et *.nom et le renouvelle, en prouvant le nom par un enregistrement TXT via Cloudflare. Aucun port n'a besoin d'être ouvert.",
+    "cf_token": "Jeton d'API Cloudflare",
+    "cf_token_saved": "Enregistré — saisissez-en un nouveau pour le remplacer",
+    "cf_token_placeholder": "Jeton avec « Edit zone DNS » pour votre zone",
+    "cf_token_help": "Cloudflare → My Profile → API Tokens → Create token → « Edit zone DNS », limité à la zone du nom.",
+    "email": "E-mail pour Let's Encrypt (facultatif)",
+    "staging": "Certificats de test",
+    "staging_sub": "Le service de test de Let's Encrypt, pour essayer la configuration. Les appareils ne leur font pas confiance.",
+    "acme_working": "Obtention du certificat : {{step}}…",
+    "acme_error": "{{error}}. Prochain essai {{when}}.",
+    "retry": "Réessayer",
+    "renews": "renouvelé {{when}}",
+    "step": {
+      "starting": "démarrage",
+      "finding_the_zone": "recherche de la zone",
+      "opening_the_request": "ouverture de la demande",
+      "adding_the_TXT_record": "ajout de l'enregistrement TXT",
+      "waiting_for_the_record_to_show_up": "attente de la publication de l'enregistrement",
+      "waiting_for_Let_s_Encrypt_to_check": "attente de la vérification par Let's Encrypt",
+      "getting_the_certificate": "récupération du certificat"
+    }
   }
 }

@@ -1116,7 +1116,7 @@
     "cert_sub": "Archivos PEM en este equipo, para el nombre y *.nombre. Las renovaciones se recogen solas.",
     "cert_expires": "vence {{when}}",
     "ports": "Puertos",
-    "ports_sub": "Android necesita DNS over TLS en el 853. 0 lo desactiva.",
+    "ports_sub": "Android necesita DNS over TLS en el 853. DNS over HTTPS puede compartir el 443 con los túneles. 0 lo desactiva.",
     "dot": "DNS over TLS",
     "doh": "DNS over HTTPS",
     "listening": "escucha en {{port}}",
@@ -1127,6 +1127,29 @@
     "android": "Android · Ajustes → Red → DNS privado",
     "ios": "iPhone, Mac, navegadores · DNS over HTTPS",
     "save": "Guardar y aplicar",
-    "saved": "Guardado y aplicado"
+    "saved": "Guardado y aplicado",
+    "shared": "en el {{port}}, compartido con los túneles",
+    "source_files": "Mis archivos",
+    "cert_le_sub": "ferrite lo obtiene para el nombre y *.nombre y lo renueva, probando el nombre con un registro TXT a través de Cloudflare. No hace falta abrir ningún puerto.",
+    "cf_token": "Token de API de Cloudflare",
+    "cf_token_saved": "Guardado: escribe uno nuevo para reemplazarlo",
+    "cf_token_placeholder": "Token con «Edit zone DNS» para tu zona",
+    "cf_token_help": "Cloudflare → My Profile → API Tokens → Create token → «Edit zone DNS», limitado a la zona del nombre.",
+    "email": "Email para Let's Encrypt (opcional)",
+    "staging": "Certificados de prueba",
+    "staging_sub": "El servicio de pruebas de Let's Encrypt, para probar la configuración. Los dispositivos no confían en ellos.",
+    "acme_working": "Obteniendo el certificado: {{step}}…",
+    "acme_error": "{{error}}. Próximo intento {{when}}.",
+    "retry": "Reintentar",
+    "renews": "se renueva {{when}}",
+    "step": {
+      "starting": "empezando",
+      "finding_the_zone": "buscando la zona",
+      "opening_the_request": "abriendo la solicitud",
+      "adding_the_TXT_record": "añadiendo el registro TXT",
+      "waiting_for_the_record_to_show_up": "esperando a que aparezca el registro",
+      "waiting_for_Let_s_Encrypt_to_check": "esperando la comprobación de Let's Encrypt",
+      "getting_the_certificate": "descargando el certificado"
+    }
   }
 }

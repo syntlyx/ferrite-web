@@ -1109,7 +1109,7 @@
     "cert_sub": "PEM files on this box, for the name and *.name. Renewals are picked up by themselves.",
     "cert_expires": "expires {{when}}",
     "ports": "Ports",
-    "ports_sub": "Android needs DNS over TLS on 853. 0 switches one off.",
+    "ports_sub": "Android needs DNS over TLS on 853. DNS over HTTPS can share 443 with Tunnels. 0 switches one off.",
     "dot": "DNS over TLS",
     "doh": "DNS over HTTPS",
     "listening": "listening on {{port}}",
@@ -1120,6 +1120,29 @@
     "android": "Android · Settings → Network → Private DNS",
     "ios": "iPhone, Mac, browsers · DNS over HTTPS",
     "save": "Save and apply",
-    "saved": "Saved and applied"
+    "saved": "Saved and applied",
+    "shared": "on {{port}}, shared with Tunnels",
+    "source_files": "My own files",
+    "cert_le_sub": "ferrite gets it for the name and *.name and renews it, proving the name with a TXT record through Cloudflare. No port has to be open for that.",
+    "cf_token": "Cloudflare API token",
+    "cf_token_saved": "Saved — type a new one to replace it",
+    "cf_token_placeholder": "Token with “Edit zone DNS” for your zone",
+    "cf_token_help": "Cloudflare → My Profile → API Tokens → Create token → “Edit zone DNS”, limited to the zone of the name.",
+    "email": "Email for Let's Encrypt (optional)",
+    "staging": "Test certificates",
+    "staging_sub": "Let's Encrypt's staging service, for trying the setup out. Devices won't trust these.",
+    "acme_working": "Getting the certificate: {{step}}…",
+    "acme_error": "{{error}}. Next try {{when}}.",
+    "retry": "Try again",
+    "renews": "renews {{when}}",
+    "step": {
+      "starting": "starting",
+      "finding_the_zone": "finding the zone",
+      "opening_the_request": "opening the request",
+      "adding_the_TXT_record": "adding the TXT record",
+      "waiting_for_the_record_to_show_up": "waiting for the record to show up",
+      "waiting_for_Let_s_Encrypt_to_check": "waiting for Let's Encrypt to check",
+      "getting_the_certificate": "getting the certificate"
+    }
   }
 }

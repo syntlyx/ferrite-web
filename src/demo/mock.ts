@@ -560,31 +560,47 @@ function dhcpLeases(): Json {
 let secureCfg: Json = {
   enabled: true,
   hostname: "dns.example.net",
-  cert_file: "/etc/letsencrypt/live/dns.example.net/fullchain.pem",
-  key_file: "/etc/letsencrypt/live/dns.example.net/privkey.pem",
+  certificate: "letsencrypt",
+  acme: { email: "me@example.net" },
   dot_port: 853,
-  doh_port: 8443,
+  doh_port: 443,
 };
+let secureToken = true;
 function secureView(): Json {
   const c = secureCfg;
   const on = c.enabled && !!c.hostname;
   return {
     config: c,
+    token_set: secureToken,
     status: {
       running: on,
-      error: c.enabled && !c.hostname ? "set the name devices connect to, like dns.example.com" : null,
+      error:
+        c.enabled && !c.hostname ? "set the name devices connect to, like dns.example.com" : null,
       dot: on && c.dot_port !== 0,
       doh: on && c.doh_port !== 0,
       dot_error: null,
       doh_error: null,
+      dot_shared: false,
+      // Tunnels listen on 443 in the demo: DNS over HTTPS shares it.
+      doh_shared: on && c.doh_port === 443,
       cert: on
         ? {
             names: [c.hostname, `*.${c.hostname}`],
             issuer: "Let's Encrypt",
+            not_before: Math.floor(Date.now() / 1000) - 29 * 86400,
             not_after: Math.floor(Date.now() / 1000) + 61 * 86400,
           }
         : null,
       cert_warning: null,
+      acme:
+        on && c.certificate === "letsencrypt"
+          ? {
+              state: "ok",
+              step: null,
+              error: null,
+              next: Math.floor(Date.now() / 1000) + 31 * 86400,
+            }
+          : null,
     },
     setup: {
       dot_host: c.hostname && c.dot_port ? c.hostname : null,
@@ -601,8 +617,12 @@ function secureView(): Json {
 
 function write(method: string, path: string, body: Json): Json {
   if (path === "/auth" || path === "/auth/login") return { token: "demo", expires_in: 86400 };
+  if (path === "/secure-dns/renew") return secureView();
   if (path === "/secure-dns" && method === "PUT") {
-    secureCfg = { ...secureCfg, ...body };
+    const acme = { ...(body.acme as Json) };
+    if (acme.cloudflare_token) secureToken = true;
+    delete acme.cloudflare_token;
+    secureCfg = { ...secureCfg, ...body, acme };
     return secureView();
   }
   if (path === "/dhcp" && method === "PUT") {

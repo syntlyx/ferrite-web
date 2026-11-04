@@ -1109,7 +1109,7 @@
     "cert_sub": "PEM-Dateien auf dieser Box, für den Namen und *.Name. Erneuerungen werden von selbst übernommen.",
     "cert_expires": "läuft ab {{when}}",
     "ports": "Ports",
-    "ports_sub": "Android braucht DNS over TLS auf 853. 0 schaltet ab.",
+    "ports_sub": "Android braucht DNS over TLS auf 853. DNS over HTTPS kann sich 443 mit den Tunneln teilen. 0 schaltet ab.",
     "dot": "DNS over TLS",
     "doh": "DNS over HTTPS",
     "listening": "lauscht auf {{port}}",
@@ -1120,6 +1120,29 @@
     "android": "Android · Einstellungen → Netzwerk → Privates DNS",
     "ios": "iPhone, Mac, Browser · DNS over HTTPS",
     "save": "Speichern und anwenden",
-    "saved": "Gespeichert und angewendet"
+    "saved": "Gespeichert und angewendet",
+    "shared": "auf {{port}}, geteilt mit Tunneln",
+    "source_files": "Eigene Dateien",
+    "cert_le_sub": "ferrite holt es für den Namen und *.Namen und erneuert es; den Namen beweist ein TXT-Eintrag über Cloudflare. Dafür muss kein Port offen sein.",
+    "cf_token": "Cloudflare-API-Token",
+    "cf_token_saved": "Gespeichert — zum Ersetzen einen neuen eingeben",
+    "cf_token_placeholder": "Token mit „Edit zone DNS“ für deine Zone",
+    "cf_token_help": "Cloudflare → My Profile → API Tokens → Create token → „Edit zone DNS“, beschränkt auf die Zone des Namens.",
+    "email": "E-Mail für Let's Encrypt (optional)",
+    "staging": "Testzertifikate",
+    "staging_sub": "Der Staging-Dienst von Let's Encrypt, zum Ausprobieren. Geräte vertrauen diesen nicht.",
+    "acme_working": "Zertifikat wird geholt: {{step}}…",
+    "acme_error": "{{error}}. Nächster Versuch {{when}}.",
+    "retry": "Erneut versuchen",
+    "renews": "wird {{when}} erneuert",
+    "step": {
+      "starting": "Start",
+      "finding_the_zone": "Zone wird gesucht",
+      "opening_the_request": "Anfrage wird gestellt",
+      "adding_the_TXT_record": "TXT-Eintrag wird angelegt",
+      "waiting_for_the_record_to_show_up": "warte, bis der Eintrag sichtbar ist",
+      "waiting_for_Let_s_Encrypt_to_check": "warte auf die Prüfung durch Let's Encrypt",
+      "getting_the_certificate": "Zertifikat wird abgeholt"
+    }
   }
 }

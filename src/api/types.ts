@@ -1217,13 +1217,32 @@ export interface DhcpLease {
 
 // ── Encrypted DNS (DoT / DoH) ─────────────────────────────────────────────────
 
+export type CertSource = "letsencrypt" | "files";
+
+export interface SecureDnsAcme {
+  email?: string;
+  /** Write-only: never sent back; blank on save keeps the saved one. */
+  cloudflare_token?: string | null;
+  staging?: boolean;
+}
+
 export interface SecureDnsSettings {
   enabled: boolean;
   hostname: string;
+  certificate: CertSource;
   cert_file?: string | null;
   key_file?: string | null;
+  acme?: SecureDnsAcme;
   dot_port: number;
   doh_port: number;
+}
+
+export interface SecureDnsAcmeStatus {
+  state: "working" | "ok" | "error";
+  step: string | null;
+  error: string | null;
+  /** Unix seconds: the next attempt after an error, or when renewal is due. */
+  next: number | null;
 }
 
 export interface SecureDnsStatus {
@@ -1233,12 +1252,18 @@ export interface SecureDnsStatus {
   doh: boolean;
   dot_error: string | null;
   doh_error: string | null;
-  cert: { names: string[]; issuer: string; not_after: number } | null;
+  /** Comes in through Tunnels' listener on the same port. */
+  dot_shared: boolean;
+  doh_shared: boolean;
+  cert: { names: string[]; issuer: string; not_before: number; not_after: number } | null;
   cert_warning: string | null;
+  acme: SecureDnsAcmeStatus | null;
 }
 
 export interface SecureDnsView {
   config: SecureDnsSettings;
+  /** A Cloudflare token is saved (it is never sent back). */
+  token_set: boolean;
   status: SecureDnsStatus;
   setup: { dot_host: string | null; dot_port: number; doh_url: string | null };
 }
