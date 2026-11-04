@@ -160,10 +160,16 @@ export function DevicePanel() {
         if (cancelled) return;
         const c = findClient(r.clients, tgt);
         setClient(c);
-        const token = c ? deviceTokens(c)[0] : (tgt.macs?.[0] ?? tgt.ips?.[0]);
-        if (!token) return setStats(null);
+        // Every token the row merges, so a device whose MAC changed shows
+        // its whole day, not the old MAC's.
+        const tokens = c?.devices?.length
+          ? c.devices
+          : c
+            ? deviceTokens(c).slice(0, 1)
+            : [tgt.macs?.[0] ?? tgt.ips?.[0]].filter((x): x is string => !!x);
+        if (tokens.length === 0) return setStats(null);
         api
-          .deviceStats(token)
+          .deviceStats(tokens.join(","))
           .then((s) => !cancelled && setStats(s))
           .catch(() => !cancelled && setStats(null));
       })

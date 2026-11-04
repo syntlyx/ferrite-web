@@ -186,6 +186,9 @@ export interface QueryFilters {
 
 export interface ClientEntry {
   name: string; // PTR hostname, manual alias, or IP string
+  /** The tokens this row merges (a Mac with a new private address is one
+   *  device under two MACs), the one seen last first. */
+  devices?: string[];
   ips: string[]; // all IPs belonging to this client
   macs: string[]; // learned MACs associated with this client
   total: number;
