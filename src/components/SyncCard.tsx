@@ -123,7 +123,7 @@ export function SyncCard({ onRestarting }: { onRestarting: () => void }) {
       title={t("sync.title", { defaultValue: "Follow another ferrite" })}
       sub={t("sync.sub", {
         defaultValue:
-          "Run two resolvers that answer alike: this box takes the chosen parts of a primary's configuration every few minutes, and restarts for a second when something changed. Edit on the primary.",
+          "Run two resolvers that answer alike: this box takes the chosen parts of a primary's configuration every few minutes, and restarts in place when something changed, without dropping a query. Edit on the primary.",
       })}
       // No footer bar at all until there is something to put in it.
       footer={

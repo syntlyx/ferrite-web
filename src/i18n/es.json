@@ -304,7 +304,7 @@
   "settings": {
     "title": "Ajustes",
     "subtitle": "Controles en runtime y configuración persistente",
-    "restarting": "El servidor se está reiniciando — esperando que vuelva...",
+    "restarting": "Reiniciando en el sitio — el DNS sigue respondiendo…",
     "ttl_window": "Ventana TTL",
     "auth": "Acceso",
     "retention": "Retención",
@@ -383,7 +383,7 @@
     "add_pattern": "Añadir",
     "save": "Guardar",
     "network": "Ajustes de red",
-    "requires_restart": "requiere reinicio",
+    "requires_restart": "se reinicia en el sitio",
     "dns_bind": "Dirección DNS",
     "dns_bind_sub": "Dirección y puerto del listener DNS",
     "cache_size": "Tamaño caché DNS",
@@ -489,7 +489,7 @@
     "dns_block_private_relay_sub": "Indicar a los dispositivos Apple que Private Relay no está disponible en esta red, para que Safari resuelva a través de ferrite. Es una decisión de privacidad del dueño del dispositivo, así que queda desactivado hasta que lo actives.",
     "dns_strip_ech": "Quitar Encrypted Client Hello",
     "dns_strip_ech_sub": "Quitar ECH de los registros HTTPS, para que los navegadores dejen visible el nombre del sitio en el saludo TLS. Bloquear servidores DoH es tarea de una lista como DoH bypass de HaGeZi.",
-    "network_sub": "Dónde escucha ferrite y cuánto guarda en caché. Los tamaños de caché se aplican al momento; una nueva dirección de escucha requiere reiniciar."
+    "network_sub": "Dónde escucha ferrite y cuánto guarda en caché. Los tamaños de caché se aplican al momento; una nueva dirección de escucha reinicia ferrite en el sitio, y el DNS sigue respondiendo."
   },
   "login": {
     "sign_in": "Iniciar sesión",
@@ -962,7 +962,7 @@
   },
   "sync": {
     "title": "Seguir a otro ferrite",
-    "sub": "Dos resolutores que responden igual: este equipo toma cada pocos minutos las partes elegidas de la configuración de uno principal y se reinicia un segundo si algo cambió. Edita en el principal.",
+    "sub": "Dos resolutores que responden igual: este equipo toma cada pocos minutos las partes elegidas de la configuración de uno principal y se reinicia en el sitio si algo cambió, sin perder ninguna consulta. Edita en el principal.",
     "now": "Sincronizar ahora",
     "saved": "Siguiendo a {{primary}}",
     "stopped": "Este equipo ya no sigue a nadie",

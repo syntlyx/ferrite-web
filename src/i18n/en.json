@@ -304,7 +304,7 @@
   "settings": {
     "title": "Settings",
     "subtitle": "Runtime controls and persisted service configuration",
-    "restarting": "Server is restarting — waiting for it to come back…",
+    "restarting": "Restarting in place — DNS keeps answering…",
     "ttl_window": "TTL window",
     "auth": "Access",
     "retention": "Retention",
@@ -383,7 +383,7 @@
     "add_pattern": "Add",
     "save": "Save",
     "network": "Network settings",
-    "requires_restart": "requires restart",
+    "requires_restart": "restarts in place",
     "dns_bind": "DNS bind address",
     "dns_bind_sub": "Address and port for the DNS listener",
     "cache_size": "DNS cache size",
@@ -489,7 +489,7 @@
     "dns_block_private_relay_sub": "Tell Apple devices Private Relay isn't available on this network, so Safari resolves through ferrite. It's the device owner's privacy choice, so it stays off until you turn it on.",
     "dns_strip_ech": "Strip Encrypted Client Hello",
     "dns_strip_ech_sub": "Remove ECH from HTTPS records, so browsers keep the site's name readable in the TLS handshake. Blocking DoH servers is a job for a list such as HaGeZi's DoH bypass.",
-    "network_sub": "Where ferrite listens and how much it caches. Cache sizes apply at once; a new listen address needs a restart."
+    "network_sub": "Where ferrite listens and how much it caches. Cache sizes apply at once; a new listen address restarts ferrite in place, and DNS keeps answering."
   },
   "login": {
     "sign_in": "Sign in",
@@ -962,7 +962,7 @@
   },
   "sync": {
     "title": "Follow another ferrite",
-    "sub": "Run two resolvers that answer alike: this box takes the chosen parts of a primary's configuration every few minutes, and restarts for a second when something changed. Edit on the primary.",
+    "sub": "Run two resolvers that answer alike: this box takes the chosen parts of a primary's configuration every few minutes, and restarts in place when something changed, without dropping a query. Edit on the primary.",
     "now": "Sync now",
     "saved": "Following {{primary}}",
     "stopped": "This box follows nobody now",

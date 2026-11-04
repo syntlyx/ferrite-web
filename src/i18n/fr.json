@@ -304,7 +304,7 @@
   "settings": {
     "title": "Paramètres",
     "subtitle": "Contrôles runtime et configuration persistante",
-    "restarting": "Le serveur redémarre — attente du retour...",
+    "restarting": "Redémarrage sur place — le DNS continue de répondre…",
     "ttl_window": "Fenêtre TTL",
     "auth": "Accès",
     "retention": "Rétention",
@@ -383,7 +383,7 @@
     "add_pattern": "Ajouter",
     "save": "Enregistrer",
     "network": "Paramètres réseau",
-    "requires_restart": "redémarrage requis",
+    "requires_restart": "redémarre sur place",
     "dns_bind": "Adresse DNS",
     "dns_bind_sub": "Adresse et port du listener DNS",
     "cache_size": "Taille cache DNS",
@@ -489,7 +489,7 @@
     "dns_block_private_relay_sub": "Indiquer aux appareils Apple que Private Relay n'est pas disponible sur ce réseau, pour que Safari résolve via ferrite. C'est un choix de confidentialité du propriétaire de l'appareil, donc désactivé tant que vous ne l'activez pas.",
     "dns_strip_ech": "Retirer Encrypted Client Hello",
     "dns_strip_ech_sub": "Retirer l'ECH des enregistrements HTTPS, pour que les navigateurs laissent le nom du site lisible dans la poignée de main TLS. Bloquer les serveurs DoH relève d'une liste comme DoH bypass de HaGeZi.",
-    "network_sub": "Où ferrite écoute et combien il met en cache. Les tailles de cache s'appliquent aussitôt ; une nouvelle adresse d'écoute demande un redémarrage."
+    "network_sub": "Où ferrite écoute et combien il met en cache. Les tailles de cache s'appliquent aussitôt ; une nouvelle adresse d'écoute redémarre ferrite sur place, et le DNS continue de répondre."
   },
   "login": {
     "sign_in": "Connexion",
@@ -962,7 +962,7 @@
   },
   "sync": {
     "title": "Suivre un autre ferrite",
-    "sub": "Deux résolveurs qui répondent pareil : cette machine reprend toutes les quelques minutes les parties choisies de la configuration d'une principale, et redémarre une seconde quand quelque chose a changé. Modifiez sur la principale.",
+    "sub": "Deux résolveurs qui répondent pareil : cette machine reprend toutes les quelques minutes les parties choisies de la configuration d'une principale, et redémarre sur place quand quelque chose a changé, sans perdre une requête. Modifiez sur la principale.",
     "now": "Synchroniser maintenant",
     "saved": "Suit {{primary}}",
     "stopped": "Cette machine ne suit plus personne",
