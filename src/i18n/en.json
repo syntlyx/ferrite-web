@@ -209,7 +209,9 @@
     "name_device": "Name this device",
     "stats_disabled": "Statistics are switched off in Settings → Privacy. This page is built from per-device counters, so it stays empty. Names and aliases still work.",
     "new_badge": "new",
-    "new_badge_hint": "First seen {{when}}"
+    "new_badge_hint": "First seen {{when}}",
+    "edit_alias": "Edit",
+    "alias_taken": "{{addr}} already has a name"
   },
   "blocklist": {
     "title": "Blocklist",
@@ -1114,11 +1116,8 @@
     "doh": "DNS over HTTPS",
     "listening": "listening on {{port}}",
     "not_listening": "not listening",
-    "setup": "Set up a device",
-    "setup_sub": "Give it a name and it shows up under that name in Clients — at home or away — and can have its own profile.",
     "device_placeholder": "Device name, e.g. pixel",
     "android": "Android · Settings → Network → Private DNS",
-    "ios": "iPhone, Mac, browsers · DNS over HTTPS",
     "save": "Save and apply",
     "saved": "Saved and applied",
     "shared": "on {{port}}, shared with Tunnels",
@@ -1143,6 +1142,18 @@
       "waiting_for_the_record_to_show_up": "waiting for the record to show up",
       "waiting_for_Let_s_Encrypt_to_check": "waiting for Let's Encrypt to check",
       "getting_the_certificate": "getting the certificate"
-    }
+    },
+    "devices": "Devices",
+    "devices_sub": "Each one shows up under its name in Clients and can have its own profile. Away from home only these devices are answered; at home every device is.",
+    "devices_empty": "No devices yet. Add one to use encrypted DNS away from home.",
+    "device_add": "Add",
+    "device_remove": "Remove",
+    "device_as": "Added as {{id}}: letters, digits and dashes.",
+    "apple": "iPhone, iPad, Mac",
+    "apple_profile": "Install profile",
+    "apple_hint": "Open this on the device itself; then Settings → Profile Downloaded → Install.",
+    "doh_url": "Browsers · DNS over HTTPS",
+    "turned_away_named": "Not answered outside home: {{count}}. The last, {{when}}, came as “{{device}}”, which isn't on the list.",
+    "turned_away_unnamed": "Not answered outside home: {{count}}. The last, {{when}}, came with no device name."
   }
 }

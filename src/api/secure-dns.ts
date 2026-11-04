@@ -15,3 +15,8 @@ export function put(body: SecureDnsSettings): Promise<SecureDnsView> {
 export function renew(): Promise<SecureDnsView> {
   return http.post("/secure-dns/renew");
 }
+
+/** A short-lived link to `device`'s profile for iPhone, iPad and Mac. */
+export function profileLink(device: string): Promise<{ url: string; device: string }> {
+  return http.post("/secure-dns/profile-link", { device });
+}

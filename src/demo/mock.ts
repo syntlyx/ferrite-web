@@ -564,6 +564,7 @@ let secureCfg: Json = {
   acme: { email: "me@example.net" },
   dot_port: 853,
   doh_port: 443,
+  devices: ["pixel-8", "iphone", "macbook"],
 };
 let secureToken = true;
 function secureView(): Json {
@@ -601,6 +602,8 @@ function secureView(): Json {
               next: Math.floor(Date.now() / 1000) + 31 * 86400,
             }
           : null,
+      turned_away: 3,
+      last_turned_away: { device: null, at: Math.floor(Date.now() / 1000) - 5400 },
     },
     setup: {
       dot_host: c.hostname && c.dot_port ? c.hostname : null,
@@ -618,6 +621,9 @@ function secureView(): Json {
 function write(method: string, path: string, body: Json): Json {
   if (path === "/auth" || path === "/auth/login") return { token: "demo", expires_in: 86400 };
   if (path === "/secure-dns/renew") return secureView();
+  if (path === "/secure-dns/profile-link")
+    // Nothing to install in the demo: the link goes nowhere.
+    return { url: "#", device: body.device };
   if (path === "/secure-dns" && method === "PUT") {
     const acme = { ...(body.acme as Json) };
     if (acme.cloudflare_token) secureToken = true;

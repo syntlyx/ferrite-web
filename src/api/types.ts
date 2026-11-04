@@ -1235,6 +1235,8 @@ export interface SecureDnsSettings {
   acme?: SecureDnsAcme;
   dot_port: number;
   doh_port: number;
+  /** Client IDs answered away from home (at home every device is). */
+  devices?: string[];
 }
 
 export interface SecureDnsAcmeStatus {
@@ -1258,6 +1260,9 @@ export interface SecureDnsStatus {
   cert: { names: string[]; issuer: string; not_before: number; not_after: number } | null;
   cert_warning: string | null;
   acme: SecureDnsAcmeStatus | null;
+  /** Queries from outside home that named no listed device. */
+  turned_away: number;
+  last_turned_away: { device: string | null; at: number } | null;
 }
 
 export interface SecureDnsView {

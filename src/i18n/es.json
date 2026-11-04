@@ -209,7 +209,9 @@
     "name_device": "Nombrar este dispositivo",
     "stats_disabled": "Las estadísticas están desactivadas en Ajustes → Privacidad. Esta página se construye con los contadores por dispositivo, así que queda vacía. Los nombres y alias siguen funcionando.",
     "new_badge": "nuevo",
-    "new_badge_hint": "Visto por primera vez {{when}}"
+    "new_badge_hint": "Visto por primera vez {{when}}",
+    "edit_alias": "Editar",
+    "alias_taken": "{{addr}} ya tiene nombre"
   },
   "blocklist": {
     "title": "Lista de bloqueo",
@@ -1121,11 +1123,8 @@
     "doh": "DNS over HTTPS",
     "listening": "escucha en {{port}}",
     "not_listening": "sin escuchar",
-    "setup": "Configurar un dispositivo",
-    "setup_sub": "Dale un nombre y aparecerá con él en Clientes —en casa o fuera— y podrá tener su propio perfil.",
     "device_placeholder": "Nombre, p. ej. pixel",
     "android": "Android · Ajustes → Red → DNS privado",
-    "ios": "iPhone, Mac, navegadores · DNS over HTTPS",
     "save": "Guardar y aplicar",
     "saved": "Guardado y aplicado",
     "shared": "en el {{port}}, compartido con los túneles",
@@ -1150,6 +1149,18 @@
       "waiting_for_the_record_to_show_up": "esperando a que aparezca el registro",
       "waiting_for_Let_s_Encrypt_to_check": "esperando la comprobación de Let's Encrypt",
       "getting_the_certificate": "descargando el certificado"
-    }
+    },
+    "devices": "Dispositivos",
+    "devices_sub": "Cada uno aparece con su nombre en Clientes y puede tener su propio perfil. Fuera de casa solo se responde a estos dispositivos; en casa, a todos.",
+    "devices_empty": "Aún no hay dispositivos. Añade uno para usar DNS cifrado fuera de casa.",
+    "device_add": "Añadir",
+    "device_remove": "Quitar",
+    "device_as": "Se añadirá como {{id}}: letras, cifras y guiones.",
+    "apple": "iPhone, iPad, Mac",
+    "apple_profile": "Instalar perfil",
+    "apple_hint": "Ábrelo en el propio dispositivo; luego Ajustes → Perfil descargado → Instalar.",
+    "doh_url": "Navegadores · DNS over HTTPS",
+    "turned_away_named": "Sin respuesta fuera de casa: {{count}}. La última, {{when}}, llegó como «{{device}}», que no está en la lista.",
+    "turned_away_unnamed": "Sin respuesta fuera de casa: {{count}}. La última, {{when}}, llegó sin nombre de dispositivo."
   }
 }

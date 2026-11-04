@@ -133,6 +133,7 @@ export const api = {
   getSecureDns: secureDns.get,
   putSecureDns: secureDns.put,
   renewSecureDns: secureDns.renew,
+  secureDnsProfileLink: secureDns.profileLink,
   getDhcp: dhcp.get,
   putDhcp: dhcp.put,
   dhcpLeases: dhcp.leases,

@@ -5,6 +5,9 @@ import {
   RefreshCw,
   Plus,
   Trash2,
+  Pencil,
+  Check,
+  X,
   Search,
   Users,
   Activity,
@@ -171,14 +174,26 @@ function AliasesPanel({ prefill }: { prefill: AliasPrefill | null }) {
   const [adding, setAdding] = useState(false);
   const [addErr, setAddErr] = useState("");
   const [removing, setRemoving] = useState("");
+  /** The row being edited: its key as saved, and the fields as typed. */
+  const [editing, setEditing] = useState<{ key: string; address: string; name: string } | null>(
+    null,
+  );
+  const [savingEdit, setSavingEdit] = useState(false);
+
+  // The list as the server keeps it — addresses come back in its own form
+  // (a MAC typed in capitals, say), so a saved row is never a near-duplicate.
+  const reload = useCallback(
+    () =>
+      api
+        .getAliases()
+        .then((d) => setAliases(d.aliases ?? []))
+        .catch((e: Error) => setErr(e.message)),
+    [],
+  );
 
   useEffect(() => {
-    api
-      .getAliases()
-      .then((d) => setAliases(d.aliases ?? []))
-      .catch((e: Error) => setErr(e.message))
-      .finally(() => setLoading(false));
-  }, []);
+    void reload().finally(() => setLoading(false));
+  }, [reload]);
 
   // A client row asked to name a device: fill in its address + type, then scroll
   // to and focus the name field so the user only types the label.
@@ -206,11 +221,7 @@ function AliasesPanel({ prefill }: { prefill: AliasPrefill | null }) {
         : { ip: addr, name: form.name.trim() };
     try {
       await api.addAlias(body);
-      const newAlias = { ...body };
-      setAliases((p) => {
-        const filtered = p.filter((a) => aliasKey(a) !== aliasKey(newAlias));
-        return [...filtered, newAlias].sort((a, b) => aliasKey(a).localeCompare(aliasKey(b)));
-      });
+      await reload();
       toast(t("clients.alias_saved", { addr }));
       setForm({ address: "", name: "" });
     } catch (e) {
@@ -218,6 +229,40 @@ function AliasesPanel({ prefill }: { prefill: AliasPrefill | null }) {
     } finally {
       setAdding(false);
     }
+  }
+
+  /** Save an edited row: a new name in place; a new address replaces the old one. */
+  async function saveEdit(original: ClientAlias) {
+    if (!editing) return;
+    const addr = editing.address.trim();
+    const name = editing.name.trim();
+    if (!addr || !name) return;
+    const body: AddAliasBody = original.mac ? { mac: addr, name } : { ip: addr, name };
+    const moved = addr.toLowerCase() !== aliasKey(original).toLowerCase();
+    if (moved && aliases.some((a) => aliasKey(a).toLowerCase() === addr.toLowerCase())) {
+      toast(t("clients.alias_taken", { addr }), "error");
+      return;
+    }
+    setSavingEdit(true);
+    try {
+      await api.addAlias(body);
+      if (moved) await api.removeAlias(aliasKey(original));
+      await reload();
+      setEditing(null);
+      toast(t("clients.alias_saved", { addr }));
+    } catch (e) {
+      toast((e as Error).message, "error");
+    } finally {
+      setSavingEdit(false);
+    }
+  }
+
+  /** Enter saves the row being edited, Escape leaves it as it was. */
+  function editKeys(e: React.KeyboardEvent, alias: ClientAlias) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      void saveEdit(alias);
+    } else if (e.key === "Escape") setEditing(null);
   }
 
   async function handleRemove(alias: ClientAlias) {
@@ -295,25 +340,80 @@ function AliasesPanel({ prefill }: { prefill: AliasPrefill | null }) {
               </tr>
             </thead>
             <tbody>
-              {aliases.map((a) => (
-                <TableRow key={aliasKey(a)} className="group">
-                  <Td>
-                    <AddrTypeBadge alias={a} />
-                  </Td>
-                  <Td className="text-body font-mono">{a.mac ?? a.ip}</Td>
-                  <Td className="text-heading w-full max-w-0 truncate sm:w-auto sm:max-w-none">{a.name}</Td>
-                  <Td className="text-right">
-                    <IconBtn
-                      danger
-                      onClick={() => handleRemove(a)}
-                      disabled={removing === aliasKey(a)}
-                      className="opacity-0 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
+              {aliases.map((a) =>
+                editing?.key === aliasKey(a) ? (
+                  <TableRow key={aliasKey(a)}>
+                    <Td>
+                      <AddrTypeBadge alias={a} />
+                    </Td>
+                    <Td className="py-1.5">
+                      <Input
+                        value={editing.address}
+                        onChange={(e) => setEditing({ ...editing, address: e.target.value })}
+                        onKeyDown={(e) => editKeys(e, a)}
+                        aria-label={t("clients.col_address")}
+                        className="w-full min-w-40 font-mono"
+                      />
+                    </Td>
+                    <Td className="py-1.5">
+                      <Input
+                        autoFocus
+                        value={editing.name}
+                        onChange={(e) => setEditing({ ...editing, name: e.target.value })}
+                        onKeyDown={(e) => editKeys(e, a)}
+                        aria-label={t("clients.col_name")}
+                        className="w-full min-w-32"
+                      />
+                    </Td>
+                    <Td className="text-right whitespace-nowrap">
+                      <IconBtn
+                        title={t("common.save")}
+                        onClick={() => void saveEdit(a)}
+                        disabled={savingEdit || !editing.address.trim() || !editing.name.trim()}
+                      >
+                        <Check size={12} />
+                      </IconBtn>
+                      <IconBtn title={t("common.cancel")} onClick={() => setEditing(null)}>
+                        <X size={12} />
+                      </IconBtn>
+                    </Td>
+                  </TableRow>
+                ) : (
+                  <TableRow key={aliasKey(a)} className="group">
+                    <Td>
+                      <AddrTypeBadge alias={a} />
+                    </Td>
+                    <Td className="text-body font-mono">{a.mac ?? a.ip}</Td>
+                    <Td
+                      className="text-heading w-full max-w-0 cursor-text truncate sm:w-auto sm:max-w-none"
+                      onClick={() =>
+                        setEditing({ key: aliasKey(a), address: aliasKey(a), name: a.name })
+                      }
                     >
-                      <Trash2 size={12} />
-                    </IconBtn>
-                  </Td>
-                </TableRow>
-              ))}
+                      {a.name}
+                    </Td>
+                    <Td className="text-right whitespace-nowrap">
+                      <IconBtn
+                        title={t("clients.edit_alias")}
+                        onClick={() =>
+                          setEditing({ key: aliasKey(a), address: aliasKey(a), name: a.name })
+                        }
+                        className="opacity-0 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
+                      >
+                        <Pencil size={12} />
+                      </IconBtn>
+                      <IconBtn
+                        danger
+                        onClick={() => handleRemove(a)}
+                        disabled={removing === aliasKey(a)}
+                        className="opacity-0 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
+                      >
+                        <Trash2 size={12} />
+                      </IconBtn>
+                    </Td>
+                  </TableRow>
+                ),
+              )}
             </tbody>
           </table>
         </div>

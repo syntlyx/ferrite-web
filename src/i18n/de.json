@@ -209,7 +209,9 @@
     "name_device": "Gerät benennen",
     "stats_disabled": "Statistiken sind unter Einstellungen → Datenschutz ausgeschaltet. Diese Seite wird aus den Gerätezählern gebaut und bleibt daher leer. Namen und Aliasse funktionieren weiterhin.",
     "new_badge": "neu",
-    "new_badge_hint": "Zuerst gesehen {{when}}"
+    "new_badge_hint": "Zuerst gesehen {{when}}",
+    "edit_alias": "Bearbeiten",
+    "alias_taken": "{{addr}} hat schon einen Namen"
   },
   "blocklist": {
     "title": "Blockliste",
@@ -1114,11 +1116,8 @@
     "doh": "DNS over HTTPS",
     "listening": "lauscht auf {{port}}",
     "not_listening": "lauscht nicht",
-    "setup": "Gerät einrichten",
-    "setup_sub": "Gib ihm einen Namen, dann erscheint es unter diesem in Clients – zu Hause oder unterwegs – und kann ein eigenes Profil haben.",
     "device_placeholder": "Gerätename, z. B. pixel",
     "android": "Android · Einstellungen → Netzwerk → Privates DNS",
-    "ios": "iPhone, Mac, Browser · DNS over HTTPS",
     "save": "Speichern und anwenden",
     "saved": "Gespeichert und angewendet",
     "shared": "auf {{port}}, geteilt mit Tunneln",
@@ -1143,6 +1142,18 @@
       "waiting_for_the_record_to_show_up": "warte, bis der Eintrag sichtbar ist",
       "waiting_for_Let_s_Encrypt_to_check": "warte auf die Prüfung durch Let's Encrypt",
       "getting_the_certificate": "Zertifikat wird abgeholt"
-    }
+    },
+    "devices": "Geräte",
+    "devices_sub": "Jedes erscheint unter seinem Namen in Clients und kann ein eigenes Profil haben. Unterwegs werden nur diese Geräte beantwortet, zu Hause jedes.",
+    "devices_empty": "Noch keine Geräte. Füge eins hinzu, um verschlüsseltes DNS unterwegs zu nutzen.",
+    "device_add": "Hinzufügen",
+    "device_remove": "Entfernen",
+    "device_as": "Wird als {{id}} hinzugefügt: Buchstaben, Ziffern und Bindestriche.",
+    "apple": "iPhone, iPad, Mac",
+    "apple_profile": "Profil installieren",
+    "apple_hint": "Auf dem Gerät selbst öffnen, dann Einstellungen → Profil geladen → Installieren.",
+    "doh_url": "Browser · DNS over HTTPS",
+    "turned_away_named": "Unterwegs nicht beantwortet: {{count}}. Die letzte Anfrage, {{when}}, kam als „{{device}}“, das nicht in der Liste steht.",
+    "turned_away_unnamed": "Unterwegs nicht beantwortet: {{count}}. Die letzte Anfrage, {{when}}, kam ohne Gerätenamen."
   }
 }

@@ -209,7 +209,9 @@
     "name_device": "Nommer cet appareil",
     "stats_disabled": "Les statistiques sont désactivées dans Réglages → Confidentialité. Cette page est construite à partir des compteurs par appareil, elle reste donc vide. Les noms et alias fonctionnent toujours.",
     "new_badge": "nouveau",
-    "new_badge_hint": "Vu pour la première fois {{when}}"
+    "new_badge_hint": "Vu pour la première fois {{when}}",
+    "edit_alias": "Modifier",
+    "alias_taken": "{{addr}} a déjà un nom"
   },
   "blocklist": {
     "title": "Liste de blocage",
@@ -1121,11 +1123,8 @@
     "doh": "DNS over HTTPS",
     "listening": "écoute sur {{port}}",
     "not_listening": "n'écoute pas",
-    "setup": "Configurer un appareil",
-    "setup_sub": "Donnez-lui un nom : il apparaîtra sous ce nom dans Clients — à la maison ou ailleurs — et pourra avoir son propre profil.",
     "device_placeholder": "Nom de l'appareil, ex. pixel",
     "android": "Android · Paramètres → Réseau → DNS privé",
-    "ios": "iPhone, Mac, navigateurs · DNS over HTTPS",
     "save": "Enregistrer et appliquer",
     "saved": "Enregistré et appliqué",
     "shared": "sur le {{port}}, partagé avec les tunnels",
@@ -1150,6 +1149,18 @@
       "waiting_for_the_record_to_show_up": "attente de la publication de l'enregistrement",
       "waiting_for_Let_s_Encrypt_to_check": "attente de la vérification par Let's Encrypt",
       "getting_the_certificate": "récupération du certificat"
-    }
+    },
+    "devices": "Appareils",
+    "devices_sub": "Chacun apparaît sous son nom dans Clients et peut avoir son propre profil. Hors de chez vous, seuls ces appareils obtiennent une réponse ; à la maison, tous.",
+    "devices_empty": "Aucun appareil pour l'instant. Ajoutez-en un pour utiliser le DNS chiffré hors de chez vous.",
+    "device_add": "Ajouter",
+    "device_remove": "Retirer",
+    "device_as": "Ajouté comme {{id}} : lettres, chiffres et tirets.",
+    "apple": "iPhone, iPad, Mac",
+    "apple_profile": "Installer le profil",
+    "apple_hint": "Ouvrez-le sur l'appareil lui-même, puis Réglages → Profil téléchargé → Installer.",
+    "doh_url": "Navigateurs · DNS over HTTPS",
+    "turned_away_named": "Sans réponse hors de chez vous : {{count}}. La dernière, {{when}}, est arrivée comme « {{device}} », absent de la liste.",
+    "turned_away_unnamed": "Sans réponse hors de chez vous : {{count}}. La dernière, {{when}}, est arrivée sans nom d'appareil."
   }
 }

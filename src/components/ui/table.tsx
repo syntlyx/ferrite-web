@@ -9,6 +9,7 @@ interface ThProps {
 interface TdProps {
   children?: ReactNode;
   className?: string;
+  onClick?: () => void;
 }
 
 interface TableRowProps {
@@ -30,8 +31,12 @@ export function Th({ children, className }: ThProps) {
   );
 }
 
-export function Td({ children, className }: TdProps) {
-  return <td className={cn("px-3 py-2.5 sm:px-4", className)}>{children}</td>;
+export function Td({ children, className, onClick }: TdProps) {
+  return (
+    <td className={cn("px-3 py-2.5 sm:px-4", className)} onClick={onClick}>
+      {children}
+    </td>
+  );
 }
 
 export function TableRow({ children, className, onClick }: TableRowProps) {

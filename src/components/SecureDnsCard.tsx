@@ -1,13 +1,23 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { AlertTriangle, Check, Copy, Lock, RefreshCw, Save } from "lucide-react";
+import {
+  AlertTriangle,
+  Check,
+  Copy,
+  Download,
+  Lock,
+  Plus,
+  RefreshCw,
+  Save,
+  Trash2,
+} from "lucide-react";
 import { api } from "@/api";
 import type { CertSource, SecureDnsSettings, SecureDnsView } from "@/api/types";
-import { cn, copyToClipboard } from "@/lib/utils";
+import { copyToClipboard } from "@/lib/utils";
 import { relTime } from "@/lib/format";
 import { FieldLabel, SettingRow, SettingsPanel } from "@/components/layout/SettingsPanel";
 import { Tag } from "@/components/feedback/Badge";
-import { Btn, Input, Skeleton, Switch } from "@/components/ui";
+import { Btn, IconBtn, Input, Skeleton, Switch } from "@/components/ui";
 import { Segmented } from "@/components/ui/segmented";
 import { useToast } from "@/hooks/use-toast";
 
@@ -81,6 +91,7 @@ export function SecureDnsCard() {
       cert_file: c.cert_file ?? "",
       key_file: c.key_file ?? "",
       acme: { email: c.acme?.email ?? "", staging: c.acme?.staging ?? false },
+      devices: c.devices ?? [],
       token: "",
     };
     setView(v);
@@ -121,18 +132,9 @@ export function SecureDnsCard() {
   const on = view.config.enabled;
   const le = form.certificate === "letsencrypt";
   const acme = view.config.certificate === "letsencrypt" ? st.acme : null;
-  const id = toLabel(device);
   const host = view.config.hostname;
-  const dotHost = view.setup.dot_host
-    ? id
-      ? `${id}.${view.setup.dot_host}`
-      : view.setup.dot_host
-    : null;
-  const dohUrl = view.setup.doh_url
-    ? id
-      ? `${view.setup.doh_url}/${id}`
-      : view.setup.doh_url
-    : null;
+  const devices = view.config.devices ?? [];
+  const newId = toLabel(device);
 
   async function save() {
     if (!form) return;
@@ -152,6 +154,44 @@ export function SecureDnsCard() {
       toast((e as Error).message, "error");
     } finally {
       setBusy(false);
+    }
+  }
+
+  /** The device list saves at once, apart from the rest of the form. */
+  async function saveDevices(next: string[]) {
+    if (!view) return;
+    setBusy(true);
+    try {
+      const v = await api.putSecureDns({
+        ...view.config,
+        acme: { ...view.config.acme, cloudflare_token: null },
+        devices: next,
+      });
+      const list = v.config.devices ?? [];
+      setView(v);
+      setForm((f) => (f ? { ...f, devices: list } : f));
+      setSaved((prev) => JSON.stringify({ ...JSON.parse(prev), devices: list }));
+      return true;
+    } catch (e) {
+      toast((e as Error).message, "error");
+      return false;
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function addDevice() {
+    if (!newId || devices.includes(newId)) return;
+    if (await saveDevices([...devices, newId])) setDevice("");
+  }
+
+  async function openProfile(name: string) {
+    try {
+      const { url } = await api.secureDnsProfileLink(name);
+      // A download on a computer; on an iPhone, Safari offers to install it.
+      window.location.href = url;
+    } catch (e) {
+      toast((e as Error).message, "error");
     }
   }
 
@@ -419,50 +459,144 @@ export function SecureDnsCard() {
         </div>
       </SettingRow>
 
-      {on && host && st.cert && (st.dot || st.doh) && (
+      {on && host && (st.dot || st.doh) && (
         <div
           className="space-y-3 py-4"
-          data-search={t("secure.setup", { defaultValue: "Set up a device" })}
+          data-search={t("secure.devices", { defaultValue: "Devices" })}
         >
           <div>
             <p className="text-sm font-medium text-heading">
-              {t("secure.setup", { defaultValue: "Set up a device" })}
+              {t("secure.devices", { defaultValue: "Devices" })}
             </p>
             <p className="mt-0.5 text-xs text-muted">
-              {t("secure.setup_sub", {
+              {t("secure.devices_sub", {
                 defaultValue:
-                  "Give it a name and it shows up under that name in Clients — at home or away — and can have its own profile.",
+                  "Each one shows up under its name in Clients and can have its own profile. Away from home only these devices are answered; at home every device is.",
               })}
             </p>
           </div>
-          <Input
-            value={device}
-            onChange={(e) => setDevice(e.target.value)}
-            placeholder={t("secure.device_placeholder", {
-              defaultValue: "Device name, e.g. pixel",
-            })}
-            className={cn("w-full sm:w-72")}
-          />
-          <div className="grid gap-3 sm:grid-cols-2">
-            {dotHost && (
-              <div className="space-y-1">
-                <FieldLabel>
-                  {t("secure.android", {
-                    defaultValue: "Android · Settings → Network → Private DNS",
-                  })}
-                </FieldLabel>
-                <Copyable value={dotHost} />
-              </div>
-            )}
-            {dohUrl && (
-              <div className="space-y-1">
-                <FieldLabel>
-                  {t("secure.ios", { defaultValue: "iPhone, Mac, browsers · DNS over HTTPS" })}
-                </FieldLabel>
-                <Copyable value={dohUrl} />
-              </div>
-            )}
+
+          {devices.length === 0 ? (
+            <p className="text-xs text-muted">
+              {t("secure.devices_empty", {
+                defaultValue: "No devices yet. Add one to use encrypted DNS away from home.",
+              })}
+            </p>
+          ) : (
+            <ul className="divide-y divide-bdr rounded-lg border border-bdr">
+              {devices.map((d) => {
+                const dot = view.setup.dot_host ? `${d}.${view.setup.dot_host}` : null;
+                const doh = view.setup.doh_url ? `${view.setup.doh_url}/${d}` : null;
+                return (
+                  <li key={d} className="space-y-2.5 p-3">
+                    <div className="flex items-center gap-2">
+                      <span className="min-w-0 flex-1 truncate font-mono text-[13px] text-heading">
+                        {d}
+                      </span>
+                      <IconBtn
+                        danger
+                        title={t("secure.device_remove", { defaultValue: "Remove" })}
+                        disabled={busy}
+                        onClick={() => void saveDevices(devices.filter((x) => x !== d))}
+                      >
+                        <Trash2 size={13} />
+                      </IconBtn>
+                    </div>
+                    <div className="grid gap-2.5 lg:grid-cols-3">
+                      {dot && (
+                        <div className="min-w-0 space-y-1">
+                          <FieldLabel>
+                            {t("secure.android", {
+                              defaultValue: "Android · Settings → Network → Private DNS",
+                            })}
+                          </FieldLabel>
+                          <Copyable value={dot} />
+                        </div>
+                      )}
+                      <div className="min-w-0 space-y-1">
+                        <FieldLabel>
+                          {t("secure.apple", { defaultValue: "iPhone, iPad, Mac" })}
+                        </FieldLabel>
+                        <Btn
+                          type="button"
+                          variant="ghost"
+                          className="w-full"
+                          title={t("secure.apple_hint", {
+                            defaultValue:
+                              "Open this on the device itself; then Settings → Profile Downloaded → Install.",
+                          })}
+                          onClick={() => void openProfile(d)}
+                        >
+                          <Download size={12} />{" "}
+                          {t("secure.apple_profile", { defaultValue: "Install profile" })}
+                        </Btn>
+                      </div>
+                      {doh && (
+                        <div className="min-w-0 space-y-1">
+                          <FieldLabel>
+                            {t("secure.doh_url", { defaultValue: "Browsers · DNS over HTTPS" })}
+                          </FieldLabel>
+                          <Copyable value={doh} />
+                        </div>
+                      )}
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+
+          <div className="flex gap-2">
+            <Input
+              value={device}
+              onChange={(e) => setDevice(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  void addDevice();
+                }
+              }}
+              placeholder={t("secure.device_placeholder", {
+                defaultValue: "Device name, e.g. pixel",
+              })}
+              className="w-full sm:w-72"
+            />
+            <Btn
+              type="button"
+              variant="ghost"
+              disabled={busy || !newId || devices.includes(newId)}
+              onClick={() => void addDevice()}
+            >
+              <Plus size={12} /> {t("secure.device_add", { defaultValue: "Add" })}
+            </Btn>
           </div>
+          {device && newId && newId !== device.trim() && (
+            <p className="text-[11px] text-muted">
+              {t("secure.device_as", {
+                id: newId,
+                defaultValue: "Added as {{id}}: letters, digits and dashes.",
+              })}
+            </p>
+          )}
+
+          {st.turned_away > 0 && st.last_turned_away && (
+            <p className="text-[11px] text-muted">
+              {st.last_turned_away.device
+                ? t("secure.turned_away_named", {
+                    count: st.turned_away,
+                    device: st.last_turned_away.device,
+                    when: relTime(st.last_turned_away.at, i18n.language),
+                    defaultValue:
+                      "Not answered outside home: {{count}}. The last, {{when}}, came as “{{device}}”, which isn't on the list.",
+                  })
+                : t("secure.turned_away_unnamed", {
+                    count: st.turned_away,
+                    when: relTime(st.last_turned_away.at, i18n.language),
+                    defaultValue:
+                      "Not answered outside home: {{count}}. The last, {{when}}, came with no device name.",
+                  })}
+            </p>
+          )}
         </div>
       )}
     </SettingsPanel>
