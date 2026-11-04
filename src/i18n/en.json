@@ -681,7 +681,12 @@
     "rule_pick_service": "Choose a service…",
     "rule_service_help": "Routes all domains of the service ({{count}}). Messengers, game launchers and Spotify also use their own protocols, which a tunnel can't carry, so they aren't listed.",
     "rule_service_help_empty": "Messengers, game launchers and Spotify also use their own protocols, which a tunnel can't carry, so they aren't listed.",
-    "alert_webhook_moved": "Tunnel-down alerts go to the webhook set under Settings → Notifications, alongside the other notifications."
+    "alert_webhook_moved": "Tunnel-down alerts go to the webhook set under Settings → Notifications, alongside the other notifications.",
+    "route_away": "Away from home too",
+    "route_away_sub": "Devices using encrypted DNS are routed outside home as well: they're sent to this box's public address, where the internet's port 443 must reach it. Only your devices get in, and only for routed names. Off: away from home they go direct.",
+    "away_address": "Public address",
+    "away_found": "Now {{found}}, from the encrypted DNS name's own record, looked up every few minutes. Set one to use it instead.",
+    "away_unknown": "Taken from the encrypted DNS name's own record, looked up every few minutes; none found yet. Set one to use it instead."
   },
   "logs": {
     "title": "Logs",
@@ -1121,7 +1126,7 @@
     "ports": "Ports",
     "ports_sub": "Android needs DNS over TLS on 853. DNS over HTTPS can share 443 with Tunnels. 0 switches one off.",
     "proxies": "Reverse proxy",
-    "proxies_sub": "When Nginx Proxy Manager or another proxy passes DNS over HTTPS on to this box, its address. The client it names (X-Real-IP) counts then, so a phone behind it is still away from home. DNS over TLS has to come here directly.",
+    "proxies_sub": "A proxy in front of this box (Nginx Proxy Manager, nginx, Caddy): its address. Then the client it names counts — in X-Real-IP, or a PROXY protocol header for connections it passes on whole — so a phone behind it is still away from home. DNS over TLS on 853 has to come here directly.",
     "dot": "DNS over TLS",
     "doh": "DNS over HTTPS",
     "listening": "listening on {{port}}",

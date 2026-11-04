@@ -681,7 +681,12 @@
     "rule_pick_service": "Dienst wählen…",
     "rule_service_help": "Leitet alle Domains des Dienstes um ({{count}}). Messenger, Spiele-Launcher und Spotify nutzen auch eigene Protokolle, die ein Tunnel nicht übertragen kann, und fehlen deshalb in der Liste.",
     "rule_service_help_empty": "Messenger, Spiele-Launcher und Spotify nutzen auch eigene Protokolle, die ein Tunnel nicht übertragen kann, und fehlen deshalb in der Liste.",
-    "alert_webhook_moved": "Tunnel-Warnungen gehen an den Webhook unter Einstellungen → Benachrichtigungen, zusammen mit den anderen Benachrichtigungen."
+    "alert_webhook_moved": "Tunnel-Warnungen gehen an den Webhook unter Einstellungen → Benachrichtigungen, zusammen mit den anderen Benachrichtigungen.",
+    "route_away": "Auch unterwegs",
+    "route_away_sub": "Geräte mit verschlüsseltem DNS werden auch außer Haus durch die Tunnel geleitet: Sie gehen an die öffentliche Adresse dieser Box, deren Port 443 aus dem Internet hierher führen muss. Nur deine Geräte kommen rein, und nur für geroutete Namen. Aus: Unterwegs gehen sie direkt.",
+    "away_address": "Öffentliche Adresse",
+    "away_found": "Jetzt {{found}}, aus dem eigenen Eintrag des Namens für verschlüsseltes DNS, alle paar Minuten neu nachgeschlagen. Trag eine ein, um sie zu nehmen.",
+    "away_unknown": "Aus dem eigenen Eintrag des Namens für verschlüsseltes DNS, alle paar Minuten nachgeschlagen; noch keine gefunden. Trag eine ein, um sie zu nehmen."
   },
   "logs": {
     "title": "Protokolle",
@@ -1121,7 +1126,7 @@
     "ports": "Ports",
     "ports_sub": "Android braucht DNS over TLS auf 853. DNS over HTTPS kann sich 443 mit den Tunneln teilen. 0 schaltet ab.",
     "proxies": "Reverse Proxy",
-    "proxies_sub": "Wenn Nginx Proxy Manager oder ein anderer Proxy DNS over HTTPS an diese Box weiterreicht: seine Adresse. Dann zählt der Client, den er nennt (X-Real-IP), und ein Handy dahinter bleibt unterwegs. DNS over TLS muss direkt hierher kommen.",
+    "proxies_sub": "Ein Proxy vor dieser Box (Nginx Proxy Manager, nginx, Caddy): seine Adresse. Dann zählt der Client, den er nennt — in X-Real-IP oder einem PROXY-Protocol-Header für Verbindungen, die er ganz weiterreicht —, und ein Handy dahinter bleibt unterwegs. DNS over TLS auf 853 muss direkt hierher kommen.",
     "dot": "DNS over TLS",
     "doh": "DNS over HTTPS",
     "listening": "lauscht auf {{port}}",

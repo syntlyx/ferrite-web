@@ -879,6 +879,11 @@ export interface ProxyConfig {
   https_port: number;
   advertise_ipv4?: string | null;
   advertise_ipv6?: string | null;
+  /** Route names for devices away from home too, at the public address. */
+  route_away?: boolean;
+  /** The public address for that; unset = the encrypted DNS name's own. */
+  away_ipv4?: string | null;
+  away_ipv6?: string | null;
   max_connections: number;
   /** host:port the active probe connects to through each egress (blank = default). */
   probe_target?: string | null;
@@ -891,6 +896,8 @@ export interface ProxyStateResponse {
   egress_health: Record<string, "up" | "down">;
   /** Effective kernel UDP recv-buffer ceiling (KiB); WG buffers above it may stall. */
   max_buffer_kb?: number | null;
+  /** Where devices away from home are sent for routed names right now. */
+  away_address?: { ipv4: string | null; ipv6: string | null };
 }
 
 export interface PutProxyResponse {

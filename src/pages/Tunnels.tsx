@@ -153,6 +153,7 @@ export default function Tunnels() {
     bytes: Record<string, { up: number; down: number }>;
   } | null>(null);
   const [maxBuf, setMaxBuf] = useState<number | null>(null);
+  const [awayFound, setAwayFound] = useState<string | null>(null);
   const [knownClients, setKnownClients] = useState<ClientEntry[]>([]);
   const [catalog, setCatalog] = useState<ServiceCatalog | null>(null);
   // Both lists are edited and deleted by index, so their rows carry identity of
@@ -176,6 +177,9 @@ export default function Tunnels() {
         setSavedJson(JSON.stringify(d.proxy));
         setHealth(d.egress_health ?? {});
         setMaxBuf(d.max_buffer_kb ?? null);
+        setAwayFound(
+          [d.away_address?.ipv4, d.away_address?.ipv6].filter(Boolean).join(", ") || null,
+        );
         setErr("");
       })
       .catch((e: Error) => setErr(e.message))
@@ -552,6 +556,42 @@ export default function Tunnels() {
                     className="w-full font-mono"
                   />
                 </SettingRow>
+                <SettingRow
+                  label={t("tunnels.route_away", { defaultValue: "Away from home too" })}
+                  sub={t("tunnels.route_away_sub", {
+                    defaultValue:
+                      "Devices using encrypted DNS are routed outside home as well: they're sent to this box's public address, where the internet's port 443 must reach it. Only your devices get in, and only for routed names. Off: away from home they go direct.",
+                  })}
+                >
+                  <Switch
+                    checked={cfg.route_away ?? false}
+                    onCheckedChange={(v) => setField("route_away", v)}
+                  />
+                </SettingRow>
+                {cfg.route_away && (
+                  <SettingRow
+                    label={t("tunnels.away_address", { defaultValue: "Public address" })}
+                    sub={
+                      awayFound
+                        ? t("tunnels.away_found", {
+                            found: awayFound,
+                            defaultValue:
+                              "Now {{found}}, from the encrypted DNS name's own record, looked up every few minutes. Set one to use it instead.",
+                          })
+                        : t("tunnels.away_unknown", {
+                            defaultValue:
+                              "Taken from the encrypted DNS name's own record, looked up every few minutes; none found yet. Set one to use it instead.",
+                          })
+                    }
+                  >
+                    <Input
+                      value={cfg.away_ipv4 ?? ""}
+                      onChange={(e) => setField("away_ipv4", e.target.value || null)}
+                      placeholder={t("tunnels.auto", { defaultValue: "auto-detect" })}
+                      className="w-full font-mono"
+                    />
+                  </SettingRow>
+                )}
                 <SettingRow
                   label={t("tunnels.max_connections", { defaultValue: "Max connections" })}
                   sub={t("tunnels.max_connections_sub", {

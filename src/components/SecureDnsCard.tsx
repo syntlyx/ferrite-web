@@ -442,7 +442,7 @@ export function SecureDnsCard() {
           label={t("secure.proxies", { defaultValue: "Reverse proxy" })}
           sub={t("secure.proxies_sub", {
             defaultValue:
-              "When Nginx Proxy Manager or another proxy passes DNS over HTTPS on to this box, its address. The client it names (X-Real-IP) counts then, so a phone behind it is still away from home. DNS over TLS has to come here directly.",
+              "A proxy in front of this box (Nginx Proxy Manager, nginx, Caddy): its address. Then the client it names counts — in X-Real-IP, or a PROXY protocol header for connections it passes on whole — so a phone behind it is still away from home. DNS over TLS on 853 has to come here directly.",
           })}
         >
           <Input

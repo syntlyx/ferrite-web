@@ -681,7 +681,12 @@
     "rule_pick_service": "Choisir un service…",
     "rule_service_help": "Achemine tous les domaines du service ({{count}}). Les messageries, les lanceurs de jeux et Spotify utilisent aussi leurs propres protocoles, qu'un tunnel ne peut pas transporter : ils ne sont donc pas proposés.",
     "rule_service_help_empty": "Les messageries, les lanceurs de jeux et Spotify utilisent aussi leurs propres protocoles, qu'un tunnel ne peut pas transporter : ils ne sont donc pas proposés.",
-    "alert_webhook_moved": "Les alertes de tunnel en panne vont au webhook défini dans Paramètres → Notifications, avec les autres notifications."
+    "alert_webhook_moved": "Les alertes de tunnel en panne vont au webhook défini dans Paramètres → Notifications, avec les autres notifications.",
+    "route_away": "Hors de la maison aussi",
+    "route_away_sub": "Les appareils en DNS chiffré passent aussi par les tunnels hors de la maison : ils sont envoyés vers l'adresse publique de ce boîtier, dont le port 443 doit mener ici depuis internet. Seuls vos appareils entrent, et seulement pour les noms routés. Désactivé : hors de la maison, ils vont en direct.",
+    "away_address": "Adresse publique",
+    "away_found": "Actuellement {{found}}, d'après l'enregistrement du nom du DNS chiffré, revérifié toutes les quelques minutes. Indiquez-en une pour l'utiliser à la place.",
+    "away_unknown": "Prise dans l'enregistrement du nom du DNS chiffré, revérifié toutes les quelques minutes ; aucune trouvée pour l'instant. Indiquez-en une pour l'utiliser à la place."
   },
   "logs": {
     "title": "Journaux",
@@ -1128,7 +1133,7 @@
     "ports": "Ports",
     "ports_sub": "Android exige le DNS over TLS sur le 853. Le DNS over HTTPS peut partager le 443 avec les tunnels. 0 le désactive.",
     "proxies": "Proxy inverse",
-    "proxies_sub": "Si Nginx Proxy Manager ou un autre proxy transmet le DNS over HTTPS à ce boîtier : son adresse. C'est alors le client qu'il indique (X-Real-IP) qui compte, et un téléphone derrière reste hors de la maison. Le DNS over TLS doit arriver ici directement.",
+    "proxies_sub": "Un proxy devant ce boîtier (Nginx Proxy Manager, nginx, Caddy) : son adresse. C'est alors le client qu'il indique qui compte — dans X-Real-IP, ou dans un en-tête PROXY protocol pour les connexions qu'il transmet entières —, et un téléphone derrière reste hors de la maison. Le DNS over TLS sur le 853 doit arriver ici directement.",
     "dot": "DNS over TLS",
     "doh": "DNS over HTTPS",
     "listening": "écoute sur {{port}}",

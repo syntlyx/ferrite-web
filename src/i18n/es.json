@@ -681,7 +681,12 @@
     "rule_pick_service": "Elige un servicio…",
     "rule_service_help": "Enruta todos los dominios del servicio ({{count}}). Los mensajeros, los lanzadores de juegos y Spotify también usan protocolos propios que un túnel no puede transportar, por eso no aparecen.",
     "rule_service_help_empty": "Los mensajeros, los lanzadores de juegos y Spotify también usan protocolos propios que un túnel no puede transportar, por eso no aparecen.",
-    "alert_webhook_moved": "Las alertas de túnel caído van al webhook de Ajustes → Notificaciones, junto con las demás notificaciones."
+    "alert_webhook_moved": "Las alertas de túnel caído van al webhook de Ajustes → Notificaciones, junto con las demás notificaciones.",
+    "route_away": "También fuera de casa",
+    "route_away_sub": "Los dispositivos con DNS cifrado también pasan por los túneles fuera de casa: se les envía a la dirección pública de este equipo, cuyo puerto 443 debe llegar aquí desde internet. Solo entran tus dispositivos, y solo para nombres enrutados. Desactivado: fuera de casa van directos.",
+    "away_address": "Dirección pública",
+    "away_found": "Ahora {{found}}, del propio registro del nombre del DNS cifrado, consultado cada pocos minutos. Pon una para usarla en su lugar.",
+    "away_unknown": "Se toma del propio registro del nombre del DNS cifrado, consultado cada pocos minutos; aún no hay. Pon una para usarla en su lugar."
   },
   "logs": {
     "title": "Registros",
@@ -1128,7 +1133,7 @@
     "ports": "Puertos",
     "ports_sub": "Android necesita DNS over TLS en el 853. DNS over HTTPS puede compartir el 443 con los túneles. 0 lo desactiva.",
     "proxies": "Proxy inverso",
-    "proxies_sub": "Si Nginx Proxy Manager u otro proxy pasa el DNS over HTTPS a este equipo, su dirección. Entonces cuenta el cliente que nombra (X-Real-IP), y un móvil detrás sigue fuera de casa. El DNS over TLS tiene que llegar aquí directamente.",
+    "proxies_sub": "Un proxy delante de este equipo (Nginx Proxy Manager, nginx, Caddy): su dirección. Entonces cuenta el cliente que nombra — en X-Real-IP, o en una cabecera PROXY protocol para las conexiones que pasa enteras —, y un móvil detrás sigue fuera de casa. El DNS over TLS en el 853 tiene que llegar aquí directamente.",
     "dot": "DNS over TLS",
     "doh": "DNS over HTTPS",
     "listening": "escucha en {{port}}",
