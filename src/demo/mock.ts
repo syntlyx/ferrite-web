@@ -477,6 +477,19 @@ function get(path: string, qs: URLSearchParams): Json {
     };
   if (p === "/secure-dns") return secureView();
   if (p === "/secure-dns/device") return secureDevice(qs.get("name") ?? "", false);
+  if (p === "/proxy/companions")
+    return {
+      rule: qs.get("rule"),
+      egress: "proton-nl",
+      egress_up: true,
+      visits: 3,
+      candidates: [
+        { domain: "check.ddos-guard.net", site: "ddos-guard.net", seen: 3, direct: false, tunnel: true, suggested: true },
+        { domain: "a.d-cd.net", site: "d-cd.net", seen: 3, direct: false, tunnel: true, suggested: true },
+        { domain: "fonts.gstatic.com", site: "gstatic.com", seen: 2, direct: true, tunnel: true, suggested: false },
+        { domain: "i.instagram.com", site: "instagram.com", seen: 1, direct: true, tunnel: true, suggested: false },
+      ],
+    };
   if (p === "/setup")
     return {
       state: "ready",

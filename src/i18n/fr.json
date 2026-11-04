@@ -686,7 +686,19 @@
     "route_away_sub": "Les appareils en DNS chiffré passent aussi par les tunnels hors de la maison : ils sont envoyés vers l'adresse publique de ce boîtier, dont le port 443 doit mener ici depuis internet. Seuls vos appareils entrent, et seulement pour les noms routés. Désactivé : hors de la maison, ils vont en direct.",
     "away_address": "Adresse publique",
     "away_found": "Actuellement {{found}}, d'après l'enregistrement du nom du DNS chiffré, revérifié toutes les quelques minutes. Indiquez-en une pour l'utiliser à la place.",
-    "away_unknown": "Prise dans l'enregistrement du nom du DNS chiffré, revérifié toutes les quelques minutes ; aucune trouvée pour l'instant. Indiquez-en une pour l'utiliser à la place."
+    "away_unknown": "Prise dans l'enregistrement du nom du DNS chiffré, revérifié toutes les quelques minutes ; aucune trouvée pour l'instant. Indiquez-en une pour l'utiliser à la place.",
+    "companions": "Ce que le site charge d'autre",
+    "companions_checking": "J'essaie chaque nom…",
+    "companions_save_first": "Enregistrez d'abord les modifications.",
+    "companions_no_visits": "Personne ne l'a ouvert la semaine dernière, ou le journal des requêtes est désactivé. Ouvrez le site sur un appareil, puis regardez à nouveau.",
+    "companions_none": "Rien d'autre autour : le site semble n'avoir besoin que de lui-même.",
+    "companions_found": "Demandé par les mêmes appareils dans les secondes après l'ouverture (visites : {{count}}). Cochés : bloqués en direct, ouverts par le tunnel.",
+    "companions_direct_ok": "s'ouvre en direct",
+    "companions_direct_no": "bloqué en direct",
+    "companions_tunnel_ok": "s'ouvre par le tunnel",
+    "companions_tunnel_no": "pas par le tunnel",
+    "companions_add": "Router par {{egress}} : {{count}}",
+    "companions_added": "Ajoutés au tunnel : {{count}}"
   },
   "logs": {
     "title": "Journaux",

@@ -686,7 +686,19 @@
     "route_away_sub": "Devices using encrypted DNS are routed outside home as well: they're sent to this box's public address, where the internet's port 443 must reach it. Only your devices get in, and only for routed names. Off: away from home they go direct.",
     "away_address": "Public address",
     "away_found": "Now {{found}}, from the encrypted DNS name's own record, looked up every few minutes. Set one to use it instead.",
-    "away_unknown": "Taken from the encrypted DNS name's own record, looked up every few minutes; none found yet. Set one to use it instead."
+    "away_unknown": "Taken from the encrypted DNS name's own record, looked up every few minutes; none found yet. Set one to use it instead.",
+    "companions": "What else the site pulls in",
+    "companions_checking": "Trying each name…",
+    "companions_save_first": "Save the changes first.",
+    "companions_no_visits": "Nobody has opened it in the last week, or the query log is off. Open the site on a device, then look again.",
+    "companions_none": "Nothing else came up around it: the site seems to need only itself.",
+    "companions_found": "Asked by the same devices in the seconds after opening it (visits: {{count}}). Ticked: blocked straight, open through the tunnel.",
+    "companions_direct_ok": "opens straight",
+    "companions_direct_no": "blocked straight",
+    "companions_tunnel_ok": "opens via tunnel",
+    "companions_tunnel_no": "not via tunnel",
+    "companions_add": "Route through {{egress}}: {{count}}",
+    "companions_added": "Added to the tunnel: {{count}}"
   },
   "logs": {
     "title": "Logs",

@@ -686,7 +686,19 @@
     "route_away_sub": "Los dispositivos con DNS cifrado también pasan por los túneles fuera de casa: se les envía a la dirección pública de este equipo, cuyo puerto 443 debe llegar aquí desde internet. Solo entran tus dispositivos, y solo para nombres enrutados. Desactivado: fuera de casa van directos.",
     "away_address": "Dirección pública",
     "away_found": "Ahora {{found}}, del propio registro del nombre del DNS cifrado, consultado cada pocos minutos. Pon una para usarla en su lugar.",
-    "away_unknown": "Se toma del propio registro del nombre del DNS cifrado, consultado cada pocos minutos; aún no hay. Pon una para usarla en su lugar."
+    "away_unknown": "Se toma del propio registro del nombre del DNS cifrado, consultado cada pocos minutos; aún no hay. Pon una para usarla en su lugar.",
+    "companions": "Qué más carga el sitio",
+    "companions_checking": "Probando cada nombre…",
+    "companions_save_first": "Guarda primero los cambios.",
+    "companions_no_visits": "Nadie lo ha abierto en la última semana, o el registro de consultas está desactivado. Abre el sitio en un dispositivo y vuelve a mirar.",
+    "companions_none": "No apareció nada alrededor: el sitio parece necesitarse solo a sí mismo.",
+    "companions_found": "Lo que pidieron los mismos dispositivos en los segundos tras abrirlo (visitas: {{count}}). Marcados: bloqueados directamente, abiertos por el túnel.",
+    "companions_direct_ok": "abre directo",
+    "companions_direct_no": "bloqueado directo",
+    "companions_tunnel_ok": "abre por el túnel",
+    "companions_tunnel_no": "no por el túnel",
+    "companions_add": "Enrutar por {{egress}}: {{count}}",
+    "companions_added": "Añadidos al túnel: {{count}}"
   },
   "logs": {
     "title": "Registros",

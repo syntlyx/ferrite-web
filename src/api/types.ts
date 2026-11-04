@@ -949,6 +949,29 @@ export interface EgressProbe {
   last_probe_secs_ago: number;
 }
 
+/** A name a routed site pulled in, tried straight and through the tunnel. */
+export interface ProxyCompanion {
+  domain: string;
+  /** The site it belongs to, as a rule would name it. */
+  site: string;
+  /** Visits it came up in. */
+  seen: number;
+  /** Opens straight / through the rule's tunnel. */
+  direct: boolean;
+  tunnel: boolean;
+  /** Doesn't open straight, does through the tunnel: worth routing. */
+  suggested: boolean;
+}
+
+export interface ProxyCompanions {
+  rule: string;
+  egress: string;
+  egress_up: boolean;
+  /** Visits to the site found in the last week. */
+  visits: number;
+  candidates: ProxyCompanion[];
+}
+
 export interface ProxyRuleHits {
   /** The rule's key: its pattern, or `service:<id>` for a service rule. */
   pattern: string;

@@ -63,6 +63,7 @@ import type {
 } from "@/api/types";
 import { Segmented } from "@/components/ui/segmented";
 import { Tag } from "@/components/feedback/Badge";
+import { RuleCompanions } from "@/components/RuleCompanions";
 
 const KINDS: EgressKind[] = ["direct", "socks5", "wireguard", "evasion"];
 
@@ -357,6 +358,33 @@ export default function Tunnels() {
     egressKeys.reset(restored.egresses.length);
     ruleKeys.reset(restored.rules.length);
     setOpenRule(null);
+  }
+
+  /** Rules for what a routed site pulls in, on its own rule's tunnel; saved
+   *  at once (the panel only offers it with nothing else pending). */
+  async function addCompanions(rule: ProxyRule, sites: string[]) {
+    const taken = new Set(cfg.rules.map((x) => x.pattern));
+    const add = sites
+      .filter((p) => !taken.has(p))
+      .map((pattern) => ({
+        pattern,
+        egress: rule.egress,
+        fail_closed: rule.fail_closed,
+        clients: rule.clients ?? [],
+      }));
+    if (add.length === 0) return;
+    try {
+      await api.putProxy({ ...cfg, rules: [...cfg.rules, ...add] });
+      toast(
+        t("tunnels.companions_added", {
+          count: add.length,
+          defaultValue: "Added to the tunnel: {{count}}",
+        }),
+      );
+      await load();
+    } catch (e) {
+      toast((e as Error).message, "error");
+    }
   }
 
   async function save() {
@@ -1246,6 +1274,13 @@ export default function Tunnels() {
                                       })}
                                     </p>
                                   </div>
+                                  <RuleCompanions
+                                    ruleKey={ruleKey(r)}
+                                    egressName={egressName(r.egress)}
+                                    saved={!dirty && ruleKey(r) !== "" && ruleKey(r) !== "service:"}
+                                    existing={new Set(cfg.rules.map((x) => x.pattern))}
+                                    onAdd={(sites) => addCompanions(r, sites)}
+                                  />
                                 </div>
                               )}
                             </div>
