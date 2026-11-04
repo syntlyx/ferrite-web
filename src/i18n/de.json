@@ -1221,5 +1221,22 @@
     "android": "Android · Einstellungen → Netzwerk und Internet → Privates DNS → Hostname",
     "other": "Etwas anderes: ein Browser, ein Computer",
     "doh": "Adresse für DNS over HTTPS"
+  },
+  "relay": {
+    "title": "Relay",
+    "sub": "Geräte unterwegs erreichen das verschlüsselte DNS dieser Box über ein Relay, ohne geöffneten Port am Router. Das Relay reicht Verbindungen nach dem Namen weiter, den sie verlangen, und sieht nie hinein.",
+    "save": "Speichern und anwenden",
+    "saved": "Gespeichert und angewendet",
+    "enabled": "Mit einem Relay verbinden",
+    "connected": "Verbunden als {{name}}, seit {{when}}.",
+    "not_connected": "Nicht verbunden: {{error}}",
+    "up": "verbunden",
+    "down": "nicht verbunden",
+    "server": "Relay",
+    "server_sub": "Seine Adresse für Boxen, host:port (UDP).",
+    "pin": "Sein Schlüssel",
+    "pin_sub": "Daran erkennt die Box das Relay, damit sich nichts anderes dafür ausgeben kann. Ein eigenes Relay zeigt ihn an: ferrite-relay pin.",
+    "id": "ID dieser Box",
+    "id_sub": "Daran kennt jedes Relay diese Box: Sie stammt aus einem hier erzeugten Schlüssel, der die Box nie verlässt. Gib sie dem Betreiber eines Relays, um die Box hereinzulassen."
   }
 }

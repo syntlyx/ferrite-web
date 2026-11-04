@@ -1228,5 +1228,22 @@
     "android": "Android · Ajustes → Redes e Internet → DNS privado → nombre de host",
     "other": "Otra cosa: un navegador, un ordenador",
     "doh": "Dirección de DNS over HTTPS"
+  },
+  "relay": {
+    "title": "Relay",
+    "sub": "Los dispositivos fuera de casa llegan al DNS cifrado de este equipo a través de un relay, sin abrir ningún puerto en el router. El relay pasa las conexiones por el nombre que piden y nunca ve su contenido.",
+    "save": "Guardar y aplicar",
+    "saved": "Guardado y aplicado",
+    "enabled": "Conectar a un relay",
+    "connected": "Conectado como {{name}}, desde {{when}}.",
+    "not_connected": "No conectado: {{error}}",
+    "up": "conectado",
+    "down": "no conectado",
+    "server": "Relay",
+    "server_sub": "Su dirección para los equipos, host:port (UDP).",
+    "pin": "Su clave",
+    "pin_sub": "Por ella el equipo reconoce al relay, así nadie más puede hacerse pasar por él. Un relay propio la muestra: ferrite-relay pin.",
+    "id": "ID de este equipo",
+    "id_sub": "Por él cualquier relay conoce a este equipo: sale de una clave creada aquí que nunca sale. Dásela al dueño de un relay para que deje entrar al equipo."
   }
 }

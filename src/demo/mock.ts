@@ -477,6 +477,12 @@ function get(path: string, qs: URLSearchParams): Json {
     };
   if (p === "/secure-dns") return secureView();
   if (p === "/secure-dns/device") return secureDevice(qs.get("name") ?? "", false);
+  if (p === "/relay")
+    return {
+      config: { enabled: false, server: "", pin: "" },
+      id: "k7f3q2m8x9vp4abc",
+      status: null,
+    };
   if (p === "/proxy/companions")
     return {
       rule: qs.get("rule"),

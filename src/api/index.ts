@@ -28,6 +28,7 @@ import * as sync from "./sync";
 import * as dhcp from "./dhcp";
 import * as secureDns from "./secure-dns";
 import * as setup from "./setup";
+import * as relay from "./relay";
 import * as services from "./services";
 import * as notifications from "./notifications";
 
@@ -139,6 +140,8 @@ export const api = {
   makeSecureDnsDevice: secureDns.makeDevice,
   setupInfo: setup.info,
   setupClaim: setup.claim,
+  getRelay: relay.get,
+  putRelay: relay.put,
   getDhcp: dhcp.get,
   putDhcp: dhcp.put,
   dhcpLeases: dhcp.leases,

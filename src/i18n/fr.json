@@ -1228,5 +1228,22 @@
     "android": "Android · Paramètres → Réseau et Internet → DNS privé → nom d'hôte",
     "other": "Autre chose : un navigateur, un ordinateur",
     "doh": "Adresse DNS over HTTPS"
+  },
+  "relay": {
+    "title": "Relay",
+    "sub": "Les appareils hors de la maison atteignent le DNS chiffré de ce boîtier par un relay, sans port ouvert sur le routeur. Le relay transmet les connexions selon le nom qu'elles demandent et ne voit jamais leur contenu.",
+    "save": "Enregistrer et appliquer",
+    "saved": "Enregistré et appliqué",
+    "enabled": "Se connecter à un relay",
+    "connected": "Connecté comme {{name}}, depuis {{when}}.",
+    "not_connected": "Non connecté : {{error}}",
+    "up": "connecté",
+    "down": "non connecté",
+    "server": "Relay",
+    "server_sub": "Son adresse pour les boîtiers, host:port (UDP).",
+    "pin": "Sa clé",
+    "pin_sub": "C'est à elle que le boîtier reconnaît le relay, si bien que rien d'autre ne peut se faire passer pour lui. Un relay à vous l'affiche : ferrite-relay pin.",
+    "id": "ID de ce boîtier",
+    "id_sub": "C'est par lui que tout relay connaît ce boîtier : il vient d'une clé créée ici, qui ne sort jamais. Donnez-le au propriétaire d'un relay pour qu'il laisse entrer le boîtier."
   }
 }

@@ -60,6 +60,7 @@ import { BackupCard } from "@/components/BackupCard";
 import { ImportCard } from "@/components/ImportCard";
 import { SyncCard } from "@/components/SyncCard";
 import { SecureDnsCard } from "@/components/SecureDnsCard";
+import { RelayCard } from "@/components/RelayCard";
 import { NotificationsCard } from "@/components/NotificationsCard";
 import { McpCard } from "@/components/McpCard";
 import { SessionsCard } from "@/components/SessionsCard";
@@ -1629,6 +1630,7 @@ export default function Settings() {
                 </SettingRow>
               </SettingsPanel>
               <SecureDnsCard />
+              <RelayCard />
             </TabsContent>
 
             <TabsContent value="panel" className="space-y-4 pt-4">

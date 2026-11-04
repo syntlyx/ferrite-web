@@ -1363,3 +1363,31 @@ export interface SecureDnsView {
   status: SecureDnsStatus;
   setup: { dot_host: string | null; dot_port: number; doh_url: string | null };
 }
+
+/** `[relay]`: the box keeps a connection out to a relay, which passes on
+ *  devices' encrypted DNS to it — no port forwarded. */
+export interface RelaySettings {
+  enabled: boolean;
+  /** host:port of the relay's side for boxes (UDP). */
+  server: string;
+  /** The relay's key: sha256:<64 hex>. */
+  pin: string;
+}
+
+export interface RelayStatus {
+  connected: boolean;
+  /** The box's name under the relay's zone. */
+  name: string | null;
+  /** Every name the relay passes on to it. */
+  names: string[];
+  error: string | null;
+  /** Unix seconds connected since. */
+  since: number | null;
+}
+
+export interface RelayView {
+  config: RelaySettings;
+  /** What this box is to any relay: from its own key. */
+  id: string | null;
+  status: RelayStatus | null;
+}
