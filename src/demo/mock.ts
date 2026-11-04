@@ -475,6 +475,7 @@ function get(path: string, qs: URLSearchParams): Json {
       check_pending: false,
       last_error: null,
     };
+  if (p === "/secure-dns") return secureView();
   if (p === "/dhcp") return dhcpView();
   if (p === "/dhcp/leases") return dhcpLeases();
   if (p === "/sync")
@@ -555,8 +556,55 @@ function dhcpLeases(): Json {
   };
 }
 
+// ── Encrypted DNS ── serving DoT and DoH for a name of the operator's.
+let secureCfg: Json = {
+  enabled: true,
+  hostname: "dns.example.net",
+  cert_file: "/etc/letsencrypt/live/dns.example.net/fullchain.pem",
+  key_file: "/etc/letsencrypt/live/dns.example.net/privkey.pem",
+  dot_port: 853,
+  doh_port: 8443,
+};
+function secureView(): Json {
+  const c = secureCfg;
+  const on = c.enabled && !!c.hostname;
+  return {
+    config: c,
+    status: {
+      running: on,
+      error: c.enabled && !c.hostname ? "set the name devices connect to, like dns.example.com" : null,
+      dot: on && c.dot_port !== 0,
+      doh: on && c.doh_port !== 0,
+      dot_error: null,
+      doh_error: null,
+      cert: on
+        ? {
+            names: [c.hostname, `*.${c.hostname}`],
+            issuer: "Let's Encrypt",
+            not_after: Math.floor(Date.now() / 1000) + 61 * 86400,
+          }
+        : null,
+      cert_warning: null,
+    },
+    setup: {
+      dot_host: c.hostname && c.dot_port ? c.hostname : null,
+      dot_port: c.dot_port,
+      doh_url:
+        c.hostname && c.doh_port
+          ? c.doh_port === 443
+            ? `https://${c.hostname}/dns-query`
+            : `https://${c.hostname}:${c.doh_port}/dns-query`
+          : null,
+    },
+  };
+}
+
 function write(method: string, path: string, body: Json): Json {
   if (path === "/auth" || path === "/auth/login") return { token: "demo", expires_in: 86400 };
+  if (path === "/secure-dns" && method === "PUT") {
+    secureCfg = { ...secureCfg, ...body };
+    return secureView();
+  }
   if (path === "/dhcp" && method === "PUT") {
     dhcpCfg = { dhcp: body?.dhcp ?? dhcpCfg.dhcp, ra: body?.ra ?? dhcpCfg.ra };
     return dhcpView();

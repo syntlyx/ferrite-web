@@ -59,6 +59,7 @@ import { useConfirm } from "@/hooks/use-confirm";
 import { BackupCard } from "@/components/BackupCard";
 import { ImportCard } from "@/components/ImportCard";
 import { SyncCard } from "@/components/SyncCard";
+import { SecureDnsCard } from "@/components/SecureDnsCard";
 import { NotificationsCard } from "@/components/NotificationsCard";
 import { McpCard } from "@/components/McpCard";
 import { SessionsCard } from "@/components/SessionsCard";
@@ -1627,6 +1628,7 @@ export default function Settings() {
                   />
                 </SettingRow>
               </SettingsPanel>
+              <SecureDnsCard />
             </TabsContent>
 
             <TabsContent value="panel" className="space-y-4 pt-4">

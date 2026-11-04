@@ -420,6 +420,12 @@ export const SECTIONS: SectionEntry[] = [
   // ── Devices, records, tools ─────────────────────────────────────────────────
   { key: "clients.manual_aliases", page: "/clients", words: "names aliases mac rename" },
   { key: "dns.add_or_update", page: "/dns", words: "add record a aaaa cname local dns" },
+  {
+    key: "secure.title",
+    page: S,
+    tab: "network",
+    words: "doh dot dns over https tls private dns encrypted client id certificate",
+  },
   { key: "dhcp.server", page: "/dhcp", words: "dhcp addresses pool router gateway lease" },
   { key: "dhcp.leases", page: "/dhcp", words: "dhcp leases devices addresses" },
   { key: "dhcp.reservations", page: "/dhcp", words: "dhcp static ip reservation fixed address" },

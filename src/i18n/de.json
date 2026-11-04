@@ -1097,5 +1097,29 @@
     "hours_other": "{{count}} Stunden",
     "minutes_one": "{{count}} Minute",
     "minutes_other": "{{count}} Minuten"
+  },
+  "secure": {
+    "title": "Verschlüsseltes DNS",
+    "sub": "DNS over TLS für Androids „Privates DNS“, DNS over HTTPS für iPhones und Browser. Ein Gerät kann seinen eigenen Namen tragen und bleibt dieses Gerät, egal von wo es sich verbindet.",
+    "enabled": "Verschlüsseltes DNS anbieten",
+    "enabled_sub": "Braucht einen eigenen Namen und ein Zertifikat dafür. Gilt sofort.",
+    "hostname": "Name",
+    "hostname_sub": "Wohin Geräte sich verbinden; muss auf diese Box zeigen. Die Namen der Geräte stehen davor.",
+    "cert": "Zertifikat",
+    "cert_sub": "PEM-Dateien auf dieser Box, für den Namen und *.Name. Erneuerungen werden von selbst übernommen.",
+    "cert_expires": "läuft ab {{when}}",
+    "ports": "Ports",
+    "ports_sub": "Android braucht DNS over TLS auf 853. 0 schaltet ab.",
+    "dot": "DNS over TLS",
+    "doh": "DNS over HTTPS",
+    "listening": "lauscht auf {{port}}",
+    "not_listening": "lauscht nicht",
+    "setup": "Gerät einrichten",
+    "setup_sub": "Gib ihm einen Namen, dann erscheint es unter diesem in Clients – zu Hause oder unterwegs – und kann ein eigenes Profil haben.",
+    "device_placeholder": "Gerätename, z. B. pixel",
+    "android": "Android · Einstellungen → Netzwerk → Privates DNS",
+    "ios": "iPhone, Mac, Browser · DNS over HTTPS",
+    "save": "Speichern und anwenden",
+    "saved": "Gespeichert und angewendet"
   }
 }

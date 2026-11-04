@@ -1104,5 +1104,29 @@
     "hours_other": "{{count}} horas",
     "minutes_one": "{{count}} minuto",
     "minutes_other": "{{count}} minutos"
+  },
+  "secure": {
+    "title": "DNS cifrado",
+    "sub": "DNS over TLS para el DNS privado de Android, DNS over HTTPS para iPhone y navegadores. Un dispositivo puede llevar su propio nombre y ser ese dispositivo desde donde se conecte.",
+    "enabled": "Servir DNS cifrado",
+    "enabled_sub": "Necesita un nombre propio y un certificado para él. Se aplica al instante.",
+    "hostname": "Nombre",
+    "hostname_sub": "A lo que se conectan los dispositivos; debe apuntar a este equipo. Los nombres de los dispositivos van delante.",
+    "cert": "Certificado",
+    "cert_sub": "Archivos PEM en este equipo, para el nombre y *.nombre. Las renovaciones se recogen solas.",
+    "cert_expires": "vence {{when}}",
+    "ports": "Puertos",
+    "ports_sub": "Android necesita DNS over TLS en el 853. 0 lo desactiva.",
+    "dot": "DNS over TLS",
+    "doh": "DNS over HTTPS",
+    "listening": "escucha en {{port}}",
+    "not_listening": "sin escuchar",
+    "setup": "Configurar un dispositivo",
+    "setup_sub": "Dale un nombre y aparecerá con él en Clientes —en casa o fuera— y podrá tener su propio perfil.",
+    "device_placeholder": "Nombre, p. ej. pixel",
+    "android": "Android · Ajustes → Red → DNS privado",
+    "ios": "iPhone, Mac, navegadores · DNS over HTTPS",
+    "save": "Guardar y aplicar",
+    "saved": "Guardado y aplicado"
   }
 }

@@ -1097,5 +1097,29 @@
     "hours_other": "{{count}} hours",
     "minutes_one": "{{count}} minute",
     "minutes_other": "{{count}} minutes"
+  },
+  "secure": {
+    "title": "Encrypted DNS",
+    "sub": "DNS over TLS for Android's Private DNS, DNS over HTTPS for iPhones and browsers. A device can carry its own name, and is that device wherever it connects from.",
+    "enabled": "Serve encrypted DNS",
+    "enabled_sub": "Needs a name of your own and a certificate for it. Applies at once.",
+    "hostname": "Name",
+    "hostname_sub": "What devices connect to; it must point at this box. Devices' own names go in front of it.",
+    "cert": "Certificate",
+    "cert_sub": "PEM files on this box, for the name and *.name. Renewals are picked up by themselves.",
+    "cert_expires": "expires {{when}}",
+    "ports": "Ports",
+    "ports_sub": "Android needs DNS over TLS on 853. 0 switches one off.",
+    "dot": "DNS over TLS",
+    "doh": "DNS over HTTPS",
+    "listening": "listening on {{port}}",
+    "not_listening": "not listening",
+    "setup": "Set up a device",
+    "setup_sub": "Give it a name and it shows up under that name in Clients — at home or away — and can have its own profile.",
+    "device_placeholder": "Device name, e.g. pixel",
+    "android": "Android · Settings → Network → Private DNS",
+    "ios": "iPhone, Mac, browsers · DNS over HTTPS",
+    "save": "Save and apply",
+    "saved": "Saved and applied"
   }
 }

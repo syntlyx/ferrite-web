@@ -1104,5 +1104,29 @@
     "hours_other": "{{count}} heures",
     "minutes_one": "{{count}} minute",
     "minutes_other": "{{count}} minutes"
+  },
+  "secure": {
+    "title": "DNS chiffré",
+    "sub": "DNS over TLS pour le DNS privé d'Android, DNS over HTTPS pour iPhone et navigateurs. Un appareil peut porter son propre nom et rester cet appareil d'où qu'il se connecte.",
+    "enabled": "Servir le DNS chiffré",
+    "enabled_sub": "Nécessite un nom à vous et un certificat pour ce nom. S'applique aussitôt.",
+    "hostname": "Nom",
+    "hostname_sub": "Ce à quoi se connectent les appareils ; doit pointer vers ce boîtier. Le nom des appareils se place devant.",
+    "cert": "Certificat",
+    "cert_sub": "Fichiers PEM sur ce boîtier, pour le nom et *.nom. Les renouvellements sont pris en compte d'eux-mêmes.",
+    "cert_expires": "expire {{when}}",
+    "ports": "Ports",
+    "ports_sub": "Android exige le DNS over TLS sur le 853. 0 le désactive.",
+    "dot": "DNS over TLS",
+    "doh": "DNS over HTTPS",
+    "listening": "écoute sur {{port}}",
+    "not_listening": "n'écoute pas",
+    "setup": "Configurer un appareil",
+    "setup_sub": "Donnez-lui un nom : il apparaîtra sous ce nom dans Clients — à la maison ou ailleurs — et pourra avoir son propre profil.",
+    "device_placeholder": "Nom de l'appareil, ex. pixel",
+    "android": "Android · Paramètres → Réseau → DNS privé",
+    "ios": "iPhone, Mac, navigateurs · DNS over HTTPS",
+    "save": "Enregistrer et appliquer",
+    "saved": "Enregistré et appliqué"
   }
 }

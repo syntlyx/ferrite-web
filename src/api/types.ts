@@ -1214,3 +1214,31 @@ export interface DhcpLease {
   expires_at: number;
   reserved: boolean;
 }
+
+// ── Encrypted DNS (DoT / DoH) ─────────────────────────────────────────────────
+
+export interface SecureDnsSettings {
+  enabled: boolean;
+  hostname: string;
+  cert_file?: string | null;
+  key_file?: string | null;
+  dot_port: number;
+  doh_port: number;
+}
+
+export interface SecureDnsStatus {
+  running: boolean;
+  error: string | null;
+  dot: boolean;
+  doh: boolean;
+  dot_error: string | null;
+  doh_error: string | null;
+  cert: { names: string[]; issuer: string; not_after: number } | null;
+  cert_warning: string | null;
+}
+
+export interface SecureDnsView {
+  config: SecureDnsSettings;
+  status: SecureDnsStatus;
+  setup: { dot_host: string | null; dot_port: number; doh_url: string | null };
+}
