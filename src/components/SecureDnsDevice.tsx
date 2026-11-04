@@ -33,7 +33,7 @@ export function Copyable({ value }: { value: string }) {
 }
 
 /** A QR code, black on white in either theme: cameras want the contrast. */
-export function QrCode({ value, size = 176 }: { value: string; size?: number }) {
+export function QrCode({ value, size = 200 }: { value: string; size?: number }) {
   const { n, d } = useMemo(() => {
     const { data } = encode(value, { ecc: "M", border: 2 });
     let path = "";
@@ -142,9 +142,11 @@ export function DeviceHowTo({
             </IconBtn>
           </div>
           {qr && (
-            <div className="space-y-2 pt-1.5">
-              <QrCode value={qr} />
-              <p className="text-[11px] text-muted">
+            <div className="flex flex-col items-center gap-2.5 rounded-xs border border-bdr/70 bg-void/40 p-4 text-center">
+              <div className="rounded-xs bg-white p-2">
+                <QrCode value={qr} />
+              </div>
+              <p className="max-w-64 text-[11px] text-muted">
                 {t("secure.qr_hint", {
                   defaultValue:
                     "Point the iPhone's camera at it, at home, and open the link; then Settings → Profile Downloaded → Install. The code works for 15 minutes.",
@@ -172,10 +174,13 @@ export function DeviceHowTo({
  */
 export function SecureDnsSection({
   name,
+  client,
   heading,
 }: {
   /** The client's name, or its device name in encrypted DNS. */
   name: string;
+  /** The client's key (MAC or IP): the device made is its. */
+  client?: string;
   heading: (text: string) => React.ReactNode;
 }) {
   const { t } = useTranslation();
@@ -187,20 +192,20 @@ export function SecureDnsSection({
     let cancelled = false;
     setDev(undefined);
     api
-      .secureDnsDevice(name)
+      .secureDnsDevice(name, client)
       .then((d) => !cancelled && setDev(d))
       .catch(() => !cancelled && setDev(null));
     return () => {
       cancelled = true;
     };
-  }, [name]);
+  }, [name, client]);
 
   if (dev === null || (dev && !dev.enabled)) return null;
 
   async function make() {
     setBusy(true);
     try {
-      setDev(await api.makeSecureDnsDevice(name));
+      setDev(await api.makeSecureDnsDevice(name, client));
     } catch (e) {
       toast((e as Error).message, "error");
     } finally {

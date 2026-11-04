@@ -573,7 +573,11 @@ export function DevicePanel() {
 
               {/* Encrypted DNS */}
               {secureName && (
-                <SecureDnsSection name={secureName} heading={(text) => <Heading>{text}</Heading>} />
+                <SecureDnsSection
+                  name={secureName}
+                  client={client?.macs[0] ?? client?.ips.find((x) => !x.startsWith("id:"))}
+                  heading={(text) => <Heading>{text}</Heading>}
+                />
               )}
 
               {stats === null && client !== undefined && (
