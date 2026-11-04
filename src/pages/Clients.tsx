@@ -366,16 +366,23 @@ function AliasesPanel({ prefill }: { prefill: AliasPrefill | null }) {
                       />
                     </Td>
                     <Td className="text-right whitespace-nowrap">
-                      <IconBtn
-                        title={t("common.save")}
-                        onClick={() => void saveEdit(a)}
-                        disabled={savingEdit || !editing.address.trim() || !editing.name.trim()}
-                      >
-                        <Check size={12} />
-                      </IconBtn>
-                      <IconBtn title={t("common.cancel")} onClick={() => setEditing(null)}>
-                        <X size={12} />
-                      </IconBtn>
+                      <div className="inline-flex items-center gap-4">
+                        <IconBtn
+                          title={t("common.save")}
+                          onClick={() => void saveEdit(a)}
+                          disabled={savingEdit || !editing.address.trim() || !editing.name.trim()}
+                          className="p-1"
+                        >
+                          <Check size={12} />
+                        </IconBtn>
+                        <IconBtn
+                          title={t("common.cancel")}
+                          onClick={() => setEditing(null)}
+                          className="p-1"
+                        >
+                          <X size={12} />
+                        </IconBtn>
+                      </div>
                     </Td>
                   </TableRow>
                 ) : (
@@ -393,23 +400,27 @@ function AliasesPanel({ prefill }: { prefill: AliasPrefill | null }) {
                       {a.name}
                     </Td>
                     <Td className="text-right whitespace-nowrap">
-                      <IconBtn
-                        title={t("clients.edit_alias")}
-                        onClick={() =>
-                          setEditing({ key: aliasKey(a), address: aliasKey(a), name: a.name })
-                        }
-                        className="opacity-0 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
-                      >
-                        <Pencil size={12} />
-                      </IconBtn>
-                      <IconBtn
-                        danger
-                        onClick={() => handleRemove(a)}
-                        disabled={removing === aliasKey(a)}
-                        className="opacity-0 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
-                      >
-                        <Trash2 size={12} />
-                      </IconBtn>
+                      {/* Apart, so a slip meant for one doesn't land on the other. */}
+                      <div className="inline-flex items-center gap-4">
+                        <IconBtn
+                          title={t("clients.edit_alias")}
+                          onClick={() =>
+                            setEditing({ key: aliasKey(a), address: aliasKey(a), name: a.name })
+                          }
+                          className="p-1 opacity-0 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
+                        >
+                          <Pencil size={12} />
+                        </IconBtn>
+                        <IconBtn
+                          danger
+                          title={t("common.delete", { defaultValue: "Delete" })}
+                          onClick={() => handleRemove(a)}
+                          disabled={removing === aliasKey(a)}
+                          className="p-1 opacity-0 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
+                        >
+                          <Trash2 size={12} />
+                        </IconBtn>
+                      </div>
                     </Td>
                   </TableRow>
                 ),
