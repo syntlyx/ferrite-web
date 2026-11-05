@@ -114,12 +114,12 @@
     "max_connections": 1024,
     "rules": [
       {
-        "pattern": "netflix.com",
+        "pattern": "reddit.com",
         "egress": "proton-nl",
         "fail_closed": true
       },
       {
-        "pattern": "*.bbc.co.uk",
+        "pattern": "*.wikipedia.org",
         "egress": "proton-nl",
         "fail_closed": true
       },
@@ -134,7 +134,7 @@
         "fail_closed": true
       },
       {
-        "pattern": "spotify.com",
+        "pattern": "archive.org",
         "egress": "proton-nl",
         "fail_closed": false
       },
