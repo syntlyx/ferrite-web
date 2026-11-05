@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && node scripts/licenses.mjs dist",
     "lint": "eslint .",
     "preview": "vite preview",
-    "build:demo": "tsc -b && FERRITE_DEMO=1 vite build --base=/demo/ --outDir dist-demo"
+    "build:demo": "tsc -b && FERRITE_DEMO=1 vite build --base=/demo/ --outDir dist-demo && node scripts/licenses.mjs dist-demo"
   },
   "dependencies": {
     "@radix-ui/react-label": "^2.1.17",
