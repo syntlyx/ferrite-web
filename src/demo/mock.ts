@@ -480,7 +480,7 @@ function get(path: string, qs: URLSearchParams): Json {
   if (p === "/relay")
     return {
       config: { enabled: false, server: "", pin: "" },
-      id: "k7f3q2m8x9vp4abc",
+      id: "k7f3q2m2x3vp4abc",
       status: null,
     };
   if (p === "/proxy/companions")

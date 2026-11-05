@@ -1259,7 +1259,9 @@ export interface DhcpLease {
 
 // ── Encrypted DNS (DoT / DoH) ─────────────────────────────────────────────────
 
-export type CertSource = "letsencrypt" | "files";
+/** Let's Encrypt through Cloudflare, PEM files of your own, or Let's
+ *  Encrypt for the box's name under its relay's zone. */
+export type CertSource = "letsencrypt" | "files" | "relay";
 
 /** Who may set a device up from `/setup` without the panel's password. */
 export type SelfSetup = "off" | "named" | "anyone";
@@ -1380,6 +1382,8 @@ export interface RelayStatus {
   name: string | null;
   /** Every name the relay passes on to it. */
   names: string[];
+  /** The relay answers its zone's DNS: a certificate can come through it. */
+  dns: boolean;
   error: string | null;
   /** Unix seconds connected since. */
   since: number | null;

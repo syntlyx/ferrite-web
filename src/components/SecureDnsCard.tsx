@@ -2,7 +2,13 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AlertTriangle, Lock, Plus, RefreshCw, Save, Trash2 } from "lucide-react";
 import { api } from "@/api";
-import type { CertSource, SecureDnsSettings, SecureDnsView, SelfSetup } from "@/api/types";
+import type {
+  CertSource,
+  RelayView,
+  SecureDnsSettings,
+  SecureDnsView,
+  SelfSetup,
+} from "@/api/types";
 import { relTime } from "@/lib/format";
 import { FieldLabel, SettingRow, SettingsPanel } from "@/components/layout/SettingsPanel";
 import { Tag } from "@/components/feedback/Badge";
@@ -47,6 +53,8 @@ export function SecureDnsCard() {
   const [saved, setSaved] = useState("");
   const [device, setDevice] = useState("");
   const [busy, setBusy] = useState(false);
+  // The relay, for a name and certificate through it.
+  const [relay, setRelay] = useState<RelayView | null>(null);
 
   const adopt = useCallback((v: SecureDnsView) => {
     const c = v.config;
@@ -80,6 +88,10 @@ export function SecureDnsCard() {
       .getSecureDns()
       .then(adopt)
       .catch(() => {});
+    api
+      .getRelay()
+      .then(setRelay)
+      .catch(() => {});
   }, [adopt]);
 
   // While a certificate is being fetched, follow along.
@@ -99,7 +111,21 @@ export function SecureDnsCard() {
   const st = view.status;
   const on = view.config.enabled;
   const le = form.certificate === "letsencrypt";
-  const acme = view.config.certificate === "letsencrypt" ? st.acme : null;
+  const viaRelay = form.certificate === "relay";
+  const acme = view.config.certificate === "files" ? null : st.acme;
+  const relayName = relay?.status?.name ?? null;
+  // Why a certificate can't come through the relay yet, if it can't.
+  const relayProblem = !viaRelay
+    ? null
+    : !relay?.config.enabled
+      ? t("secure.relay_off", {
+          defaultValue: "Turn the relay on first (Relay, below).",
+        })
+      : relay.status?.connected && !relay.status.dns
+        ? t("secure.relay_no_dns", {
+            defaultValue: "This relay doesn't give certificates: its DNS is off.",
+          })
+        : null;
   const host = view.config.hostname;
   const devices = view.config.devices ?? [];
   const newId = toLabel(device);
@@ -201,6 +227,13 @@ export function SecureDnsCard() {
     { value: "letsencrypt", label: "Let's Encrypt" },
     { value: "files", label: t("secure.source_files", { defaultValue: "My own files" }) },
   ];
+  // Offered once a relay is set up (or already chosen).
+  if (relay?.config.server || viaRelay) {
+    sources.push({
+      value: "relay",
+      label: t("secure.source_relay", { defaultValue: "Through the relay" }),
+    });
+  }
 
   const stepText = (step: string | null) =>
     step
@@ -237,18 +270,37 @@ export function SecureDnsCard() {
       </SettingRow>
       <SettingRow
         label={t("secure.hostname", { defaultValue: "Name" })}
-        sub={t("secure.hostname_sub", {
-          defaultValue:
-            "What devices connect to; it must point at this box. Devices' own names go in front of it.",
-        })}
+        sub={
+          viaRelay
+            ? t("secure.hostname_relay_sub", {
+                defaultValue:
+                  "The relay gives it: this box's ID under the relay's zone. Devices' own names go in front of it.",
+              })
+            : t("secure.hostname_sub", {
+                defaultValue:
+                  "What devices connect to; it must point at this box. Devices' own names go in front of it.",
+              })
+        }
       >
-        <Input
-          value={form.hostname}
-          onChange={(e) => set("hostname", e.target.value)}
-          placeholder="dns.example.com"
-          className="w-full font-mono"
-          spellCheck={false}
-        />
+        {viaRelay ? (
+          relayName || form.hostname ? (
+            <Copyable value={relayName ?? form.hostname} />
+          ) : (
+            <span className="text-xs text-muted">
+              {t("secure.hostname_relay_wait", {
+                defaultValue: "Given once the box connects to the relay.",
+              })}
+            </span>
+          )
+        ) : (
+          <Input
+            value={form.hostname}
+            onChange={(e) => set("hostname", e.target.value)}
+            placeholder="dns.example.com"
+            className="w-full font-mono"
+            spellCheck={false}
+          />
+        )}
       </SettingRow>
       <SettingRow
         label={t("secure.cert", { defaultValue: "Certificate" })}
@@ -258,10 +310,15 @@ export function SecureDnsCard() {
                 defaultValue:
                   "ferrite gets it for the name and *.name and renews it, proving the name with a TXT record through Cloudflare. No port has to be open for that.",
               })
-            : t("secure.cert_sub", {
-                defaultValue:
-                  "PEM files on this box, for the name and *.name. Renewals are picked up by themselves.",
-              })
+            : viaRelay
+              ? t("secure.cert_relay_sub", {
+                  defaultValue:
+                    "ferrite gets it from Let's Encrypt for the name and *.name and renews it; the relay answers the check. The key never leaves this box.",
+                })
+              : t("secure.cert_sub", {
+                  defaultValue:
+                    "PEM files on this box, for the name and *.name. Renewals are picked up by themselves.",
+                })
         }
         align="start"
       >
@@ -272,36 +329,41 @@ export function SecureDnsCard() {
             onChange={(v) => set("certificate", v)}
             ariaLabel={t("secure.cert", { defaultValue: "Certificate" })}
           />
-          {le ? (
+          {relayProblem && <Problem>{relayProblem}</Problem>}
+          {le || viaRelay ? (
             <>
-              <label className="space-y-1">
-                <FieldLabel>
-                  {t("secure.cf_token", { defaultValue: "Cloudflare API token" })}
-                </FieldLabel>
-                <Input
-                  type="password"
-                  autoComplete="off"
-                  value={form.token}
-                  onChange={(e) => set("token", e.target.value)}
-                  placeholder={
-                    view.token_set
-                      ? t("secure.cf_token_saved", {
-                          defaultValue: "Saved — type a new one to replace it",
-                        })
-                      : t("secure.cf_token_placeholder", {
-                          defaultValue: "Token with “Edit zone DNS” for your zone",
-                        })
-                  }
-                  className="w-full"
-                  spellCheck={false}
-                />
-              </label>
-              <p className="text-[11px] text-muted">
-                {t("secure.cf_token_help", {
-                  defaultValue:
-                    "Cloudflare → My Profile → API Tokens → Create token → “Edit zone DNS”, limited to the zone of the name.",
-                })}
-              </p>
+              {le && (
+                <>
+                  <label className="space-y-1">
+                    <FieldLabel>
+                      {t("secure.cf_token", { defaultValue: "Cloudflare API token" })}
+                    </FieldLabel>
+                    <Input
+                      type="password"
+                      autoComplete="off"
+                      value={form.token}
+                      onChange={(e) => set("token", e.target.value)}
+                      placeholder={
+                        view.token_set
+                          ? t("secure.cf_token_saved", {
+                              defaultValue: "Saved — type a new one to replace it",
+                            })
+                          : t("secure.cf_token_placeholder", {
+                              defaultValue: "Token with “Edit zone DNS” for your zone",
+                            })
+                      }
+                      className="w-full"
+                      spellCheck={false}
+                    />
+                  </label>
+                  <p className="text-[11px] text-muted">
+                    {t("secure.cf_token_help", {
+                      defaultValue:
+                        "Cloudflare → My Profile → API Tokens → Create token → “Edit zone DNS”, limited to the zone of the name.",
+                    })}
+                  </p>
+                </>
+              )}
               <label className="space-y-1">
                 <FieldLabel>
                   {t("secure.email", { defaultValue: "Email for Let's Encrypt (optional)" })}

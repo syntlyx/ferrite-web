@@ -1175,7 +1175,8 @@
       "adding_the_TXT_record": "ajout de l'enregistrement TXT",
       "waiting_for_the_record_to_show_up": "attente de la publication de l'enregistrement",
       "waiting_for_Let_s_Encrypt_to_check": "attente de la vérification par Let's Encrypt",
-      "getting_the_certificate": "récupération du certificat"
+      "getting_the_certificate": "récupération du certificat",
+      "handing_the_challenge_to_the_relay": "je confie la vérification au relais"
     },
     "devices": "Appareils",
     "devices_sub": "Chacun apparaît sous son nom dans Clients et peut avoir son propre profil. Hors de chez vous, seuls ces appareils obtiennent une réponse ; à la maison, tous.",
@@ -1204,7 +1205,13 @@
     "self_anyone_hint": "N'importe quel appareil de votre réseau, invités compris. Retirez de la liste ci-dessous ceux qui n'y ont pas leur place.",
     "http3": "DNS over HTTP/3",
     "http3_sub": "QUIC sur l'UDP {{port}} : plus rapide sur un mauvais réseau mobile, et les appareils y passent d'eux-mêmes. Hors de la maison, le routeur doit envoyer l'UDP {{port}} directement ici — un proxy inverse ne transmet pas QUIC.",
-    "http3_on": "à l'écoute sur {{port}}/udp"
+    "http3_on": "à l'écoute sur {{port}}/udp",
+    "source_relay": "Via le relais",
+    "hostname_relay_sub": "Le relais le fournit : l'ID de ce boîtier dans la zone du relais. Les noms propres des appareils se placent devant.",
+    "hostname_relay_wait": "Attribué dès que le boîtier se connecte au relais.",
+    "cert_relay_sub": "ferrite l'obtient auprès de Let's Encrypt pour le nom et *.nom et le renouvelle ; le relais répond à la vérification. La clé ne quitte jamais ce boîtier.",
+    "relay_off": "Activez d'abord le relais (Relais, plus bas).",
+    "relay_no_dns": "Ce relais ne délivre pas de certificats : son DNS est désactivé."
   },
   "setup": {
     "title": "DNS chiffré pour cet appareil",

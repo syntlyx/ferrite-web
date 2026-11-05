@@ -1175,7 +1175,8 @@
       "adding_the_TXT_record": "añadiendo el registro TXT",
       "waiting_for_the_record_to_show_up": "esperando a que aparezca el registro",
       "waiting_for_Let_s_Encrypt_to_check": "esperando la comprobación de Let's Encrypt",
-      "getting_the_certificate": "descargando el certificado"
+      "getting_the_certificate": "descargando el certificado",
+      "handing_the_challenge_to_the_relay": "pasando la comprobación al relay"
     },
     "devices": "Dispositivos",
     "devices_sub": "Cada uno aparece con su nombre en Clientes y puede tener su propio perfil. Fuera de casa solo se responde a estos dispositivos; en casa, a todos.",
@@ -1204,7 +1205,13 @@
     "self_anyone_hint": "Cualquier dispositivo de tu red, invitados incluidos. Quita de la lista de abajo los que sobren.",
     "http3": "DNS over HTTP/3",
     "http3_sub": "QUIC en UDP {{port}}: más rápido con una red móvil mala, y los dispositivos pasan a él solos. Fuera de casa el router tiene que enviar el UDP {{port}} directamente aquí: un proxy inverso no pasa QUIC.",
-    "http3_on": "escuchando en {{port}}/udp"
+    "http3_on": "escuchando en {{port}}/udp",
+    "source_relay": "A través del relay",
+    "hostname_relay_sub": "Lo da el relay: el ID de esta caja en la zona del relay. Los nombres propios de los dispositivos van delante.",
+    "hostname_relay_wait": "Se asigna en cuanto la caja se conecta al relay.",
+    "cert_relay_sub": "ferrite lo obtiene de Let's Encrypt para el nombre y *.nombre y lo renueva; el relay responde a la comprobación. La clave nunca sale de esta caja.",
+    "relay_off": "Activa primero el relay (Relay, más abajo).",
+    "relay_no_dns": "Este relay no emite certificados: su DNS está apagado."
   },
   "setup": {
     "title": "DNS cifrado para este dispositivo",

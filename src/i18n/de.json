@@ -1168,7 +1168,8 @@
       "adding_the_TXT_record": "TXT-Eintrag wird angelegt",
       "waiting_for_the_record_to_show_up": "warte, bis der Eintrag sichtbar ist",
       "waiting_for_Let_s_Encrypt_to_check": "warte auf die Prüfung durch Let's Encrypt",
-      "getting_the_certificate": "Zertifikat wird abgeholt"
+      "getting_the_certificate": "Zertifikat wird abgeholt",
+      "handing_the_challenge_to_the_relay": "übergebe die Prüfung an das Relay"
     },
     "devices": "Geräte",
     "devices_sub": "Jedes erscheint unter seinem Namen in Clients und kann ein eigenes Profil haben. Unterwegs werden nur diese Geräte beantwortet, zu Hause jedes.",
@@ -1197,7 +1198,13 @@
     "self_anyone_hint": "Jedes Gerät in deinem Netz, auch Gäste. Entferne unten die, die nicht in die Liste gehören.",
     "http3": "DNS over HTTP/3",
     "http3_sub": "QUIC auf UDP {{port}}: schneller in einem schwachen Mobilnetz, und Geräte wechseln von selbst dorthin. Unterwegs muss der Router UDP {{port}} direkt hierher schicken — ein Reverse Proxy reicht QUIC nicht weiter.",
-    "http3_on": "lauscht auf {{port}}/udp"
+    "http3_on": "lauscht auf {{port}}/udp",
+    "source_relay": "Über das Relay",
+    "hostname_relay_sub": "Das Relay vergibt ihn: die ID dieser Box in der Zone des Relays. Eigene Gerätenamen stehen davor.",
+    "hostname_relay_wait": "Wird vergeben, sobald die Box mit dem Relay verbunden ist.",
+    "cert_relay_sub": "ferrite holt es bei Let's Encrypt für den Namen und *.Namen und erneuert es selbst; die Prüfung beantwortet das Relay. Der Schlüssel verlässt diese Box nie.",
+    "relay_off": "Schalte zuerst das Relay ein (Relay, unten).",
+    "relay_no_dns": "Dieses Relay stellt keine Zertifikate aus: sein DNS ist aus."
   },
   "setup": {
     "title": "Verschlüsseltes DNS für dieses Gerät",
