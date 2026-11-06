@@ -1,6 +1,6 @@
 # Ferrite Web UI
 
-The control panel for [Ferrite](https://github.com/syntlyx/ferrite-server) — a
+The control panel for [Ferrite](https://github.com/koroblabs/ferrite-server) — a
 self-hosted DNS filter and router. React + Vite; it talks to the Ferrite API
 through same-origin `/api` requests and runs either under Vite during
 development or as static files served by the Ferrite server itself.
@@ -183,8 +183,8 @@ The release publisher uses GitHub's built-in `${{ github.token }}` with workflow
 `contents: write` permission. It avoids Actions artifacts so releases are
 self-contained.
 
-Ferrite web release assets are published from `syntlyx/ferrite-web`. The server
-release assets live in `syntlyx/ferrite-server`.
+Ferrite web release assets are published from `koroblabs/ferrite-web`. The server
+release assets live in `koroblabs/ferrite-server`.
 
 ## API Contract
 
